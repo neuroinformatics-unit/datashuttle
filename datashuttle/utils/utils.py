@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+import getpass
+import random
 import re
+import string
+import sys
 import traceback
 import warnings
 from typing import TYPE_CHECKING, Any, List, Literal, Union, overload
@@ -101,6 +105,73 @@ def print_message_to_user(
 def get_user_input(message: str) -> str:
     """Centralised way to get user input."""
     input_ = input(message)
+    return input_
+
+
+def get_connection_secret_from_user(
+    connection_method_name: str,
+    key_name_full: str,
+    key_name_short: str,
+    key_info: str | None = None,
+    log_status: bool = True,
+) -> str:
+    """Get sensitive information input from the user via their terminal.
+
+    This is a centralised function shared across connection methods.
+    It checks whether the standard input (stdin) is connected to a
+    terminal or not. If not, the user is displayed a warning and asked
+    if they would like to continue.
+
+    Parameters
+    ----------
+    connection_method_name
+        A string identifying the connection method being used.
+
+    key_name_full
+        Full name of the connection secret being asked from the user.
+
+    key_name_short
+        Short name of the connection secret to avoid repeatedly writing the full name.
+
+    key_info
+        Extra info about the connection secret that needs to intimated to the user.
+
+    log_status
+        Log if `True`, logger must already be initialised.
+
+    """
+    if key_info:
+        print_message_to_user(key_info)
+
+    if not sys.stdin.isatty():
+        proceed = input(
+            f"\nWARNING!\nThe next step is to enter a {key_name_full}, but it is not possible\n"
+            f"to hide your {key_name_short} while entering it in the current terminal.\n"
+            f"This can occur if running the command in an IDE.\n\n"
+            f"Press 'y' to proceed to {key_name_short} entry. "
+            f"The characters will not be hidden!\n"
+            f"Alternatively, run {connection_method_name} setup after starting Python in your "
+            f"system terminal \nrather than through an IDE: "
+        )
+        if proceed != "y":
+            print_message_to_user(
+                f"Quitting {connection_method_name} setup as 'y' not pressed."
+            )
+            log_and_raise_error(
+                f"{connection_method_name} setup aborted by user.",
+                ConnectionAbortedError,
+            )
+
+        input_ = input(
+            f"Please enter your {key_name_full}. Characters will not be hidden: "
+        )
+
+    else:
+        input_ = getpass.getpass(f"Please enter your {key_name_full}: ")
+
+    if log_status:
+        log(f"{key_name_full} entered by user.")
+
     return input_
 
 
@@ -258,3 +329,11 @@ def all_unique(list_: List) -> bool:
 def all_identical(list_: List) -> bool:
     """Return bool indicating whether all values in a list are identical."""
     return len(set(list_)) == 1
+
+
+def get_random_string(num_chars: int = 15) -> str:
+    """Return a random string of alphanumeric characters."""
+    characters = string.ascii_letters + string.digits
+    random_string = "".join(random.choices(characters, k=num_chars))
+
+    return random_string

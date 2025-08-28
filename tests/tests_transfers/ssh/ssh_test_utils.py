@@ -1,12 +1,9 @@
 import builtins
 import copy
-import stat
 import subprocess
 import sys
 
-import paramiko
-
-from datashuttle.utils import rclone, ssh
+from datashuttle.utils import rclone, ssh, utils
 
 
 def setup_project_for_ssh(
@@ -43,8 +40,8 @@ def setup_ssh_connection(project, setup_ssh_key_pair=True):
     orig_builtin = copy.deepcopy(builtins.input)
     builtins.input = lambda _: "y"  # type: ignore
 
-    orig_getpass = copy.deepcopy(ssh.getpass.getpass)
-    ssh.getpass.getpass = lambda _: "password"  # type: ignore
+    orig_get_secret = copy.deepcopy(utils.get_connection_secret_from_user)
+    utils.get_connection_secret_from_user = lambda *args, **kwargs: "password"  # type: ignore
 
     orig_isatty = copy.deepcopy(sys.stdin.isatty)
     sys.stdin.isatty = lambda: True
@@ -59,7 +56,7 @@ def setup_ssh_connection(project, setup_ssh_key_pair=True):
 
     # Restore functions
     builtins.input = orig_builtin
-    ssh.getpass.getpass = orig_getpass
+    utils.get_connection_secret_from_user = orig_get_secret
     sys.stdin.isatty = orig_isatty
 
     rclone.setup_rclone_config_for_ssh(
@@ -69,49 +66,6 @@ def setup_ssh_connection(project, setup_ssh_key_pair=True):
     )
 
     return verified
-
-
-def recursive_search_central(project):
-    """
-    A convenience function to recursively search a
-    project for files through SSH, used  during testing
-    across an SSH connection to collected names of
-    files that were transferred.
-    """
-    with paramiko.SSHClient() as client:
-        ssh.connect_client_core(client, project.cfg)
-
-        sftp = client.open_sftp()
-
-        all_filenames = []
-
-        sftp_recursive_file_search(
-            sftp,
-            (project.cfg["central_path"] / "rawdata").as_posix(),
-            all_filenames,
-        )
-    return all_filenames
-
-
-def sftp_recursive_file_search(sftp, path_, all_filenames):
-    """
-    Append all filenames found within a folder,
-    when searching over a sftp connection.
-    """
-    try:
-        sftp.stat(path_)
-    except FileNotFoundError:
-        return
-
-    for file_or_folder in sftp.listdir_attr(path_):
-        if stat.S_ISDIR(file_or_folder.st_mode):
-            sftp_recursive_file_search(
-                sftp,
-                path_ + "/" + file_or_folder.filename,
-                all_filenames,
-            )
-        else:
-            all_filenames.append(path_ + "/" + file_or_folder.filename)
 
 
 def docker_is_running():

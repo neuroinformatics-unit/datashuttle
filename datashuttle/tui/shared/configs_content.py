@@ -20,13 +20,22 @@ from textual.widgets import (
     Label,
     RadioButton,
     RadioSet,
+    Select,
     Static,
 )
 
+from datashuttle.configs.aws_regions import get_aws_regions_list
+from datashuttle.configs.canonical_configs import get_connection_methods_list
 from datashuttle.tui.custom_widgets import ClickableInput
 from datashuttle.tui.interface import Interface
-from datashuttle.tui.screens import modal_dialogs, setup_ssh
+from datashuttle.tui.screens import (
+    modal_dialogs,
+    setup_aws,
+    setup_gdrive,
+    setup_ssh,
+)
 from datashuttle.tui.tooltips import get_tooltip
+from datashuttle.tui.utils import tui_utils
 
 
 class ConfigsContent(Container):
@@ -116,12 +125,43 @@ class ConfigsContent(Container):
             ),
         ]
 
+        self.config_gdrive_widgets = [
+            Label("Root Folder ID", id="configs_gdrive_root_folder_id_label"),
+            ClickableInput(
+                self.parent_class.mainwindow,
+                placeholder="e.g. 1KAN9QLD2K2EANE",
+                id="configs_gdrive_root_folder_id_input",
+            ),
+            Label("Client ID (Optional)", id="configs_gdrive_client_id_label"),
+            ClickableInput(
+                self.parent_class.mainwindow,
+                placeholder="e.g. 93412981629-2icf0ba09cks9.apps.googleusercontent.com",
+                id="configs_gdrive_client_id_input",
+            ),
+        ]
+
+        self.config_aws_widgets = [
+            Label("AWS Access Key ID", id="configs_aws_access_key_id_label"),
+            ClickableInput(
+                self.parent_class.mainwindow,
+                placeholder="eg. EJIBCLSIP2K2PQK3CDON",
+                id="configs_aws_access_key_id_input",
+            ),
+            Label("AWS S3 Region", id="configs_aws_region_label"),
+            Select(
+                ((region, region) for region in get_aws_regions_list()),
+                id="configs_aws_region_select",
+            ),
+        ]
+
         config_screen_widgets = [
             Label("Local Path", id="configs_local_path_label"),
             Horizontal(
                 ClickableInput(
                     self.parent_class.mainwindow,
-                    placeholder=f"e.g. {self.get_platform_dependent_example_paths('local')}",
+                    placeholder=self.get_platform_dependent_example_paths(
+                        "local", "local_filesystem"
+                    ),
                     id="configs_local_path_input",
                 ),
                 Button("Select", id="configs_local_path_select_button"),
@@ -130,22 +170,38 @@ class ConfigsContent(Container):
             Label("Connection Method", id="configs_connect_method_label"),
             RadioSet(
                 RadioButton(
-                    "Local Filesystem",
-                    id="configs_local_filesystem_radiobutton",
-                ),
-                RadioButton("SSH", id="configs_ssh_radiobutton"),
-                RadioButton(
                     "No connection (local only)",
                     id="configs_local_only_radiobutton",
+                ),
+                RadioButton(
+                    "Local Filesystem",
+                    id=self.radiobutton_id_from_connection_method(
+                        "local_filesystem"
+                    ),
+                ),
+                RadioButton(
+                    "SSH", id=self.radiobutton_id_from_connection_method("ssh")
+                ),
+                RadioButton(
+                    "Google Drive",
+                    id=self.radiobutton_id_from_connection_method("gdrive"),
+                ),
+                RadioButton(
+                    "AWS S3 Bucket",
+                    id=self.radiobutton_id_from_connection_method("aws"),
                 ),
                 id="configs_connect_method_radioset",
             ),
             *self.config_ssh_widgets,
+            *self.config_gdrive_widgets,
+            *self.config_aws_widgets,
             Label("Central Path", id="configs_central_path_label"),
             Horizontal(
                 ClickableInput(
                     self.parent_class.mainwindow,
-                    placeholder=f"e.g. {self.get_platform_dependent_example_paths('central', ssh=False)}",
+                    placeholder=self.get_platform_dependent_example_paths(
+                        "central", "local_filesystem"
+                    ),
                     id="configs_central_path_input",
                 ),
                 Button("Select", id="configs_central_path_select_button"),
@@ -153,9 +209,12 @@ class ConfigsContent(Container):
             ),
             Horizontal(
                 Button("Save", id="configs_save_configs_button"),
-                Button(
-                    "Setup SSH Connection",
-                    id="configs_setup_ssh_connection_button",
+                Horizontal(
+                    Button(
+                        "Setup Button",
+                        id="configs_setup_connection_button",
+                    ),
+                    id="setup_buttons_container",
                 ),
                 # Below button is always hidden when accessing
                 # configs from project manager screen
@@ -172,7 +231,7 @@ class ConfigsContent(Container):
             Horizontal(
                 Static(
                     "Set your configurations for a new project. For more "
-                    "details on each section,\nsee the Datashuttle "
+                    "details on each section,\nsee the datashuttle "
                     "documentation. Once configs are set, you will "
                     "be able\nto use the 'Create' and 'Transfer' tabs.",
                     id="configs_info_label",
@@ -211,31 +270,25 @@ class ConfigsContent(Container):
         self.query_one("#configs_go_to_project_screen_button").visible = False
         if self.interface:
             self.fill_widgets_with_project_configs()
+            self.setup_widgets_to_display(
+                connection_method=self.interface.get_configs()[
+                    "connection_method"
+                ]
+            )
         else:
-            self.query_one(
-                "#configs_local_filesystem_radiobutton"
-            ).value = True
-            self.switch_ssh_widgets_display(display_ssh=False)
-            self.query_one(
-                "#configs_setup_ssh_connection_button"
-            ).visible = False
+            self.query_one("#configs_local_only_radiobutton").value = True
+
+            self.setup_widgets_to_display(connection_method=None)
 
         # Setup tooltips
         if not self.interface:
             id = "#configs_name_input"
             self.query_one(id).tooltip = get_tooltip(id)
 
-            # Assumes 'local_filesystem' is default if no project set.
+            # Assumes local-only is default if no project set.
             assert (
-                self.query_one("#configs_local_filesystem_radiobutton").value
-                is True
+                self.query_one("#configs_local_only_radiobutton").value is True
             )
-            self.set_central_path_input_tooltip(display_ssh=False)
-        else:
-            display_ssh = (
-                self.interface.project.cfg["connection_method"] == "ssh"
-            )
-            self.set_central_path_input_tooltip(display_ssh)
 
         for id in [
             "#configs_local_path_input",
@@ -245,6 +298,10 @@ class ConfigsContent(Container):
             "#configs_local_only_radiobutton",
             "#configs_central_host_username_input",
             "#configs_central_host_id_input",
+            "#configs_gdrive_client_id_input",
+            "#configs_gdrive_root_folder_id_input",
+            "#configs_aws_access_key_id_input",
+            "#configs_aws_region_select",
         ]:
             self.query_one(id).tooltip = get_tooltip(id)
 
@@ -258,43 +315,62 @@ class ConfigsContent(Container):
         disabled.
         """
         label = str(event.pressed.label)
+        radiobutton_id = event.pressed.id
+
         assert label in [
             "SSH",
             "Local Filesystem",
             "No connection (local only)",
+            "Google Drive",
+            "AWS S3 Bucket",
         ], "Unexpected label."
 
-        if label == "No connection (local only)":
-            self.query_one("#configs_central_path_input").value = ""
-            self.query_one("#configs_central_path_input").disabled = True
-            self.query_one(
-                "#configs_central_path_select_button"
-            ).disabled = True
-            display_ssh = False
-        else:
-            self.query_one("#configs_central_path_input").disabled = False
-            self.query_one(
-                "#configs_central_path_select_button"
-            ).disabled = False
-            display_ssh = True if label == "SSH" else False
+        connection_method = self.connection_method_from_radiobutton_id(
+            radiobutton_id
+        )
 
-        self.switch_ssh_widgets_display(display_ssh)
-        self.set_central_path_input_tooltip(display_ssh)
+        self.setup_widgets_to_display(connection_method)
 
-    def set_central_path_input_tooltip(self, display_ssh: bool) -> None:
-        """Set tooltip depending on whether connection method is SSH or local filesystem."""
-        id = "#configs_central_path_input"
-        if display_ssh:
-            self.query_one(id).tooltip = get_tooltip(
-                "config_central_path_input_mode-ssh"
-            )
+        self.set_central_path_input_tooltip(connection_method)
+
+    def radiobutton_id_from_connection_method(
+        self, connection_method: str
+    ) -> str:
+        """Create a canonical radiobutton textual ID from the connection method."""
+        return f"configs_{connection_method}_radiobutton"
+
+    def connection_method_from_radiobutton_id(
+        self, radiobutton_id: str
+    ) -> str | None:
+        """Convert back from radiobutton Textual ID to connection method."""
+        assert radiobutton_id.startswith("configs_")
+        assert radiobutton_id.endswith("_radiobutton")
+
+        connection_string = radiobutton_id[
+            len("configs_") : -len("_radiobutton")
+        ]
+        return (
+            connection_string
+            if connection_string in get_connection_methods_list()
+            else None
+        )
+
+    def set_central_path_input_tooltip(
+        self, connection_method: str | None
+    ) -> None:
+        """Set tooltip depending on the connection method."""
+        if connection_method is None:
+            tooltip = get_tooltip("config_central_path_input_mode-local_only")
         else:
-            self.query_one(id).tooltip = get_tooltip(
-                "config_central_path_input_mode-local_filesystem"
+            tooltip = get_tooltip(
+                f"config_central_path_input_mode-{connection_method}"
             )
+        self.query_one("#configs_central_path_input").tooltip = tooltip
 
     def get_platform_dependent_example_paths(
-        self, local_or_central: Literal["local", "central"], ssh: bool = False
+        self,
+        local_or_central: Literal["local", "central"],
+        connection_method: str,
     ) -> str:
         """Get example paths for the local or central Inputs depending on operating system.
 
@@ -303,62 +379,31 @@ class ConfigsContent(Container):
         local_or_central
             The "local" or "central" input to fill.
 
-        ssh
-            If the user has selected SSH (which changes the central input).
+        connection_method
+            Connection method e.g. "local_filesystem"
 
         """
         assert local_or_central in ["local", "central"]
 
         # Handle the ssh central case separately
         # because it is always the same
-        if local_or_central == "central" and ssh:
-            example_path = "/nfs/path_on_server/myprojects/central"
+        if (
+            local_or_central == "central"
+            and connection_method != "local_filesystem"
+        ):
+            if connection_method == "ssh":
+                example_path = "e.g. /nfs/path_on_server/myprojects/central"
+            elif connection_method == "aws":
+                example_path = "my-bucket-name/my-folder"
+            elif connection_method == "gdrive":
+                example_path = ""
         else:
             if platform.system() == "Windows":
-                example_path = rf"C:\path\to\{local_or_central}\my_projects\my_first_project"
+                example_path = rf"e.g. C:\path\to\{local_or_central}\my_projects\my_first_project"
             else:
-                example_path = (
-                    f"/path/to/{local_or_central}/my_projects/my_first_project"
-                )
+                example_path = f"e.g. /path/to/{local_or_central}/my_projects/my_first_project"
 
         return example_path
-
-    def switch_ssh_widgets_display(self, display_ssh: bool) -> None:
-        """Show or hide SSH-related configs.
-
-         This is based on whether the current `connection_method`
-         widget is "ssh" or "local_filesystem".
-
-        Parameters
-        ----------
-        display_ssh
-            If `True`, display the SSH-related widgets.
-
-        """
-        for widget in self.config_ssh_widgets:
-            widget.display = display_ssh
-
-        self.query_one(
-            "#configs_central_path_select_button"
-        ).display = not display_ssh
-
-        if self.interface is None:
-            self.query_one(
-                "#configs_setup_ssh_connection_button"
-            ).visible = False
-        else:
-            self.query_one(
-                "#configs_setup_ssh_connection_button"
-            ).visible = display_ssh
-
-        if not self.query_one("#configs_central_path_input").value:
-            if display_ssh:
-                placeholder = f"e.g. {self.get_platform_dependent_example_paths('central', ssh=True)}"
-            else:
-                placeholder = f"e.g. {self.get_platform_dependent_example_paths('central', ssh=False)}"
-            self.query_one(
-                "#configs_central_path_input"
-            ).placeholder = placeholder
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle a button press event.
@@ -372,8 +417,28 @@ class ConfigsContent(Container):
             else:
                 self.setup_configs_for_an_existing_project()
 
-        elif event.button.id == "configs_setup_ssh_connection_button":
-            self.setup_ssh_connection()
+        elif event.button.id == "configs_setup_connection_button":
+            assert self.interface is not None, (
+                "type narrow flexible `interface`"
+            )
+
+            connection_method = self.interface.get_configs()[
+                "connection_method"
+            ]
+
+            if not self.widget_configs_match_saved_configs():
+                self.parent_class.mainwindow.show_modal_error_dialog(
+                    "The values set above must equal the datashuttle settings. "
+                    "Either press 'Save' or reload this page."
+                )
+                return
+
+            if connection_method == "ssh":
+                self.setup_ssh_connection()
+            elif connection_method == "gdrive":
+                self.setup_gdrive_connection()
+            elif connection_method == "aws":
+                self.setup_aws_connection()
 
         elif event.button.id == "configs_go_to_project_screen_button":
             self.parent_class.dismiss(self.interface)
@@ -425,18 +490,27 @@ class ConfigsContent(Container):
             ).value = path_.as_posix()
 
     def setup_ssh_connection(self) -> None:
-        """Set up the `SetupSshScreen` screen."""
+        """Run the SSH set up in a new screen."""
         assert self.interface is not None, "type narrow flexible `interface`"
-
-        if not self.widget_configs_match_saved_configs():
-            self.parent_class.mainwindow.show_modal_error_dialog(
-                "The values set above must equal the datashuttle settings. "
-                "Either press 'Save' or reload this page."
-            )
-            return
 
         self.parent_class.mainwindow.push_screen(
             setup_ssh.SetupSshScreen(self.interface)
+        )
+
+    def setup_gdrive_connection(self) -> None:
+        """Run the Google Drive set up in a new screen."""
+        assert self.interface is not None, "type narrow flexible `interface`"
+
+        self.parent_class.mainwindow.push_screen(
+            setup_gdrive.SetupGdriveScreen(self.interface)
+        )
+
+    def setup_aws_connection(self) -> None:
+        """Run the AWS set up in a new screen."""
+        assert self.interface is not None, "type narrow flexible `interface`"
+
+        self.parent_class.mainwindow.push_screen(
+            setup_aws.SetupAwsScreen(self.interface)
         )
 
     def widget_configs_match_saved_configs(self):
@@ -455,7 +529,7 @@ class ConfigsContent(Container):
         for key, value in cfg_kwargs.items():
             saved_val = self.interface.get_configs()[key]
             if key in ["central_path", "local_path"]:
-                if value.name != project_name:
+                if value is not None and value.name != project_name:
                     value = value / project_name
             if saved_val != value:
                 return False
@@ -489,22 +563,24 @@ class ConfigsContent(Container):
                 "#configs_go_to_project_screen_button"
             ).visible = True
 
+            # A message template to display custom message to user according to the chosen connection method
+            message_template = tui_utils.get_project_created_message_template()
+
             # Could not find a neater way to combine the push screen
             # while initiating the callback in one case but not the other.
-            if cfg_kwargs["connection_method"] == "ssh":
-                self.query_one(
-                    "#configs_setup_ssh_connection_button"
-                ).visible = True
-                self.query_one(
-                    "#configs_setup_ssh_connection_button"
-                ).disabled = False
+            connection_method = cfg_kwargs["connection_method"]
 
-                message = (
-                    "A datashuttle project has now been created.\n\n "
-                    "Next, setup the SSH connection. Once complete, navigate to the "
-                    "'Main Menu' and proceed to the project page, where you will be "
-                    "able to create and transfer project folders."
-                )
+            # To trigger the appearance of "Setup connection" button
+            self.setup_widgets_to_display(connection_method)
+
+            if connection_method == "ssh":
+                message = message_template.format(method_name="SSH")
+
+            elif connection_method == "gdrive":
+                message = message_template.format(method_name="Google Drive")
+
+            elif connection_method == "aws":
+                message = message_template.format(method_name="AWS")
 
             else:
                 message = (
@@ -534,7 +610,6 @@ class ConfigsContent(Container):
 
         # Handle the edge case where connection method is changed after
         # saving on the 'Make New Project' screen.
-        self.query_one("#configs_setup_ssh_connection_button").visible = True
 
         cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
 
@@ -549,6 +624,8 @@ class ConfigsContent(Container):
                 ),
                 lambda unused: self.post_message(self.ConfigsSaved()),
             )
+            # To trigger the appearance of "Setup connection" button
+            self.setup_widgets_to_display(cfg_kwargs["connection_method"])
         else:
             self.parent_class.mainwindow.show_modal_error_dialog(output)
 
@@ -559,9 +636,42 @@ class ConfigsContent(Container):
         widgets with the current project configs. This in some instances
         requires recasting to a new type of changing the value.
 
-        In the case of the `connection_method` widget, the associated
-        "ssh" widgets are hidden / displayed based on the current setting,
-        in `self.switch_ssh_widgets_display()`.
+        In the case of the `connection_method` widget, the associated connection
+        method radio button is hidden / displayed based on the current settings.
+        This change of radio button triggers `on_radio_set_changed` which displays
+        the appropriate connection method widgets.
+        """
+        assert self.interface is not None, "type narrow flexible `interface`"
+
+        cfg_to_load = self.interface.get_textual_compatible_project_configs()
+
+        # Connection Method
+        # Make a dict of radiobutton: is on bool to easily find
+        # how to set radiobuttons and associated configs
+        # fmt: off
+        what_radiobuton_is_on = {
+            "configs_ssh_radiobutton":
+                cfg_to_load["connection_method"] == "ssh",
+            "configs_local_filesystem_radiobutton":
+                cfg_to_load["connection_method"] == "local_filesystem",
+            "configs_gdrive_radiobutton":
+                cfg_to_load["connection_method"] == "gdrive",
+            "configs_aws_radiobutton":
+                cfg_to_load["connection_method"] == "aws",
+            "configs_local_only_radiobutton":
+                cfg_to_load["connection_method"] is None,
+        }
+        # fmt: on
+
+        for id, value in what_radiobuton_is_on.items():
+            self.query_one(f"#{id}").value = value
+
+        self.fill_inputs_with_project_configs()
+
+    def fill_inputs_with_project_configs(self) -> None:
+        """Fill the input widgets with the current project configs.
+
+        It is used while setting up widgets for the project while mounting the current tab.
         """
         assert self.interface is not None, "type narrow flexible `interface`"
 
@@ -575,27 +685,6 @@ class ConfigsContent(Container):
         input = self.query_one("#configs_central_path_input")
         input.value = (
             cfg_to_load["central_path"] if cfg_to_load["central_path"] else ""
-        )
-
-        # Connection Method
-        # Make a dict of radiobutton: is on bool to easily find
-        # how to set radiobuttons and associated configs
-        # fmt: off
-        what_radiobuton_is_on = {
-            "configs_ssh_radiobutton":
-                cfg_to_load["connection_method"] == "ssh",
-            "configs_local_filesystem_radiobutton":
-                cfg_to_load["connection_method"] == "local_filesystem",
-            "configs_local_only_radiobutton":
-                cfg_to_load["connection_method"] is None,
-        }
-        # fmt: on
-
-        for id, value in what_radiobuton_is_on.items():
-            self.query_one(f"#{id}").value = value
-
-        self.switch_ssh_widgets_display(
-            display_ssh=what_radiobuton_is_on["configs_ssh_radiobutton"]
         )
 
         # Central Host ID
@@ -616,6 +705,137 @@ class ConfigsContent(Container):
         )
         input.value = value
 
+        # Google Drive Client ID
+        input = self.query_one("#configs_gdrive_client_id_input")
+        value = (
+            ""
+            if cfg_to_load["gdrive_client_id"] is None
+            else cfg_to_load["gdrive_client_id"]
+        )
+        input.value = value
+
+        # Google Drive Root Folder ID
+        input = self.query_one("#configs_gdrive_root_folder_id_input")
+        value = (
+            ""
+            if cfg_to_load["gdrive_root_folder_id"] is None
+            else cfg_to_load["gdrive_root_folder_id"]
+        )
+        input.value = value
+
+        # AWS Access Key ID
+        input = self.query_one("#configs_aws_access_key_id_input")
+        value = (
+            ""
+            if cfg_to_load["aws_access_key_id"] is None
+            else cfg_to_load["aws_access_key_id"]
+        )
+        input.value = value
+
+        # AWS S3 Region
+        select = self.query_one("#configs_aws_region_select")
+        value = (
+            Select.BLANK
+            if cfg_to_load["aws_region"] is None
+            else cfg_to_load["aws_region"]
+        )
+        select.value = value
+
+    def setup_widgets_to_display(self, connection_method: str | None) -> None:
+        """Set up widgets to display based on the chosen `connection_method` on the radiobutton.
+
+        The widgets pertaining to the chosen connection method will be displayed.
+        This is done by dedicated functions for each connection method
+        which display widgets on receiving a `True` flag.
+
+        Also, this function handles other TUI changes like displaying "setup connection"
+        button, disabling central path input in a local only project, etc.
+
+        Called on mount, on radiobuttons' switch and upon saving project configs.
+        """
+        if connection_method:
+            assert connection_method in get_connection_methods_list(), (
+                "Unexpected Connection Method"
+            )
+
+        # Connection specific widgets
+        connection_widget_display_functions = {
+            "ssh": self.config_ssh_widgets,
+            "gdrive": self.config_gdrive_widgets,
+            "aws": self.config_aws_widgets,
+        }
+
+        for (
+            name,
+            connection_widgets,
+        ) in connection_widget_display_functions.items():
+            for widget in connection_widgets:
+                widget.display = connection_method == name
+
+        has_connection_method = connection_method is not None
+
+        # Central Path Input
+        self.query_one(
+            "#configs_central_path_input"
+        ).disabled = not has_connection_method
+        self.query_one(
+            "#configs_central_path_select_button"
+        ).disabled = not has_connection_method
+
+        # Central Path Input Placeholder
+        if connection_method is None:
+            self.query_one("#configs_central_path_input").value = ""
+            self.query_one("#configs_central_path_input").placeholder = ""
+        else:
+            placeholder = self.get_platform_dependent_example_paths(
+                "central",
+                connection_method,
+            )
+            self.query_one(
+                "#configs_central_path_input"
+            ).placeholder = placeholder
+
+        # Central Path Label
+        central_path_label = self.query_one("#configs_central_path_label")
+        if connection_method == "gdrive":
+            central_path_label.update(content="Central Path (Optional)")
+        else:
+            central_path_label.update(content="Central Path")
+
+        # Central Path Select Button
+        show_central_path_select = connection_method not in [
+            "ssh",
+            "aws",
+            "gdrive",
+        ]
+        self.query_one(
+            "#configs_central_path_select_button"
+        ).display = show_central_path_select
+
+        # fmt: off
+        # Setup connection button
+        setup_connection_button = self.query_one(
+            "#configs_setup_connection_button"
+        )
+
+        if (
+            not connection_method
+            or connection_method == "local_filesystem"
+            or not self.interface
+            or connection_method != self.interface.get_configs()["connection_method"]
+        ):
+            setup_connection_button.visible = False
+        # fmt: on
+        else:
+            setup_connection_button.visible = True
+
+            if connection_method == "ssh":
+                setup_connection_button.label = "Setup SSH Connection"
+            elif connection_method == "gdrive":
+                setup_connection_button.label = "Setup Google Drive Connection"
+            elif connection_method == "aws":
+                setup_connection_button.label = "Setup AWS Connection"
+
     def get_datashuttle_inputs_from_widgets(self) -> Dict:
         """Get the configs to pass to `make_config_file()` from the current TUI settings."""
         cfg_kwargs: Dict[str, Any] = {}
@@ -632,30 +852,68 @@ class ConfigsContent(Container):
         else:
             cfg_kwargs["central_path"] = Path(central_path_value)
 
-        if self.query_one("#configs_ssh_radiobutton").value:
-            connection_method = "ssh"
-
-        elif self.query_one("#configs_local_filesystem_radiobutton").value:
-            connection_method = "local_filesystem"
-
-        elif self.query_one("#configs_local_only_radiobutton").value:
-            connection_method = None
+        for id in [
+            "configs_local_filesystem_radiobutton",
+            "configs_ssh_radiobutton",
+            "configs_gdrive_radiobutton",
+            "configs_aws_radiobutton",
+            "configs_local_only_radiobutton",
+        ]:
+            if self.query_one("#" + id).value:
+                connection_method = self.connection_method_from_radiobutton_id(
+                    id
+                )
+                break
 
         cfg_kwargs["connection_method"] = connection_method
 
-        central_host_id = self.query_one(
-            "#configs_central_host_id_input"
-        ).value
-        cfg_kwargs["central_host_id"] = (
-            None if central_host_id == "" else central_host_id
-        )
+        # SSH specific
+        if connection_method == "ssh":
+            cfg_kwargs["central_host_id"] = (
+                self.get_config_value_from_input_value(
+                    "#configs_central_host_id_input"
+                )
+            )
 
-        central_host_username = self.query_one(
-            "#configs_central_host_username_input"
-        ).value
+            cfg_kwargs["central_host_username"] = (
+                self.get_config_value_from_input_value(
+                    "#configs_central_host_username_input"
+                )
+            )
 
-        cfg_kwargs["central_host_username"] = (
-            None if central_host_username == "" else central_host_username
-        )
+        # Google Drive specific
+        elif connection_method == "gdrive":
+            cfg_kwargs["gdrive_client_id"] = (
+                self.get_config_value_from_input_value(
+                    "#configs_gdrive_client_id_input"
+                )
+            )
+
+            cfg_kwargs["gdrive_root_folder_id"] = (
+                self.get_config_value_from_input_value(
+                    "#configs_gdrive_root_folder_id_input"
+                )
+            )
+
+        # AWS specific
+        elif connection_method == "aws":
+            cfg_kwargs["aws_access_key_id"] = (
+                self.get_config_value_from_input_value(
+                    "#configs_aws_access_key_id_input"
+                )
+            )
+
+            aws_region = self.query_one("#configs_aws_region_select").value
+            cfg_kwargs["aws_region"] = (
+                None if aws_region == Select.BLANK else aws_region
+            )
 
         return cfg_kwargs
+
+    def get_config_value_from_input_value(
+        self, input_box_selector: str
+    ) -> str | None:
+        """Format the Input value from string to string or `None`."""
+        input_value = self.query_one(input_box_selector).value
+
+        return None if input_value == "" else input_value

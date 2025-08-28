@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import pytest
 
@@ -222,16 +223,14 @@ class TestConfigs(BaseTest):
         """Test existing projects are correctly found based on whether
         they exist in the home directory and contain a config.yaml.
 
-        By default, datashuttle saves project folders to
-        Path.home() / .datashuttle. In order to not mess with
-        the home directory during this test the `get_datashuttle_path()`
-        function is monkeypatched in order to point to a tmp_path.
-
         The tmp_path / "projects" is filled with a mix of project folders
         with and without config, and tested against accordingly. The
         `local_path` and `central_path` specified in the DataShuttle config are
         arbitrarily put in `tmp_path`.
         """
+        test_utils.monkeypatch_get_datashuttle_path(
+            tmp_path / "projects", monkeypatch
+        )
 
         def patch_get_datashuttle_path():
             return tmp_path / "projects"
@@ -265,6 +264,65 @@ class TestConfigs(BaseTest):
             (tmp_path / "projects" / "project_1"),
             (tmp_path / "projects" / "project_3"),
         ]
+
+    # Test Connection Method
+    # -------------------------------------------------------------
+
+    @pytest.mark.parametrize(
+        "connection_method", [None, "local_filesystem", "ssh", "gdrive", "aws"]
+    )
+    def test_connection_method_required_args(
+        self, tmp_path, no_cfg_project, connection_method
+    ):
+        """Test that error is not raised when `central_path` is `None` for `gdrive`."""
+        if connection_method in ["local_filesystem", "ssh", "aws"]:
+            with pytest.raises(ConfigError):
+                no_cfg_project.make_config_file(
+                    local_path=tmp_path / "local",
+                    connection_method=connection_method,
+                    central_path=None,
+                )
+        else:
+            no_cfg_project.make_config_file(
+                local_path=tmp_path / "local",
+                connection_method=connection_method,
+                central_path=None,
+                gdrive_root_folder_id="placeholder",
+            )
+            assert no_cfg_project.cfg["central_path"] is None
+
+    @pytest.mark.parametrize(
+        "connection_method", ["aws", "local_filesystem", "ssh", "gdrive"]
+    )
+    def test_get_base_folder(
+        self, tmp_path, no_cfg_project, connection_method
+    ):
+        """Test central `get_base_folder()` which can depend on the connection method.
+
+        For `aws` and `gdrive`, it is possible for `central_path` to be `None` as
+        the folder my be the project folder itself. In this case, check that
+        `get_base_folder()` returns the expected path.
+        """
+        project_name = no_cfg_project.project_name
+        central_path = None if connection_method == "gdrive" else tmp_path
+
+        no_cfg_project.make_config_file(
+            local_path=tmp_path / "local",
+            connection_method=connection_method,
+            central_path=central_path,
+            central_host_id="placeholder",
+            central_host_username="placeholder",
+            gdrive_root_folder_id="placeholder",
+            aws_access_key_id="placeholder",
+            aws_region="us-east-1",
+        )
+
+        folder = no_cfg_project.cfg.get_base_folder("central", "rawdata")
+
+        if connection_method in ["ssh", "local_filesystem", "aws"]:
+            assert folder == central_path / project_name / "rawdata"
+        else:
+            assert folder == Path("rawdata")
 
     # -------------------------------------------------------------------------
     # Utils

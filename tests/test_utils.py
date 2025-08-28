@@ -1,6 +1,7 @@
 import asyncio
 import copy
 import glob
+import json
 import logging
 import os
 import pathlib
@@ -415,6 +416,38 @@ def check_config_file(config_path, *kwargs):
 
 
 # -----------------------------------------------------------------------------
+# Search
+# -----------------------------------------------------------------------------
+
+
+def recursive_search_central(project: DataShuttle):
+    """
+    A convenience function to search project for files on remote folders
+    using rclone's recursive search.
+    """
+    all_filenames: list[str] = []
+
+    path_ = (project.cfg["central_path"] / "rawdata").as_posix()
+
+    # -R flag searches recursively
+    output = rclone.call_rclone(
+        f"lsjson -R {project.cfg.get_rclone_config_name()}:{path_}",
+        pipe_std=True,
+    )
+
+    all_files_or_folders = json.loads(output.stdout)
+
+    for file_or_folder in all_files_or_folders:
+        is_dir = file_or_folder.get("IsDir", False)
+
+        if not is_dir:
+            file_path = file_or_folder["Path"]
+            all_filenames.append(f"{path_}/{file_path}")
+
+    return all_filenames
+
+
+# -----------------------------------------------------------------------------
 # Test Helpers
 # -----------------------------------------------------------------------------
 
@@ -659,3 +692,21 @@ def make_project(project_name):
     project = DataShuttle(project_name)
     warnings.filterwarnings("default")
     return project
+
+
+def monkeypatch_get_datashuttle_path(tmp_config_path, _monkeypatch):
+    """Monkeypatch the function that creates a hidden datashuttle folder.
+
+    By default, datashuttle saves project folders to
+    Path.home() / .datashuttle. In order to not mess with
+    the home directory during this test the `get_datashuttle_path()`
+    function is monkeypatched in order to point to a tmp_path.
+    """
+
+    def mock_get_datashuttle_path():
+        return tmp_config_path
+
+    _monkeypatch.setattr(
+        "datashuttle.configs.canonical_folders.get_datashuttle_path",
+        mock_get_datashuttle_path,
+    )
