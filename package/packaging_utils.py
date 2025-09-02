@@ -15,7 +15,7 @@ def download_wezterm(vendored_dir, wezterm_foldername):
     print(wezterm_url)
 
     wezterm_extracted_dir = vendored_dir / wezterm_foldername
-    wezterm_zip_path = vendored_dir / f"{wezterm_foldername}.zip"
+    wezterm_zip_path = vendored_dir / f"{wezterm_foldername}" # .zip"
 
     # Step 1: Download and extract WezTerm if missing
     if not wezterm_extracted_dir.exists():
