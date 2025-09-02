@@ -45,6 +45,7 @@ def download_wezterm(vendored_dir, wezterm_foldername):
             )
         elif platform == "linux":
             import os
+
             os.chdir(vendored_dir)
             subprocess.run(
                 f"chmod +x {wezterm_zip_path}; {wezterm_zip_path} --appimage-extract",
