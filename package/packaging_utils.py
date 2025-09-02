@@ -21,7 +21,7 @@ def download_wezterm(vendored_dir, wezterm_foldername):
     if not wezterm_extracted_dir.exists():
         print("⬇ Downloading WezTerm...")
         vendored_dir.mkdir(parents=True, exist_ok=True)
-        requests.get(wezterm_url, stream=True)
+        requests.get(wezterm_url)
 
         print("📦 Extracting WezTerm with system unzip...")
 
