@@ -24,7 +24,8 @@ if (dist_path := project_root / "dist").exists():
 # Step 2: Run PyInstaller builds
 subprocess.run(f"pyinstaller {project_root / 'datashuttle.spec'}", shell=True)
 subprocess.run(
-    f"pyinstaller {project_root / 'terminal_launcher_windows.spec'}", shell=True
+    f"pyinstaller {project_root / 'terminal_launcher_windows.spec'}",
+    shell=True,
 )
 
 # Paths
@@ -51,20 +52,22 @@ shutil.rmtree(launcher_subdir)
 vendored_output_path = dist_dir / "_vendored" / "squashfs-root"
 
 shutil.copytree(
-    vendored_dir / "squashfs-root", vendored_output_path, dirs_exist_ok=True, symlinks=True, copy_function=shutil.copy2
+    vendored_dir / "squashfs-root",
+    vendored_output_path,
+    dirs_exist_ok=True,
+    symlinks=True,
+    copy_function=shutil.copy2,
 )
 
+shutil.copy(vendored_dir / WEZTERM_FOLDERNAME, vendored_output_path.parent)
+
+
 shutil.copy(
-    vendored_dir / WEZTERM_FOLDERNAME, vendored_output_path.parent
-    )
-
-
-shutil.copy(project_root / "license.txt", dist_dir)  # TODO: NEED TO DO THIS FOR ALL
+    project_root / "license.txt", dist_dir
+)  # TODO: NEED TO DO THIS FOR ALL
 shutil.copy(project_root / "NeuroBlueprint_icon.ico", dist_dir)
 
 shutil.copy(
     project_root / "wezterm_config.lua",
     vendored_output_path,
 )
-
-
