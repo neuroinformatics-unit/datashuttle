@@ -36,6 +36,10 @@ def download_wezterm(vendored_dir, wezterm_foldername):
                 ],
                 check=True,
             )
+        elif platform == "linux":
+            subprocess.run(
+                f"{wezterm_zip_path} --appimage-extract"
+            )
         else:
             with zipfile.ZipFile(wezterm_zip_path, "r") as zip_ref:
                 zip_ref.extractall(vendored_dir)
