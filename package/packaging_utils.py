@@ -27,6 +27,9 @@ def download_wezterm(vendored_dir, wezterm_foldername):
         with open(wezterm_zip_path, "wb") as f:
             f.write(response.content)
 
+        print(wezterm_zip_path)
+        breakpoint()
+
         print("📦 Extracting WezTerm with system unzip...")
 
         if platform == "darwin":  ## TODO always use same way
@@ -41,8 +44,10 @@ def download_wezterm(vendored_dir, wezterm_foldername):
                 check=True,
             )
         elif platform == "linux":
+            import os
+            os.chdir(vendored_dir)
             subprocess.run(
-                f"chmod +x wezterm_zip_path; {wezterm_zip_path} --appimage-extract",
+                f"chmod +x {wezterm_zip_path}; {wezterm_zip_path} --appimage-extract",
                 shell=True,
             )
         else:
