@@ -49,6 +49,16 @@ def main():
 
         exe = base_path / "datashuttle"
 
+    elif platform.system() == "Linux":
+        base_path = Path(__file__).resolve().parent.parent
+        print(base_path)
+
+        wezterm_exe_path = base_path / "_vendored/squashfs-root/AppRun"
+
+        wezterm_config_path = wezterm_path / "wezterm_config.lua"
+
+        exe = base_path / "datashuttle"
+
     # https://github.com/wezterm/wezterm/releases/download/20240203-110809-5046fc22/WezTerm-macos-20240203-110809-5046fc22.zip
 
     print("BaSE PATH", base_path)

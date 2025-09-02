@@ -136,7 +136,9 @@ shutil.copytree(
     vendored_dir / WEZTERM_FOLDERNAME, vendored_output_path, dirs_exist_ok=True
 )
 
-shutil.copy(project_root / "license.txt", dist_dir)
+shutil.copy(
+    project_root / "license.txt", dist_dir
+)  # TODO: NEED TO DO THIS FOR ALL
 shutil.copy(project_root / "NeuroBlueprint_icon.ico", dist_dir)
 
 shutil.copy(
