@@ -15,8 +15,6 @@ vendored_dir = project_root / "_vendored"
 if not (vendored_dir / WEZTERM_FOLDERNAME).exists():
     packaging_utils.download_wezterm(vendored_dir, WEZTERM_FOLDERNAME)
 
-breakpoint()
-
 if (build_path := project_root / "build").exists():
     shutil.rmtree(build_path)
 
@@ -26,29 +24,47 @@ if (dist_path := project_root / "dist").exists():
 # Step 2: Run PyInstaller builds
 subprocess.run(f"pyinstaller {project_root / 'datashuttle.spec'}", shell=True)
 subprocess.run(
-    f"pyinstaller {project_root / 'terminal_launcher_macos.spec'}", shell=True
+    f"pyinstaller {project_root / 'terminal_launcher_windows.spec'}", shell=True
 )
 
-app_macos_path = (
-    project_root / "dist" / "Datashuttle.app" / "Contents" / "Resources"
-)
+# Paths
+dist_dir = project_root / "dist"
+launcher_subdir = dist_dir / "terminal_launcher_"
+
+shutil.move(dist_dir / "terminal_launcher", launcher_subdir)
+
+# Copy contents of dist/terminal_launcher/ into dist/
+for item in launcher_subdir.iterdir():
+    dest = dist_dir / item.name
+    if item.is_dir():
+        if dest.exists():
+            shutil.rmtree(dest)
+        shutil.copytree(item, dest)
+    else:
+        shutil.copy2(item, dest)
+
+
+# TODO COPY LICENSE
+
+shutil.rmtree(launcher_subdir)
+
+vendored_output_path = dist_dir / "_vendored" / "squashfs-root"
 
 shutil.copytree(
-    vendored_dir / f"{WEZTERM_FOLDERNAME}",
-    app_macos_path / "_vendored" / f"{WEZTERM_FOLDERNAME}",
-)
-
-shutil.copytree(
-    project_root / "dist" / "datashuttle" / "_internal",
-    app_macos_path.parent / "Resources" / "_internal",
+    vendored_dir / "squashfs-root", vendored_output_path, dirs_exist_ok=True, symlinks=True, copy_function=shutil.copy2
 )
 
 shutil.copy(
-    project_root / "dist" / "datashuttle" / "datashuttle",
-    app_macos_path.parent / "Resources",
-)
+    vendored_dir / WEZTERM_FOLDERNAME, vendored_output_path.parent
+    )
+
+
+shutil.copy(project_root / "license.txt", dist_dir)  # TODO: NEED TO DO THIS FOR ALL
+shutil.copy(project_root / "NeuroBlueprint_icon.ico", dist_dir)
 
 shutil.copy(
     project_root / "wezterm_config.lua",
-    app_macos_path.parent / "Resources" / "_vendored" / WEZTERM_FOLDERNAME,
+    vendored_output_path,
 )
+
+
