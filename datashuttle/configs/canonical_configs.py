@@ -17,6 +17,7 @@ from typing import (
     Literal,
     Optional,
     Union,
+    get_args,
 )
 
 if TYPE_CHECKING:
@@ -25,8 +26,16 @@ from pathlib import Path
 
 import typeguard
 
+from datashuttle.configs.aws_regions import AwsRegion
 from datashuttle.utils import folders, utils
 from datashuttle.utils.custom_exceptions import ConfigError
+
+connection_methods = Literal["ssh", "local_filesystem", "gdrive", "aws"]
+
+
+def get_connection_methods_list() -> List[str]:
+    """Return the canonical connection methods."""
+    return list(get_args(connection_methods))
 
 
 def get_canonical_configs() -> dict:
@@ -34,9 +43,13 @@ def get_canonical_configs() -> dict:
     canonical_configs = {
         "local_path": Union[str, Path],
         "central_path": Optional[Union[str, Path]],
-        "connection_method": Optional[Literal["ssh", "local_filesystem"]],
+        "connection_method": Optional[connection_methods],
         "central_host_id": Optional[str],
         "central_host_username": Optional[str],
+        "gdrive_client_id": Optional[str],
+        "gdrive_root_folder_id": Optional[str],
+        "aws_access_key_id": Optional[str],
+        "aws_region": Optional[AwsRegion],
     }
 
     return canonical_configs
@@ -101,7 +114,18 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
 
     check_config_types(config_dict)
 
-    raise_on_bad_local_only_project_configs(config_dict)
+    if config_dict["connection_method"] != "gdrive":
+        if (
+            config_dict["connection_method"] == "aws"
+            and config_dict["central_path"] is None
+        ):
+            utils.log_and_raise_error(
+                "`central_path` cannot be `None` when `connection_method` is 'aws'. "
+                "`central_path` must include the s3 bucket name.",
+                ConfigError,
+            )
+        else:
+            raise_on_bad_local_only_project_configs(config_dict)
 
     if list(config_dict.keys()) != list(canonical_dict.keys()):
         utils.log_and_raise_error(
@@ -130,6 +154,29 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
             ConfigError,
         )
 
+    # Check gdrive settings
+    elif config_dict["connection_method"] == "gdrive":
+        if not config_dict["gdrive_root_folder_id"]:
+            utils.log_and_raise_error(
+                "'gdrive_root_folder_id' is required if 'connection_method' "
+                "is 'gdrive'.",
+                ConfigError,
+            )
+
+        if not config_dict["gdrive_client_id"]:
+            utils.log_and_message(
+                "`gdrive_client_id` not found in config. default rlcone client will be used (slower)."
+            )
+
+    # Check AWS settings
+    elif config_dict["connection_method"] == "aws" and (
+        not config_dict["aws_access_key_id"] or not config_dict["aws_region"]
+    ):
+        utils.log_and_raise_error(
+            "Both aws_access_key_id and aws_region must be present for AWS connection.",
+            ConfigError,
+        )
+
     # Initialise the local project folder
     utils.print_message_to_user(
         f"Making project folder at: {config_dict['local_path']}"
@@ -150,7 +197,10 @@ def raise_on_bad_local_only_project_configs(config_dict: Configs) -> None:
     There is no circumstance where one is set and not the other. Either both are set
     ('full' project) or both are `None` ('local only' project).
     """
-    params_are_none = local_only_configs_are_none(config_dict)
+    params_are_none = [
+        config_dict[key] is None
+        for key in ["central_path", "connection_method"]
+    ]
 
     if any(params_are_none):
         if not all(params_are_none):
@@ -159,14 +209,6 @@ def raise_on_bad_local_only_project_configs(config_dict: Configs) -> None:
                 "or must both be `None` (for local-project mode).",
                 ConfigError,
             )
-
-
-def local_only_configs_are_none(config_dict: Configs) -> list[bool]:
-    """Check whether `central_path` and `connection_method` are both set to None."""
-    return [
-        config_dict[key] is None
-        for key in ["central_path", "connection_method"]
-    ]
 
 
 def raise_on_bad_path_syntax(

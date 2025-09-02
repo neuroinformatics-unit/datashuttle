@@ -24,6 +24,8 @@ class TestDatatypesTUI(TuiBase):
                 pilot, project_name
             )
 
+            self.fill_input(pilot, "#create_folders_subject_input", "sub-001")
+
             # Open the datatypes screen
             await self.scroll_to_click_pause(
                 pilot,
@@ -124,6 +126,14 @@ class TestDatatypesTUI(TuiBase):
                     is False
                 )
 
+            # Check that input information is not deleted on refresh
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_subject_input"
+                ).value
+                == "sub-001"
+            )
+
             # Confirm also that narrow datatypes are not shown.
             with pytest.raises(BaseException):
                 pilot.app.screen.query_one(
@@ -148,6 +158,7 @@ class TestDatatypesTUI(TuiBase):
             await self.scroll_to_click_pause(
                 pilot, "#transfer_custom_radiobutton"
             )
+            await self.fill_input(pilot, "#transfer_subject_input", "sub-001")
             await self.scroll_to_click_pause(
                 pilot,
                 "#transfer_tab_displayed_datatypes_button",
@@ -159,6 +170,7 @@ class TestDatatypesTUI(TuiBase):
             pilot.app.screen.query_one(
                 "#displayed_datatypes_selection_list"
             ).toggle_all()
+
             await self.scroll_to_click_pause(
                 pilot, "#displayed_datatypes_save_button"
             )
@@ -173,6 +185,12 @@ class TestDatatypesTUI(TuiBase):
                     ).value
                     is False
                 )
+
+            # Check that input information is not deleted on refresh
+            assert (
+                pilot.app.screen.query_one("#transfer_subject_input").value
+                == "sub-001"
+            )
 
             # Turn on a single checkbox and run a transfer, checking that
             # the underlying function is called correctly (monkeypatch)

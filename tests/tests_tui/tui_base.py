@@ -27,12 +27,23 @@ class TuiBase:
     async def empty_project_paths(self, tmp_path_factory, monkeypatch):
         """Get the paths and project name for a non-existent (i.e. not
         yet setup) project.
+
+        For these tests, store the datashuttle configs (usually stored in
+        Path.home()) in the `tmp_path` provided by pytest, as it simplifies
+        testing here.
+
+        This is not done for general tests because
+        1) It is further from the actual datashuttle behaviour
+        2) It fails for testing CLI, because CLI spawns a new process in
+           which `get_datashuttle_path()` is not monkeypatched.
         """
         project_name = "my-test-project"
         tmp_path = tmp_path_factory.mktemp("test")
         tmp_config_path = tmp_path / "config"
 
-        self.monkeypatch_get_datashuttle_path(tmp_config_path, monkeypatch)
+        test_utils.monkeypatch_get_datashuttle_path(
+            tmp_config_path, monkeypatch
+        )
         self.monkeypatch_print(monkeypatch)
 
         assert not any(list(tmp_config_path.glob("**")))
@@ -52,25 +63,6 @@ class TuiBase:
         )
 
         return empty_project_paths
-
-    def monkeypatch_get_datashuttle_path(self, tmp_config_path, _monkeypatch):
-        """For these tests, store the datashuttle configs (usually stored in
-        Path.home()) in the `tmp_path` provided by pytest, as it simplifies
-        testing here.
-
-        This is not done for general tests because
-        1) It is further from the actual datashuttle behaviour
-        2) It fails for testing CLI, because CLI spawns a new process in
-           which `get_datashuttle_path()` is not monkeypatched.
-        """
-
-        def mock_get_datashuttle_path():
-            return tmp_config_path
-
-        _monkeypatch.setattr(
-            "datashuttle.configs.canonical_folders.get_datashuttle_path",
-            mock_get_datashuttle_path,
-        )
 
     def monkeypatch_print(self, _monkeypatch):
         """Calls to `print` in datashuttle crash the TUI in the
@@ -115,9 +107,13 @@ class TuiBase:
     async def double_click(self, pilot, id, control=False):
         """Double-click on a widget of `id`, if `control` is `True` the
         control modifier key will be used.
+
+        It seems quite important not to pause in between clicks,
+        using `scroll_to_click_pause` led to random errors testing in CI.
         """
         for _ in range(2):
-            await self.scroll_to_click_pause(pilot, id, control=control)
+            await pilot.click(id, control=control)
+        await pilot.pause(0.5)
 
     async def reload_tree_nodes(self, pilot, id, num_nodes):
         """For some reason, for TUI tree nodes to register in the
