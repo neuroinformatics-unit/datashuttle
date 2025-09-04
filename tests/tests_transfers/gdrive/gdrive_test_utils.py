@@ -34,6 +34,8 @@ def setup_gdrive_connection(project: DataShuttle):
     a browser. Second, to enter a `GDRIVE_CONFIG_TOKEN` needed to set up
     connection without a browser. The credentials are set in the environment
     by the CI. To run tests locally, the developer must set them themselves.
+
+    Throwaway change
     """
     state = {"first": True}
 
