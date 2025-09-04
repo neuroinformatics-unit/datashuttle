@@ -710,27 +710,3 @@ def monkeypatch_get_datashuttle_path(tmp_config_path, _monkeypatch):
         "datashuttle.configs.canonical_folders.get_datashuttle_path",
         mock_get_datashuttle_path,
     )
-
-
-def has_gdrive_environment_variables():
-    for key in [
-        "GDRIVE_CLIENT_ID"
-        "GDRIVE_ROOT_FOLDER_ID"
-        "GDRIVE_CONFIG_TOKEN"
-        "GDRIVE_CLIENT_SECRET"
-    ]:
-        if key not in os.environ:
-            return False
-    return True
-
-
-def has_aws_environment_variables():
-    for key in [
-        "AWS_BUCKET_NAME",
-        "AWS_ACCESS_KEY_ID",
-        "AWS_REGION",
-        "AWS_SECRET_ACCESS_KEY",
-    ]:
-        if key not in os.environ:
-            return False
-    return True
