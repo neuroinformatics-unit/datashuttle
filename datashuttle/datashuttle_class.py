@@ -161,11 +161,13 @@ class DataShuttle:
             valid to NeuroBlueprint style.
 
         allow_alphanumeric_sub_ses_values
-            If `True`, any alphanumeric character are allowed for sub- or ses- labels. Otherwise,
-            labels must be integer and the following additional checks are performed:
-                - Identical numbers are considered the same value even if padded with different number of zeros
-                    (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
-                - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
+            If `True`, any alphanumeric character are allowed for the values associated
+            with sub- or ses-  keys. Otherwise, values must be integer
+            and the following additional checks are performed:
+
+            - Identical numbers are considered the same value even if padded with different number of zeros
+              (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
+            - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
 
         log
             If `True`, details of folder creation will be logged.
@@ -1327,11 +1329,13 @@ class DataShuttle:
             raise a validation issue.
 
         allow_alphanumeric_sub_ses_values
-            If `True`, any alphanumeric character are allowed for sub- or ses- labels. Otherwise,
-            labels must be integer and the following additional checks are performed:
-                - Identical numbers are considered the same value even if padded with different number of zeros
-                    (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
-                - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
+            If `True`, any alphanumeric character are allowed for the values associated
+            with sub- or ses-  keys. Otherwise, values must be integer
+            and the following additional checks are performed:
+
+            - Identical numbers are considered the same value even if padded with different number of zeros
+              (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
+            - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
 
         Returns
         -------
@@ -1402,11 +1406,13 @@ class DataShuttle:
             e.g. ``"sub-"`` or ``"ses-"``
 
         allow_alphanumeric_sub_ses_values
-            If `True`, any alphanumeric character are allowed for sub- or ses- labels. Otherwise,
-            labels must be integer and the following additional checks are performed:
-                - Identical numbers are considered the same value even if padded with different number of zeros
-                    (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
-                - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
+            If `True`, any alphanumeric character are allowed for the values associated
+            with sub- or ses-  keys. Otherwise, values must be integer
+            and the following additional checks are performed:
+
+            - Identical numbers are considered the same value even if padded with different number of zeros
+              (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
+            - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
 
         """
         if prefix not in ["sub", "ses"]:

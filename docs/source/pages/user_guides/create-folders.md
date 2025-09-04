@@ -145,6 +145,10 @@ are not valid (i.e. they break with
 This screen is also used to validate and autofill with
 [Name Templates](how-to-use-name-templates).
 
+Allow alphanumeric sub- and ses- values
+: This setting allows `sub-` or `ses-` values in created folders to be
+any alphanumeric character, rather than restricted to integers.
+
 :::
 
 :::{tab-item} Python API
