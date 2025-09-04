@@ -83,16 +83,13 @@ class ValidateContent(Container):
                 Button("Select", id="validate_select_button"),
                 id="validate_path_container",
             ),
+            Select(
+                ((name, name) for name in ["rawdata", "derivatives", "both"]),
+                value="rawdata",
+                allow_blank=False,
+                id="validate_top_level_folder_select",
+            ),
             Horizontal(
-                Select(
-                    (
-                        (name, name)
-                        for name in ["rawdata", "derivatives", "both"]
-                    ),
-                    value="rawdata",
-                    allow_blank=False,
-                    id="validate_top_level_folder_select",
-                ),
                 Checkbox(
                     "Include Central",
                     value=False,
