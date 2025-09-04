@@ -397,17 +397,17 @@ CreateFoldersSettingsScreen {
     border: tall $panel-lighten-3;
 }
 #checkbox_container {
-    height: 75%;
+    height: 80%;
     overflow: hidden auto;
 }
 #create_folders_settings_allow_alphanumeric_checkbox {
-    padding: 0 0;
+    padding: 0 6;
 }
 #create_folders_settings_checkbox_outer_container {
     margin: 0 0 0 0;
 }
 #template_top_container {
-    height: 60%;
+    height: 75%;
     background: $primary-background;
     border: tall $panel-lighten-3;
     overflow: hidden auto;
@@ -470,7 +470,7 @@ CreateFoldersSettingsScreen {
     background: $boost;
  }
 
- #template_settings_radioset:light:disabled {
+#template_settings_radioset:light:disabled {
     color: $panel-darken-2;
 }
 
@@ -481,6 +481,10 @@ CreateFoldersSettingsScreen {
 
 #template_settings_input:light:disabled {
     color: $panel-darken-2;
+}
+
+#create_folders_settings_close_button {
+    margin: 1 0 0 0;
 }
 
 /* Confirmation Screen --------------------------------------------------------------------- */
