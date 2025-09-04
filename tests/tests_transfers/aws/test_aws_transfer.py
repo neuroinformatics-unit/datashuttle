@@ -2,10 +2,15 @@ import pytest
 
 from datashuttle.utils import rclone
 
+from ... import test_utils
 from ..base_transfer import BaseTransfer
 from . import aws_test_utils
 
 
+@pytest.mark.skipif(
+    not test_utils.has_aws_environment_variables(),
+    reason="AWS set up environment variables must be set.",
+)
 class TestAwsTransfer(BaseTransfer):
     @pytest.fixture(
         scope="class",
