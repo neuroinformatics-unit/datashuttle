@@ -512,7 +512,7 @@ class Interface:
     # Setup Google Drive
     # ----------------------------------------------------------------------------------
 
-    def setup_google_drive_connection(
+    def setup_gdrive_connection(
         self,
         gdrive_client_secret: Optional[str] = None,
         config_token: Optional[str] = None,
