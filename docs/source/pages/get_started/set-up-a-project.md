@@ -20,12 +20,12 @@ Enter the name of your project, the path to your project folder and
 select `No connection (local only)` (note that the `Central Path` option
 will be disabled).
 
-```{image} /_static/screenshots/how-to-make-local-project-configs-dark.png
+```{image} /_static/screenshots/tutorial-1-make-screen-dark.png
    :align: center
    :class: only-dark
    :width: 900px
 ```
-```{image} /_static/screenshots/how-to-make-local-project-configs-light.png
+```{image} /_static/screenshots/tutorial-1-make-screen-light.png
    :align: center
    :class: only-light
    :width: 900px
@@ -159,12 +159,12 @@ First, click the `Make New Project` button from the launch page.
 
 The `Make New Project` screen will be displayed:
 
-```{image} /_static/screenshots/tutorial-1-make-screen-dark.png
+```{image} /_static/screenshots/tutorial-1-make-screen-local-filesystem-dark.png
    :align: center
    :class: only-dark
    :width: 900px
 ```
-```{image} /_static/screenshots/tutorial-1-make-screen-light.png
+```{image} /_static/screenshots/tutorial-1-make-screen-local-filesystem-light.png
    :align: center
    :class: only-light
    :width: 900px

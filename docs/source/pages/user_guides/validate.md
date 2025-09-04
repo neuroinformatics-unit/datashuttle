@@ -38,13 +38,13 @@ for details on the options.
 ```{image} /_static/screenshots/tutorial-validation-light.png
 :align: center
 :class: only-light
-:width: 600px
+:width: 800px
 ```
 
 ```{image} /_static/screenshots/tutorial-validation-dark.png
 :align: center
 :class: only-dark
-:width: 600px
+:width: 800px
 ```
 
 :::
