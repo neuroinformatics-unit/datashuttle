@@ -315,12 +315,12 @@ we only create `behav` and `ephys` folders.
 ```{image} /_static/screenshots/tutorial-1-create-datatype-dark.png
    :align: center
    :class: only-dark
-   :width: 400px
+   :width: 375px
 ```
 ```{image} /_static/screenshots/tutorial-1-create-datatype-light.png
    :align: center
    :class: only-light
-   :width: 400px
+   :width: 375px
 ```
 <br>
 

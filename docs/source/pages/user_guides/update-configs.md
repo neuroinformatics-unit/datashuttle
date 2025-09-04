@@ -11,12 +11,12 @@ The project configs can be updated at any time following the initial set up.
 ```{image} /_static/screenshots/updating-configs-dark.png
    :align: center
    :class: only-dark
-   :width: 900px
+   :width: 1100px
 ```
 ```{image} /_static/screenshots/updating-configs-light.png
    :align: center
    :class: only-light
-   :width: 900px
+   :width: 1100px
 ```
 <br>
 
@@ -46,7 +46,7 @@ project.update_config_file(
 )
 ```
 
-If SSH configs are changed the connection may need to be
+If SSH, AWS or Google Drive configs are changed the connection may need to be
 [set up again](new-project-ssh) with:
 
 ```python
