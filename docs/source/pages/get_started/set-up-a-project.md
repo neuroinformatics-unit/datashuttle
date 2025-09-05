@@ -20,12 +20,12 @@ Enter the name of your project, the path to your project folder and
 select `No connection (local only)` (note that the `Central Path` option
 will be disabled).
 
-```{image} /_static/screenshots/how-to-make-local-project-configs-dark.png
+```{image} /_static/screenshots/tutorial-1-make-screen-dark.png
    :align: center
    :class: only-dark
    :width: 900px
 ```
-```{image} /_static/screenshots/how-to-make-local-project-configs-light.png
+```{image} /_static/screenshots/tutorial-1-make-screen-light.png
    :align: center
    :class: only-light
    :width: 900px
@@ -74,11 +74,13 @@ project.make_config_file(
 
 ```
 \
-The project is now ready for use, and in future can be instantiated
-with the line ``project = DataShuttle("my_project_name")`` (i.e. you will not
-have to set the `local_path` again).
+The project is now ready for use, and in future can be instantiated with the line:
+```python
+project = DataShuttle("my_project_name")
+```
+(i.e. you will not have to set the `local_path` again).
 
-If you wish to change the project settings at a later time, use ``project.update_config_file()``.
+If you wish to change the project settings at a later time, use [](update_config_file()).
 
 :::
 ::::
@@ -159,12 +161,12 @@ First, click the `Make New Project` button from the launch page.
 
 The `Make New Project` screen will be displayed:
 
-```{image} /_static/screenshots/tutorial-1-make-screen-dark.png
+```{image} /_static/screenshots/tutorial-1-make-screen-local-filesystem-dark.png
    :align: center
    :class: only-dark
    :width: 900px
 ```
-```{image} /_static/screenshots/tutorial-1-make-screen-light.png
+```{image} /_static/screenshots/tutorial-1-make-screen-local-filesystem-light.png
    :align: center
    :class: only-light
    :width: 900px
@@ -201,7 +203,7 @@ project = DataShuttle("my_first_project")
 
 ```
 
-Next, the `make_config_file()` method can be used to set up a new
+Next, the [](make_config_file()) method can be used to set up a new
 project with the desired **local path**, **central path** and
 **connection method**.
 
