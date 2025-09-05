@@ -35,7 +35,7 @@ If SSH configs are changed the connection may need to be
 :sync: python
 
 The project configs on the local machine can be selectively
-updated with the `update_config_file()` method.
+updated with the [](update_config_file()) method.
 
 For example, to change the `local_path` and `central_path`:
 
@@ -46,12 +46,8 @@ project.update_config_file(
 )
 ```
 
-If SSH, AWS or Google Drive configs are changed the connection may need to be
-[set up again](new-project-ssh) with:
-
-```python
-project.setup_ssh_connection()
-```
+If SSH, AWS or Google Drive configs are changed the connection
+may need to be [set up again](new-project-ssh).
 
 :::
 ::::
