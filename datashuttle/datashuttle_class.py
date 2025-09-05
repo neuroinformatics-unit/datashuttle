@@ -1077,7 +1077,17 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     def update_config_file(self, **kwargs) -> None:
-        """Update the configuration file."""
+        """Update the configuration file.
+
+        Parameters
+        ----------
+        **kwargs
+            A dictionary of key-value pairs containing the config
+            settings to update. For example,
+            ``{"connection_method": "local_filesystem", "central_path": "/my/local/path"}``
+            will update the ``connection_method`` and ``central_path`` settings.
+
+        """
         if not self.cfg:
             utils.log_and_raise_error(
                 "Must have a config loaded before updating configs.",

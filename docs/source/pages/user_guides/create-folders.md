@@ -161,7 +161,7 @@ any alphanumeric character, rather than restricted to integers.
 :::{tab-item} Python API
 :sync: python
 
-The `create_folders()` method is used for folder creation.
+The [](create_folders()) method is used for folder creation.
 
 We simply need to provide the subject, session and datatypes to create:
 
@@ -178,9 +178,8 @@ created_folders = project.create_folders(
 )
 ```
 
-The method outputs `created_folders`, which contains the
-`Path`s to created datatype folders. See the below section for
-details on the `@DATE@` and other convenience tags.
+`created_folders` is a list containing  `Path`s to created datatype folders.
+See the below section for details on the `@DATE@` and other convenience tags.
 
 By default, an error will be raised if the folder names break
 with [Neuroblueprint](https://neuroblueprint.neuroinformatics.dev/)

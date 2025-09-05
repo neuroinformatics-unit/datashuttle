@@ -74,11 +74,13 @@ project.make_config_file(
 
 ```
 \
-The project is now ready for use, and in future can be instantiated
-with the line ``project = DataShuttle("my_project_name")`` (i.e. you will not
-have to set the `local_path` again).
+The project is now ready for use, and in future can be instantiated with the line:
+```python
+project = DataShuttle("my_project_name")
+```
+(i.e. you will not have to set the `local_path` again).
 
-If you wish to change the project settings at a later time, use ``project.update_config_file()``.
+If you wish to change the project settings at a later time, use [](update_config_file()).
 
 :::
 ::::
@@ -201,7 +203,7 @@ project = DataShuttle("my_first_project")
 
 ```
 
-Next, the `make_config_file()` method can be used to set up a new
+Next, the [](make_config_file()) method can be used to set up a new
 project with the desired **local path**, **central path** and
 **connection method**.
 
