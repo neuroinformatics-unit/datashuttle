@@ -7,9 +7,20 @@ from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 from datashuttle.utils import rclone, utils
 
 from ..tui_base import TuiBase
+from . import aws_test_utils
 
 
+@pytest.mark.skipif(
+    not aws_test_utils.has_aws_environment_variables(),
+    reason="AWS set up environment variables must be set.",
+)
 class TestTuiSetupAws(TuiBase):
+    """
+    Set up the connection to AWS via the TUI. These tests require
+    environment variables to be set to allow the full set up,
+    like other transfer tests.
+    """
+
     @pytest.fixture(scope="function")
     def central_path_and_project(self, setup_project_paths):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()

@@ -8,9 +8,20 @@ from datashuttle.utils import rclone, utils
 
 from ... import test_utils
 from ..tui_base import TuiBase
+from . import gdrive_test_utils
 
 
+@pytest.mark.skipif(
+    not gdrive_test_utils.has_gdrive_environment_variables(),
+    reason="Google Drive set up environment variables must be set.",
+)
 class TestTuiSetupGdrive(TuiBase):
+    """
+    Set up the connection to GDrive via the TUI. These tests require
+    environment variables to be set to allow the full set up,
+    like other transfer tests.
+    """
+
     @pytest.fixture(scope="function")
     def central_path_and_project(self, setup_project_paths):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
