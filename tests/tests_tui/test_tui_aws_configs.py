@@ -4,7 +4,7 @@ import pytest
 
 from datashuttle.tui.app import TuiApp
 
-from ..tui_configs_base import TuiConfigsBase
+from .tui_configs_base import TuiConfigsBase
 
 
 class TestTuiAwsConfigs(TuiConfigsBase):
