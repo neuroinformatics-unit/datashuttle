@@ -130,6 +130,10 @@ class Interface:
         ]
         bypass_validation = self.tui_settings["bypass_validation"]
 
+        allow_alphanumeric_sub_ses_values = self.tui_settings[
+            "allow_alphanumeric_sub_ses_values"
+        ]
+
         try:
             self.project.create_folders(
                 top_level_folder,
@@ -137,6 +141,7 @@ class Interface:
                 ses_names=ses_names,
                 datatype=datatype,
                 bypass_validation=bypass_validation,
+                allow_alphanumeric_sub_ses_values=allow_alphanumeric_sub_ses_values,
             )
             return True, None
 
@@ -144,7 +149,10 @@ class Interface:
             return False, str(e)
 
     def validate_names(
-        self, sub_names: List[str], ses_names: Optional[List[str]]
+        self,
+        sub_names: List[str],
+        ses_names: Optional[List[str]],
+        allow_alphanumeric_sub_ses_values: bool,
     ) -> InterfaceOutput:
         """Validate a list of subject / session names.
 
@@ -161,6 +169,9 @@ class Interface:
         ses_names
             List of session names to format.
 
+        allow_alphanumeric_sub_ses_values
+            If `True`, alphanumeric values will not raise an error.
+
         """
         top_level_folder = self.tui_settings["top_level_folder_select"][
             "create_tab"
@@ -173,6 +184,7 @@ class Interface:
                 ses_names,
                 self.get_name_templates(),
                 bypass_validation=False,
+                allow_alphanumeric_sub_ses_values=allow_alphanumeric_sub_ses_values,
             )
 
             return True, {
@@ -188,6 +200,7 @@ class Interface:
         top_level_folder: list[str] | None,
         include_central: bool,
         strict_mode: bool,
+        allow_alphanumeric_sub_ses_values: bool,
     ) -> tuple[bool, list[str] | str]:
         """Wrap the validate project function.
 
@@ -202,6 +215,8 @@ class Interface:
             If `True`, the central project is also validated.
         strict_mode
             If `True`, validation will be run in strict mode.
+        allow_alphanumeric_sub_ses_values
+            If `True`, alphanumeric values will not raise an error.
 
         Returns
         -------
@@ -218,6 +233,7 @@ class Interface:
                 display_mode="print",  # unused
                 include_central=include_central,
                 strict_mode=strict_mode,
+                allow_alphanumeric_sub_ses_values=allow_alphanumeric_sub_ses_values,
             )
             return True, results
 
