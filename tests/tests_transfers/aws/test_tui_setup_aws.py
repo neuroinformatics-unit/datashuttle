@@ -6,7 +6,7 @@ from datashuttle.tui.app import TuiApp
 from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 from datashuttle.utils import rclone, utils
 
-from ..tui_base import TuiBase
+from ...tests_tui.tui_base import TuiBase
 from . import aws_test_utils
 
 

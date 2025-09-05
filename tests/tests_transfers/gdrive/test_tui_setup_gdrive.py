@@ -7,7 +7,7 @@ from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 from datashuttle.utils import rclone, utils
 
 from ... import test_utils
-from ..tui_base import TuiBase
+from ...tests_tui.tui_base import TuiBase
 from . import gdrive_test_utils
 
 
