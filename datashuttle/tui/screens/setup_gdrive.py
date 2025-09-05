@@ -91,7 +91,7 @@ class SetupGdriveScreen(ModalScreen):
             # see setup_gdrive_connection_and_update_ui()
             if self.setup_worker and self.setup_worker.is_running:
                 self.setup_worker.cancel()  # fix
-                self.interface.terminate_google_drive_setup()
+                self.interface.terminate_gdrive_setup()
             self.dismiss()
 
         elif event.button.id == "setup_gdrive_ok_button":

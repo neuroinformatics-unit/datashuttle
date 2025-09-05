@@ -38,7 +38,7 @@ class Interface:
         self.name_templates: Dict = {}
         self.tui_settings: Dict = {}
 
-        self.google_drive_rclone_setup_process: subprocess.Popen | None = None
+        self.gdrive_rclone_setup_process: subprocess.Popen | None = None
         self.gdrive_setup_process_killed: bool = False
 
     def select_existing_project(self, project_name: str) -> InterfaceOutput:
@@ -521,7 +521,7 @@ class Interface:
 
         This is done by running the rclone setup function which returns a
         subprocess.Popen object. The process object is stored in
-        `self.google_drive_rclone_setup_process` to allow for termination
+        `self.gdrive_rclone_setup_process` to allow for termination
         of the process if needed. The `self.gdrive_setup_process_killed`
         flag is set to false to signal normal operation. The process is then
         awaited to ensure it completes successfully. If the process is killed
@@ -532,7 +532,7 @@ class Interface:
             process = self.project._setup_rclone_gdrive_config(
                 gdrive_client_secret, config_token
             )
-            self.google_drive_rclone_setup_process = process
+            self.gdrive_rclone_setup_process = process
             self.gdrive_setup_process_killed = False
 
             self.await_successful_gdrive_connection_setup_raise_on_fail(
@@ -558,11 +558,11 @@ class Interface:
         except BaseException as e:
             return False, str(e)
 
-    def terminate_google_drive_setup(self) -> None:
+    def terminate_gdrive_setup(self) -> None:
         """Terminate rclone setup for Google Drive by killing the rclone process."""
-        assert self.google_drive_rclone_setup_process is not None
+        assert self.gdrive_rclone_setup_process is not None
 
-        process = self.google_drive_rclone_setup_process
+        process = self.gdrive_rclone_setup_process
 
         # Check if the process is still running
         if process.poll() is None:
