@@ -846,7 +846,7 @@ class DataShuttle:
     # -------------------------------------------------------------------------
 
     @check_configs_set
-    def setup_google_drive_connection(self) -> None:
+    def setup_gdrive_connection(self) -> None:
         """Set up a connection to Google Drive using the provided credentials.
 
         Assumes `gdrive_root_folder_id` is set in configs.

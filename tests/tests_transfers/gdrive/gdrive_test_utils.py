@@ -52,7 +52,7 @@ def setup_gdrive_connection(project: DataShuttle):
         "GDRIVE_CLIENT_SECRET"
     ]
 
-    project.setup_google_drive_connection()
+    project.setup_gdrive_connection()
 
     builtins.input = original_input
     gdrive.get_client_secret = original_get_secret
