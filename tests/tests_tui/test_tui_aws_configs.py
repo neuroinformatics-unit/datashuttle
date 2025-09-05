@@ -4,10 +4,10 @@ import pytest
 
 from datashuttle.tui.app import TuiApp
 
-from ..tui_configs_base import TuiConfigsBase
+from .tui_configs_base import TuiConfigsBase
 
 
-class TestTuiGdriveConfigs(TuiConfigsBase):
+class TestTuiAwsConfigs(TuiConfigsBase):
     # -------------------------------------------------------------------------
     # Test New Project Configs
     # -------------------------------------------------------------------------
@@ -19,9 +19,9 @@ class TestTuiGdriveConfigs(TuiConfigsBase):
         kwargs = {
             "local_path": (tmp_path / "local" / project_name).as_posix(),
             "central_path": (tmp_path / "central" / project_name).as_posix(),
-            "connection_method": "gdrive",
-            "gdrive_client_id": "some-random-client-id",
-            "gdrive_root_folder_id": "some-random-root-folder-id",
+            "connection_method": "aws",
+            "aws_region": "us-east-1",
+            "aws_access_key_id": "some-random-access-key-id",
         }
 
         app = TuiApp()
@@ -30,7 +30,7 @@ class TestTuiGdriveConfigs(TuiConfigsBase):
                 pilot,
                 project_name,
                 tmp_config_path,
-                connection_method_name="Google Drive",
+                connection_method_name="AWS",
                 config_kwargs=kwargs,
             )
 
@@ -54,7 +54,6 @@ class TestTuiGdriveConfigs(TuiConfigsBase):
 
             await self.switch_tab(pilot, "configs")
 
-            # Create mock gdrive configs to input to widgets and check
             project_cfg = copy.deepcopy(pilot.app.screen.interface.project.cfg)
             new_kwargs = {
                 "local_path": self.make_and_get_random_project_path(
@@ -63,9 +62,9 @@ class TestTuiGdriveConfigs(TuiConfigsBase):
                 "central_path": self.make_and_get_random_project_path(
                     tmp_path, project_name
                 ),
-                "connection_method": "gdrive",
-                "gdrive_root_folder_id": "random-folder-id",
-                "gdrive_client_id": "random-client-id",
+                "connection_method": "aws",
+                "aws_access_key_id": "random-access-key-id",
+                "aws_region": "us-east-1",
             }
 
             await self.edit_configs_and_check_widgets(

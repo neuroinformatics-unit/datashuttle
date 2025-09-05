@@ -4,10 +4,10 @@ import pytest
 
 from datashuttle.tui.app import TuiApp
 
-from ..tui_configs_base import TuiConfigsBase
+from .tui_configs_base import TuiConfigsBase
 
 
-class TestTuiAwsConfigs(TuiConfigsBase):
+class TestTuiGdriveConfigs(TuiConfigsBase):
     # -------------------------------------------------------------------------
     # Test New Project Configs
     # -------------------------------------------------------------------------
@@ -19,9 +19,9 @@ class TestTuiAwsConfigs(TuiConfigsBase):
         kwargs = {
             "local_path": (tmp_path / "local" / project_name).as_posix(),
             "central_path": (tmp_path / "central" / project_name).as_posix(),
-            "connection_method": "aws",
-            "aws_region": "us-east-1",
-            "aws_access_key_id": "some-random-access-key-id",
+            "connection_method": "gdrive",
+            "gdrive_client_id": "some-random-client-id",
+            "gdrive_root_folder_id": "some-random-root-folder-id",
         }
 
         app = TuiApp()
@@ -30,7 +30,7 @@ class TestTuiAwsConfigs(TuiConfigsBase):
                 pilot,
                 project_name,
                 tmp_config_path,
-                connection_method_name="AWS",
+                connection_method_name="Google Drive",
                 config_kwargs=kwargs,
             )
 
@@ -54,6 +54,7 @@ class TestTuiAwsConfigs(TuiConfigsBase):
 
             await self.switch_tab(pilot, "configs")
 
+            # Create mock gdrive configs to input to widgets and check
             project_cfg = copy.deepcopy(pilot.app.screen.interface.project.cfg)
             new_kwargs = {
                 "local_path": self.make_and_get_random_project_path(
@@ -62,9 +63,9 @@ class TestTuiAwsConfigs(TuiConfigsBase):
                 "central_path": self.make_and_get_random_project_path(
                     tmp_path, project_name
                 ),
-                "connection_method": "aws",
-                "aws_access_key_id": "random-access-key-id",
-                "aws_region": "us-east-1",
+                "connection_method": "gdrive",
+                "gdrive_root_folder_id": "random-folder-id",
+                "gdrive_client_id": "random-client-id",
             }
 
             await self.edit_configs_and_check_widgets(
