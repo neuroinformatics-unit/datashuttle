@@ -61,11 +61,11 @@ will be automatically saved. These settings will persist across
 :::{tab-item} Python API
 :sync: python
 
-The [](set_validation_templates()) and [](get_validation_templates()) 
-can be used to set and get current Validation Template settings.
+The [](set_validation_templates()) and [](get_validation_templates()) can be used
+to set and get current Validation Template settings.
 
-[](set_validation_templates()) takes as input the `validation_template` 
-dictionary, which is formatted as below:
+[](set_validation_templates()) takes as input the [](get_validation_templates()) dictionary,
+which is formatted as below:
 
 ```
 
