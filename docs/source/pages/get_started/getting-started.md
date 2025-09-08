@@ -387,7 +387,7 @@ to the central project folder (`False` by default).
 
 This was a quick overview of creating folders—see
 and [How to use Create Folder Tags](how-to-create-folders) for full details
-including additional customisation with [Name Templates](how-to-use-name-templates).
+including additional customisation with [Validation Templates](how-to-use-validation-templates).
 
 ## Exploring folders
 
