@@ -27,7 +27,7 @@ def validate_project_from_path(
     top_level_folder: Optional[TopLevelFolder] = "rawdata",
     display_mode: DisplayMode = "warn",
     strict_mode: bool = False,
-    name_templates: Optional[Dict] = None,
+    validation_templates: Optional[Dict] = None,
 ) -> List[str]:
     """Perform validation on a NeuroBlueprint-formatted project.
 
@@ -53,9 +53,9 @@ def validate_project_from_path(
         any folder not prefixed with sub-, ses- or a valid datatype will
         raise a validation issue.
 
-    name_templates
+    validation_templates
         A dictionary of templates for subject and session name
-        to validate against. See ``DataShuttle.set_name_templates()``
+        to validate against. See ``DataShuttle.set_validation_templates()``
         for details.
 
     Returns
@@ -93,7 +93,7 @@ def validate_project_from_path(
         top_level_folder_list=top_level_folders_to_validate,
         include_central=False,
         display_mode=display_mode,
-        name_templates=name_templates,
+        validation_templates=validation_templates,
         strict_mode=strict_mode,
     )
 

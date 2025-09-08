@@ -209,13 +209,13 @@ class DataShuttle:
         utils.log("\nFormatting Names...")
         ds_logger.log_names(["sub_names", "ses_names"], [sub_names, ses_names])
 
-        name_templates = self.get_name_templates()
+        validation_templates = self.get_validation_templates()
 
         format_sub, format_ses = self._format_and_validate_names(
             top_level_folder,
             sub_names,
             ses_names,
-            name_templates,
+            validation_templates,
             bypass_validation,
             log=True,
         )
@@ -251,18 +251,18 @@ class DataShuttle:
         top_level_folder: TopLevelFolder,
         sub_names: Union[str, List[str]],
         ses_names: Optional[Union[str, List[str]]],
-        name_templates: Dict,
+        validation_templates: Dict,
         bypass_validation: bool,
         log: bool = True,
     ) -> Tuple[List[str], List[str]]:
         """Central method to format and validate subject and session names."""
         format_sub = formatting.check_and_format_names(
-            sub_names, "sub", name_templates, bypass_validation
+            sub_names, "sub", validation_templates, bypass_validation
         )
 
         if ses_names is not None:
             format_ses = formatting.check_and_format_names(
-                ses_names, "ses", name_templates, bypass_validation
+                ses_names, "ses", validation_templates, bypass_validation
             )
         else:
             format_ses = []
@@ -276,7 +276,7 @@ class DataShuttle:
                 include_central=False,
                 display_mode="error",
                 log=log,
-                name_templates=name_templates,
+                validation_templates=validation_templates,
             )
 
         return format_sub, format_ses
@@ -1147,9 +1147,9 @@ class DataShuttle:
         The next subject ID.
 
         """
-        name_template = self.get_name_templates()
-        name_template_regexp = (
-            name_template["sub"] if name_template["on"] else None
+        validation_template = self.get_validation_templates()
+        validation_template_regexp = (
+            validation_template["sub"] if validation_template["on"] else None
         )
 
         if self.is_local_project():
@@ -1162,7 +1162,7 @@ class DataShuttle:
             include_central=include_central,
             return_with_prefix=return_with_prefix,
             search_str="sub-*",
-            name_template_regexp=name_template_regexp,
+            validation_template_regexp=validation_template_regexp,
         )
 
     @check_configs_set
@@ -1196,9 +1196,9 @@ class DataShuttle:
         The next session ID.
 
         """
-        name_template = self.get_name_templates()
-        name_template_regexp = (
-            name_template["ses"] if name_template["on"] else None
+        validation_template = self.get_validation_templates()
+        validation_template_regexp = (
+            validation_template["ses"] if validation_template["on"] else None
         )
 
         if self.is_local_project():
@@ -1211,7 +1211,7 @@ class DataShuttle:
             include_central=include_central,
             return_with_prefix=return_with_prefix,
             search_str="ses-*",
-            name_template_regexp=name_template_regexp,
+            validation_template_regexp=validation_template_regexp,
         )
 
     @check_configs_set
@@ -1226,36 +1226,38 @@ class DataShuttle:
     # Name Templates
     # -------------------------------------------------------------------------
 
-    def get_name_templates(self) -> Dict:
+    def get_validation_templates(self) -> Dict:
         """Return the regexp templates used for validation.
 
         If the "on" key is set to `False`, template validation is not performed.
 
         Returns
         -------
-        name_templates
-            e.g. {"name_templates": {"on": False, "sub": None, "ses": None}}
+        validation_templates
+            e.g. {"validation_templates": {"on": False, "sub": None, "ses": None}}
 
         """
         settings = self._load_persistent_settings()
-        return settings["name_templates"]
+        return settings["validation_templates"]
 
-    def set_name_templates(self, new_name_templates: Dict) -> None:
+    def set_validation_templates(self, new_validation_templates: Dict) -> None:
         """Update the persistent settings with new name templates.
 
-        Name templates are regexp for that, when ``name_templates["on"]`` is
+        Name templates are regexp for that, when ``validation_templates["on"]`` is
         set to ``True``, ``"sub"`` and ``"ses"`` names are validated against
         the regexp contained in the dict.
 
         Parameters
         ----------
-        new_name_templates
-            e.g. ``{"name_templates": {"on": False, "sub": None, "ses": None}}``
+        new_validation_templates
+            e.g. ``{"validation_templates": {"on": False, "sub": None, "ses": None}}``
             where ``"sub"`` or ``"ses"`` can be a regexp that subject and session
             names respectively are validated against.
 
         """
-        self._update_persistent_setting("name_templates", new_name_templates)
+        self._update_persistent_setting(
+            "validation_templates", new_validation_templates
+        )
 
     # -------------------------------------------------------------------------
     # Showers
@@ -1328,7 +1330,7 @@ class DataShuttle:
             local_vars=locals(),
         )
 
-        name_templates = self.get_name_templates()
+        validation_templates = self.get_validation_templates()
 
         if self.is_local_project():
             include_central = False
@@ -1342,7 +1344,7 @@ class DataShuttle:
             top_level_folder_to_validate,
             include_central=include_central,
             display_mode=display_mode,
-            name_templates=name_templates,
+            validation_templates=validation_templates,
             strict_mode=strict_mode,
         )
 
@@ -1624,8 +1626,15 @@ class DataShuttle:
         Added keys:
             v0.4.0: tui "overwrite_existing_files" and "dry_run"
         """
-        if "name_templates" not in settings:
-            settings.update(canonical_configs.get_name_templates_defaults())
+        if "validation_template" not in settings:
+            if "validation_template" in settings:
+                settings["validation_template"] = settings.pop(
+                    "validation_template"
+                )
+            else:
+                settings.update(
+                    canonical_configs.get_validation_templates_defaults()
+                )
 
         canonical_tui_configs = canonical_configs.get_tui_config_defaults()
 
