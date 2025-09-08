@@ -6,7 +6,7 @@
 [NeuroBlueprint specification](https://neuroblueprint.neuroinformatics.dev/latest/specification.html).
 This will find and display a list of all formatting errors in the project.
 
-To quickly validate an existing project with only the project path, see [quick-validate-projects](quick-validate-projects).
+To quickly validate an existing project with only the project path, see how to [validate a project from a path](validate-project-from-path).
 
 Below we will cover how to validate a datashuttle-managed project
 (which will additionally [log](how-to-read-the-logs) the validation results).

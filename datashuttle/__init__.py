@@ -1,7 +1,7 @@
 from importlib.metadata import PackageNotFoundError, version
 
 from datashuttle.datashuttle_class import DataShuttle
-from datashuttle.datashuttle_functions import quick_validate_project
+from datashuttle.datashuttle_functions import validate_project_from_path
 
 
 try:

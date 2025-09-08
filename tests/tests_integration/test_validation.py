@@ -4,7 +4,7 @@ import warnings
 
 import pytest
 
-from datashuttle import quick_validate_project
+from datashuttle import validate_project_from_path
 from datashuttle.utils import formatting, validation
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
@@ -794,7 +794,7 @@ class TestValidation(BaseTest):
         os.makedirs(project.cfg["local_path"] / "derivatives" / "sub-02")
 
         with pytest.warns(UserWarning) as w:
-            quick_validate_project(
+            validate_project_from_path(
                 project.get_local_path(),
                 display_mode="warn",
                 top_level_folder=None,
@@ -812,7 +812,7 @@ class TestValidation(BaseTest):
             datashuttle.datashuttle_functions.validation, "validate_project"
         )
 
-        quick_validate_project(
+        validate_project_from_path(
             project.get_local_path(),
             display_mode="print",
             top_level_folder="derivatives",
@@ -829,7 +829,7 @@ class TestValidation(BaseTest):
         bad project path input.
         """
         with pytest.raises(FileNotFoundError) as e:
-            quick_validate_project(
+            validate_project_from_path(
                 project.get_local_path() / "does not exist",
                 display_mode="error",
             )
