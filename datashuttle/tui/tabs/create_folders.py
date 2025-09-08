@@ -229,7 +229,7 @@ class CreateFoldersTab(TreeAndInputTab):
 
         """
         if self.templates_on(prefix):
-            fill_value = self.interface.get_name_templates()[prefix]
+            fill_value = self.interface.get_validation_templates()[prefix]
         else:
             fill_value = f"{prefix}-"
 
@@ -239,8 +239,8 @@ class CreateFoldersTab(TreeAndInputTab):
     def templates_on(self, prefix: Prefix) -> bool:
         """Return `True` if the name templates are used in the project."""
         return (
-            self.interface.get_name_templates()["on"]
-            and self.interface.get_name_templates()[prefix] is not None
+            self.interface.get_validation_templates()["on"]
+            and self.interface.get_validation_templates()[prefix] is not None
         )
 
     # Validation
@@ -380,7 +380,7 @@ class CreateFoldersTab(TreeAndInputTab):
     ) -> Worker[None]:
         """Fill an Input the next subject / session in the project (local).
 
-        If `name_templates` are set, then the sub- or ses- first key
+        If `validation_templates` are set, then the sub- or ses- first key
         of the template name will be replaced with the suggested
         sub or ses key-value. Otherwise, the sub/ses key-value pair only
         will be suggested.
@@ -453,7 +453,9 @@ class CreateFoldersTab(TreeAndInputTab):
                 next_val = output
 
         if self.templates_on(prefix):
-            split_name = self.interface.get_name_templates()[prefix].split("_")
+            split_name = self.interface.get_validation_templates()[
+                prefix
+            ].split("_")
             fill_value = "_".join([next_val, *split_name[1:]])
         else:
             fill_value = next_val

@@ -292,9 +292,9 @@ def get_tui_config_defaults() -> Dict:
     return settings
 
 
-def get_name_templates_defaults() -> Dict:
-    """Return the default values for name_templates."""
-    return {"name_templates": {"on": False, "sub": None, "ses": None}}
+def get_validation_templates_defaults() -> Dict:
+    """Return the default values for validation_templates."""
+    return {"validation_templates": {"on": False, "sub": None, "ses": None}}
 
 
 def get_persistent_settings_defaults() -> Dict:
@@ -306,7 +306,7 @@ def get_persistent_settings_defaults() -> Dict:
     """
     settings = {}
     settings.update(get_tui_config_defaults())
-    settings.update(get_name_templates_defaults())
+    settings.update(get_validation_templates_defaults())
 
     return settings
 

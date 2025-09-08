@@ -1,6 +1,6 @@
-(how-to-use-name-templates)=
+(how-to-use-validation-templates)=
 
-# Name templates
+# Validation Templates
 
 Validation in ``datashuttle`` is by default restricted to the
 NeuroBlueprint specification. Any subject or session names
@@ -21,23 +21,23 @@ as a regexp where `\d` stands for 'any digit`:
 "sub-\d\d\d_id-\d\d\d\d\d\d"
 ```
 
-If this is defined as a Name Template, any name that
+If this is defined as a Validation Template, any name that
 does not take this form will result in a validation error.
-Name templates can include [convenience tags](create-folders-convenience-tags).
+Validation Templates can include [convenience tags](create-folders-convenience-tags).
 (`@DATE@`, `@TIME@` or `@DATETIME@`.)
 
-## Set up Name Templates
+## Set up Validation Templates
 ::::{tab-set}
 
 :::{tab-item} Graphical Interface
 :sync: gui
 
-```{image} /_static/screenshots/how-to-name-templates-dark.png
+```{image} /_static/screenshots/how-to-validation-templates-dark.png
    :align: center
    :class: only-dark
    :width: 900px
 ```
-```{image} /_static/screenshots/how-to-name-templates-light.png
+```{image} /_static/screenshots/how-to-validation-templates-light.png
    :align: center
    :class: only-light
    :width: 900px
@@ -50,9 +50,9 @@ Click the `Settings` button in the `Create` tab. Scroll down to the
 
 Clicking the checkbox will turn on `Template Validation` and these
 can be set for subject and session independent. If the input is left empty,
-no name template will be applied.
+no Validation Template will be applied.
 
-Fill in the subject or session name template—any changes
+Fill in the subject or session Validation Template—any changes
 will be automatically saved. These settings will persist across
 ``datashuttle`` sessions.
 
@@ -61,29 +61,29 @@ will be automatically saved. These settings will persist across
 :::{tab-item} Python API
 :sync: python
 
-The [](set_name_templates()) and [](get_name_templates()) can be used
-to set and get current name template settings.
+The [](set_validation_templates()) and [](get_validation_templates()) 
+can be used to set and get current Validation Template settings.
 
-[](set_name_templates()) takes as input the `name_template` dictionary,
-which is formatted as below:
+[](set_validation_templates()) takes as input the `validation_template` 
+dictionary, which is formatted as below:
 
 ```
 
-name_templates = {
+validation_templates = {
     "on": True,
     "sub": "sub-\d\d\d_id-\d\d\d\d\d\d",
     "ses": None,
 }
 
 
-project.set_name_templates(
-    name_templates
+project.set_validation_templates(
+    validation_templates
 )
 
 ```
 
-In the above example, validation with name templates is
-turned on `"on: True`. A template is set for the subject name,
+In the above example, validation with Validation Templates is
+turned on `"on": True`. A template is set for the subject name,
 but no template is set for the session name.
 
 
@@ -92,7 +92,7 @@ but no template is set for the session name.
 ::::
 
 
-## Name Template placeholders
+## Validation Template placeholders
 
 Placeholders (based on [regular expressions]) can be used to
 fill templates with yet-unknown values.
