@@ -14,7 +14,7 @@ to any problematic folders.
 :sync: gui
 
 To quickly validate a project, start the terminal user interface with
-``datashuttle launch`` and click ``Validate Project at Path``.
+``datashuttle launch`` and click ``Validate Project From Path``.
 
 The screen below will show. To validate an existing project,
 enter the full filepath to the project folder in the top input box

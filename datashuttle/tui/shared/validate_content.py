@@ -29,7 +29,7 @@ from datashuttle.tui.tooltips import get_tooltip
 class ValidateContent(Container):
     """A container containing widgets for project validation.
 
-    This is shared between the Validate Project from Path
+    This is shared between the Validate Project From Path
     and validation tab on the project manager. It takes a similar
     approach to ConfigsContent.
 
