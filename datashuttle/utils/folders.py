@@ -505,6 +505,7 @@ def search_with_tags(
 
     """
     new_all_names: List[str] = []
+
     for name in all_names:
         if not (
             canonical_tags.tags("*") in name
@@ -524,6 +525,7 @@ def search_with_tags(
         # Handle datetime ranges
         format_type = None
         tag = None
+
         if canonical_tags.tags("DATETO") in search_str:
             tag = canonical_tags.tags("DATETO")
             format_type = "date"

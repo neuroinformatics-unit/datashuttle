@@ -374,3 +374,80 @@ class TestDateSearchRange(BaseTest):
             "ses-003_date-20240401",
         ]
         assert sorted(transferred_sessions) == sorted(expected_sessions)
+
+    def test_with_range_to_flag(self, project):
+        """Test that the @DATETO@ works well with @TO@"""
+        subs = ["sub-001"]
+
+        sessions = [
+            "ses-001_date-20240301",
+            "ses-002_date-20240301",
+            "ses-003_date-20240405",
+            "ses-004_date-20240415",
+        ]
+
+        datatypes_used = test_utils.get_all_broad_folders_used(value=False)
+        datatypes_used.update({"behav": True})
+        test_utils.make_and_check_local_project_folders(
+            project, "rawdata", subs, sessions, ["behav"], datatypes_used
+        )
+
+        # Select such that ses-002 onwards is selected, and
+        # ses-004 is excluded based on date.
+        project.upload_custom(
+            "rawdata",
+            sub_names=subs,
+            ses_names=[
+                f"ses-002@TO@004_20240301{canonical_tags.tags('DATETO')}20240406"
+            ],
+            datatype=["behav"],
+        )
+
+        central_path = project.get_central_path() / "rawdata" / "sub-001"
+        transferred_sessions = [ses.name for ses in central_path.glob("ses-*")]
+
+        expected_sessions = [
+            "ses-002_date-20240301",
+            "ses-003_date-20240405",
+        ]
+        assert sorted(transferred_sessions) == sorted(expected_sessions)
+
+    def test_without_wildcard_ses(self, project):
+        """Test without wildcard ses.
+
+        Including @*@ only led to an uncaught but as it was triggering a
+        conditional in `check_and_format_names` that was not triggered by
+        @DATETO@ alone though it should have been.
+        """
+        subs = ["sub-001"]
+
+        sessions = [
+            "ses-001_date-20240301",
+            "ses-002_date-20240301",
+            "ses-003_date-20240405",
+            "ses-004_date-20240415",
+        ]
+
+        datatypes_used = test_utils.get_all_broad_folders_used(value=False)
+        datatypes_used.update({"behav": True})
+        test_utils.make_and_check_local_project_folders(
+            project, "rawdata", subs, sessions, ["behav"], datatypes_used
+        )
+
+        # Select such that ses-002 is selected (and it is in range)
+        project.upload_custom(
+            "rawdata",
+            sub_names=subs,
+            ses_names=[
+                f"ses-002_20240301{canonical_tags.tags('DATETO')}20240302"
+            ],
+            datatype=["behav"],
+        )
+
+        central_path = project.get_central_path() / "rawdata" / "sub-001"
+        transferred_sessions = [ses.name for ses in central_path.glob("ses-*")]
+
+        expected_sessions = [
+            "ses-002_date-20240301",
+        ]
+        assert sorted(transferred_sessions) == sorted(expected_sessions)
