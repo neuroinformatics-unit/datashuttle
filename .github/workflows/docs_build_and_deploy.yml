@@ -21,9 +21,6 @@ jobs:
     steps:
       - uses: neuroinformatics-unit/actions/build_sphinx_docs@main
         with:
-          python-version: 3.12
-          use-make: false
-          fetch-tags: false
           use-artifactci: lazy
 
   deploy_sphinx_docs:
