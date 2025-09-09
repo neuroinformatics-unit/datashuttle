@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     import subprocess
 
     from datashuttle.utils.custom_types import (
+        ConnectionMethods,
         DisplayMode,
         OverwriteExistingFiles,
         Prefix,
@@ -933,8 +934,8 @@ class DataShuttle:
     def make_config_file(
         self,
         local_path: str,
-        central_path: str | None = None,
-        connection_method: str | None = None,
+        central_path: Optional[str] = None,
+        connection_method: Optional[ConnectionMethods] = "local_only",
         central_host_id: Optional[str] = None,
         central_host_username: Optional[str] = None,
         gdrive_client_id: Optional[str] = None,

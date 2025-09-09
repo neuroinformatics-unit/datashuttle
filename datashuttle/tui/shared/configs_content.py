@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Union
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from datashuttle.concifgs.canonical_configs import ConnectionMethods
     from datashuttle.tui.interface import Interface
     from datashuttle.tui.screens.new_project import NewProjectScreen
     from datashuttle.tui.screens.project_manager import ProjectManagerScreen
+    from datashuttle.utils.custom_types import ConnectionMethods
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -344,12 +344,12 @@ class ConfigsContent(Container):
 
     def connection_method_from_radiobutton_id(
         self, radiobutton_id: str
-    ) -> str | None:
+    ) -> ConnectionMethods:
         """Convert back from radiobutton Textual ID to connection method."""
         assert radiobutton_id.startswith("configs_")
         assert radiobutton_id.endswith("_radiobutton")
 
-        connection_method = radiobutton_id[
+        connection_method: ConnectionMethods = radiobutton_id[  # type: ignore
             len("configs_") : -len("_radiobutton")
         ]
         return connection_method

@@ -14,7 +14,6 @@ from typing import (
     TYPE_CHECKING,
     Dict,
     List,
-    Literal,
     Optional,
     Union,
     get_args,
@@ -29,10 +28,7 @@ import typeguard
 from datashuttle.configs.aws_regions import AwsRegion
 from datashuttle.utils import folders, utils
 from datashuttle.utils.custom_exceptions import ConfigError
-
-ConnectionMethods = Literal[
-    "ssh", "local_filesystem", "gdrive", "aws", "local_only"
-]
+from datashuttle.utils.custom_types import ConnectionMethods
 
 
 def get_connection_methods_list() -> List:
