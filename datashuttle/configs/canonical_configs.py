@@ -30,24 +30,14 @@ from datashuttle.configs.aws_regions import AwsRegion
 from datashuttle.utils import folders, utils
 from datashuttle.utils.custom_exceptions import ConfigError
 
-ConnectionMethods = Optional[
-    Literal["ssh", "local_filesystem", "gdrive", "aws"]
+ConnectionMethods = Literal[
+    "ssh", "local_filesystem", "gdrive", "aws", "local_only"
 ]
 
 
 def get_connection_methods_list() -> List:
-    """Return the canonical connection methods.
-
-    This is a little ugly, but required to only define the Literals once.
-    """
-    connection_methods = []
-    for hint in get_args(ConnectionMethods):
-        if hint is type(None):
-            connection_methods.append(None)
-        else:
-            connection_methods += list(get_args(hint))
-
-    return connection_methods
+    """Return the canonical connection methods."""
+    return list(get_args(ConnectionMethods))
 
 
 def get_canonical_configs() -> dict:
@@ -55,7 +45,7 @@ def get_canonical_configs() -> dict:
     canonical_configs = {
         "local_path": Union[str, Path],
         "central_path": Optional[Union[str, Path]],
-        "connection_method": ConnectionMethods,
+        "connection_method": Optional[ConnectionMethods],
         "central_host_id": Optional[str],
         "central_host_username": Optional[str],
         "gdrive_client_id": Optional[str],
@@ -209,13 +199,8 @@ def raise_on_bad_local_only_project_configs(config_dict: Configs) -> None:
     There is no circumstance where one is set and not the other. Either both are set
     ('full' project) or both are `None` ('local only' project).
     """
-    params_are_none = [
-        config_dict[key] is None
-        for key in ["central_path", "connection_method"]
-    ]
-
-    if any(params_are_none):
-        if not all(params_are_none):
+    if config_dict["connection_method"] == "local_only":
+        if config_dict["central_path"] is not None:
             utils.log_and_raise_error(
                 "Either both `central_path` and `connection_method` must be set, "
                 "or must both be `None` (for local-project mode).",
