@@ -2,6 +2,7 @@ import re
 
 import pytest
 
+from datashuttle.configs.canonical_configs import get_connection_methods_list
 from datashuttle.configs.canonical_tags import tags
 from datashuttle.utils import formatting, getters, utils
 
@@ -235,6 +236,16 @@ class TestUnit:
 
         assert max_num == 11
         assert num_digits == 2
+
+    def test_get_connection_methods_list(self):
+        """"""
+        assert get_connection_methods_list() == [
+            "ssh",
+            "local_filesystem",
+            "gdrive",
+            "aws",
+            None,
+        ]
 
     # -------------------------------------------------------------------------
     # Utils

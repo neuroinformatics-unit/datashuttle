@@ -30,12 +30,24 @@ from datashuttle.configs.aws_regions import AwsRegion
 from datashuttle.utils import folders, utils
 from datashuttle.utils.custom_exceptions import ConfigError
 
-connection_methods = Literal["ssh", "local_filesystem", "gdrive", "aws"]
+ConnectionMethods = Optional[
+    Literal["ssh", "local_filesystem", "gdrive", "aws"]
+]
 
 
-def get_connection_methods_list() -> List[str]:
-    """Return the canonical connection methods."""
-    return list(get_args(connection_methods))
+def get_connection_methods_list() -> List:
+    """Return the canonical connection methods.
+
+    This is a little ugly, but required to only define the Literals once.
+    """
+    connection_methods = []
+    for hint in get_args(ConnectionMethods):
+        if hint is type(None):
+            connection_methods.append(None)
+        else:
+            connection_methods += list(get_args(hint))
+
+    return connection_methods
 
 
 def get_canonical_configs() -> dict:
@@ -43,7 +55,7 @@ def get_canonical_configs() -> dict:
     canonical_configs = {
         "local_path": Union[str, Path],
         "central_path": Optional[Union[str, Path]],
-        "connection_method": Optional[connection_methods],
+        "connection_method": ConnectionMethods,
         "central_host_id": Optional[str],
         "central_host_username": Optional[str],
         "gdrive_client_id": Optional[str],
