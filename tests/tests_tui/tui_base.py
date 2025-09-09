@@ -240,3 +240,20 @@ class TuiBase:
             await transfer_task
 
         await self.close_messagebox(pilot)
+
+    async def double_click_input(self, pilot, sub_or_ses, control=False):
+        """Helper function to double click input to suggest next sub or ses.
+
+        Because this function is performed in separate asyncio task, this was a little
+        brittle in the CI tests leading to random errors. The below
+        combination of awaiting the test, then pausing, stopped the errors.
+        """
+        expand_name = "session" if sub_or_ses == "ses" else "subject"
+
+        await self.double_click(
+            pilot, f"#create_folders_{expand_name}_input", control=control
+        )
+        await test_utils.await_task_by_name_if_present(
+            f"suggest_next_{sub_or_ses}_async_task"
+        )
+        await pilot.pause(0.5)

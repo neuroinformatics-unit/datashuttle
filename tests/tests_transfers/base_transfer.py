@@ -7,6 +7,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from datashuttle.tui.app import TuiApp
 from datashuttle.utils import rclone
 
 from .. import test_utils
@@ -256,3 +257,45 @@ class BaseTransfer(BaseTest):
         local_path location in the test environment.
         """
         project.get_logging_path().mkdir(parents=True, exist_ok=True)
+
+    async def check_next_sub_002_ses_003_in_tui(self, project):
+        """ """
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+            await self.check_and_click_onto_existing_project(
+                pilot, project.project_name
+            )
+
+            # Turn on the central checkbox
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_button"
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#suggest_next_sub_ses_central_checkbox"
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_close_button"
+            )
+
+            await self.fill_input(
+                pilot, "#create_folders_subject_input", "sub-001"
+            )
+
+            await self.double_click_input(pilot, "ses")
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_session_input"
+                ).value
+                == "ses-003"
+            )
+
+            # Check subject suggestion called mocked function correctly
+            await self.double_click_input(pilot, "sub")
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_subject_input"
+                ).value
+                == "sub-002"
+            )

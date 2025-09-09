@@ -23,7 +23,7 @@ TEST_SSH = ssh_test_utils.docker_is_running()
 )
 class TestSSH(BaseSSHTransfer):
     @pytest.fixture(scope="function")
-    def project(test, tmp_path, setup_ssh_container):
+    def project(test, tmp_path, setup_ssh_container_fixture):
         """Set up a project with configs for SSH into
         the test Dockerfile image.
         """
