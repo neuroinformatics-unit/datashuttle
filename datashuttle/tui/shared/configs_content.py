@@ -171,7 +171,7 @@ class ConfigsContent(Container):
             RadioSet(
                 RadioButton(
                     "No connection (local only)",
-                    id="configs_local_only_radiobutton",
+                    id=self.radiobutton_id_from_connection_method(None),
                 ),
                 RadioButton(
                     "Local Filesystem",
@@ -334,9 +334,12 @@ class ConfigsContent(Container):
         self.set_central_path_input_tooltip(connection_method)
 
     def radiobutton_id_from_connection_method(
-        self, connection_method: str
+        self, connection_method: str | None
     ) -> str:
         """Create a canonical radiobutton textual ID from the connection method."""
+        if connection_method is None:
+            connection_method = "local_only"
+
         return f"configs_{connection_method}_radiobutton"
 
     def connection_method_from_radiobutton_id(
@@ -346,14 +349,13 @@ class ConfigsContent(Container):
         assert radiobutton_id.startswith("configs_")
         assert radiobutton_id.endswith("_radiobutton")
 
-        connection_string = radiobutton_id[
+        connection_method = radiobutton_id[
             len("configs_") : -len("_radiobutton")
         ]
-        return (
-            connection_string
-            if connection_string in get_connection_methods_list()
-            else None
-        )
+        if connection_method == "local_only":
+            connection_method = None
+
+        return connection_method
 
     def set_central_path_input_tooltip(
         self, connection_method: str | None
@@ -753,10 +755,9 @@ class ConfigsContent(Container):
 
         Called on mount, on radiobuttons' switch and upon saving project configs.
         """
-        if connection_method:
-            assert connection_method in get_connection_methods_list(), (
-                "Unexpected Connection Method"
-            )
+        assert connection_method in get_connection_methods_list(), (
+            "Unexpected Connection Method"
+        )
 
         # Connection specific widgets
         connection_widget_display_functions = {
