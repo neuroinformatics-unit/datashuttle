@@ -338,10 +338,9 @@ class CreateFoldersTab(TreeAndInputTab):
             in canonical_configs.get_connection_methods_list()
         )
 
-        if (
-            include_central
-            and self.interface.project.cfg["connection_method"] == "ssh"
-        ):
+        if include_central and self.interface.project.cfg[
+            "connection_method"
+        ] in ["aws", "gdrive", "ssh"]:
             self.searching_central_popup_widget = (
                 SearchingCentralForNextSubSesPopup(prefix)
             )
