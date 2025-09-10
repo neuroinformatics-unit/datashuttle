@@ -781,6 +781,7 @@ def validate_project(
             )
 
         # Next, check inconsistent value lengths across the entire project
+        # (only required for integer ses values)
         if not allow_alphanumeric_sub_ses_values:
             all_ses_paths = list(chain(*folder_paths["ses"].values()))
 
