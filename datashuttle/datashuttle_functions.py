@@ -22,7 +22,7 @@ from datashuttle.utils import (
 )
 
 
-def quick_validate_project(
+def validate_project_from_path(
     project_path: str | Path,
     top_level_folder: Optional[TopLevelFolder] = "rawdata",
     display_mode: DisplayMode = "warn",

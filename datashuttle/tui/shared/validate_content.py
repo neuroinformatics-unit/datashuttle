@@ -20,7 +20,7 @@ from textual.widgets import (
     Select,
 )
 
-from datashuttle.datashuttle_functions import quick_validate_project
+from datashuttle.datashuttle_functions import validate_project_from_path
 from datashuttle.tui.custom_widgets import ClickableInput
 from datashuttle.tui.screens import modal_dialogs, validate_at_path
 from datashuttle.tui.tooltips import get_tooltip
@@ -29,7 +29,7 @@ from datashuttle.tui.tooltips import get_tooltip
 class ValidateContent(Container):
     """A container containing widgets for project validation.
 
-    This is shared between the Validate Project from Path
+    This is shared between the Validate Project From Path
     and validation tab on the project manager. It takes a similar
     approach to ConfigsContent.
 
@@ -192,7 +192,7 @@ class ValidateContent(Container):
                     )
                     return
 
-                output = quick_validate_project(
+                output = validate_project_from_path(
                     path_,
                     top_level_folder=top_level_folder,
                     strict_mode=strict_mode,

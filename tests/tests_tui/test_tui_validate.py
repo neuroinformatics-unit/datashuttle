@@ -160,7 +160,7 @@ class TestTuiValidate(TuiBase):
 
     @pytest.mark.asyncio
     async def test_validate_at_path_kwargs(self, setup_project_paths, mocker):
-        """Test kwargs are properly passed through from the TUI to `quick_validate_project`
+        """Test kwargs are properly passed through from the TUI to `validate_project_from_path`
         with mocker. Note that the 'Select' button / directorytree is not tested here,
         as the screen is tested elsewhere and it's non-critical feature here.
         """
@@ -179,7 +179,7 @@ class TestTuiValidate(TuiBase):
             # Spy the function and click 'validate' button
             spy_validate = mocker.spy(
                 datashuttle.tui.shared.validate_content,
-                "quick_validate_project",
+                "validate_project_from_path",
             )
 
             warnings.filterwarnings("ignore")

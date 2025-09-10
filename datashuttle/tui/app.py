@@ -58,7 +58,7 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
             ),
             Button("Make New Project", id="mainwindow_new_project_button"),
             Button(
-                "Validate Project at Path",
+                "Validate Project From Path",
                 id="mainwindow_validate_from_project_path",
             ),
             Button("Settings", id="mainwindow_settings_button"),
