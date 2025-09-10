@@ -1026,7 +1026,7 @@ class TestValidation(BaseTest):
             project.validate_project("rawdata", "error")
 
         with pytest.raises(NeuroBlueprintError) as e_val_from_path:
-            quick_validate_project(
+            validate_project_from_path(
                 project.get_local_path(), display_mode="error"
             )
 
@@ -1040,7 +1040,7 @@ class TestValidation(BaseTest):
             "rawdata", "error", allow_alphanumeric_sub_ses_values=True
         )
 
-        quick_validate_project(
+        validate_project_from_path(
             project.get_local_path(),
             display_mode="error",
             allow_alphanumeric_sub_ses_values=True,
@@ -1062,7 +1062,7 @@ class TestValidation(BaseTest):
             )
 
         with pytest.warns(UserWarning) as w_val_from_path:
-            quick_validate_project(
+            validate_project_from_path(
                 project.get_local_path(),
                 display_mode="warn",
                 allow_alphanumeric_sub_ses_values=True,
