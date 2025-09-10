@@ -327,7 +327,7 @@ class TestTuiCreateFolders(TuiBase):
     async def test_allow_alphanumeric_sub_ses_values(
         self, setup_project_paths
     ):
-        """"""
+        """Turn on allow alphanumeric labels and check sub and ses folders with such labels are created."""
         _, _, project_name = setup_project_paths.values()
 
         app = TuiApp()
