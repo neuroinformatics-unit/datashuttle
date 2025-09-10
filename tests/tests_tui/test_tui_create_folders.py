@@ -324,7 +324,9 @@ class TestTuiCreateFolders(TuiBase):
             await pilot.pause()
 
     @pytest.mark.asyncio
-    async def test_ALLOW_ALPHANUMERIC(self, setup_project_paths):
+    async def test_allow_alphanumeric_sub_ses_values(
+        self, setup_project_paths
+    ):
         """"""
         _, _, project_name = setup_project_paths.values()
 

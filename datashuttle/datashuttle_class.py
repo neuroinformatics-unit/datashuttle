@@ -294,10 +294,10 @@ class DataShuttle:
                 format_sub,
                 format_ses,
                 include_central=False,
-                allow_alphanumeric_sub_ses_values=allow_alphanumeric_sub_ses_values,  # TODO: CHECK ORDER
                 display_mode="error",
                 log=log,
                 name_templates=name_templates,
+                allow_alphanumeric_sub_ses_values=allow_alphanumeric_sub_ses_values,
             )
 
         return format_sub, format_ses
