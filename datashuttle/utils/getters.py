@@ -204,6 +204,7 @@ def get_max_sub_or_ses_num_and_value_length(
                 int_value = utils.sub_or_ses_value_to_int(value)
                 all_value_nums.append(int_value)
             except NeuroBlueprintError:
+                # Re-raise with a more descriptive error for this case.
                 utils.log_and_raise_error(
                     f"Cannot suggest next {prefix} because not all {prefix} labels in the project are integer. e.g. {prefix}-{value}",
                     NeuroBlueprintError,

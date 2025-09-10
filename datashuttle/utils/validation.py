@@ -283,20 +283,18 @@ def prefix_is_duplicate_or_has_bad_values(
     if len(value) > 1:
         return [get_duplicate_prefix_error(name, prefix, path_)]
 
-    if allow_alphanumeric_sub_ses_values:
-        if not value[0].isalnum():
-            return [
-                get_bad_value_error(
-                    name, prefix, path_, allow_alphanumeric_sub_ses_values
-                )
-            ]
-    else:
-        if not value[0].isdigit():
-            return [
-                get_bad_value_error(
-                    name, prefix, path_, allow_alphanumeric_sub_ses_values
-                )
-            ]
+    is_valid = (
+        value[0].isalnum()
+        if allow_alphanumeric_sub_ses_values
+        else value[0].isdigit()
+    )
+
+    if not is_valid:
+        return [
+            get_bad_value_error(
+                name, prefix, path_, allow_alphanumeric_sub_ses_values
+            )
+        ]
 
     return []
 
