@@ -461,8 +461,8 @@ class TransferData:
                 processed_names += [f"all_non_{prefix}"]
 
         else:
-            processed_names = formatting.check_and_format_names(  # TODO: CHECK THIS!!!!!!!!!!!!!!!!!!!
-                names_checked, prefix
+            processed_names = formatting.check_and_format_names(
+                names_checked, prefix, bypass_validation=True
             )
             processed_names = folders.search_for_wildcards(
                 self.__cfg,
