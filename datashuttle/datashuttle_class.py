@@ -1690,10 +1690,10 @@ class DataShuttle:
         Added keys:
             v0.4.0: tui "overwrite_existing_files" and "dry_run"
         """
-        if "validation_template" not in settings:
-            if "validation_template" in settings:
-                settings["validation_template"] = settings.pop(
-                    "validation_template"
+        if "validation_templates" not in settings:
+            if "name_templates" in settings:
+                settings["validation_templates"] = settings.pop(
+                    "name_templates"
                 )
             else:
                 settings.update(
