@@ -112,18 +112,59 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
 
     check_config_types(config_dict)
 
-    if config_dict["connection_method"] != "gdrive":
-        if (
-            config_dict["connection_method"] == "aws"
-            and config_dict["central_path"] is None
-        ):
+    if config_dict["connection_method"] == "local_only":
+        if config_dict["central_path"] is not None:
+            utils.log_and_raise_error(
+                "Either both `central_path` and `connection_method` must be set, "
+                "or must both be `None` (for local-project mode).",
+                ConfigError,
+            )
+
+    elif config_dict["connection_method"] == "aws":
+        if config_dict["central_path"] is None:
             utils.log_and_raise_error(
                 "`central_path` cannot be `None` when `connection_method` is 'aws'. "
                 "`central_path` must include the s3 bucket name.",
                 ConfigError,
             )
-        else:
-            raise_on_bad_local_only_project_configs(config_dict)
+        if (
+            not config_dict["aws_access_key_id"]
+            or not config_dict["aws_region"]
+        ):
+            utils.log_and_raise_error(
+                "Both aws_access_key_id and aws_region must be present for AWS connection.",
+                ConfigError,
+            )
+
+    elif config_dict["connection_method"] == "ssh":
+        if (
+            not config_dict["central_host_id"]
+            or not config_dict["central_host_username"]
+        ):
+            utils.log_and_raise_error(
+                "'central_host_id' and 'central_host_username' are "
+                "required if 'connection_method' is 'ssh'.",
+                ConfigError,
+            )
+
+    elif config_dict["connection_method"] == "gdrive":
+        if not config_dict["gdrive_root_folder_id"]:
+            utils.log_and_raise_error(
+                "'gdrive_root_folder_id' is required if 'connection_method' "
+                "is 'gdrive'.",
+                ConfigError,
+            )
+        if not config_dict["gdrive_client_id"]:
+            utils.log_and_message(
+                "`gdrive_client_id` not found in config. default rlcone client will be used (slower)."
+            )
+
+    if config_dict["connection_method"] in ["ssh", "local_filesystem"]:
+        if config_dict["central_path"] is None:
+            utils.log_and_raise_error(
+                f"`central_path` must be set if `connection_method` is {config_dict['connection_method']}",
+                ConfigError,
+            )
 
     if list(config_dict.keys()) != list(canonical_dict.keys()):
         utils.log_and_raise_error(
@@ -141,44 +182,11 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
             config_dict["central_path"].as_posix(), "central_path"
         )
 
-    # Check SSH settings
-    if config_dict["connection_method"] == "ssh" and (
-        not config_dict["central_host_id"]
-        or not config_dict["central_host_username"]
-    ):
-        utils.log_and_raise_error(
-            "'central_host_id' and 'central_host_username' are "
-            "required if 'connection_method' is 'ssh'.",
-            ConfigError,
-        )
-
-    # Check gdrive settings
-    elif config_dict["connection_method"] == "gdrive":
-        if not config_dict["gdrive_root_folder_id"]:
-            utils.log_and_raise_error(
-                "'gdrive_root_folder_id' is required if 'connection_method' "
-                "is 'gdrive'.",
-                ConfigError,
-            )
-
-        if not config_dict["gdrive_client_id"]:
-            utils.log_and_message(
-                "`gdrive_client_id` not found in config. default rlcone client will be used (slower)."
-            )
-
-    # Check AWS settings
-    elif config_dict["connection_method"] == "aws" and (
-        not config_dict["aws_access_key_id"] or not config_dict["aws_region"]
-    ):
-        utils.log_and_raise_error(
-            "Both aws_access_key_id and aws_region must be present for AWS connection.",
-            ConfigError,
-        )
-
     # Initialise the local project folder
     utils.print_message_to_user(
         f"Making project folder at: {config_dict['local_path']}"
     )
+
     try:
         folders.create_folders(config_dict["local_path"])
     except OSError:
@@ -187,21 +195,6 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
             f"Config file not updated.",
             RuntimeError,
         )
-
-
-def raise_on_bad_local_only_project_configs(config_dict: Configs) -> None:
-    """Check that both or neither of `central_path` and `connection_method` are set.
-
-    There is no circumstance where one is set and not the other. Either both are set
-    ('full' project) or both are `None` ('local only' project).
-    """
-    if config_dict["connection_method"] == "local_only":
-        if config_dict["central_path"] is not None:
-            utils.log_and_raise_error(
-                "Either both `central_path` and `connection_method` must be set, "
-                "or must both be `None` (for local-project mode).",
-                ConfigError,
-            )
 
 
 def raise_on_bad_path_syntax(

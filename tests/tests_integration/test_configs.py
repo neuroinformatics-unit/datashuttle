@@ -269,7 +269,8 @@ class TestConfigs(BaseTest):
     # -------------------------------------------------------------
 
     @pytest.mark.parametrize(
-        "connection_method", [None, "local_filesystem", "ssh", "gdrive", "aws"]
+        "connection_method",
+        ["local_only", "local_filesystem", "ssh", "gdrive", "aws"],
     )
     def test_connection_method_required_args(
         self, tmp_path, no_cfg_project, connection_method
