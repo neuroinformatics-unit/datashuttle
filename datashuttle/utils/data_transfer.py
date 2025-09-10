@@ -462,7 +462,7 @@ class TransferData:
 
         else:
             processed_names = formatting.check_and_format_names(
-                names_checked, prefix
+                names_checked, prefix, bypass_validation=True
             )
             processed_names = folders.search_for_wildcards(
                 self.__cfg,

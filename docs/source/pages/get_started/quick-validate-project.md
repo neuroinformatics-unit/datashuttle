@@ -35,18 +35,8 @@ and click ``Validate``:
 Any validation errors detected in the project will be displayed in the logging box.
 See ``Strict Mode`` below for details on how the validation is performed.
 
-**Options:**
-
-Top level folder dropdown
-: The top-level folder to validate the folders within.
-
-Strict Mode
-: If `True`, only [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)-formatted folders are allowed
-in the project. By default, non-[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) folders (e.g. a folder
-called `my_stuff` in the `rawdata`) are allowed, and only folders
-starting with `sub-` or `ses-` prefix are checked. In `Strict Mode`,
-any folder with a name not prefixed with `sub-`, `ses-` or a valid datatype will
-raise a validation issue.
+See the [Validate Folders](tutorial-validation) page for full
+details on the arguments.
 
 :::
 
@@ -69,9 +59,8 @@ validate_project_from_path(
 In this case, `display_mode=error` will result in an error on the first encountered validation issue.
 Otherwise, `"warn"` will show a python warning for all detected issues, while `"print"` will print directly to the console.
 
-See the [](validate_project_from_path()) API documentation
-for full details of parameters, including the important argument ``strict_mode``
-that controls how validation is performed.
+See the [Validate Folders tutorial](tutorial-validation) and [](datashuttle.validate_project_from_path())
+API documentation  for full details of arguments.
 
 :::
 
