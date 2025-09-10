@@ -325,8 +325,8 @@ def new_name_duplicates_existing(
     allow_alphanumeric_sub_ses_values
         If `True`, any alphanumeric character are allowed for the values associated
         with sub- or ses-  keys. In this case, do not convert to `int` before comparison.
-        However, if `False`, we do want to convert to `int` because we want to catch
-        cases with inconsistent leading zeros (e.g. sub-01 and sub-001 are equivalent).
+        However, if `False`, we do want to convert to `int` because we want to
+        ignore leading zeros.
 
     Returns
     -------
