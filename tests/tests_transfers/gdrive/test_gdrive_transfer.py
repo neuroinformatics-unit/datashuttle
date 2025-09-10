@@ -6,6 +6,10 @@ from ..base_transfer import BaseTransfer
 from . import gdrive_test_utils
 
 
+@pytest.mark.skipif(
+    not gdrive_test_utils.has_gdrive_environment_variables(),
+    reason="Google Drive set up environment variables must be set.",
+)
 class TestGdriveTransfer(BaseTransfer):
     @pytest.fixture(
         scope="class",

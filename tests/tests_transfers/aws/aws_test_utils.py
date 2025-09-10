@@ -42,3 +42,15 @@ def setup_aws_connection(project: DataShuttle):
     project.setup_aws_connection()
 
     aws.get_aws_secret_access_key = original_get_secret
+
+
+def has_aws_environment_variables():
+    for key in [
+        "AWS_BUCKET_NAME",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_REGION",
+        "AWS_SECRET_ACCESS_KEY",
+    ]:
+        if key not in os.environ:
+            return False
+    return True

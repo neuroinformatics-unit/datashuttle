@@ -52,7 +52,19 @@ def setup_gdrive_connection(project: DataShuttle):
         "GDRIVE_CLIENT_SECRET"
     ]
 
-    project.setup_google_drive_connection()
+    project.setup_gdrive_connection()
 
     builtins.input = original_input
     gdrive.get_client_secret = original_get_secret
+
+
+def has_gdrive_environment_variables():
+    for key in [
+        "GDRIVE_CLIENT_ID",
+        "GDRIVE_ROOT_FOLDER_ID",
+        "GDRIVE_CONFIG_TOKEN",
+        "GDRIVE_CLIENT_SECRET",
+    ]:
+        if key not in os.environ:
+            return False
+    return True

@@ -19,7 +19,9 @@ jobs:
     name: Build Sphinx Docs
     runs-on: ubuntu-latest
     steps:
-      - uses: neuroinformatics-unit/actions/build_sphinx_docs@v2
+      - uses: neuroinformatics-unit/actions/build_sphinx_docs@main
+        with:
+          use-artifactci: lazy
 
   deploy_sphinx_docs:
     name: Deploy Sphinx Docs

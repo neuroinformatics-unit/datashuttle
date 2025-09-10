@@ -91,7 +91,7 @@ class SetupGdriveScreen(ModalScreen):
             # see setup_gdrive_connection_and_update_ui()
             if self.setup_worker and self.setup_worker.is_running:
                 self.setup_worker.cancel()  # fix
-                self.interface.terminate_google_drive_setup()
+                self.interface.terminate_gdrive_setup()
             self.dismiss()
 
         elif event.button.id == "setup_gdrive_ok_button":
@@ -244,7 +244,7 @@ class SetupGdriveScreen(ModalScreen):
         thread for Google Drive setup, sets `self.setup_worker` to the worker and
         awaits the worker to finish. After completion, it displays a
         success / failure screen. The setup on the lower level is a bit complicated.
-        The worker thread runs the `setup_google_drive_connection` method of the
+        The worker thread runs the `setup_gdrive_connection` method of the
         `Interface` class which spawns an rclone process to set up the connection.
         The rclone process object is stored in the `Interface` class to handle closing
         the process as the thread does not kill the process itself upon cancellation and
@@ -283,7 +283,7 @@ class SetupGdriveScreen(ModalScreen):
         by this function are responsible for opening google's auth page to authenticate
         with Google Drive.
         """
-        success, output = self.interface.setup_google_drive_connection(
+        success, output = self.interface.setup_gdrive_connection(
             gdrive_client_secret, config_token
         )
         return success, output

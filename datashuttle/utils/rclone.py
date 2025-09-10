@@ -43,6 +43,9 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
     else:
         output = subprocess.run(command, shell=True)
 
+    if output.returncode != 0:
+        prompt_rclone_download_if_does_not_exist()
+
     return output
 
 
@@ -88,6 +91,9 @@ def call_rclone_through_script(command: str) -> CompletedProcess:
             stderr=subprocess.PIPE,
             shell=False,
         )
+
+        if output.returncode != 0:
+            prompt_rclone_download_if_does_not_exist()
 
     finally:
         os.remove(tmp_script_path)
@@ -370,25 +376,34 @@ def log_rclone_config_output() -> None:
     )
 
 
-def check_rclone_with_default_call() -> bool:
-    """Return a bool indicating whether rclone is installed."""
-    try:
-        output = call_rclone("-h", pipe_std=True)
-    except FileNotFoundError:
-        return False
-    return True if output.returncode == 0 else False
-
-
 def prompt_rclone_download_if_does_not_exist() -> None:
     """Check that rclone is installed."""
     if not check_rclone_with_default_call():
         newline = "" if "PYTEST_CURRENT_TEST" in os.environ else "\n"
 
-        raise BaseException(
+        utils.log_and_raise_error(
             f"RClone installation not found. Install by entering "
             f"the following into your terminal:{newline}"
-            f"  conda install -c conda-forge rclone"
+            f"  conda install -c conda-forge rclone",
+            RuntimeError,
         )
+
+
+def check_rclone_with_default_call() -> bool:
+    """Return a bool indicating whether rclone is installed.
+
+    Must not use `call_rclone` or leads to recursion.
+    """
+    try:
+        output = subprocess.run(
+            "rclone -h",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=True,
+        )
+    except FileNotFoundError:
+        return False
+    return True if output.returncode == 0 else False
 
 
 # -----------------------------------------------------------------------------

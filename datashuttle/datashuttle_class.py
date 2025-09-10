@@ -105,8 +105,6 @@ class DataShuttle:
 
         if self.cfg:
             self._set_attributes_after_config_load()
-        else:
-            rclone.prompt_rclone_download_if_does_not_exist()
 
     def _set_attributes_after_config_load(self) -> None:
         """Update all private attributes according to config contents."""
@@ -848,7 +846,7 @@ class DataShuttle:
     # -------------------------------------------------------------------------
 
     @check_configs_set
-    def setup_google_drive_connection(self) -> None:
+    def setup_gdrive_connection(self) -> None:
         """Set up a connection to Google Drive using the provided credentials.
 
         Assumes `gdrive_root_folder_id` is set in configs.

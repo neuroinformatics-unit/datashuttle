@@ -341,7 +341,7 @@ the Google API Console. If not provided, [RClone's](https://rclone.org/) shared 
 If not provided, it is assumed the `gdrive_root_folder_id` points directly to the project folder.
 
 Once the configs are saved, we can set up the connection by clicking `Set Up Google Drive Connection`
-(through the TUI) or running the function [](setup_google_drive_connection()) in Python.
+(through the TUI) or running the function [](setup_gdrive_connection()) in Python.
 
 ```{important}
 If you change the `gdrive_root_folder_id`, you must re-run the connection set up.
@@ -428,10 +428,10 @@ project.make_config_file(
 Next, a one-time command to set up the connection must be run:
 
 ```{code-block} python
-project.setup_google_drive_connection()
+project.setup_gdrive_connection()
 ```
 
-Running [](setup_google_drive_connection()) will prompt to you to enter your
+Running [](setup_gdrive_connection()) will prompt to you to enter your
 Google Drive client secret.
 
 Finally, you will be required to authenticate to Google Drive via your browser.
