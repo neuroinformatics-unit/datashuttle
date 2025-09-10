@@ -181,8 +181,6 @@ def validate_list_of_names(
         with sub- or ses-  keys. Otherwise, values must be integer
         and the following additional checks are performed:
 
-        - Identical numbers are considered the same value even if padded with different number of zeros
-          (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
         - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
 
     Returns
@@ -326,12 +324,9 @@ def new_name_duplicates_existing(
 
     allow_alphanumeric_sub_ses_values
         If `True`, any alphanumeric character are allowed for the values associated
-        with sub- or ses-  keys. Otherwise, values must be integer
-        and the following additional checks are performed:
-
-        - Identical numbers are considered the same value even if padded with different number of zeros
-          (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
-        - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
+        with sub- or ses-  keys. In this case, do not convert to `int` before comparison.
+        However, if `False`, we do want to convert to `int` because we want to catch
+        cases with inconsistent leading zeros (e.g. sub-01 and sub-001 are equivalent).
 
     Returns
     -------
@@ -736,8 +731,6 @@ def validate_project(
         with sub- or ses-  keys. Otherwise, values must be integer
         and the following additional checks are performed:
 
-        - Identical numbers are considered the same value even if padded with different number of zeros
-          (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
         - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
 
     Returns
@@ -863,8 +856,7 @@ def validate_names_against_project(
         If `True`, any alphanumeric character are allowed for the values associated
         with sub- or ses-  keys. Otherwise, values must be integer
         and the following additional checks are performed:
-            - Identical numbers are considered the same value even if padded with different number of zeros
-                (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
+
             - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
 
     """

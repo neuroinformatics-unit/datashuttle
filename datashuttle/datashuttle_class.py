@@ -165,8 +165,6 @@ class DataShuttle:
             with sub- or ses-  keys. Otherwise, values must be integer
             and the following additional checks are performed:
 
-            - Identical numbers are considered the same value even if padded with different number of zeros
-              (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
             - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
 
         log
@@ -1333,8 +1331,6 @@ class DataShuttle:
             with sub- or ses-  keys. Otherwise, values must be integer
             and the following additional checks are performed:
 
-            - Identical numbers are considered the same value even if padded with different number of zeros
-              (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
             - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
 
         Returns
@@ -1410,8 +1406,6 @@ class DataShuttle:
             with sub- or ses-  keys. Otherwise, values must be integer
             and the following additional checks are performed:
 
-            - Identical numbers are considered the same value even if padded with different number of zeros
-              (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
             - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
 
         """
