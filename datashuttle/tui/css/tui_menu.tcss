@@ -314,25 +314,42 @@ config label and button align center */
 #validate_top_container {
     align: center top;
     content-align: center top;
-    margin: 2 0 0 0;
+    margin: 2 0 1 0;
     layout: vertical;
     overflow: hidden auto;
 }
 
-
 #validate_arguments_horizontal{
    height: auto;
-   margin: 0 1 1 1;
+   margin: 0 1 1 0;
 }
 
 #validate_top_level_folder_select {
     width: 30%;
+    margin: 0 0 0 1;
+}
+
+#validate_path_label {
+    margin: 0 0 0 2;
 }
 
 #validate_path_input {
     width: 80%;
     margin: 1 1 1 1;
 }
+
+#validate_allow_alphanumeric_sub_ses_values_checkbox {
+    margin: 0 0 0 6;
+}
+
+#validate_strict_mode_checkbox {
+    margin: 0 0 0 1;
+}
+
+#validate_include_central_checkbox {
+    margin: 0 6 0 1
+}
+
 
 #validate_select_button {
     margin: 1 1 1 1;
