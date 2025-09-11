@@ -211,7 +211,7 @@ def setup_rclone_config_for_ssh(
         f'-- key_pem "{key_escaped}"'
     )
 
-    call_rclone(command, pipe_std=True)  # TODO: handle bad return code...
+    call_rclone(command, pipe_std=True)
 
     if log:
         log_rclone_config_output()
