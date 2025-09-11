@@ -1,0 +1,191 @@
+tui:
+  create_checkboxes_on:
+    ephys:
+      'on': false
+      displayed: false
+    behav:
+      'on': false
+      displayed: false
+    funcimg:
+      'on': false
+      displayed: false
+    anat:
+      'on': false
+      displayed: false
+    ecephys:
+      'on': false
+      displayed: false
+    icephys:
+      'on': false
+      displayed: false
+    cscope:
+      'on': false
+      displayed: false
+    f2pe:
+      'on': false
+      displayed: true
+    fmri:
+      'on': false
+      displayed: false
+    fusi:
+      'on': false
+      displayed: false
+    2pe:
+      'on': false
+      displayed: false
+    bf:
+      'on': false
+      displayed: false
+    cars:
+      'on': false
+      displayed: false
+    conf:
+      'on': false
+      displayed: false
+    dic:
+      'on': false
+      displayed: false
+    df:
+      'on': false
+      displayed: false
+    fluo:
+      'on': false
+      displayed: false
+    mpe:
+      'on': false
+      displayed: false
+    nlo:
+      'on': false
+      displayed: false
+    oct:
+      'on': false
+      displayed: false
+    pc:
+      'on': false
+      displayed: false
+    pli:
+      'on': false
+      displayed: false
+    sem:
+      'on': false
+      displayed: false
+    spim:
+      'on': false
+      displayed: false
+    sr:
+      'on': false
+      displayed: false
+    tem:
+      'on': false
+      displayed: false
+    uct:
+      'on': false
+      displayed: false
+    mri:
+      'on': false
+      displayed: false
+  transfer_checkboxes_on:
+    all:
+      'on': false
+      displayed: false
+    all_datatype:
+      'on': false
+      displayed: false
+    all_non_datatype:
+      'on': false
+      displayed: false
+    ephys:
+      'on': false
+      displayed: false
+    behav:
+      'on': false
+      displayed: false
+    funcimg:
+      'on': false
+      displayed: false
+    anat:
+      'on': false
+      displayed: false
+    ecephys:
+      'on': false
+      displayed: false
+    icephys:
+      'on': false
+      displayed: false
+    cscope:
+      'on': false
+      displayed: false
+    f2pe:
+      'on': false
+      displayed: true
+    fmri:
+      'on': false
+      displayed: false
+    fusi:
+      'on': false
+      displayed: false
+    2pe:
+      'on': false
+      displayed: false
+    bf:
+      'on': false
+      displayed: false
+    cars:
+      'on': false
+      displayed: false
+    conf:
+      'on': false
+      displayed: false
+    dic:
+      'on': false
+      displayed: false
+    df:
+      'on': false
+      displayed: false
+    fluo:
+      'on': false
+      displayed: false
+    mpe:
+      'on': false
+      displayed: false
+    nlo:
+      'on': false
+      displayed: false
+    oct:
+      'on': false
+      displayed: false
+    pc:
+      'on': false
+      displayed: false
+    pli:
+      'on': false
+      displayed: false
+    sem:
+      'on': false
+      displayed: false
+    spim:
+      'on': false
+      displayed: false
+    sr:
+      'on': false
+      displayed: false
+    tem:
+      'on': false
+      displayed: false
+    uct:
+      'on': false
+      displayed: false
+    mri:
+      'on': false
+      displayed: false
+  top_level_folder_select:
+    create_tab: rawdata
+    toplevel_transfer: rawdata
+    custom_transfer: rawdata
+  bypass_validation: false
+  overwrite_existing_files: never
+  dry_run: false
+name_templates:
+  'on': false
+  sub: null
+  ses: null

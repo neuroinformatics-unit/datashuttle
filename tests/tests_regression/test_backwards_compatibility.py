@@ -30,7 +30,7 @@ class TestBackwardsCompatibility:
         In the test file, all 'displayed' are turned off except f2pe.
         """
         reloaded_ver_configs, reloaded_ver_persistent_settings = (
-            self.load_and_check_old_version_yamls(project, tmp_path, "v0.6.0")
+            self.load_old_version_yamls(project, tmp_path, "v0.6.0")
         )
 
         assert reloaded_ver_configs["local_path"] == Path("old_ver")
@@ -55,7 +55,7 @@ class TestBackwardsCompatibility:
         bool. Therefore, the "displayed" uses the canonical defaults (because they don't exist in the file yet).
         """
         reloaded_ver_configs, reloaded_ver_persistent_settings = (
-            self.load_and_check_old_version_yamls(project, tmp_path, "v0.5.3")
+            self.load_old_version_yamls(project, tmp_path, "v0.5.3")
         )
 
         assert reloaded_ver_configs["local_path"] == Path("old_ver")
@@ -86,7 +86,7 @@ class TestBackwardsCompatibility:
         new config values.
         """
         reloaded_ver_configs, reloaded_ver_persistent_settings = (
-            self.load_and_check_old_version_yamls(project, tmp_path, "v0.6.0")
+            self.load_old_version_yamls(project, tmp_path, "v0.6.0")
         )
         assert reloaded_ver_configs["local_path"] == Path("old_ver")
 
@@ -101,13 +101,26 @@ class TestBackwardsCompatibility:
             assert key in reloaded_ver_configs
             assert reloaded_ver_configs[key] is None
 
-    def load_and_check_old_version_yamls(
-        self, project, tmp_path, datashuttle_version
+    def test_connection_method_none(self, project, tmp_path):
+        """Check an old version of the configs where `connection_method` can equal `None` is loaded correctly."""
+        reloaded_ver_configs, _ = self.load_old_version_yamls(
+            project, tmp_path, "connection_method_none", check_correct=False
+        )
+        assert reloaded_ver_configs["connection_method"] == "local_only"
+
+    def load_old_version_yamls(
+        self, project, tmp_path, datashuttle_version, check_correct=True
     ):
         """Load an old config file in the current datashuttle version,
         and check that the new-version ('canonical') configs
         and persistent settings match the structure of the
         files loaded from the old datashuttle version.
+
+        If `check_correct` is `True`, check that the loaded config
+        file matches is identical to the new version. This requires
+        the config file contains the expected settings, i.e. matches:
+        project.make_config_file("cur_ver", "cur_ver", "local_filesystem")
+
         """
         # Switch dir so folders created in `DataShuttle` init do
         # not pollute the users test drive.
@@ -141,12 +154,14 @@ class TestBackwardsCompatibility:
         reloaded_ver_configs = project.get_configs()
         reloaded_ver_persistent_settings = project._load_persistent_settings()
 
-        self.recursive_test_dictionary(
-            current_ver_configs, reloaded_ver_configs
-        )
-        self.recursive_test_dictionary(
-            current_ver_persistent_settings, reloaded_ver_persistent_settings
-        )
+        if check_correct:
+            self.recursive_test_dictionary(
+                current_ver_configs, reloaded_ver_configs
+            )
+            self.recursive_test_dictionary(
+                current_ver_persistent_settings,
+                reloaded_ver_persistent_settings,
+            )
 
         return reloaded_ver_configs, reloaded_ver_persistent_settings
 
