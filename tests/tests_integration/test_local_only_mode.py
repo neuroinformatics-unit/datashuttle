@@ -30,10 +30,24 @@ class TestLocalOnlyProject(BaseTest):
             in str(e.value)
         )
 
+        for connection_method in ["ssh"]:  # , "local_filesystem"]:
+            with pytest.raises(ConfigError) as e:
+                project.make_config_file(
+                    local_path,
+                    connection_method=connection_method,
+                    central_host_id="",
+                    central_host_username="",
+                )
+
+            assert (
+                f"'central_host_id' and 'central_host_username' are required if 'connection_method' is '{connection_method}'."
+                in str(e.value)
+            )
+
         with pytest.raises(ConfigError) as e:
-            project.make_config_file(local_path, connection_method="ssh")
+            project.make_config_file(local_path, connection_method="aws")
         assert (
-            "Either both `central_path` and `connection_method` must be set"
+            "`central_path` cannot be `None` when `connection_method` is 'aws'. `central_path` must include the s3 bucket name."
             in str(e.value)
         )
 
