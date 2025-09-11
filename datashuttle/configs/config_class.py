@@ -62,7 +62,6 @@ class Configs(UserDict):
 
         self.logging_path: Path
         self.hostkeys_path: Path
-        self.ssh_key_path: Path
         self.project_metadata_path: Path
 
     def setup_after_load(self) -> None:
@@ -292,8 +291,6 @@ class Configs(UserDict):
         datashuttle_path, _ = canonical_folders.get_project_datashuttle_path(
             self.project_name
         )
-
-        self.ssh_key_path = datashuttle_path / f"{self.project_name}_ssh_key"
 
         self.hostkeys_path = datashuttle_path / "hostkeys"
 
