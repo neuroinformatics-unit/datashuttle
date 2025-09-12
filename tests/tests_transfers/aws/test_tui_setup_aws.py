@@ -31,7 +31,9 @@ class TestTuiSetupAws(TuiBase):
 
         yield central_path, project_name
 
-        rclone.call_rclone(f"purge central_{project_name}_aws:{central_path}")
+        rclone.call_rclone(
+            f"purge central_{project_name}_aws:{central_path}"
+        )  # TODO: I think this will fail, needs config
 
     @pytest.mark.asyncio
     async def test_aws_connection_setup(self, central_path_and_project):

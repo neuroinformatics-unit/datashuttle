@@ -844,6 +844,11 @@ class DataShuttle:
     # Google Drive
     # -------------------------------------------------------------------------
 
+    # TODO: this is going to be a massive pain because old config files will not work
+    # will need to re-set up all connections
+    # this can just be a breaking change, but will have to handle error nicely
+    # We could just move it from the config file, then show a warning
+
     @check_configs_set
     def setup_gdrive_connection(self) -> None:
         """Set up a connection to Google Drive using the provided credentials.

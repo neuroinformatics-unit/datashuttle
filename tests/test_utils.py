@@ -449,7 +449,7 @@ def recursive_search_central(project: DataShuttle):
 
     # -R flag searches recursively
     output = rclone.call_rclone(
-        f"lsjson -R {project.cfg.get_rclone_config_name()}:{path_}",
+        f"lsjson -R {project.cfg.get_rclone_config_name()}:{path_} {rclone.get_config_arg(project.cfg)}",
         pipe_std=True,
     )
 

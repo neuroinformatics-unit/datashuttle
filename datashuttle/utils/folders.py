@@ -695,10 +695,12 @@ def search_central_via_connection(
         If `True`, return the full filepath, otherwise return only the folder/file name.
 
     """
-    rclone_config_name = cfg.get_rclone_config_name(cfg["connection_method"])
+    rclone_config_name = cfg.get_rclone_config_name(
+        cfg["connection_method"]
+    )  # TODO: this is not good because we get the config name here and in get_config_arg
 
     output = rclone.call_rclone(
-        f'lsjson {rclone_config_name}:"{search_path.as_posix()}"',
+        f'lsjson {rclone_config_name}:"{search_path.as_posix()}" {rclone.get_config_arg(cfg)}',
         pipe_std=True,
     )
 

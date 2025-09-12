@@ -11,6 +11,7 @@ import platform
 import shlex
 import subprocess
 import tempfile
+from pathlib import Path
 from subprocess import CompletedProcess
 
 from datashuttle.configs import canonical_configs
@@ -208,13 +209,30 @@ def setup_rclone_config_for_ssh(
         f"host {cfg['central_host_id']} "
         f"user {cfg['central_host_username']} "
         f"port {canonical_configs.get_default_ssh_port()} "
+        f"{get_config_arg(cfg)} "
         f'-- key_pem "{key_escaped}"'
     )
-
     call_rclone(command, pipe_std=True)
 
     if log:
         log_rclone_config_output()
+
+
+def get_config_path():
+    """TODO PLACEHOLDER."""
+    return (
+        Path().home() / "AppData" / "Roaming" / "rclone"
+    ).as_posix()  #  # "$HOME/.config/rclone/rclone.conf")
+
+
+def get_config_arg(cfg):
+    """TODO PLACEHOLDER."""
+    cfg.get_rclone_config_name()  # pass this? handle better...
+
+    if cfg["connection_method"] in ["aws", "gdrive", "ssh"]:
+        return f'--config "{get_config_path()}/{cfg.get_rclone_config_name()}.conf"'
+    else:
+        return ""
 
 
 def setup_rclone_config_for_gdrive(
@@ -274,7 +292,8 @@ def setup_rclone_config_for_gdrive(
         f"{client_secret_key_value}"
         f"scope drive "
         f"root_folder_id {cfg['gdrive_root_folder_id']} "
-        f"{extra_args}"
+        f"{extra_args} "
+        f"{get_config_arg(cfg)}"
     )
 
     return process
@@ -322,7 +341,8 @@ def setup_rclone_config_for_aws(
         f"access_key_id {cfg['aws_access_key_id']} "
         f"secret_access_key {aws_secret_access_key} "
         f"region {aws_region}"
-        f"{location_constraint_key_value}",
+        f"{location_constraint_key_value} "
+        f"{get_config_arg(cfg)}",
         pipe_std=True,
     )
 
@@ -351,8 +371,11 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
     else:
         tempfile_path = (cfg["central_path"] / filename).as_posix()
 
+    config_name = cfg.get_rclone_config_name()
+
     output = call_rclone(
-        f"touch {cfg.get_rclone_config_name()}:{tempfile_path}", pipe_std=True
+        f"touch {config_name}:{tempfile_path} {get_config_arg(cfg)}",
+        pipe_std=True,
     )
     if output.returncode != 0:
         utils.log_and_raise_error(
@@ -360,7 +383,8 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
         )
 
     output = call_rclone(
-        f"delete {cfg.get_rclone_config_name()}:{tempfile_path}", pipe_std=True
+        f"delete {cfg.get_rclone_config_name()}:{tempfile_path} {get_config_arg(cfg)}",
+        pipe_std=True,
     )
     if output.returncode != 0:
         utils.log_and_raise_error(
@@ -368,7 +392,7 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
         )
 
 
-def log_rclone_config_output() -> None:
+def log_rclone_config_output() -> None:  # TODO: remove or update this
     """Log the output from creating Rclone config."""
     output = call_rclone("config file", pipe_std=True)
     utils.log(
@@ -461,14 +485,14 @@ def transfer_data(
         output = call_rclone_through_script(
             f"{rclone_args('copy')} "
             f'"{local_filepath}" "{cfg.get_rclone_config_name()}:'
-            f'{central_filepath}" {extra_arguments}',
+            f'{central_filepath}" {extra_arguments} {get_config_arg(cfg)}',
         )
 
     elif upload_or_download == "download":
         output = call_rclone_through_script(
             f"{rclone_args('copy')} "
             f'"{cfg.get_rclone_config_name()}:'
-            f'{central_filepath}" "{local_filepath}"  {extra_arguments}',
+            f'{central_filepath}" "{local_filepath}"  {extra_arguments} {get_config_arg(cfg)}',
         )
 
     return output
@@ -573,7 +597,8 @@ def perform_rclone_check(
         f"{rclone_args('check')} "
         f'"{local_filepath}" '
         f'"{cfg.get_rclone_config_name()}:{central_filepath}"'
-        f" --combined -",
+        f"{get_config_arg(cfg)} "
+        f"--combined -",
         pipe_std=True,
     )
 
