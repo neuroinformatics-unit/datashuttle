@@ -4,8 +4,6 @@ import platform
 
 import pytest
 
-from datashuttle.utils import ssh
-
 from ... import test_utils
 from . import ssh_test_utils
 from .base_ssh import BaseSSHTransfer
@@ -81,15 +79,3 @@ class TestSSH(BaseSSHTransfer):
         assert (
             f"[{project.cfg['central_host_id']}]:3306 ssh-ed25519 " in hostkey
         )
-
-    def test_generate_and_write_ssh_key(self, project):
-        """Check ssh key for passwordless connection is written
-        to file.
-        """
-        path_to_save = project.cfg["local_path"] / "test"
-        ssh.generate_and_write_ssh_key(path_to_save)
-
-        with open(path_to_save) as file:
-            first_line = file.readlines()[0]
-
-        assert first_line == "-----BEGIN RSA PRIVATE KEY-----\n"

@@ -152,10 +152,7 @@ class SetupSshScreen(ModalScreen):
         )
 
         if success:
-            message = (
-                f"Connection successful! SSH key "
-                f"saved to {self.interface.get_configs().ssh_key_path}"
-            )
+            message = "Connection successful! SSH key saved to the RClone config file."
             self.query_one("#setup_ssh_ok_button").label = "Finish"
             self.query_one("#setup_ssh_cancel_button").disabled = True
             self.stage += 1
