@@ -340,7 +340,7 @@ class CreateFoldersTab(TreeAndInputTab):
 
         if (
             include_central
-            and self.interface.project.cfg["connection_method"] == "ssh"
+            # and self.interface.project.cfg["connection_method"] == "ssh"
         ):
             self.searching_central_popup_widget = (
                 SearchingCentralForNextSubSesPopup(prefix)
