@@ -152,7 +152,6 @@ class Interface:
         self,
         sub_names: List[str],
         ses_names: Optional[List[str]],
-        allow_letters_in_sub_ses_values: bool,
     ) -> InterfaceOutput:
         """Validate a list of subject / session names.
 
@@ -169,12 +168,13 @@ class Interface:
         ses_names
             List of session names to format.
 
-        allow_letters_in_sub_ses_values
-            If `True`, alphanumeric values will not raise an error.
-
         """
         top_level_folder = self.tui_settings["top_level_folder_select"][
             "create_tab"
+        ]
+
+        allow_letters_in_sub_ses_values = self.tui_settings[
+            "allow_letters_in_sub_ses_values"
         ]
 
         try:
