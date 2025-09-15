@@ -212,7 +212,7 @@ class TestFileTransfer(BaseTest):
             subs,
             sessions,
             get_broad_datatypes(),
-            bypass_validation=True,
+            allow_letters_in_sub_ses_values=True,
         )
 
         (

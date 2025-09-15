@@ -340,7 +340,7 @@ def make_and_check_local_project_folders(
     sessions,
     datatype,
     datatypes_used=None,
-    bypass_validation=False,
+    allow_letters_in_sub_ses_values=False,
 ):
     """Make a local project folder tree with the specified datatype,
     subs, sessions and check it is made successfully.
@@ -353,7 +353,12 @@ def make_and_check_local_project_folders(
         datatypes_used = get_all_broad_folders_used()
 
     make_local_folders_with_files_in(
-        project, top_level_folder, subs, sessions, datatype, bypass_validation
+        project,
+        top_level_folder,
+        subs,
+        sessions,
+        datatype,
+        allow_letters_in_sub_ses_values,
     )
 
     check_folder_tree_is_correct(
@@ -370,14 +375,14 @@ def make_local_folders_with_files_in(
     subs,
     sessions=None,
     datatype="",
-    bypass_validation=False,
+    allow_letters_in_sub_ses_values=False,
 ):
     project.create_folders(
         top_level_folder,
         subs,
         sessions,
         datatype,
-        bypass_validation=bypass_validation,
+        allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
     )
     for root, dirs, _ in os.walk(project.cfg["local_path"]):
         if not dirs:
