@@ -186,7 +186,7 @@ class TestValidationUnit:
             new_name,
             existing_names,
             prefix,
-            allow_alphanumeric_sub_ses_values=False,
+            allow_letters_in_sub_ses_values=False,
         )
         assert len(error_messages) == 0
 
@@ -197,7 +197,7 @@ class TestValidationUnit:
             new_name,
             existing_names,
             prefix,
-            allow_alphanumeric_sub_ses_values=False,
+            allow_letters_in_sub_ses_values=False,
         )
         assert len(error_messages) == 0
 
@@ -208,7 +208,7 @@ class TestValidationUnit:
             new_name,
             existing_names,
             prefix,
-            allow_alphanumeric_sub_ses_values=False,
+            allow_letters_in_sub_ses_values=False,
         )
         assert len(error_messages) == 1
         assert (
@@ -224,7 +224,7 @@ class TestValidationUnit:
             new_name,
             existing_names,
             prefix,
-            allow_alphanumeric_sub_ses_values=False,
+            allow_letters_in_sub_ses_values=False,
         )
         assert len(error_messages) == 1
         assert (

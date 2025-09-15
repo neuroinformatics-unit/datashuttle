@@ -124,7 +124,7 @@ class DataShuttle:
         ses_names: Optional[Union[str, List[str]]] = None,
         datatype: Union[str, List[str]] = "",
         bypass_validation: bool = False,
-        allow_alphanumeric_sub_ses_values: bool = False,
+        allow_letters_in_sub_ses_values: bool = False,
         log: bool = True,
     ) -> Dict[str, List[Path]]:
         """Create a folder tree in the project folder.
@@ -160,7 +160,7 @@ class DataShuttle:
             If `True`, folders will be created even if they are not
             valid to NeuroBlueprint style.
 
-        allow_alphanumeric_sub_ses_values
+        allow_letters_in_sub_ses_values
             If `True`, any alphanumeric character are allowed for the values associated
             with sub- or ses-  keys. Otherwise, values must be integer
             and the following additional checks are performed:
@@ -225,7 +225,7 @@ class DataShuttle:
             ses_names,
             name_templates,
             bypass_validation,
-            allow_alphanumeric_sub_ses_values,
+            allow_letters_in_sub_ses_values,
             log=True,
         )
 
@@ -262,7 +262,7 @@ class DataShuttle:
         ses_names: Optional[Union[str, List[str]]],
         name_templates: Dict,
         bypass_validation: bool,
-        allow_alphanumeric_sub_ses_values: bool,
+        allow_letters_in_sub_ses_values: bool,
         log: bool = True,
     ) -> Tuple[List[str], List[str]]:
         """Central method to format and validate subject and session names."""
@@ -271,7 +271,7 @@ class DataShuttle:
             "sub",
             name_templates,
             bypass_validation,
-            allow_alphanumeric_sub_ses_values,
+            allow_letters_in_sub_ses_values,
         )
 
         if ses_names is not None:
@@ -280,7 +280,7 @@ class DataShuttle:
                 "ses",
                 name_templates,
                 bypass_validation,
-                allow_alphanumeric_sub_ses_values,
+                allow_letters_in_sub_ses_values,
             )
         else:
             format_ses = []
@@ -295,7 +295,7 @@ class DataShuttle:
                 display_mode="error",
                 log=log,
                 name_templates=name_templates,
-                allow_alphanumeric_sub_ses_values=allow_alphanumeric_sub_ses_values,
+                allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
             )
 
         return format_sub, format_ses
@@ -1296,7 +1296,7 @@ class DataShuttle:
         display_mode: DisplayMode,
         include_central: bool = False,
         strict_mode: bool = False,
-        allow_alphanumeric_sub_ses_values: bool = False,
+        allow_letters_in_sub_ses_values: bool = False,
     ) -> List[str]:
         """Perform validation on the project.
 
@@ -1326,7 +1326,7 @@ class DataShuttle:
             any folder not prefixed with sub-, ses- or a valid datatype will
             raise a validation issue.
 
-        allow_alphanumeric_sub_ses_values
+        allow_letters_in_sub_ses_values
             If `True`, any alphanumeric character are allowed for the values associated
             with sub- or ses-  keys. Otherwise, values must be integer
             and the following additional checks are performed:
@@ -1371,7 +1371,7 @@ class DataShuttle:
             display_mode=display_mode,
             name_templates=name_templates,
             strict_mode=strict_mode,
-            allow_alphanumeric_sub_ses_values=allow_alphanumeric_sub_ses_values,
+            allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
         )
 
         ds_logger.close_log_filehandler()
@@ -1382,7 +1382,7 @@ class DataShuttle:
     def check_name_formatting(
         names: Union[str, list],
         prefix: Prefix,
-        allow_alphanumeric_sub_ses_values: bool = False,
+        allow_letters_in_sub_ses_values: bool = False,
     ) -> None:
         """Format a list of subject or session names.
 
@@ -1401,7 +1401,7 @@ class DataShuttle:
             The relevant subject or session prefix,
             e.g. ``"sub-"`` or ``"ses-"``
 
-        allow_alphanumeric_sub_ses_values
+        allow_letters_in_sub_ses_values
             If `True`, any alphanumeric character are allowed for the values associated
             with sub- or ses-  keys. Otherwise, values must be integer
             and the following additional checks are performed:
@@ -1421,7 +1421,7 @@ class DataShuttle:
         formatted_names = formatting.check_and_format_names(
             names,
             prefix,
-            allow_alphanumeric_sub_ses_values=allow_alphanumeric_sub_ses_values,
+            allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
         )
         utils.print_message_to_user(formatted_names)
 
@@ -1679,7 +1679,7 @@ class DataShuttle:
             "overwrite_existing_files",
             "dry_run",
             "suggest_next_sub_ses_central",
-            "allow_alphanumeric_sub_ses_values",
+            "allow_letters_in_sub_ses_values",
         ]:
             if key not in settings["tui"]:
                 settings["tui"][key] = canonical_tui_configs["tui"][key]

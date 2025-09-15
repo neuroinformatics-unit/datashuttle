@@ -21,7 +21,7 @@ def check_and_format_names(
     prefix: Prefix,
     name_templates: Optional[Dict] = None,
     bypass_validation: bool = False,
-    allow_alphanumeric_sub_ses_values: bool = False,
+    allow_letters_in_sub_ses_values: bool = False,
 ) -> List[str]:
     """Format a list of subject or session names.
 
@@ -54,7 +54,7 @@ def check_and_format_names(
         If `True`, NeuroBlueprint validation will be performed
         on the passed names.
 
-    allow_alphanumeric_sub_ses_values
+    allow_letters_in_sub_ses_values
         If `True`, alphanumeric values will not raise an error.
 
     Returns
@@ -85,7 +85,7 @@ def check_and_format_names(
             formatted_names,
             prefix,
             name_templates=name_templates,
-            allow_alphanumeric_sub_ses_values=allow_alphanumeric_sub_ses_values,
+            allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
         )
         for message in error_messages:
             validation.raise_display_mode(message, "error", log=True)

@@ -99,8 +99,8 @@ class CreateFoldersSettingsScreen(ModalScreen):
         """
 
         bypass_validation = self.interface.tui_settings["bypass_validation"]
-        allow_alphanumeric_sub_ses_values = self.interface.tui_settings[
-            "allow_alphanumeric_sub_ses_values"
+        allow_letters_in_sub_ses_values = self.interface.tui_settings[
+            "allow_letters_in_sub_ses_values"
         ]
         suggest_next_sub_ses_central = self.interface.tui_settings[
             "suggest_next_sub_ses_central"
@@ -132,9 +132,9 @@ class CreateFoldersSettingsScreen(ModalScreen):
                             id="create_folders_settings_bypass_validation_checkbox",
                         ),
                         Checkbox(
-                            "Allow alphanumeric sub- and ses- values",
-                            value=allow_alphanumeric_sub_ses_values,
-                            id="create_folders_settings_allow_alphanumeric_checkbox",
+                            "Allow letters in sub- and ses- values",
+                            value=allow_letters_in_sub_ses_values,
+                            id="create_folders_settings_allow_letters_in_checkbox",
                         ),
                     ),
                 ),
@@ -183,7 +183,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
             "#create_folders_settings_bypass_validation_checkbox",
             "#template_settings_validation_on_checkbox",
             "#suggest_next_sub_ses_central_checkbox",
-            "#create_folders_settings_allow_alphanumeric_checkbox",
+            "#create_folders_settings_allow_letters_in_checkbox",
         ]:
             self.query_one(id).tooltip = get_tooltip(id)
 
@@ -284,10 +284,10 @@ class CreateFoldersSettingsScreen(ModalScreen):
 
         elif (
             event.checkbox.id
-            == "create_folders_settings_allow_alphanumeric_checkbox"
+            == "create_folders_settings_allow_letters_in_checkbox"
         ):
             self.interface.save_tui_settings(
-                is_on, "allow_alphanumeric_sub_ses_values"
+                is_on, "allow_letters_in_sub_ses_values"
             )
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:

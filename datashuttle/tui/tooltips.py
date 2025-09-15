@@ -181,8 +181,8 @@ def get_tooltip(id: str) -> str:
         )
 
     elif (
-        id == "#create_folders_settings_allow_alphanumeric_checkbox"
-        or id == "validate_allow_alphanumeric_sub_ses_values_checkbox"
+        id == "#create_folders_settings_allow_letters_in_checkbox"
+        or id == "validate_allow_letters_in_sub_ses_values_checkbox"
     ):
         tooltip = (
             "If `True`, any alphanumeric character are allowed for the values associated "

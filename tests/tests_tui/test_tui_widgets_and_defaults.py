@@ -422,13 +422,13 @@ class TestTuiWidgets(TuiBase):
 
             assert (
                 pilot.app.screen.query_one(
-                    "#create_folders_settings_allow_alphanumeric_checkbox"
+                    "#create_folders_settings_allow_letters_in_checkbox"
                 ).label._text
-                == "Allow alphanumeric sub- and ses- values"
+                == "Allow letters in sub- and ses- values"
             )
             assert (
                 pilot.app.screen.query_one(
-                    "#create_folders_settings_allow_alphanumeric_checkbox"
+                    "#create_folders_settings_allow_letters_in_checkbox"
                 ).value
                 is False
             )
@@ -669,12 +669,12 @@ class TestTuiWidgets(TuiBase):
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
         "parameter_name",
-        ["bypass_validation", "allow_alphanumeric_sub_ses_values"],
+        ["bypass_validation", "allow_letters_in_sub_ses_values"],
     )
     async def test_create_folderes_validation_settings(
         self, setup_project_paths, parameter_name
     ):
-        """Test all configs that underly the 'bypass validation' and `allow_alphanumeric_sub_ses_values`
+        """Test all configs that underly the 'bypass validation' and `allow_letters_in_sub_ses_values`
         setting are updated correctly by the widget.
 
         These two options are similar and are both default off, we so we can test
@@ -686,9 +686,7 @@ class TestTuiWidgets(TuiBase):
         if parameter_name == "bypass_validation":
             checkbox_id = "#create_folders_settings_bypass_validation_checkbox"
         else:
-            checkbox_id = (
-                "#create_folders_settings_allow_alphanumeric_checkbox"
-            )
+            checkbox_id = "#create_folders_settings_allow_letters_in_checkbox"
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:

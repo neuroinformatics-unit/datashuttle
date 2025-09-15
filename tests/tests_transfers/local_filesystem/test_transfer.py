@@ -199,10 +199,10 @@ class TestFileTransfer(BaseTest):
         )
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    def test_transfer_with_alphanumeric_sub_ses_values(
+    def test_transfer_with_letters_in_sub_ses_values(
         self, project, upload_or_download
     ):
-        """Test transferring with alphanumeric values rather than integer."""
+        """Test transferring with letters_in values rather than integer."""
         subs = ["sub-abc", "sub-243sdfcxa1"]
         sessions = ["ses-abc", "ses-tg34asdf"]
 

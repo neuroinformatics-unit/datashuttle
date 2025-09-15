@@ -962,13 +962,13 @@ class TestValidation(BaseTest):
         )
 
     # ----------------------------------------------------------------------------------
-    # Test allow_alphanumeric_sub_ses_values off
+    # Test allow_letters_in_sub_ses_values off
     # ----------------------------------------------------------------------------------
 
-    def test_allow_alphanumeric_sub_ses_values(self, project):
-        """Test `allow_alphanumeric_sub_ses_values` for validation functions.
+    def test_allow_letters_in_sub_ses_values(self, project):
+        """Test `allow_letters_in_sub_ses_values` for validation functions.
 
-        When `allow_alphanumeric_sub_ses_values=True`, any alphanumeric sub- or ses-
+        When `allow_letters_in_sub_ses_values=True`, any alphanumeric sub- or ses-
         key is allowed, and it is not restricted to integer only.
 
         Additionally, a few other restrictions are loosened:
@@ -990,7 +990,7 @@ class TestValidation(BaseTest):
             sub_names,
             ses_names,
             "ephys",
-            allow_alphanumeric_sub_ses_values=True,
+            allow_letters_in_sub_ses_values=True,
         )
 
         # Check that duplicate names are still detected for alphanumeric labels
@@ -999,7 +999,7 @@ class TestValidation(BaseTest):
             project.create_folders(
                 "rawdata",
                 "sub-abc_id-123",
-                allow_alphanumeric_sub_ses_values=True,
+                allow_letters_in_sub_ses_values=True,
             )
 
         assert (
@@ -1012,7 +1012,7 @@ class TestValidation(BaseTest):
                 "rawdata",
                 "sub-abc",
                 "ses-abc_id-123",
-                allow_alphanumeric_sub_ses_values=True,
+                allow_letters_in_sub_ses_values=True,
             )
 
         assert (
@@ -1021,7 +1021,7 @@ class TestValidation(BaseTest):
         )
 
         # Check that the validation functions also catch alphanumeric characters
-        # but allow them if `allow_alphanumeric_sub_ses_values=True`
+        # but allow them if `allow_letters_in_sub_ses_values=True`
         with pytest.raises(NeuroBlueprintError) as e_val:
             project.validate_project("rawdata", "error")
 
@@ -1037,13 +1037,13 @@ class TestValidation(BaseTest):
             )
 
         project.validate_project(
-            "rawdata", "error", allow_alphanumeric_sub_ses_values=True
+            "rawdata", "error", allow_letters_in_sub_ses_values=True
         )
 
         validate_project_from_path(
             project.get_local_path(),
             display_mode="error",
-            allow_alphanumeric_sub_ses_values=True,
+            allow_letters_in_sub_ses_values=True,
         )
 
         # Create a duplicate alphanumeric label and check that the validation functions throw validation error
@@ -1058,14 +1058,14 @@ class TestValidation(BaseTest):
             project.validate_project(
                 "rawdata",
                 display_mode="warn",
-                allow_alphanumeric_sub_ses_values=True,
+                allow_letters_in_sub_ses_values=True,
             )
 
         with pytest.warns(UserWarning) as w_val_from_path:
             validate_project_from_path(
                 project.get_local_path(),
                 display_mode="warn",
-                allow_alphanumeric_sub_ses_values=True,
+                allow_letters_in_sub_ses_values=True,
             )
 
         for w in [w_val, w_val_from_path]:

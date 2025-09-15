@@ -156,7 +156,7 @@ error_messages = project.validate_project(
 ```
 
 
-## ``allow_alphanumeric_sub_ses_values``
+## ``allow_letters_in_sub_ses_values``
 
 If `True`, any alphanumeric character are allowed for the values associated with `sub-` or ses- `keys`.
 Otherwise, values must be integer and the following additional checks are performed:

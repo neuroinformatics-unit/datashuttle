@@ -324,9 +324,7 @@ class TestTuiCreateFolders(TuiBase):
             await pilot.pause()
 
     @pytest.mark.asyncio
-    async def test_allow_alphanumeric_sub_ses_values(
-        self, setup_project_paths
-    ):
+    async def test_allow_letters_in_sub_ses_values(self, setup_project_paths):
         """Turn on allow alphanumeric labels and check sub and ses folders with such labels are created."""
         _, _, project_name = setup_project_paths.values()
 
@@ -347,7 +345,7 @@ class TestTuiCreateFolders(TuiBase):
                 pilot, "#create_folders_settings_button"
             )
             await self.scroll_to_click_pause(
-                pilot, "#create_folders_settings_allow_alphanumeric_checkbox"
+                pilot, "#create_folders_settings_allow_letters_in_checkbox"
             )
             await self.scroll_to_click_pause(
                 pilot, "#create_folders_settings_close_button"

@@ -28,7 +28,7 @@ def validate_project_from_path(
     display_mode: DisplayMode = "warn",
     strict_mode: bool = False,
     name_templates: Optional[Dict] = None,
-    allow_alphanumeric_sub_ses_values: bool = False,
+    allow_letters_in_sub_ses_values: bool = False,
 ) -> List[str]:
     """Perform validation on a NeuroBlueprint-formatted project.
 
@@ -59,7 +59,7 @@ def validate_project_from_path(
         to validate against. See ``DataShuttle.set_name_templates()``
         for details.
 
-    allow_alphanumeric_sub_ses_values
+    allow_letters_in_sub_ses_values
         If `True`, any alphanumeric character are allowed for the values associated
         with sub- or ses-  keys. Otherwise, values must be integer
         and the following additional checks are performed:
@@ -103,7 +103,7 @@ def validate_project_from_path(
         display_mode=display_mode,
         name_templates=name_templates,
         strict_mode=strict_mode,
-        allow_alphanumeric_sub_ses_values=allow_alphanumeric_sub_ses_values,
+        allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
     )
 
     return error_messages

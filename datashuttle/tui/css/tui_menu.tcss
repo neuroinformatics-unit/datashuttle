@@ -338,7 +338,7 @@ config label and button align center */
     margin: 1 1 1 1;
 }
 
-#validate_allow_alphanumeric_sub_ses_values_checkbox {
+#validate_allow_letters_in_sub_ses_values_checkbox {
     margin: 0 0 0 6;
 }
 
@@ -417,7 +417,7 @@ CreateFoldersSettingsScreen {
     height: 80%;
     overflow: hidden auto;
 }
-#create_folders_settings_allow_alphanumeric_checkbox {
+#create_folders_settings_allow_letters_in_checkbox {
     padding: 0 6;
 }
 #create_folders_settings_checkbox_outer_container {
