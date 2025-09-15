@@ -671,7 +671,7 @@ class TestTuiWidgets(TuiBase):
         "parameter_name",
         ["bypass_validation", "allow_letters_in_sub_ses_values"],
     )
-    async def test_create_folderes_validation_settings(
+    async def test_create_folders_validation_settings(
         self, setup_project_paths, parameter_name
     ):
         """Test all configs that underly the 'bypass validation' and `allow_letters_in_sub_ses_values`
