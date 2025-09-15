@@ -461,7 +461,7 @@ class TransferData:
                 processed_names += [f"all_non_{prefix}"]
 
         else:
-            # Format the sub and ses names to search for. This expands @T@
+            # Format the sub and ses names to search for. This expands @TO@
             # flag and adds sub- or ses- prefixes if not found. Do not perform
             # validation here as we want to be less restrictive during transfer
             # searchers vs. folder creation.
