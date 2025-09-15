@@ -461,6 +461,10 @@ class TransferData:
                 processed_names += [f"all_non_{prefix}"]
 
         else:
+            # Format the sub and ses names to search for. This expands @T@
+            # flag and adds sub- or ses- prefixes if not found. Do not perform
+            # validation here as we want to be less restrictive during transfer
+            # searchers vs. folder creation.
             processed_names = formatting.check_and_format_names(
                 names_checked, prefix, bypass_validation=True
             )
