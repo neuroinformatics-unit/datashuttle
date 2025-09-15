@@ -962,7 +962,7 @@ class TestValidation(BaseTest):
         )
 
     # ----------------------------------------------------------------------------------
-    # Test allow_letters_in_sub_ses_values off
+    # Test allow_letters_in_sub_ses_values
     # ----------------------------------------------------------------------------------
 
     def test_allow_letters_in_sub_ses_values(self, project):
