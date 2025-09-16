@@ -58,7 +58,8 @@ Datashuttle automates the creation, validation and transfer of experimental fold
 
 Datashuttle can be installed via the package manager conda. While pip installation is supported, the non-Python dependency RClone (used to manage data transfers) must be installed separately. The cross-platform terminal user interface (TUI) is built with Textual [@McGugan:2021] and can be used in the system terminal.
 
-The typical workflow begins with researchers creating standardised folders at the start of each experimental session. Data generated during the acquisition (e.g. from cameras, behaviour-monitoring devices or electrophysiology probes) are saved into the created folders. Real-time validation features ensure that common errors such as duplicate subject or session IDs are caught immediately. At the end of the experimental session, data are transferred to the laboratory’s central storage (e.g. a shared lab or departmental server). Data transfer over the operating filesystem (i.e. mounted drive) or SSH is supported, with SSH keys set up under the hood for passwordless connection.
+The typical workflow begins with researchers creating standardised folders at the start of each experimental session. Data generated during the acquisition (e.g. from cameras, behaviour-monitoring devices or electrophysiology probes) are saved into the created folders. Real-time validation features ensure that common errors such as duplicate subject or session IDs are caught immediately. At the end of the experimental session, data are transferred to the laboratory’s central storage (e.g. a shared lab or departmental server, Amazon Web Services S3 Bucket or Google Drive).
+Data transfer to a server over the operating filesystem (i.e. mounted drive) or via SSH is supported, with transfer to Google Drive and Amazon Web Services (S3 Bucket) also supported.
 
 ## Folder Creation
 
@@ -85,7 +86,6 @@ In order to track full provenance of the project, datashuttle operations are log
 # Future Directions
 
 Datashuttle will continue to evolve alongside the NeuroBlueprint specification, implementing upcoming extensions as they emerge. While Datashuttle does not currently support a metadata standard, this will be a key focus for future development to enable improved validation and automation.
-Datashuttle is currently being extended to natively support Google Drive and Amazon Web Services (S3 Bucket), which are often used by laboratories for central data storage.
 
 Currently, NeuroBlueprint is designed for experiments in which subjects go through the experimental procedures individually. However multi-animal experiments investigating social behaviours, in which animals interact during experimental sessions, are a growing area of neuroscience research. Future updates to both NeuroBlueprint and datashuttle will aim to support this use case.
 
