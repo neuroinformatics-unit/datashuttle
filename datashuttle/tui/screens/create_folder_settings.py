@@ -99,6 +99,9 @@ class CreateFoldersSettingsScreen(ModalScreen):
         """
 
         bypass_validation = self.interface.tui_settings["bypass_validation"]
+        allow_letters_in_sub_ses_values = self.interface.tui_settings[
+            "allow_letters_in_sub_ses_values"
+        ]
         suggest_next_sub_ses_central = self.interface.tui_settings[
             "suggest_next_sub_ses_central"
         ]
@@ -116,15 +119,24 @@ class CreateFoldersSettingsScreen(ModalScreen):
                 id="toplevel_folder_select_container",
             ),
             Container(
-                Checkbox(
-                    "Search Central For Suggestions",
-                    value=suggest_next_sub_ses_central,
-                    id="suggest_next_sub_ses_central_checkbox",
-                ),
-                Checkbox(
-                    "Bypass validation",
-                    value=bypass_validation,
-                    id="create_folders_settings_bypass_validation_checkbox",
+                Container(
+                    Checkbox(
+                        "Search central for suggestions",
+                        value=suggest_next_sub_ses_central,
+                        id="suggest_next_sub_ses_central_checkbox",
+                    ),
+                    Horizontal(
+                        Checkbox(
+                            "Bypass validation",
+                            value=bypass_validation,
+                            id="create_folders_settings_bypass_validation_checkbox",
+                        ),
+                        Checkbox(
+                            "Allow letters in sub- and ses- values",
+                            value=allow_letters_in_sub_ses_values,
+                            id="create_folders_settings_allow_letters_in_checkbox",
+                        ),
+                    ),
                 ),
                 Container(
                     Horizontal(
@@ -160,7 +172,6 @@ class CreateFoldersSettingsScreen(ModalScreen):
                 ),
                 id="checkbox_container",
             ),
-            Container(),
             Button("Close", id="create_folders_settings_close_button"),
             id="create_tab_settings_outer_container",
         )
@@ -172,6 +183,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
             "#create_folders_settings_bypass_validation_checkbox",
             "#template_settings_validation_on_checkbox",
             "#suggest_next_sub_ses_central_checkbox",
+            "#create_folders_settings_allow_letters_in_checkbox",
         ]:
             self.query_one(id).tooltip = get_tooltip(id)
 
@@ -268,6 +280,14 @@ class CreateFoldersSettingsScreen(ModalScreen):
         elif event.checkbox.id == "suggest_next_sub_ses_central_checkbox":
             self.interface.save_tui_settings(
                 is_on, "suggest_next_sub_ses_central"
+            )
+
+        elif (
+            event.checkbox.id
+            == "create_folders_settings_allow_letters_in_checkbox"
+        ):
+            self.interface.save_tui_settings(
+                is_on, "allow_letters_in_sub_ses_values"
             )
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:

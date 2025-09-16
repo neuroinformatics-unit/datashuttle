@@ -279,6 +279,7 @@ def get_tui_config_defaults() -> Dict:
             "overwrite_existing_files": "never",
             "dry_run": False,
             "suggest_next_sub_ses_central": False,
+            "allow_letters_in_sub_ses_values": False,
         }
     }
 

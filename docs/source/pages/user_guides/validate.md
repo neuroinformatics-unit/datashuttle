@@ -154,3 +154,11 @@ error_messages = project.validate_project(
     include_central=True
 )
 ```
+
+
+## ``allow_letters_in_sub_ses_values``
+
+If `True`, any alphanumeric character are allowed for the values associated with `sub-` or ses- `keys`.
+Otherwise, values must be integer and the following additional checks are performed:
+
+- Labels must be the same length (e.g. `sub-01` and `sub-002` is invalid).
