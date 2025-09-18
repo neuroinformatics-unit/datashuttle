@@ -15,6 +15,7 @@ authors:
     affiliation: 1
   - name: Brandon D. Peri
     affiliation: 2
+  - name: Shrey Singh
   - name: Sepiedeh Keshavarzi
     orcid: 0000-0002-7310-8034
     affiliation: 2
@@ -58,8 +59,8 @@ Datashuttle automates the creation, validation and transfer of experimental fold
 
 Datashuttle can be installed via the package manager conda. While pip installation is supported, the non-Python dependency RClone (used to manage data transfers) must be installed separately. The cross-platform terminal user interface (TUI) is built with Textual [@McGugan:2021] and can be used in the system terminal.
 
-The typical workflow begins with researchers creating standardised folders at the start of each experimental session. Data generated during the acquisition (e.g. from cameras, behaviour-monitoring devices or electrophysiology probes) are saved into the created folders. Real-time validation features ensure that common errors such as duplicate subject or session IDs are caught immediately. At the end of the experimental session, data are transferred to the laboratory’s central storage (e.g. a shared lab or departmental server, Amazon Web Services S3 Bucket or Google Drive).
-Data transfer to a server over the operating filesystem (i.e. mounted drive) or via SSH is supported, with transfer to Google Drive and Amazon Web Services (S3 Bucket) also supported.
+The typical workflow begins with researchers creating standardised folders at the start of each experimental session. Data generated during the acquisition (e.g. from cameras, behaviour-monitoring devices or electrophysiology probes) are saved into the created folders. Real-time validation features ensure that common errors such as duplicate subject or session IDs are caught immediately. At the end of the experimental session, data are transferred to the laboratory’s central storage (e.g. a shared lab or departmental server, Amazon Web Services (AWS) S3 Bucket or Google Drive).
+Data can be transferred to the server either through the operating system’s mounted drive or via SSH. Transfers to cloud services such as Google Drive and AWS S3 Buckets are also supported.
 
 ## Folder Creation
 
