@@ -8,9 +8,9 @@ on:
       - 'v*'
   pull_request:
   schedule:
-    # Weekly cron job at 12:00 AM UTC on Mondays.
+    # Cron runs on the 1st and 15th of every month.
     # This will only run on main by default.
-    - cron: '0 0 * * 1'
+    - cron: "0 0 1,15 * *"
 
 jobs:
   linting:
@@ -28,13 +28,18 @@ jobs:
         shell: bash -l {0}
 
     strategy:
+      fail-fast: true
       matrix:
         # macos-14 is M1, macos-13 is intel. Run on earliest and
         # latest python versions. All python versions are tested in
         # the weekly cron job.
-        os: [ ubuntu-latest, windows-latest, macos-14, macos-13]
-        # Test all Python versions for cron job, and only first/last for other triggers
-        python-version: ${{ fromJson(github.event_name == 'schedule' && '["3.9", "3.10", "3.11", "3.12", "3.13"]' || '["3.9", "3.13"]') }}
+         # Test all Python versions for cron job, and only first/last for other triggers
+        os: ${{ fromJson(github.event_name == 'schedule'
+              && '["ubuntu-latest","windows-latest","macos-14","macos-13"]'
+              || '["ubuntu-latest","windows-latest","macos-latest"]') }}
+        python-version: ${{ fromJson(github.event_name == 'schedule'
+              && '["3.9","3.10","3.11","3.12","3.13"]'
+              || '["3.9","3.13"]') }}
 
     steps:
       - uses: actions/checkout@v5
