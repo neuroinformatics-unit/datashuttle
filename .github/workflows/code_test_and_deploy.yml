@@ -6,7 +6,7 @@ on:
       - main
     tags:
       - 'v*'
-  pull_request:
+  pull_request: [opened, synchronize, reopened, ready_for_review]
   schedule:
     # Cron runs on the 1st and 15th of every month.
     # This will only run on main by default.
