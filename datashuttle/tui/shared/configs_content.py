@@ -337,7 +337,7 @@ class ConfigsContent(Container):
         self.set_central_path_input_tooltip(connection_method)
 
     def radiobutton_id_from_connection_method(
-        self, connection_method: str | None
+        self, connection_method: str
     ) -> str:
         """Create a canonical radiobutton textual ID from the connection method."""
         return f"configs_{connection_method}_radiobutton"
