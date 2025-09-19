@@ -192,6 +192,12 @@ class TestBackwardsCompatibility:
         current_ver_configs,
         current_ver_persistent_settings,
     ):
+        """
+        In these tests, a current 'correct' version of the configs / settings
+        is generated, as well as a reloaded old version of the configs which should
+        match the current, correct version. Test recursively all elements in the
+        configs / settings dictionaries to ensure they match.
+        """
         self.recursive_test_dictionary(
             current_ver_configs, reloaded_ver_configs
         )
