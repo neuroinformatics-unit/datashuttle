@@ -16,20 +16,23 @@ authors:
   - name: Brandon D. Peri
     affiliation: 2
   - name: Shrey Singh
+    affiliation: 3
   - name: Sepiedeh Keshavarzi
     orcid: 0000-0002-7310-8034
     affiliation: 2
   - name: Adam L. Tyson
     orcid: 0000-0003-3225-1130
-    affiliation: "1, 3"
+    affiliation: "1, 4"
     corresponding: true
 affiliations:
   - name: Sainsbury Wellcome Centre, University College London, London, United Kingdom
     index: 1
   - name: Department of Physiology, Development and Neuroscience, University of Cambridge, Cambridge, United Kingdom
     index: 2
-  - name: Gatsby Computational Neuroscience Unit, University College London, London, United Kingdom
+  - name: Netaji Subhas University of Technology, New Delhi, India
     index: 3
+  - name: Gatsby Computational Neuroscience Unit, University College London, London, United Kingdom
+    index: 4
 date: 18 July 2025
 bibliography: paper.bib
 ---
