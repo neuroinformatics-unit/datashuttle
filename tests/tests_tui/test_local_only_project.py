@@ -32,7 +32,7 @@ class TestTuiLocalOnlyProject(TuiBase):
             assert pilot.app.screen.interface.project.cfg == {
                 "local_path": local_path / project_name,
                 "central_path": None,
-                "connection_method": None,
+                "connection_method": "local_only",
                 "central_host_id": None,
                 "central_host_username": None,
                 "gdrive_client_id": None,
@@ -179,7 +179,7 @@ class TestTuiLocalOnlyProject(TuiBase):
             assert pilot.app.screen.interface.project.cfg == {
                 "local_path": local_path / project_name,
                 "central_path": None,
-                "connection_method": None,
+                "connection_method": "local_only",
                 "central_host_id": None,
                 "central_host_username": None,
                 "gdrive_client_id": None,

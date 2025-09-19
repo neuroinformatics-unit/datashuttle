@@ -162,6 +162,9 @@ class Configs(UserDict):
             for key in canonical_config_keys_to_add:
                 config_dict[key] = None
 
+        if config_dict["connection_method"] is None:
+            config_dict["connection_method"] = "local_only"
+
     # -------------------------------------------------------------------------
     # Utils
     # -------------------------------------------------------------------------
@@ -257,6 +260,10 @@ class Configs(UserDict):
         if connection_method is None:
             connection_method = self["connection_method"]
 
+        assert connection_method != "local_only", (
+            "This state assumes a central connection."
+        )
+
         return f"central_{self.project_name}_{connection_method}"
 
     def make_rclone_transfer_options(
@@ -340,4 +347,4 @@ class Configs(UserDict):
         A project is 'local-only' if it has no `central_path` and `connection_method`.
         It can be used to make folders and validate, but not for transfer.
         """
-        return self["connection_method"] is None
+        return self["connection_method"] == "local_only"

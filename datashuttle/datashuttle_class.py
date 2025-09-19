@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     import subprocess
 
     from datashuttle.utils.custom_types import (
+        ConnectionMethods,
         DisplayMode,
         OverwriteExistingFiles,
         Prefix,
@@ -952,8 +953,8 @@ class DataShuttle:
     def make_config_file(
         self,
         local_path: str,
-        central_path: str | None = None,
-        connection_method: str | None = None,
+        central_path: Optional[str] = None,
+        connection_method: Optional[ConnectionMethods] = "local_only",
         central_host_id: Optional[str] = None,
         central_host_username: Optional[str] = None,
         gdrive_client_id: Optional[str] = None,
@@ -990,6 +991,7 @@ class DataShuttle:
 
         connection_method
             The method used to connect to the central project filesystem,
+            ``None`` is an alias for ``"local_only"``.
             e.g. ``"local_filesystem"`` (e.g. mounted drive) or ``"ssh"``
 
         central_host_id
@@ -1026,6 +1028,10 @@ class DataShuttle:
             local_vars=locals(),
             store_in_temp_folder=True,
         )
+
+        if connection_method is None:
+            # For backward compatibility
+            connection_method = "local_only"
 
         if self._config_path.is_file():
             utils.log_and_raise_error(
@@ -1082,6 +1088,11 @@ class DataShuttle:
             "update-config-file",
             local_vars=locals(),
         )
+
+        if "connection_method" in kwargs:
+            if kwargs["connection_method"] is None:
+                # For backward compatibility
+                kwargs["connection_method"] = "local_only"
 
         new_cfg = copy.deepcopy(self.cfg)
         new_cfg.update(**kwargs)
