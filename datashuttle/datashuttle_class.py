@@ -45,6 +45,7 @@ from datashuttle.utils import (
     gdrive,
     getters,
     rclone,
+    rclone_password,
     ssh,
     utils,
     validation,
@@ -111,6 +112,62 @@ class DataShuttle:
         self.cfg.init_paths()
 
         self._make_project_metadata_if_does_not_exist()
+
+    def set_config_password(self):
+        """"""
+        # TODO: CHECK CONNECTION METHOD
+        connection_method = self.cfg["connection_method"]
+
+        if self.cfg.backend_has_password[connection_method]:
+            raise RuntimeError(
+                "This config file already has a password set. First, use `remove_config_password` to remove it."
+            )
+
+        rclone_config_path = rclone.get_full_config_filepath(
+            self.cfg
+        )  # change name to rclone config becuase this is getting confusing!
+
+        if not rclone_config_path.exists():
+            raise RuntimeError(
+                f"Rclone config file for: {connection_method} was not found. "
+                f"Make sure you set up the connection first with `setup_{connection_method}_connection()`"
+            )
+
+        password_filepath = rclone_password.get_password_filepath(self.cfg)
+
+        if password_filepath.exists():
+            password_filepath.unlink()
+
+        rclone_password.save_credentials_password(
+            password_filepath,
+        )
+
+        rclone_password.set_config_password(
+            password_filepath, rclone.get_full_config_filepath(self.cfg)
+        )
+
+        self.cfg.backend_has_password[connection_method] = (
+            True  # HANDLE THIS PROPERLY
+        )
+        print(self.cfg.backend_has_password[connection_method])
+
+    def remove_config_password(self):
+        """"""
+        # TODO: CHECK CONNECTION METHOD
+        connection_method = self.cfg["connection_method"]
+
+        if self.cfg.backend_has_password[self.cfg["connection_method"]]:
+            raise RuntimeError(
+                f"The config for the current connection method: {self.cfg['connection_method']} does not have a password."
+            )
+        config_filepath = rclone_password.get_password_filepath(self.cfg)
+        rclone_password.remove_config_password(
+            config_filepath, rclone.get_full_config_filepath(self.cfg)
+        )
+
+        self.cfg.backend_has_password[connection_method] = (
+            False  # HANDLE THIS PROPERLY
+        )
 
     # -------------------------------------------------------------------------
     # Public Folder Makers

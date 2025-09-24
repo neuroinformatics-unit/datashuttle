@@ -64,6 +64,12 @@ class Configs(UserDict):
         self.hostkeys_path: Path
         self.project_metadata_path: Path
 
+        self.backend_has_password = {  # TODO: REMOVE
+            "ssh": False,
+            "gdrive": False,
+            "aws": False,
+        }
+
     def setup_after_load(self) -> None:
         """Set up the config after loading it."""
         load_configs.convert_str_and_pathlib_paths(self, "str_to_path")
