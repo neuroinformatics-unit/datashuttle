@@ -15,7 +15,7 @@ from pathlib import Path
 from subprocess import CompletedProcess
 
 from datashuttle.configs import canonical_configs
-from datashuttle.utils import utils
+from datashuttle.utils import rclone_password, utils
 
 
 def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
@@ -202,6 +202,12 @@ def setup_rclone_config_for_ssh(
     """
     key_escaped = private_key_str.replace("\n", "\\n")
 
+    rclone_config_filepath = get_full_config_filepath(
+        cfg
+    )  # TODO: do this for everything TODO: maybe this config file can be created before setup in case of old file
+    if rclone_config_filepath.exists():
+        rclone_config_filepath.unlink()
+
     command = (
         f"config create "
         f"{rclone_config_name} "
@@ -222,7 +228,11 @@ def get_config_path():
     """TODO PLACEHOLDER."""
     return (
         Path().home() / "AppData" / "Roaming" / "rclone"
-    ).as_posix()  #  # "$HOME/.config/rclone/rclone.conf")
+    )  #  # "$HOME/.config/rclone/rclone.conf")
+
+
+def get_full_config_filepath(cfg: Configs) -> Path:
+    return get_config_path() / f"{cfg.get_rclone_config_name()}.conf"
 
 
 def get_config_arg(cfg):
@@ -230,9 +240,18 @@ def get_config_arg(cfg):
     cfg.get_rclone_config_name()  # pass this? handle better...
 
     if cfg["connection_method"] in ["aws", "gdrive", "ssh"]:
-        return f'--config "{get_config_path()}/{cfg.get_rclone_config_name()}.conf"'
+        return f'--config "{get_full_config_filepath(cfg)}"'
     else:
         return ""
+
+
+def set_password(cfg, password: str):
+    subprocess.run(
+        f"rclone config encryption set {get_config_arg(cfg)}", text=True
+    )
+
+
+# def remove_password():
 
 
 def setup_rclone_config_for_gdrive(
@@ -481,19 +500,28 @@ def transfer_data(
 
     extra_arguments = handle_rclone_arguments(rclone_options, include_list)
 
+    if cfg.backend_has_password[cfg["connection_method"]]:  # TODO: one getter
+        print("SET")
+        config_filepath = rclone_password.get_password_filepath(cfg)
+        rclone_password.set_credentials_as_password_command(config_filepath)
+
     if upload_or_download == "upload":
         output = call_rclone_through_script(
             f"{rclone_args('copy')} "
             f'"{local_filepath}" "{cfg.get_rclone_config_name()}:'
-            f'{central_filepath}" {extra_arguments} {get_config_arg(cfg)}',
+            f'{central_filepath}" {extra_arguments} {get_config_arg(cfg)} --ask-password=false',  # TODO: handle the error
         )
 
     elif upload_or_download == "download":
         output = call_rclone_through_script(
             f"{rclone_args('copy')} "
             f'"{cfg.get_rclone_config_name()}:'
-            f'{central_filepath}" "{local_filepath}"  {extra_arguments} {get_config_arg(cfg)}',
+            f'{central_filepath}" "{local_filepath}"  {extra_arguments} {get_config_arg(cfg)} --ask-password=false',  # TODO: handle the error
         )
+
+    if cfg.backend_has_password[cfg["connection_method"]]:
+        print("REMOVED")
+        rclone_password.remove_credentials_as_password_command()
 
     return output
 
