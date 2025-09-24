@@ -32,7 +32,7 @@ class TestTuiSetupGdrive(TuiBase):
         yield central_path, project_name
 
         rclone.call_rclone(
-            f"purge central_{project_name}_gdrive:{central_path}"
+            f"purge central_{project_name}_gdrive:{central_path}"  # TODO: I think this will fail
         )
 
     @pytest.mark.parametrize("central_path_none", [True, False])

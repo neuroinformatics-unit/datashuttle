@@ -242,7 +242,7 @@ class BaseTransfer(BaseTest):
         # Clean up, removing the temp directories and
         # resetting the project paths.
         rclone.call_rclone(
-            f"purge {project.cfg.get_rclone_config_name()}:{tmp_central_path.as_posix()}"
+            f"purge {project.cfg.get_rclone_config_name()}:{tmp_central_path.as_posix()} {rclone.get_config_arg(project.cfg)}"
         )
 
         shutil.rmtree(tmp_local_path)

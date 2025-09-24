@@ -27,7 +27,6 @@ if TYPE_CHECKING:
         TopLevelFolder,
     )
 
-import paramiko
 import yaml
 
 from datashuttle.configs import (
@@ -45,6 +44,7 @@ from datashuttle.utils import (
     gdrive,
     getters,
     rclone,
+    rclone_password,
     ssh,
     utils,
     validation,
@@ -111,6 +111,62 @@ class DataShuttle:
         self.cfg.init_paths()
 
         self._make_project_metadata_if_does_not_exist()
+
+    def set_config_password(self):
+        """"""
+        # TODO: CHECK CONNECTION METHOD
+        connection_method = self.cfg["connection_method"]
+
+        if self.cfg.backend_has_password[connection_method]:
+            raise RuntimeError(
+                "This config file already has a password set. First, use `remove_config_password` to remove it."
+            )
+
+        rclone_config_path = rclone.get_full_config_filepath(
+            self.cfg
+        )  # change name to rclone config becuase this is getting confusing!
+
+        if not rclone_config_path.exists():
+            raise RuntimeError(
+                f"Rclone config file for: {connection_method} was not found. "
+                f"Make sure you set up the connection first with `setup_{connection_method}_connection()`"
+            )
+
+        password_filepath = rclone_password.get_password_filepath(self.cfg)
+
+        if password_filepath.exists():
+            password_filepath.unlink()
+
+        rclone_password.save_credentials_password(
+            password_filepath,
+        )
+
+        rclone_password.set_config_password(
+            password_filepath, rclone.get_full_config_filepath(self.cfg)
+        )
+
+        self.cfg.backend_has_password[connection_method] = (
+            True  # HANDLE THIS PROPERLY
+        )
+        print(self.cfg.backend_has_password[connection_method])
+
+    def remove_config_password(self):
+        """"""
+        # TODO: CHECK CONNECTION METHOD
+        connection_method = self.cfg["connection_method"]
+
+        if self.cfg.backend_has_password[self.cfg["connection_method"]]:
+            raise RuntimeError(
+                f"The config for the current connection method: {self.cfg['connection_method']} does not have a password."
+            )
+        config_filepath = rclone_password.get_password_filepath(self.cfg)
+        rclone_password.remove_config_password(
+            config_filepath, rclone.get_full_config_filepath(self.cfg)
+        )
+
+        self.cfg.backend_has_password[connection_method] = (
+            False  # HANDLE THIS PROPERLY
+        )
 
     # -------------------------------------------------------------------------
     # Public Folder Makers
@@ -819,50 +875,35 @@ class DataShuttle:
             "setup-ssh-connection-to-central-server", local_vars=locals()
         )
 
-        verified = ssh.verify_ssh_central_host(
+        verified = ssh.verify_ssh_central_host_api(
             self.cfg["central_host_id"],
             self.cfg.hostkeys_path,
             log=True,
         )
 
         if verified:
-            ssh.setup_ssh_key(self.cfg, log=True)
-            self._setup_rclone_central_ssh_config(log=True)
+            private_key_str = ssh.setup_ssh_key_api(self.cfg, log=True)
+
+            self._setup_rclone_central_ssh_config(private_key_str, log=True)
 
             rclone.check_successful_connection_and_raise_error_on_fail(
                 self.cfg
             )
 
+            utils.log_and_message(
+                "SSH key pair setup successfully. SSH key saved to the RClone config file."
+            )
+
         ds_logger.close_log_filehandler()
-
-    @requires_ssh_configs
-    @check_is_not_local_project
-    def write_public_key(self, filepath: str) -> None:
-        """Save the public SSH key to a specified filepath.
-
-        By default, only the SSH private key is stored in the
-        datashuttle configs folder. Use this function to save
-        the public key.
-
-        Parameters
-        ----------
-        filepath
-            Full filepath (including filename) to write the
-            public key to.
-
-        """
-        key: paramiko.RSAKey
-        key = paramiko.RSAKey.from_private_key_file(
-            self.cfg.ssh_key_path.as_posix()
-        )
-
-        with open(filepath, "w") as public:
-            public.write(key.get_base64())
-        public.close()
 
     # -------------------------------------------------------------------------
     # Google Drive
     # -------------------------------------------------------------------------
+
+    # TODO: this is going to be a massive pain because old config files will not work
+    # will need to re-set up all connections
+    # this can just be a breaking change, but will have to handle error nicely
+    # We could just move it from the config file, then show a warning
 
     @check_configs_set
     def setup_gdrive_connection(self) -> None:
@@ -1567,11 +1608,13 @@ class DataShuttle:
         """
         folders.create_folders(self.cfg.project_metadata_path, log=False)
 
-    def _setup_rclone_central_ssh_config(self, log: bool) -> None:
+    def _setup_rclone_central_ssh_config(
+        self, private_key_str: str, log: bool
+    ) -> None:
         rclone.setup_rclone_config_for_ssh(
             self.cfg,
             self.cfg.get_rclone_config_name("ssh"),
-            self.cfg.ssh_key_path,
+            private_key_str,
             log=log,
         )
 
