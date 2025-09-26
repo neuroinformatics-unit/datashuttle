@@ -115,8 +115,7 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
     if config_dict["connection_method"] == "local_only":
         if config_dict["central_path"] is not None:
             utils.log_and_raise_error(
-                "Either both `central_path` and `connection_method` must be set, "
-                "or must both be `None` (for local-project mode).",
+                "Cannot set `central_path` when `connection_method` is 'local_only'.",
                 ConfigError,
             )
 
