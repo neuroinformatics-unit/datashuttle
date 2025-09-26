@@ -26,7 +26,7 @@ class TestLocalOnlyProject(BaseTest):
                 local_path, central_path=tmp_path / "central"
             )
         assert (
-            "Either both `central_path` and `connection_method` must be set"
+            "Cannot set `central_path` when `connection_method` is 'local_only'."
             in str(e.value)
         )
 
