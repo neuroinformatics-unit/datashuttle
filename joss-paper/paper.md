@@ -62,7 +62,7 @@ Datashuttle automates the creation, validation and transfer of experimental fold
 
 Datashuttle can be installed via the package manager conda. While pip installation is supported, the non-Python dependency RClone (used to manage data transfers) must be installed separately. The cross-platform terminal user interface (TUI) is built with Textual [@McGugan:2021] and can be used in the system terminal.
 
-The typical workflow begins with researchers creating standardised folders at the start of each experimental session. Data generated during acquisition (e.g. from cameras, behaviour-monitoring devices or electrophysiology probes) are saved into the created folders. Real-time validation features ensure that common errors such as duplicate subject or session IDs are caught immediately. At the end of the experimental session, data are transferred to the laboratory’s central storage. Transfers can be made to a remote server either through a mounted drive or via SSH, while cloud services such as Google Drive and AWS S3 Buckets are also supported.
+The typical workflow begins with researchers creating standardised folders at the start of each experimental session. Data generated during acquisition (e.g. from cameras, behaviour-monitoring devices or electrophysiology probes) are saved into the created folders. Real-time validation features ensure that common errors such as duplicate subject or session IDs are caught immediately. At the end of the experimental session, data are transferred to the laboratory’s central storage. Transfers can be made to a remote server either via a mounted drive or SSH, while cloud services such as Google Drive and AWS S3 Buckets are also supported.
 
 ## Folder Creation
 
