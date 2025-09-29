@@ -48,7 +48,17 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
     return output
 
 
-def call_rclone_through_script(command: str) -> CompletedProcess:
+def call_rclone_for_central_connection(
+    cfg, command: str, pipe_std: bool = False
+) -> CompletedProcess:
+    return run_function_that_may_require_central_connection_password(
+        cfg, lambda: call_rclone(command, pipe_std)
+    )
+
+
+def call_rclone_through_script_for_central_connection(
+    cfg, command: str
+) -> CompletedProcess:
     """Call rclone through a script.
 
     This is to avoid limits on command-line calls (in particular on Windows).
@@ -84,11 +94,15 @@ def call_rclone_through_script(command: str) -> CompletedProcess:
         if system != "Windows":
             os.chmod(tmp_script_path, 0o700)
 
-        output = subprocess.run(
+        lambda_func = lambda: subprocess.run(
             [tmp_script_path],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=False,
+        )
+
+        output = run_function_that_may_require_central_connection_password(
+            cfg, lambda_func
         )
 
         if output.returncode != 0:
@@ -100,7 +114,9 @@ def call_rclone_through_script(command: str) -> CompletedProcess:
     return output
 
 
-def call_rclone_with_popen(command: str) -> subprocess.Popen:
+def call_rclone_with_popen_for_central_connection(
+    command: str,
+) -> subprocess.Popen:
     """Call rclone using `subprocess.Popen` for control over process termination.
 
     It is not possible to kill a process while running it using `subprocess.run`.
@@ -116,7 +132,7 @@ def call_rclone_with_popen(command: str) -> subprocess.Popen:
     return process
 
 
-def await_call_rclone_with_popen_raise_on_fail(
+def await_call_rclone_with_popen_for_central_connection_raise_on_fail(
     process: subprocess.Popen, log: bool = True
 ):
     """Await rclone the subprocess.Popen call.
@@ -124,13 +140,35 @@ def await_call_rclone_with_popen_raise_on_fail(
     Calling `process.communicate()` waits for the process to complete and returns
     the stdout and stderr.
     """
-    stdout, stderr = process.communicate()
+    lambda_func = lambda: process.communicate()
+
+    stdout, stderr = run_function_that_may_require_central_connection_password(
+        cfg, lambda_func
+    )
 
     if process.returncode != 0:
         utils.log_and_raise_error(stderr.decode("utf-8"), ConnectionError)
 
     if log:
         log_rclone_config_output()
+
+
+def run_function_that_may_require_central_connection_password(
+    cfg, lambda_func
+):
+    """ """
+    set_password = cfg.backend_has_password[cfg["connection_method"]]
+
+    if set_password:
+        config_filepath = rclone_password.get_password_filepath(cfg)
+        rclone_password.set_credentials_as_password_command(config_filepath)
+
+    results = lambda_func()
+
+    if set_password:
+        rclone_password.remove_credentials_as_password_command()
+
+    return results
 
 
 # -----------------------------------------------------------------------------
@@ -262,7 +300,7 @@ def setup_rclone_config_for_gdrive(
 ) -> subprocess.Popen:
     """Set up rclone config for connections to Google Drive.
 
-    This function uses `call_rclone_with_popen` instead of `call_rclone`. This
+    This function uses `call_rclone_with_popen_for_central_connection` instead of `call_rclone`. This
     is done to have more control over the setup process in case the user wishes to
     cancel the setup. Since the rclone setup for google drive uses a local web server
     for authentication to google drive, the running process must be killed before the
@@ -303,7 +341,7 @@ def setup_rclone_config_for_gdrive(
         else ""
     )
 
-    process = call_rclone_with_popen(
+    process = call_rclone_with_popen_for_central_connection(
         f"config create "
         f"{rclone_config_name} "
         f"drive "
@@ -392,7 +430,8 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
 
     config_name = cfg.get_rclone_config_name()
 
-    output = call_rclone(
+    output = call_rclone_for_central_connection(
+        cfg,
         f"touch {config_name}:{tempfile_path} {get_config_arg(cfg)}",
         pipe_std=True,
     )
@@ -401,7 +440,8 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
             output.stderr.decode("utf-8"), ConnectionError
         )
 
-    output = call_rclone(
+    output = call_rclone_for_central_connection(
+        cfg,
         f"delete {cfg.get_rclone_config_name()}:{tempfile_path} {get_config_arg(cfg)}",
         pipe_std=True,
     )
@@ -500,22 +540,24 @@ def transfer_data(
 
     extra_arguments = handle_rclone_arguments(rclone_options, include_list)
 
-    if cfg.backend_has_password[cfg["connection_method"]]:  # TODO: one getter
-        print("SET")
-        config_filepath = rclone_password.get_password_filepath(
-            cfg
-        )  # TODO: ONE FUNCTION OR INCORPORATE INTO SINGLE FUNCTION
-        rclone_password.set_credentials_as_password_command(config_filepath)
+    #    if cfg.backend_has_password[cfg["connection_method"]]:  # TODO: one getter
+    #        print("SET")
+    #        config_filepath = rclone_password.get_password_filepath(
+    #            cfg
+    #        )  # TODO: ONE FUNCTION OR INCORPORATE INTO SINGLE FUNCTION
+    #        rclone_password.set_credentials_as_password_command(config_filepath)
 
     if upload_or_download == "upload":
-        output = call_rclone_through_script(
+        output = call_rclone_through_script_for_central_connection(
+            cfg,
             f"{rclone_args('copy')} "
             f'"{local_filepath}" "{cfg.get_rclone_config_name()}:'
             f'{central_filepath}" {extra_arguments} {get_config_arg(cfg)} --ask-password=false',  # TODO: handle the error
         )
 
     elif upload_or_download == "download":
-        output = call_rclone_through_script(
+        output = call_rclone_through_script_for_central_connection(
+            cfg,
             f"{rclone_args('copy')} "
             f'"{cfg.get_rclone_config_name()}:'
             f'{central_filepath}" "{local_filepath}"  {extra_arguments} {get_config_arg(cfg)} --ask-password=false',  # TODO: handle the error
@@ -623,7 +665,8 @@ def perform_rclone_check(
         "central", top_level_folder
     ).parent.as_posix()
 
-    output = call_rclone(
+    output = call_rclone_for_central_connection(
+        cfg,
         f"{rclone_args('check')} "
         f'"{local_filepath}" '
         f'"{cfg.get_rclone_config_name()}:{central_filepath}"'
