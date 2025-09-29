@@ -98,7 +98,7 @@ class TestTuiValidate(TuiBase):
             assert args_[1] == ["rawdata"]
             assert kwargs_["include_central"] is False
             assert kwargs_["display_mode"] == "print"
-            assert kwargs_["name_templates"] == {
+            assert kwargs_["validation_templates"] == {
                 "on": False,
                 "sub": None,
                 "ses": None,
@@ -145,7 +145,7 @@ class TestTuiValidate(TuiBase):
             assert args_[1] == ["rawdata", "derivatives"]
             assert kwargs_["include_central"] is True
             assert kwargs_["display_mode"] == "print"
-            assert kwargs_["name_templates"] == {
+            assert kwargs_["validation_templates"] == {
                 "on": False,
                 "sub": None,
                 "ses": None,

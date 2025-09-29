@@ -431,19 +431,19 @@ class TestCreateFolders(BaseTest):
         assert new_num == "ses-006" if return_with_prefix else "006"
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
-    def test_get_next_sub_and_ses_name_template(self, project):
+    def test_get_next_sub_and_ses_validation_template(self, project):
         """In the case where a name template exists, these getters should use the
         number of digits on the template (even if these are different
         within the project!).
         """
         project.create_folders("rawdata", "sub-001", "ses-001")
 
-        name_templates = {
+        validation_templates = {
             "on": True,
             "sub": r"sub-\d.?.?.?\d_key-value",  # 5 digits
             "ses": r"ses-\d_@DATE@",  # 2 digits
         }
-        project.set_name_templates(name_templates)
+        project.set_validation_templates(validation_templates)
 
         new_num = project.get_next_sub(
             "rawdata", return_with_prefix=False, include_central=False
@@ -462,17 +462,17 @@ class TestCreateFolders(BaseTest):
         # Test sub only as underlying code is the same. If name templates
         # is off, use the num_digits from the project, same if the sub
         # key value takes a length-unspecific wildcard (should never really happen).
-        name_templates["on"] = False
-        project.set_name_templates(name_templates)
+        validation_templates["on"] = False
+        project.set_validation_templates(validation_templates)
 
         new_num = project.get_next_sub(
             "rawdata", return_with_prefix=False, include_central=False
         )
         assert new_num == "002"
 
-        name_templates["on"] = True
-        name_templates["sub"] = "sub-.*"
-        project.set_name_templates(name_templates)
+        validation_templates["on"] = True
+        validation_templates["sub"] = "sub-.*"
+        project.set_validation_templates(validation_templates)
 
         new_num = project.get_next_sub(
             "rawdata", return_with_prefix=False, include_central=False
