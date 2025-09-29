@@ -699,7 +699,8 @@ def search_central_via_connection(
         cfg["connection_method"]
     )  # TODO: this is not good because we get the config name here and in get_config_arg
 
-    output = rclone.call_rclone(
+    output = rclone.call_rclone_for_central_connection(
+        cfg,
         f'lsjson {rclone_config_name}:"{search_path.as_posix()}" {rclone.get_config_arg(cfg)}',
         pipe_std=True,
     )

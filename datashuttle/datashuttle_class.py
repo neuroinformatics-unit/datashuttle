@@ -887,18 +887,11 @@ class DataShuttle:
 
             self._setup_rclone_central_ssh_config(private_key_str, log=True)
 
-            config_filepath = rclone_password.get_password_filepath(self.cfg)
-            rclone_password.set_credentials_as_password_command(
-                config_filepath
-            )
-
             print("Checking write permissions on the `central_path`...")
 
             rclone.check_successful_connection_and_raise_error_on_fail(
                 self.cfg
             )
-
-            rclone_password.remove_credentials_as_password_command()
 
             utils.log_and_message(
                 "SSH key pair setup successfully. SSH key saved to the RClone config file."
@@ -957,7 +950,9 @@ class DataShuttle:
             gdrive_client_secret, config_token
         )
 
-        rclone.await_call_rclone_with_popen_raise_on_fail(process, log=True)
+        rclone.await_call_rclone_with_popen_for_central_connection_raise_on_fail(
+            self.cfg, process, log=True
+        )
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
 
