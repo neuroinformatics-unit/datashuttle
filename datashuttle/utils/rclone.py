@@ -502,7 +502,9 @@ def transfer_data(
 
     if cfg.backend_has_password[cfg["connection_method"]]:  # TODO: one getter
         print("SET")
-        config_filepath = rclone_password.get_password_filepath(cfg)
+        config_filepath = rclone_password.get_password_filepath(
+            cfg
+        )  # TODO: ONE FUNCTION OR INCORPORATE INTO SINGLE FUNCTION
         rclone_password.set_credentials_as_password_command(config_filepath)
 
     if upload_or_download == "upload":
