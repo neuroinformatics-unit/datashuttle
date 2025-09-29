@@ -125,7 +125,7 @@ class DataShuttle:
 
         rclone_config_path = rclone.get_full_config_filepath(
             self.cfg
-        )  # change name to rclone config becuase this is getting confusing!
+        )  # change name to rclone config because this is getting confusing!
 
         if not rclone_config_path.exists():
             raise RuntimeError(
@@ -887,9 +887,18 @@ class DataShuttle:
 
             self._setup_rclone_central_ssh_config(private_key_str, log=True)
 
+            config_filepath = rclone_password.get_password_filepath(self.cfg)
+            rclone_password.set_credentials_as_password_command(
+                config_filepath
+            )
+
+            print("Checking write permissions on the `central_path`...")
+
             rclone.check_successful_connection_and_raise_error_on_fail(
                 self.cfg
             )
+
+            rclone_password.remove_credentials_as_password_command()
 
             utils.log_and_message(
                 "SSH key pair setup successfully. SSH key saved to the RClone config file."
@@ -1632,12 +1641,36 @@ class DataShuttle:
     def _setup_rclone_central_ssh_config(
         self, private_key_str: str, log: bool
     ) -> None:
+        input_ = input(
+            f"Your SSH key will be stored in the rclone config at:\n "
+            f"{rclone.get_full_config_filepath(self.cfg)}.\n\n"
+            f"Would you like to set a password using Windows credential manager? "
+            f"Press 'y' to set password or leave blank to skip."
+        )
+
+        set_password = input_ == "y"
+
         rclone.setup_rclone_config_for_ssh(
             self.cfg,
             self.cfg.get_rclone_config_name("ssh"),
             private_key_str,
             log=log,
         )
+
+        if set_password:
+            try:
+                self.set_config_password()
+            except BaseException as e:
+                print(e)
+                # THIS PATH IS WRONG
+                config_path = rclone.get_full_config_filepath(self.cfg)
+
+                raise RuntimeError(
+                    f"Password set up failed. The config at {config_path} contains the private ssh key without a password.\n"
+                    f"Use set_config_password()` to attempt to set the password again (see stacktrace above). "
+                )
+
+            print("Password set successfully")
 
     def _setup_rclone_central_local_filesystem_config(self) -> None:
         rclone.setup_rclone_config_for_local_filesystem(
