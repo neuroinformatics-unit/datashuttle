@@ -113,14 +113,40 @@ class DataShuttle:
 
         self._make_project_metadata_if_does_not_exist()
 
-    def set_config_password(self):
+    def _try_set_rclone_password(self):  # TODO: BETTER NAME!
+        """"""
+        input_ = input(
+            f"Your SSH key will be stored in the rclone config at:\n "
+            f"{rclone.get_full_config_filepath(self.cfg)}.\n\n"
+            f"Would you like to set a password using Windows credential manager? "
+            f"Press 'y' to set password or leave blank to skip."
+        )
+
+        set_password = input_ == "y"
+
+        if set_password:
+            try:
+                self.set_rclone_password()
+            except BaseException as e:
+                print(e)
+                # THIS PATH IS WRONG
+                config_path = rclone.get_full_config_filepath(self.cfg)
+
+                raise RuntimeError(
+                    f"Password set up failed. The config at {config_path} contains the private ssh key without a password.\n"
+                    f"Use set_rclone_password()` to attempt to set the password again (see stacktrace above). "
+                )
+
+            print("Password set successfully")
+
+    def set_rclone_password(self):
         """"""
         # TODO: CHECK CONNECTION METHOD
         connection_method = self.cfg["connection_method"]
 
-        if self.cfg.backend_has_password[connection_method]:
+        if self.cfg.rclone_has_password[connection_method]:
             raise RuntimeError(
-                "This config file already has a password set. First, use `remove_config_password` to remove it."
+                "This config file already has a password set. First, use `remove_rclone_password` to remove it."
             )
 
         rclone_config_path = rclone.get_full_config_filepath(
@@ -142,32 +168,36 @@ class DataShuttle:
             password_filepath,
         )
 
-        rclone_password.set_config_password(
+        rclone_password.set_rclone_password(
             password_filepath, rclone.get_full_config_filepath(self.cfg)
         )
 
-        self.cfg.backend_has_password[connection_method] = (
+        self.cfg.rclone_has_password[connection_method] = (
             True  # HANDLE THIS PROPERLY
         )
-        print(self.cfg.backend_has_password[connection_method])
+        self.cfg.save_rclone_password_state()
+        print(self.cfg.rclone_has_password[connection_method])
 
-    def remove_config_password(self):
+    def remove_rclone_password(self):
         """"""
         # TODO: CHECK CONNECTION METHOD
         connection_method = self.cfg["connection_method"]
 
-        if self.cfg.backend_has_password[self.cfg["connection_method"]]:
+        if not self.cfg.rclone_has_password[self.cfg["connection_method"]]:
             raise RuntimeError(
-                f"The config for the current connection method: {self.cfg['connection_method']} does not have a password."
+                f"The config for the current connection method: {self.cfg['connection_method']} does not have a password. Cannot remove."
             )
         config_filepath = rclone_password.get_password_filepath(self.cfg)
-        rclone_password.remove_config_password(
+        rclone_password.remove_rclone_password(
             config_filepath, rclone.get_full_config_filepath(self.cfg)
         )
 
-        self.cfg.backend_has_password[connection_method] = (
+        self.cfg.rclone_has_password[connection_method] = (
             False  # HANDLE THIS PROPERLY
         )
+        self.cfg.save_rclone_password_state()
+
+        print("SAY SOMETHING LIKE PASSWORD REMOVED")
 
     # -------------------------------------------------------------------------
     # Public Folder Makers
@@ -950,6 +980,8 @@ class DataShuttle:
             gdrive_client_secret, config_token
         )
 
+        self._try_set_rclone_password()
+
         rclone.await_call_rclone_with_popen_for_central_connection_raise_on_fail(
             self.cfg, process, log=True
         )
@@ -1636,36 +1668,13 @@ class DataShuttle:
     def _setup_rclone_central_ssh_config(
         self, private_key_str: str, log: bool
     ) -> None:
-        input_ = input(
-            f"Your SSH key will be stored in the rclone config at:\n "
-            f"{rclone.get_full_config_filepath(self.cfg)}.\n\n"
-            f"Would you like to set a password using Windows credential manager? "
-            f"Press 'y' to set password or leave blank to skip."
-        )
-
-        set_password = input_ == "y"
-
         rclone.setup_rclone_config_for_ssh(
             self.cfg,
             self.cfg.get_rclone_config_name("ssh"),
             private_key_str,
             log=log,
         )
-
-        if set_password:
-            try:
-                self.set_config_password()
-            except BaseException as e:
-                print(e)
-                # THIS PATH IS WRONG
-                config_path = rclone.get_full_config_filepath(self.cfg)
-
-                raise RuntimeError(
-                    f"Password set up failed. The config at {config_path} contains the private ssh key without a password.\n"
-                    f"Use set_config_password()` to attempt to set the password again (see stacktrace above). "
-                )
-
-            print("Password set successfully")
+        self._try_set_rclone_password()
 
     def _setup_rclone_central_local_filesystem_config(self) -> None:
         rclone.setup_rclone_config_for_local_filesystem(

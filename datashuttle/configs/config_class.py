@@ -64,11 +64,24 @@ class Configs(UserDict):
         self.hostkeys_path: Path
         self.project_metadata_path: Path
 
-        self.backend_has_password = {  # TODO: REMOVE
-            "ssh": False,
-            "gdrive": False,
-            "aws": False,
-        }
+        self.rclone_password_state_file_path = (
+            self.file_path.parent / "rclone_ps_state.yaml"
+        )
+        self.rclone_has_password = {}
+        self.setup_rclone_has_password()
+
+    def setup_rclone_has_password(self):
+        """"""
+        if self.rclone_password_state_file_path.is_file():
+            with open(self.rclone_password_state_file_path, "r") as file:
+                self.rclone_has_password = yaml.full_load(file)
+        else:
+            self.rclone_has_password = {
+                "ssh": False,
+                "gdrive": False,
+                "aws": False,
+            }
+            self.save_rclone_password_state()
 
     def setup_after_load(self) -> None:
         """Set up the config after loading it."""
@@ -169,6 +182,10 @@ class Configs(UserDict):
 
         if config_dict["connection_method"] is None:
             config_dict["connection_method"] = "local_only"
+
+    def save_rclone_password_state(self):
+        with open(self.rclone_password_state_file_path, "w") as file:
+            yaml.dump(self.rclone_has_password, file)
 
     # -------------------------------------------------------------------------
     # Utils
