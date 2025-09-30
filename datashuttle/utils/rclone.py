@@ -133,7 +133,7 @@ def call_rclone_with_popen_for_central_connection(
 
 
 def await_call_rclone_with_popen_for_central_connection_raise_on_fail(
-    process: subprocess.Popen, log: bool = True
+    cfg, process: subprocess.Popen, log: bool = True
 ):
     """Await rclone the subprocess.Popen call.
 
@@ -157,7 +157,7 @@ def run_function_that_may_require_central_connection_password(
     cfg, lambda_func
 ):
     """ """
-    set_password = cfg.backend_has_password[cfg["connection_method"]]
+    set_password = cfg.rclone_has_password[cfg["connection_method"]]
 
     if set_password:
         config_filepath = rclone_password.get_password_filepath(cfg)
@@ -540,7 +540,7 @@ def transfer_data(
 
     extra_arguments = handle_rclone_arguments(rclone_options, include_list)
 
-    #    if cfg.backend_has_password[cfg["connection_method"]]:  # TODO: one getter
+    #    if cfg.rclone_has_password[cfg["connection_method"]]:  # TODO: one getter
     #        print("SET")
     #        config_filepath = rclone_password.get_password_filepath(
     #            cfg
@@ -563,7 +563,7 @@ def transfer_data(
             f'{central_filepath}" "{local_filepath}"  {extra_arguments} {get_config_arg(cfg)} --ask-password=false',  # TODO: handle the error
         )
 
-    if cfg.backend_has_password[cfg["connection_method"]]:
+    if cfg.rclone_has_password[cfg["connection_method"]]:
         print("REMOVED")
         rclone_password.remove_credentials_as_password_command()
 

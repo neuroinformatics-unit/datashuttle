@@ -64,7 +64,7 @@ def set_credentials_as_password_command(password_filepath: Path):
     os.environ["RCLONE_PASSWORD_COMMAND"] = cmd
 
 
-def set_config_password(password_filepath: Path, config_filepath: Path):
+def set_rclone_password(password_filepath: Path, config_filepath: Path):
     """"""
     assert password_filepath.exists(), (
         "password file not found at point of config creation."
@@ -80,7 +80,7 @@ def set_config_password(password_filepath: Path, config_filepath: Path):
 
 
 # TODO: HANDLE ERRORS
-def remove_config_password(password_filepath: Path, config_filepath: Path):
+def remove_rclone_password(password_filepath: Path, config_filepath: Path):
     """"""
     set_credentials_as_password_command(Path(password_filepath))
     subprocess.run(
