@@ -116,7 +116,7 @@ class DataShuttle:
     def _try_set_rclone_password(self):  # TODO: BETTER NAME!
         """"""
         input_ = input(
-            f"Your SSH key will be stored in the rclone config at:\n "
+            f"Your SSH key will be stored in the rclone config at:\n "  ## TODO: FIX T HIS IS NOT SSH
             f"{rclone.get_full_config_filepath(self.cfg)}.\n\n"
             f"Would you like to set a password using Windows credential manager? "
             f"Press 'y' to set password or leave blank to skip."
@@ -887,6 +887,9 @@ class DataShuttle:
     # SSH
     # -------------------------------------------------------------------------
 
+    # TODO: MAKE MORE NOTES ON HOW THE GDRIVE WORKER IS THE BEST MODEL
+    # IT MUST BE DONE WILL NOT WORK WITHOUT
+
     @requires_ssh_configs
     @check_is_not_local_project
     def setup_ssh_connection(self) -> None:
@@ -938,6 +941,9 @@ class DataShuttle:
     # this can just be a breaking change, but will have to handle error nicely
     # We could just move it from the config file, then show a warning
 
+    # TODO: need the cancel button on tui in case we close the google window
+    # THEN we can hide it while we make the connection to check
+
     @check_configs_set
     def setup_gdrive_connection(self) -> None:
         """Set up a connection to Google Drive using the provided credentials.
@@ -980,12 +986,16 @@ class DataShuttle:
             gdrive_client_secret, config_token
         )
 
-        self._try_set_rclone_password()
-
         rclone.await_call_rclone_with_popen_for_central_connection_raise_on_fail(
             self.cfg, process, log=True
         )
 
+        # If re-running connection when password already set, we don't want to
+        # try and set a new password
+        if not self.cfg.rclone_has_password[self.cfg["connection_method"]]:
+            self._try_set_rclone_password()
+
+        print("Now trying to connect or something")  # TODO
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
 
         utils.log_and_message("Google Drive Connection Successful.")
