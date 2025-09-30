@@ -115,6 +115,7 @@ def call_rclone_through_script_for_central_connection(
 
 
 def call_rclone_with_popen_for_central_connection(
+    cfg,
     command: str,
 ) -> subprocess.Popen:
     """Call rclone using `subprocess.Popen` for control over process termination.
@@ -126,8 +127,12 @@ def call_rclone_with_popen_for_central_connection(
     process explicitly.
     """
     command = "rclone " + command
-    process = subprocess.Popen(
+    lambda_func = lambda: subprocess.Popen(
         shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
+
+    process = run_function_that_may_require_central_connection_password(
+        cfg, lambda_func
     )
     return process
 
@@ -342,6 +347,7 @@ def setup_rclone_config_for_gdrive(
     )
 
     process = call_rclone_with_popen_for_central_connection(
+        cfg,
         f"config create "
         f"{rclone_config_name} "
         f"drive "
@@ -350,7 +356,7 @@ def setup_rclone_config_for_gdrive(
         f"scope drive "
         f"root_folder_id {cfg['gdrive_root_folder_id']} "
         f"{extra_args} "
-        f"{get_config_arg(cfg)}"
+        f"{get_config_arg(cfg)}",
     )
 
     return process
