@@ -1026,6 +1026,14 @@ class DataShuttle:
 
         self._setup_rclone_aws_config(aws_secret_access_key, log=True)
 
+        # If re-running connection when password already set, we don't want to
+        # try and set a new password
+        if not self.cfg.rclone_has_password[
+            self.cfg["connection_method"]
+        ]:  # TODO: do this for ssh too!
+            self._try_set_rclone_password()
+
+        print("Say something like checking connection...")  # TODO
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
         aws.raise_if_bucket_absent(self.cfg)
 
