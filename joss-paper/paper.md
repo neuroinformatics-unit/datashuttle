@@ -15,20 +15,24 @@ authors:
     affiliation: 1
   - name: Brandon D. Peri
     affiliation: 2
+  - name: Shrey Singh
+    affiliation: 3
   - name: Sepiedeh Keshavarzi
     orcid: 0000-0002-7310-8034
     affiliation: 2
   - name: Adam L. Tyson
     orcid: 0000-0003-3225-1130
-    affiliation: "1, 3"
+    affiliation: "1, 4"
     corresponding: true
 affiliations:
   - name: Sainsbury Wellcome Centre, University College London, London, United Kingdom
     index: 1
   - name: Department of Physiology, Development and Neuroscience, University of Cambridge, Cambridge, United Kingdom
     index: 2
-  - name: Gatsby Computational Neuroscience Unit, University College London, London, United Kingdom
+  - name: Netaji Subhas University of Technology, New Delhi, India
     index: 3
+  - name: Gatsby Computational Neuroscience Unit, University College London, London, United Kingdom
+    index: 4
 date: 18 July 2025
 bibliography: paper.bib
 ---
@@ -58,7 +62,7 @@ Datashuttle automates the creation, validation and transfer of experimental fold
 
 Datashuttle can be installed via the package manager conda. While pip installation is supported, the non-Python dependency RClone (used to manage data transfers) must be installed separately. The cross-platform terminal user interface (TUI) is built with Textual [@McGugan:2021] and can be used in the system terminal.
 
-The typical workflow begins with researchers creating standardised folders at the start of each experimental session. Data generated during the acquisition (e.g. from cameras, behaviour-monitoring devices or electrophysiology probes) are saved into the created folders. Real-time validation features ensure that common errors such as duplicate subject or session IDs are caught immediately. At the end of the experimental session, data are transferred to the laboratory’s central storage (e.g. a shared lab or departmental server). Data transfer over the operating filesystem (i.e. mounted drive) or SSH is supported, with SSH keys set up under the hood for passwordless connection.
+The typical workflow begins with researchers creating standardised folders at the start of each experimental session. Data generated during acquisition (e.g. from cameras, behaviour-monitoring devices or electrophysiology probes) are saved into the created folders. Real-time validation features ensure that common errors such as duplicate subject or session IDs are caught immediately. At the end of the experimental session, data are transferred to the laboratory’s central storage. Transfers can be made to a remote server either via a mounted drive or SSH, while cloud services such as Google Drive and AWS S3 Buckets are also supported.
 
 ## Folder Creation
 
@@ -85,7 +89,6 @@ In order to track full provenance of the project, datashuttle operations are log
 # Future Directions
 
 Datashuttle will continue to evolve alongside the NeuroBlueprint specification, implementing upcoming extensions as they emerge. While Datashuttle does not currently support a metadata standard, this will be a key focus for future development to enable improved validation and automation.
-Datashuttle is currently being extended to natively support Google Drive and Amazon Web Services (S3 Bucket), which are often used by laboratories for central data storage.
 
 Currently, NeuroBlueprint is designed for experiments in which subjects go through the experimental procedures individually. However multi-animal experiments investigating social behaviours, in which animals interact during experimental sessions, are a growing area of neuroscience research. Future updates to both NeuroBlueprint and datashuttle will aim to support this use case.
 
