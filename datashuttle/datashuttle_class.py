@@ -920,7 +920,8 @@ class DataShuttle:
 
             self._setup_rclone_central_ssh_config(private_key_str, log=True)
 
-            self._try_set_rclone_password()
+            if not self.cfg.rclone_has_password[self.cfg["connection_method"]]:
+                self._try_set_rclone_password()
 
             print("Checking write permissions on the `central_path`...")  # TODO
 

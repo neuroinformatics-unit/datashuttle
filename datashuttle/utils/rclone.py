@@ -273,7 +273,7 @@ def get_config_path():
         return (
             Path().home() / "AppData" / "Roaming" / "rclone"
         )  #  # "$HOME/.config/rclone/rclone.conf")
-    elif platform.system() == "Linux":
+    else: # TODO HANDLE platform.system() == "Linux":
         return (
                 Path().home() / ".config" / "rclone"
         )
