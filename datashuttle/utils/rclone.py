@@ -362,7 +362,7 @@ def setup_rclone_config_for_gdrive(
     return process
 
 
-def setup_rclone_config_for_aws(
+def setup_rclone_config_for_aws(  # TODO: call_rclone_for_central_connection for ssh setup
     cfg: Configs,
     rclone_config_name: str,
     aws_secret_access_key: str,
@@ -397,7 +397,8 @@ def setup_rclone_config_for_aws(
         else f" location_constraint {aws_region}"
     )
 
-    output = call_rclone(
+    output = call_rclone_for_central_connection(
+        cfg,
         "config create "
         f"{rclone_config_name} "
         "s3 provider AWS "
