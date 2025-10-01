@@ -42,39 +42,67 @@ def save_credentials_password(password_filepath: Path):
         # run it
         subprocess.run([shell, "-NoProfile", "-Command", ps_cmd], check=True)
 
+    elif platform.system() == "Linux":
+        output = subprocess.run("pass --help", shell=True, capture_output=True)
+
+        if output.returncode != 0:
+
+            raise RuntimeError(
+                "`pass` is required to set password. Install e.g. sudo apt install pass."
+            )
+
+        try:
+            result = subprocess.run(
+                ["pass", "ls"],
+                capture_output=True,
+                text=True,
+                check=True
+            )
+        except subprocess.CalledProcessError as e:
+            if "pass init" in e.stderr:
+                raise  Exception() # re-raise unexpected errors
+
+        breakpoint()
+        subprocess.run("echo $(openssl rand -base64 40) | pass insert -m rclone/config", shell=True, check=True)
+
 
 def set_credentials_as_password_command(password_filepath: Path):
     """"""
     #    if platform.system() == "Windows":
     #        filepath = Path(filepath).resolve()
 
-    shell = shutil.which("powershell")
-    if not shell:
-        raise RuntimeError("powershell.exe not found in PATH")
+    if platform.system() == "Windows":
+        shell = shutil.which("powershell")
+        if not shell:
+            raise RuntimeError("powershell.exe not found in PATH")
 
-    # Escape single quotes inside PowerShell string by doubling them
-    #  safe_path = str(filepath).replace("'", "''")
+        # Escape single quotes inside PowerShell string by doubling them
+        #  safe_path = str(filepath).replace("'", "''")
 
-    cmd = (
-        f'{shell} -NoProfile -Command "Write-Output ('
-        f"[System.Runtime.InteropServices.Marshal]::PtrToStringAuto("
-        f"[System.Runtime.InteropServices.Marshal]::SecureStringToBSTR("
-        f"(Import-Clixml -LiteralPath '{password_filepath.as_posix()}' ).Password)))\""
-    )
-    os.environ["RCLONE_PASSWORD_COMMAND"] = cmd
+        cmd = (
+            f'{shell} -NoProfile -Command "Write-Output ('
+            f"[System.Runtime.InteropServices.Marshal]::PtrToStringAuto("
+            f"[System.Runtime.InteropServices.Marshal]::SecureStringToBSTR("
+            f"(Import-Clixml -LiteralPath '{password_filepath.as_posix()}' ).Password)))\""
+        )
+        os.environ["RCLONE_PASSWORD_COMMAND"] = cmd
+
+    elif platform.system() == "Linux":
+
+        os.environ["RCLONE_PASSWORD_COMMAND"] = "/usr/bin/pass rclone/config"
 
 
 def set_rclone_password(password_filepath: Path, config_filepath: Path):
     """"""
-    assert password_filepath.exists(), (
-        "password file not found at point of config creation."
-    )
+    if platform.system() == "Windows":  # TODO: handle this properly, only windows uses a password file.
+        assert password_filepath.exists(), (
+            "password file not found at point of config creation."
+        )
 
-    set_credentials_as_password_command(password_filepath)
+    set_credentials_as_password_command(password_filepath)  # TODO: OMG handle this
 
-    subprocess.run(
-        f"rclone config encryption set --config {config_filepath.as_posix()} "
-    )
+    breakpoint()
+    subprocess.run(f"rclone config encryption set --config {config_filepath.as_posix()}", shell=True)
 
     remove_credentials_as_password_command()
 
@@ -84,7 +112,7 @@ def remove_rclone_password(password_filepath: Path, config_filepath: Path):
     """"""
     set_credentials_as_password_command(Path(password_filepath))
     subprocess.run(
-        rf"rclone config encryption remove --config {config_filepath.as_posix()}"
+        rf"rclone config encryption remove --config {config_filepath.as_posix()}", shell=True
     )
 
     # TODO: HANDLE ERRORS
