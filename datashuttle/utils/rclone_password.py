@@ -65,6 +65,11 @@ def save_credentials_password(password_filepath: Path):
         breakpoint()
         subprocess.run("echo $(openssl rand -base64 40) | pass insert -m rclone/config", shell=True, check=True)
 
+    # TODO: HANDLE ERRORS
+    else:
+        breakpoint()
+        subprocess.run("security add-generic-password -a rclone -s config -w $(openssl rand -base64 40) -U", shell=True, check=True)
+        breakpoint()
 
 def set_credentials_as_password_command(password_filepath: Path):
     """"""
@@ -90,6 +95,10 @@ def set_credentials_as_password_command(password_filepath: Path):
     elif platform.system() == "Linux":
 
         os.environ["RCLONE_PASSWORD_COMMAND"] = "/usr/bin/pass rclone/config"
+
+    elif platform.system() == "Darwin":
+
+        os.environ["RCLONE_PASSWORD_COMMAND"] = "/usr/bin/security find-generic-password -a rclone -s config -w"
 
 
 def set_rclone_password(password_filepath: Path, config_filepath: Path):
