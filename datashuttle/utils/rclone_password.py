@@ -46,30 +46,38 @@ def save_credentials_password(password_filepath: Path):
         output = subprocess.run("pass --help", shell=True, capture_output=True)
 
         if output.returncode != 0:
-
             raise RuntimeError(
                 "`pass` is required to set password. Install e.g. sudo apt install pass."
             )
 
         try:
             result = subprocess.run(
-                ["pass", "ls"],
-                capture_output=True,
-                text=True,
-                check=True
+                ["pass", "ls"], capture_output=True, text=True, check=True
             )
         except subprocess.CalledProcessError as e:
             if "pass init" in e.stderr:
-                raise  Exception() # re-raise unexpected errors
+                raise Exception()  # re-raise unexpected errors
 
         breakpoint()
-        subprocess.run("echo $(openssl rand -base64 40) | pass insert -m rclone/config", shell=True, check=True)
+        subprocess.run(
+            f"echo $(openssl rand -base64 40) | pass insert -m {name_from_file(password_filepath)}",
+            shell=True,
+            check=True,
+        )
 
     # TODO: HANDLE ERRORS
     else:
-        breakpoint()
-        subprocess.run("security add-generic-password -a rclone -s config -w $(openssl rand -base64 40) -U", shell=True, check=True)
-        breakpoint()
+        subprocess.run(
+            f"security add-generic-password -a datashuttle -s {name_from_file(password_filepath)} -w $(openssl rand -base64 40) -U",
+            shell=True,
+            check=True,
+        )
+
+
+def name_from_file(password_filepath):  # TODO: HADNLE THIS MUCH LESS WEIRDLY!
+    """"""
+    return f"datashuttle/rclone/{password_filepath.stem}"
+
 
 def set_credentials_as_password_command(password_filepath: Path):
     """"""
@@ -93,25 +101,34 @@ def set_credentials_as_password_command(password_filepath: Path):
         os.environ["RCLONE_PASSWORD_COMMAND"] = cmd
 
     elif platform.system() == "Linux":
-
-        os.environ["RCLONE_PASSWORD_COMMAND"] = "/usr/bin/pass rclone/config"
+        os.environ["RCLONE_PASSWORD_COMMAND"] = (
+            f"/usr/bin/pass {name_from_file(password_filepath)}"
+        )
 
     elif platform.system() == "Darwin":
-
-        os.environ["RCLONE_PASSWORD_COMMAND"] = "/usr/bin/security find-generic-password -a rclone -s config -w"
+        os.environ["RCLONE_PASSWORD_COMMAND"] = (
+            f"/usr/bin/security find-generic-password -a datashuttle -s {name_from_file(password_filepath)} -w"
+        )
 
 
 def set_rclone_password(password_filepath: Path, config_filepath: Path):
     """"""
-    if platform.system() == "Windows":  # TODO: handle this properly, only windows uses a password file.
+    if (
+        platform.system() == "Windows"
+    ):  # TODO: handle this properly, only windows uses a password file.
         assert password_filepath.exists(), (
             "password file not found at point of config creation."
         )
 
-    set_credentials_as_password_command(password_filepath)  # TODO: OMG handle this
+    set_credentials_as_password_command(
+        password_filepath
+    )  # TODO: OMG handle this
 
     breakpoint()
-    subprocess.run(f"rclone config encryption set --config {config_filepath.as_posix()}", shell=True)
+    subprocess.run(
+        f"rclone config encryption set --config {config_filepath.as_posix()}",
+        shell=True,
+    )
 
     remove_credentials_as_password_command()
 
@@ -121,7 +138,8 @@ def remove_rclone_password(password_filepath: Path, config_filepath: Path):
     """"""
     set_credentials_as_password_command(Path(password_filepath))
     subprocess.run(
-        rf"rclone config encryption remove --config {config_filepath.as_posix()}", shell=True
+        rf"rclone config encryption remove --config {config_filepath.as_posix()}",
+        shell=True,
     )
 
     # TODO: HANDLE ERRORS
