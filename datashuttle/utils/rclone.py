@@ -269,9 +269,14 @@ def setup_rclone_config_for_ssh(
 
 def get_config_path():
     """TODO PLACEHOLDER."""
-    return (
-        Path().home() / "AppData" / "Roaming" / "rclone"
-    )  #  # "$HOME/.config/rclone/rclone.conf")
+    if platform.system() == "Windows":
+        return (
+            Path().home() / "AppData" / "Roaming" / "rclone"
+        )  #  # "$HOME/.config/rclone/rclone.conf")
+    elif platform.system() == "Linux":
+        return (
+                Path().home() / ".config" / "rclone"
+        )
 
 
 def get_full_config_filepath(cfg: Configs) -> Path:

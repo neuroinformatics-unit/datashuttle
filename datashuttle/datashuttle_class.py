@@ -920,7 +920,9 @@ class DataShuttle:
 
             self._setup_rclone_central_ssh_config(private_key_str, log=True)
 
-            print("Checking write permissions on the `central_path`...")
+            self._try_set_rclone_password()
+
+            print("Checking write permissions on the `central_path`...")  # TODO
 
             rclone.check_successful_connection_and_raise_error_on_fail(
                 self.cfg
@@ -1692,7 +1694,6 @@ class DataShuttle:
             private_key_str,
             log=log,
         )
-        self._try_set_rclone_password()
 
     def _setup_rclone_central_local_filesystem_config(self) -> None:
         rclone.setup_rclone_config_for_local_filesystem(
