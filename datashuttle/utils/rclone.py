@@ -11,7 +11,6 @@ import platform
 import shlex
 import subprocess
 import tempfile
-from pathlib import Path
 from subprocess import CompletedProcess
 
 from datashuttle.configs import canonical_configs
@@ -245,9 +244,8 @@ def setup_rclone_config_for_ssh(
     """
     key_escaped = private_key_str.replace("\n", "\\n")
 
-    rclone_config_filepath = get_full_config_filepath(
-        cfg
-    )  # TODO: do this for everything TODO: maybe this config file can be created before setup in case of old file
+    rclone_config_filepath = cfg.get_rclone_config_filepath()
+    # TODO: do this for everything TODO: maybe this config file can be created before setup in case of old file
     if rclone_config_filepath.exists():
         rclone_config_filepath.unlink()
 
@@ -267,28 +265,12 @@ def setup_rclone_config_for_ssh(
         log_rclone_config_output()
 
 
-def get_config_path():
-    """TODO PLACEHOLDER."""
-    if platform.system() == "Windows":
-        return (
-            Path().home() / "AppData" / "Roaming" / "rclone"
-        )  #  # "$HOME/.config/rclone/rclone.conf")
-    else: # TODO HANDLE platform.system() == "Linux":
-        return (
-                Path().home() / ".config" / "rclone"
-        )
-
-
-def get_full_config_filepath(cfg: Configs) -> Path:
-    return get_config_path() / f"{cfg.get_rclone_config_name()}.conf"
-
-
 def get_config_arg(cfg):
     """TODO PLACEHOLDER."""
     cfg.get_rclone_config_name()  # pass this? handle better...
 
     if cfg["connection_method"] in ["aws", "gdrive", "ssh"]:
-        return f'--config "{get_full_config_filepath(cfg)}"'
+        return f'--config "{cfg.get_rclone_config_filepath()}"'
     else:
         return ""
 
@@ -430,8 +412,14 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
     If the command fails, it raises a ConnectionError. The created file is
     deleted thereafter.
     """
+    utils.log_and_message(
+        f"Attempting to write to the central server to check write permissions...\n"
+        f"`central_path`: {cfg['central_path']}"
+    )
+
     filename = f"{utils.get_random_string()}_temp.txt"
 
+    # Get the full path to write to
     if cfg["central_path"] is None:
         assert cfg["connection_method"] == "gdrive", (
             "`central_path` may only be `None` for `gdrive`"
@@ -440,6 +428,7 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
     else:
         tempfile_path = (cfg["central_path"] / filename).as_posix()
 
+    # Try and write to the central location and log errors
     config_name = cfg.get_rclone_config_name()
 
     output = call_rclone_for_central_connection(
@@ -452,6 +441,7 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
             output.stderr.decode("utf-8"), ConnectionError
         )
 
+    # Delete the written file and complete
     output = call_rclone_for_central_connection(
         cfg,
         f"delete {cfg.get_rclone_config_name()}:{tempfile_path} {get_config_arg(cfg)}",
@@ -461,6 +451,8 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
         utils.log_and_raise_error(
             output.stderr.decode("utf-8"), ConnectionError
         )
+
+    utils.log_and_message("Successfully wrote to the central location.")
 
 
 def log_rclone_config_output() -> None:  # TODO: remove or update this
