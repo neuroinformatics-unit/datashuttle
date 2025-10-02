@@ -70,6 +70,9 @@ class Configs(UserDict):
         self.rclone_has_password = {}
         self.setup_rclone_has_password()
 
+    def connection_method_rclone_config_has_password(self):
+        return self.rclone_has_password[self["connection_method"]]
+
     def setup_rclone_has_password(self):
         """"""
         if self.rclone_password_state_file_path.is_file():
@@ -287,6 +290,13 @@ class Configs(UserDict):
         )
 
         return f"central_{self.project_name}_{connection_method}"
+
+    def get_rclone_config_filepath(self) -> Path:
+        """"""
+        return (
+            canonical_folders.get_rclone_config_base_path()
+            / f"{self.get_rclone_config_name()}.conf"
+        )
 
     def make_rclone_transfer_options(
         self, overwrite_existing_files: OverwriteExistingFiles, dry_run: bool

@@ -4,6 +4,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from configs.config_class import Configs
+
 from datashuttle.configs import canonical_folders
 
 
@@ -22,9 +24,14 @@ def get_password_filepath(
     return base_path / f"{cfg.get_rclone_config_name()}.xml"
 
 
-def save_credentials_password(password_filepath: Path):
+def save_credentials_password(cfg):
     """"""
     if platform.system() == "Windows":
+        password_filepath = get_password_filepath(cfg)
+
+        if password_filepath.exists():
+            password_filepath.unlink()
+
         # $env:APPDATA\\rclone\\rclone-credential.xml
         shell = shutil.which("powershell")
         if not shell:
@@ -60,7 +67,7 @@ def save_credentials_password(password_filepath: Path):
 
         breakpoint()
         subprocess.run(
-            f"echo $(openssl rand -base64 40) | pass insert -m {name_from_file(password_filepath)}",
+            f"echo $(openssl rand -base64 40) | pass insert -m {cfg.get_rclone_config_name()}",
             shell=True,
             check=True,
         )
@@ -68,7 +75,7 @@ def save_credentials_password(password_filepath: Path):
     # TODO: HANDLE ERRORS
     else:
         subprocess.run(
-            f"security add-generic-password -a datashuttle -s {name_from_file(password_filepath)} -w $(openssl rand -base64 40) -U",
+            f"security add-generic-password -a datashuttle -s {cfg.get_rclone_config_name()} -w $(openssl rand -base64 40) -U",
             shell=True,
             check=True,
         )
@@ -79,12 +86,15 @@ def name_from_file(password_filepath):  # TODO: HADNLE THIS MUCH LESS WEIRDLY!
     return f"datashuttle/rclone/{password_filepath.stem}"
 
 
-def set_credentials_as_password_command(password_filepath: Path):
+def set_credentials_as_password_command(cfg):
     """"""
-    #    if platform.system() == "Windows":
-    #        filepath = Path(filepath).resolve()
-
     if platform.system() == "Windows":
+        password_filepath = get_password_filepath(cfg)
+
+        assert password_filepath.exists(), (
+            "Critical error: password file not found when setting password command."
+        )
+
         shell = shutil.which("powershell")
         if not shell:
             raise RuntimeError("powershell.exe not found in PATH")
@@ -96,35 +106,25 @@ def set_credentials_as_password_command(password_filepath: Path):
             f'{shell} -NoProfile -Command "Write-Output ('
             f"[System.Runtime.InteropServices.Marshal]::PtrToStringAuto("
             f"[System.Runtime.InteropServices.Marshal]::SecureStringToBSTR("
-            f"(Import-Clixml -LiteralPath '{password_filepath.as_posix()}' ).Password)))\""
+            f"(Import-Clixml -LiteralPath '{password_filepath}' ).Password)))\""
         )
         os.environ["RCLONE_PASSWORD_COMMAND"] = cmd
 
     elif platform.system() == "Linux":
         os.environ["RCLONE_PASSWORD_COMMAND"] = (
-            f"/usr/bin/pass {name_from_file(password_filepath)}"
+            f"/usr/bin/pass {cfg.get_rclone_config_name()}"
         )
 
     elif platform.system() == "Darwin":
         os.environ["RCLONE_PASSWORD_COMMAND"] = (
-            f"/usr/bin/security find-generic-password -a datashuttle -s {name_from_file(password_filepath)} -w"
+            f"/usr/bin/security find-generic-password -a datashuttle -s {cfg.get_rclone_config_name()} -w"
         )
 
 
-def set_rclone_password(password_filepath: Path, config_filepath: Path):
+def run_rclone_config_encrypt(cfg: Configs):
     """"""
-    if (
-        platform.system() == "Windows"
-    ):  # TODO: handle this properly, only windows uses a password file.
-        assert password_filepath.exists(), (
-            "password file not found at point of config creation."
-        )
+    set_credentials_as_password_command(cfg)
 
-    set_credentials_as_password_command(
-        password_filepath
-    )  # TODO: OMG handle this
-
-    breakpoint()
     subprocess.run(
         f"rclone config encryption set --config {config_filepath.as_posix()}",
         shell=True,
