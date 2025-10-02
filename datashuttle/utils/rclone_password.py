@@ -7,6 +7,7 @@ from pathlib import Path
 from configs.config_class import Configs
 
 from datashuttle.configs import canonical_folders
+from datashuttle.utils import utils
 
 
 def get_password_filepath(
@@ -47,6 +48,7 @@ def save_credentials_password(cfg):
         )
 
         # run it
+        # TODO: HANDLE ERRORS
         subprocess.run([shell, "-NoProfile", "-Command", ps_cmd], check=True)
 
     elif platform.system() == "Linux":
@@ -58,6 +60,7 @@ def save_credentials_password(cfg):
             )
 
         try:
+            # TODO: HANDLE ERRORS
             result = subprocess.run(
                 ["pass", "ls"], capture_output=True, text=True, check=True
             )
@@ -66,6 +69,7 @@ def save_credentials_password(cfg):
                 raise Exception()  # re-raise unexpected errors
 
         breakpoint()
+        # TODO: HANDLE ERRORS
         subprocess.run(
             f"echo $(openssl rand -base64 40) | pass insert -m {cfg.get_rclone_config_name()}",
             shell=True,
@@ -74,6 +78,7 @@ def save_credentials_password(cfg):
 
     # TODO: HANDLE ERRORS
     else:
+        # TODO: HANDLE ERRORS
         subprocess.run(
             f"security add-generic-password -a datashuttle -s {cfg.get_rclone_config_name()} -w $(openssl rand -base64 40) -U",
             shell=True,
@@ -123,10 +128,23 @@ def set_credentials_as_password_command(cfg):
 
 def run_rclone_config_encrypt(cfg: Configs):
     """"""
+    rclone_config_path = cfg.get_rclone_config_filepath()
+
+    if not rclone_config_path.exists():
+        connection_method = cfg["connection_method"]
+
+        raise RuntimeError(
+            f"Rclone config file for: {connection_method} was not found. "
+            f"Make sure you set up the connection first with `setup_{connection_method}_connection()`"
+        )
+
+    save_credentials_password(cfg)
+
     set_credentials_as_password_command(cfg)
 
+    # TODO: HANDLE ERRORS
     subprocess.run(
-        f"rclone config encryption set --config {config_filepath.as_posix()}",
+        f"rclone config encryption set --config {rclone_config_path.as_posix()}",
         shell=True,
     )
 
@@ -134,16 +152,23 @@ def run_rclone_config_encrypt(cfg: Configs):
 
 
 # TODO: HANDLE ERRORS
-def remove_rclone_password(password_filepath: Path, config_filepath: Path):
+def remove_rclone_password(cfg):
     """"""
-    set_credentials_as_password_command(Path(password_filepath))
+    set_credentials_as_password_command(Path(cfg))
+
+    config_filepath = cfg.get_rclone_config_filepath()
+
+    # TODO: HANDLE ERRORS
     subprocess.run(
         rf"rclone config encryption remove --config {config_filepath.as_posix()}",
         shell=True,
     )
 
-    # TODO: HANDLE ERRORS
     remove_credentials_as_password_command()
+
+    utils.log_and_message(
+        f"Password removed from rclone config file: {config_filepath}"
+    )
 
 
 def remove_credentials_as_password_command():
