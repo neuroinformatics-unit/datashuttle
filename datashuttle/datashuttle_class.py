@@ -963,7 +963,7 @@ class DataShuttle:
         pass_type = {
             "Windows": "Windows credential manager",
             "Linux": "the `pass` program",
-            "Darwin": "macOS inbuild `security`."
+            "Darwin": "macOS inbuild `security`.",
         }
 
         input_ = utils.get_user_input(
@@ -977,14 +977,13 @@ class DataShuttle:
             try:
                 self.set_rclone_password()
             except Exception as e:
-
                 config_path = self.cfg.get_rclone_config_filepath()
 
                 utils.log_and_raise_error(
                     f"Password set up failed. The config at {config_path} contains the private ssh key without a password.\n"
                     f"Use set_rclone_password()` to attempt to set the password again (see full error message above). ",
                     RuntimeError,
-                    from_error=e
+                    from_error=e,
                 )
 
             utils.log_and_message("Password set successfully")
@@ -997,20 +996,9 @@ class DataShuttle:
                 "First, use `remove_rclone_password` to remove it."
             )
 
-        connection_method = self.cfg["connection_method"]
+        rclone_password.run_rclone_config_encrypt(self.cfg)
 
-        rclone_config_path = self.cfg.get_rclone_config_filepath()
-
-        if not rclone_config_path.exists():
-            raise RuntimeError(
-                f"Rclone config file for: {connection_method} was not found. "
-                f"Make sure you set up the connection first with `setup_{connection_method}_connection()`"
-            )
-        rclone_password.run_rclone_config_encrypt(
-            self.cfg
-        )
-
-        self.cfg.rclone_has_password[connection_method] = True
+        self.cfg.rclone_has_password[self.cfg["connection_method"]] = True
 
         self.cfg.save_rclone_password_state()
 
@@ -1018,21 +1006,15 @@ class DataShuttle:
         """"""
         if not self.cfg.connection_method_rclone_config_has_password():
             raise RuntimeError(
-                f"The config for the current connection method: {self.cfg['connection_method']} does not have a password. Cannot remove."
+                f"The config for the current connection method: {self.cfg['connection_method']} "
+                f"does not have a password. Cannot remove."
             )
-        config_filepath = rclone_password.get_password_filepath(self.cfg)
 
-        rclone_password.remove_rclone_password(
-            config_filepath, self.cfg.get_rclone_config_filepath()
-        )
+        rclone_password.remove_rclone_password(self.cfg)
 
         self.cfg.rclone_has_password[self.cfg["connection_method"]] = False
 
         self.cfg.save_rclone_password_state()
-
-        utils.log_and_message(
-            f"Password removed from rclone config file: {}"
-        )
 
     # -------------------------------------------------------------------------
     # Configs
