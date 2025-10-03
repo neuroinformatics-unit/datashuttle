@@ -1,94 +1,123 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from datashuttle.configs.configs_class import Configs
+
 import os
 import platform
 import shutil
 import subprocess
-from pathlib import Path
-
-from configs.config_class import Configs
 
 from datashuttle.configs import canonical_folders
 from datashuttle.utils import utils
 
 
-def get_password_filepath(
-    cfg,
-):  # Configs  # TOOD: datashuttle_path should be on configs?
-    """"""
-    assert cfg["connection_method"] in ["aws", "gdrive", "ssh"], (
-        "password should only be set for ssh, aws, gdrive."
-    )
-
-    base_path = canonical_folders.get_datashuttle_path() / "credentials"
-
-    base_path.mkdir(exist_ok=True, parents=True)
-
-    return base_path / f"{cfg.get_rclone_config_name()}.xml"
-
-
 def save_credentials_password(cfg):
     """"""
     if platform.system() == "Windows":
-        password_filepath = get_password_filepath(cfg)
-
-        if password_filepath.exists():
-            password_filepath.unlink()
-
-        # $env:APPDATA\\rclone\\rclone-credential.xml
-        shell = shutil.which("powershell")
-        if not shell:
-            raise RuntimeError(
-                "powershell.exe not found in PATH (need Windows PowerShell 5.1)."
-            )
-
-        ps_cmd = (
-            "Add-Type -AssemblyName System.Web; "
-            "New-Object PSCredential 'rclone', "
-            "(ConvertTo-SecureString ([System.Web.Security.Membership]::GeneratePassword(40,10)) -AsPlainText -Force) "
-            f"| Export-Clixml -LiteralPath '{password_filepath}'"
-        )
-
-        # run it
-        # TODO: HANDLE ERRORS
-        subprocess.run([shell, "-NoProfile", "-Command", ps_cmd], check=True)
-
+        set_password_windows(cfg)
     elif platform.system() == "Linux":
-        output = subprocess.run("pass --help", shell=True, capture_output=True)
-
-        if output.returncode != 0:
-            raise RuntimeError(
-                "`pass` is required to set password. Install e.g. sudo apt install pass."
-            )
-
-        try:
-            # TODO: HANDLE ERRORS
-            result = subprocess.run(
-                ["pass", "ls"], capture_output=True, text=True, check=True
-            )
-        except subprocess.CalledProcessError as e:
-            if "pass init" in e.stderr:
-                raise Exception()  # re-raise unexpected errors
-
-        breakpoint()
-        # TODO: HANDLE ERRORS
-        subprocess.run(
-            f"echo $(openssl rand -base64 40) | pass insert -m {cfg.get_rclone_config_name()}",
-            shell=True,
-            check=True,
-        )
-
-    # TODO: HANDLE ERRORS
+        set_password_linux(cfg)
     else:
-        # TODO: HANDLE ERRORS
-        subprocess.run(
-            f"security add-generic-password -a datashuttle -s {cfg.get_rclone_config_name()} -w $(openssl rand -base64 40) -U",
-            shell=True,
-            check=True,
+        set_password_macos(cfg)
+
+
+def set_password_windows(cfg: Configs):
+    """"""
+    password_filepath = get_password_filepath(cfg)
+
+    if password_filepath.exists():
+        password_filepath.unlink()
+
+    shell = shutil.which("powershell")
+    if not shell:
+        raise RuntimeError(
+            "powershell.exe not found in PATH (need Windows PowerShell 5.1)."
+        )
+
+    ps_cmd = (
+        "Add-Type -AssemblyName System.Web; "
+        "New-Object PSCredential 'rclone', "
+        "(ConvertTo-SecureString ([System.Web.Security.Membership]::GeneratePassword(40,10)) -AsPlainText -Force) "
+        f"| Export-Clixml -LiteralPath '{password_filepath}'"
+    )
+    output = subprocess.run(
+        [shell, "-NoProfile", "-Command", ps_cmd],
+        capture_output=True,
+        text=True,
+    )
+    if output.returncode != 0:
+        raise RuntimeError(
+            f"\n--- STDOUT ---\n{output.stdout}",
+            f"\n--- STDERR ---\n{output.stderr}",
+            "Could not set the PSCredential with System.web. See the error message above.",
         )
 
 
-def name_from_file(password_filepath):  # TODO: HADNLE THIS MUCH LESS WEIRDLY!
+def set_password_linux(cfg):
     """"""
-    return f"datashuttle/rclone/{password_filepath.stem}"
+    output = subprocess.run(
+        "pass --help",
+        shell=True,
+        capture_output=True,
+        text=True,
+    )
+    if output.returncode != 0:
+        raise RuntimeError(
+            "`pass` is required to set password. Install e.g. sudo apt install pass."
+        )
+
+    try:
+        output = subprocess.run(
+            ["pass", "ls"],
+            shell=True,
+            capture_output=True,
+            text=True,
+        )
+    except subprocess.CalledProcessError as e:
+        if "pass init" in e.stderr:
+            raise RuntimeError(
+                "Password store is not initialized. "
+                "Run `pass init <gpg-id>` before using `pass`."
+            ) from e
+        else:
+            raise RuntimeError(
+                f"\n--- STDOUT ---\n{output.stdout}",
+                f"\n--- STDERR ---\n{output.stderr}",
+                "Could not set up password with `pass`. See the error message above.",
+            )
+
+    output = subprocess.run(
+        f"echo $(openssl rand -base64 40) | pass insert -m {cfg.get_rclone_config_name()}",
+        shell=True,
+        capture_output=True,
+        text=True,
+    )
+    if output.returncode != 0:
+        raise RuntimeError(
+            f"\n--- STDOUT ---\n{output.stdout}",
+            f"\n--- STDERR ---\n{output.stderr}",
+            "Could not remove the password from the RClone config. See the error message above.",
+        )
+
+
+def set_password_macos(cfg: Configs):
+    """"""
+    output = subprocess.run(
+        f"security add-generic-password -a datashuttle -s {cfg.get_rclone_config_name()} -w $(openssl rand -base64 40) -U",
+        shell=True,
+        capture_output=True,
+        text=True,
+    )
+
+    if output.returncode != 0:
+        raise RuntimeError(
+            f"\n--- STDOUT ---\n{output.stdout}",
+            f"\n--- STDERR ---\n{output.stderr}",
+            "Could not remove the password from the RClone config. See the error message above.",
+        )
 
 
 def set_credentials_as_password_command(cfg):
@@ -142,27 +171,40 @@ def run_rclone_config_encrypt(cfg: Configs):
 
     set_credentials_as_password_command(cfg)
 
-    # TODO: HANDLE ERRORS
-    subprocess.run(
+    output = subprocess.run(
         f"rclone config encryption set --config {rclone_config_path.as_posix()}",
         shell=True,
+        capture_output=True,
+        text=True,
     )
+    if output.returncode != 0:
+        raise RuntimeError(
+            f"\n--- STDOUT ---\n{output.stdout}\n"
+            f"\n--- STDERR ---\n{output.stderr}\n"
+            "Could not remove the password from the RClone config. See the error message above."
+        )
 
     remove_credentials_as_password_command()
 
 
-# TODO: HANDLE ERRORS
 def remove_rclone_password(cfg):
     """"""
-    set_credentials_as_password_command(Path(cfg))
+    set_credentials_as_password_command(cfg)
 
     config_filepath = cfg.get_rclone_config_filepath()
 
-    # TODO: HANDLE ERRORS
-    subprocess.run(
+    output = subprocess.run(
         rf"rclone config encryption remove --config {config_filepath.as_posix()}",
         shell=True,
+        capture_output=True,
+        text=True,
     )
+    if output.returncode != 0:
+        raise RuntimeError(
+            f"\n--- STDOUT ---\n{output.stdout}",
+            f"\n--- STDERR ---\n{output.stderr}",
+            "Could not remove the password from the RClone config. See the error message above.",
+        )
 
     remove_credentials_as_password_command()
 
@@ -174,3 +216,33 @@ def remove_rclone_password(cfg):
 def remove_credentials_as_password_command():
     if "RCLONE_PASSWORD_COMMAND" in os.environ:
         os.environ.pop("RCLONE_PASSWORD_COMMAND")
+
+
+def get_password_filepath(
+    cfg,
+):  # Configs  # TODO: datashuttle_path should be on configs?
+    """"""
+    assert cfg["connection_method"] in ["aws", "gdrive", "ssh"], (
+        "password should only be set for ssh, aws, gdrive."
+    )
+
+    base_path = canonical_folders.get_datashuttle_path() / "credentials"
+
+    base_path.mkdir(exist_ok=True, parents=True)
+
+    return base_path / f"{cfg.get_rclone_config_name()}.xml"
+
+
+def run_raise_if_fail(command, command_description):
+    output = run_subprocess.run(
+        command,
+        shell=True,  # TODO: handle shell
+        capture_output=True,
+        text=True,
+    )
+
+    if output.returncode != 0:
+        raise RuntimeError(
+            f"\n--- STDOUT ---\n{output.stdout}\n"
+            f"\n--- STDERR ---\n{output.stderr}\n"
+        )

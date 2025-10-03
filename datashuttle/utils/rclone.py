@@ -11,6 +11,7 @@ import platform
 import shlex
 import subprocess
 import tempfile
+from pathlib import Path
 from subprocess import CompletedProcess
 
 from datashuttle.configs import canonical_configs
@@ -114,7 +115,6 @@ def call_rclone_through_script_for_central_connection(
 
 
 def call_rclone_with_popen_for_central_connection(
-    cfg,
     command: str,
 ) -> subprocess.Popen:
     """Call rclone using `subprocess.Popen` for control over process termination.
@@ -126,18 +126,14 @@ def call_rclone_with_popen_for_central_connection(
     process explicitly.
     """
     command = "rclone " + command
-    lambda_func = lambda: subprocess.Popen(
+    process = subprocess.Popen(
         shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
-
-    process = run_function_that_may_require_central_connection_password(
-        cfg, lambda_func
     )
     return process
 
 
 def await_call_rclone_with_popen_for_central_connection_raise_on_fail(
-    cfg, process: subprocess.Popen, log: bool = True
+    process: subprocess.Popen, log: bool = True
 ):
     """Await rclone the subprocess.Popen call.
 
@@ -161,11 +157,10 @@ def run_function_that_may_require_central_connection_password(
     cfg, lambda_func
 ):
     """ """
-    set_password = cfg.rclone_has_password[cfg["connection_method"]]
+    set_password = cfg.connection_method_rclone_config_has_password()
 
     if set_password:
-        config_filepath = rclone_password.get_password_filepath(cfg)
-        rclone_password.set_credentials_as_password_command(config_filepath)
+        rclone_password.set_credentials_as_password_command(cfg)
 
     results = lambda_func()
 
@@ -244,8 +239,9 @@ def setup_rclone_config_for_ssh(
     """
     key_escaped = private_key_str.replace("\n", "\\n")
 
-    rclone_config_filepath = cfg.get_rclone_config_filepath()
-    # TODO: do this for everything TODO: maybe this config file can be created before setup in case of old file
+    rclone_config_filepath = get_full_config_filepath(
+        cfg
+    )  # TODO: do this for everything TODO: maybe this config file can be created before setup in case of old file
     if rclone_config_filepath.exists():
         rclone_config_filepath.unlink()
 
@@ -265,12 +261,23 @@ def setup_rclone_config_for_ssh(
         log_rclone_config_output()
 
 
+def get_config_path():
+    """TODO PLACEHOLDER."""
+    return (
+        Path().home() / "AppData" / "Roaming" / "rclone"
+    )  #  # "$HOME/.config/rclone/rclone.conf")
+
+
+def get_full_config_filepath(cfg: Configs) -> Path:
+    return get_config_path() / f"{cfg.get_rclone_config_name()}.conf"
+
+
 def get_config_arg(cfg):
     """TODO PLACEHOLDER."""
     cfg.get_rclone_config_name()  # pass this? handle better...
 
     if cfg["connection_method"] in ["aws", "gdrive", "ssh"]:
-        return f'--config "{cfg.get_rclone_config_filepath()}"'
+        return f'--config "{get_full_config_filepath(cfg)}"'
     else:
         return ""
 
@@ -334,7 +341,6 @@ def setup_rclone_config_for_gdrive(
     )
 
     process = call_rclone_with_popen_for_central_connection(
-        cfg,
         f"config create "
         f"{rclone_config_name} "
         f"drive "
@@ -343,13 +349,13 @@ def setup_rclone_config_for_gdrive(
         f"scope drive "
         f"root_folder_id {cfg['gdrive_root_folder_id']} "
         f"{extra_args} "
-        f"{get_config_arg(cfg)}",
+        f"{get_config_arg(cfg)}"
     )
 
     return process
 
 
-def setup_rclone_config_for_aws(  # TODO: call_rclone_for_central_connection for ssh setup
+def setup_rclone_config_for_aws(
     cfg: Configs,
     rclone_config_name: str,
     aws_secret_access_key: str,
@@ -384,8 +390,7 @@ def setup_rclone_config_for_aws(  # TODO: call_rclone_for_central_connection for
         else f" location_constraint {aws_region}"
     )
 
-    output = call_rclone_for_central_connection(
-        cfg,
+    output = call_rclone(
         "config create "
         f"{rclone_config_name} "
         "s3 provider AWS "
@@ -412,14 +417,8 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
     If the command fails, it raises a ConnectionError. The created file is
     deleted thereafter.
     """
-    utils.log_and_message(
-        f"Attempting to write to the central server to check write permissions...\n"
-        f"`central_path`: {cfg['central_path']}"
-    )
-
     filename = f"{utils.get_random_string()}_temp.txt"
 
-    # Get the full path to write to
     if cfg["central_path"] is None:
         assert cfg["connection_method"] == "gdrive", (
             "`central_path` may only be `None` for `gdrive`"
@@ -428,7 +427,6 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
     else:
         tempfile_path = (cfg["central_path"] / filename).as_posix()
 
-    # Try and write to the central location and log errors
     config_name = cfg.get_rclone_config_name()
 
     output = call_rclone_for_central_connection(
@@ -441,7 +439,6 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
             output.stderr.decode("utf-8"), ConnectionError
         )
 
-    # Delete the written file and complete
     output = call_rclone_for_central_connection(
         cfg,
         f"delete {cfg.get_rclone_config_name()}:{tempfile_path} {get_config_arg(cfg)}",
@@ -451,8 +448,6 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
         utils.log_and_raise_error(
             output.stderr.decode("utf-8"), ConnectionError
         )
-
-    utils.log_and_message("Successfully wrote to the central location.")
 
 
 def log_rclone_config_output() -> None:  # TODO: remove or update this
@@ -544,7 +539,7 @@ def transfer_data(
 
     extra_arguments = handle_rclone_arguments(rclone_options, include_list)
 
-    #    if cfg.rclone_has_password[cfg["connection_method"]]:  # TODO: one getter
+    #    if cfg.backend_has_password[cfg["connection_method"]]:  # TODO: one getter
     #        print("SET")
     #        config_filepath = rclone_password.get_password_filepath(
     #            cfg
@@ -567,7 +562,7 @@ def transfer_data(
             f'{central_filepath}" "{local_filepath}"  {extra_arguments} {get_config_arg(cfg)} --ask-password=false',  # TODO: handle the error
         )
 
-    if cfg.rclone_has_password[cfg["connection_method"]]:
+    if cfg.connection_method_rclone_config_has_password():
         print("REMOVED")
         rclone_password.remove_credentials_as_password_command()
 
