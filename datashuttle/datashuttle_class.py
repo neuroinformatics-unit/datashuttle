@@ -848,7 +848,7 @@ class DataShuttle:
                 f"{self.cfg.get_rclone_config_filepath()}.\n\n"
             )
 
-            if not self.cfg.connection_method_rclone_config_has_password():
+            if not self.cfg.get_rclone_has_password():
                 self._try_set_rclone_password()
 
             rclone.check_successful_connection_and_raise_error_on_fail(
@@ -911,7 +911,7 @@ class DataShuttle:
             self.cfg, process, log=True
         )
 
-        if not self.cfg.connection_method_rclone_config_has_password():
+        if not self.cfg.get_rclone_has_password():
             self._try_set_rclone_password()
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
@@ -944,7 +944,7 @@ class DataShuttle:
 
         self._setup_rclone_aws_config(aws_secret_access_key, log=True)
 
-        if not self.cfg.connection_method_rclone_config_has_password():
+        if not self.cfg.get_rclone_has_password():
             self._try_set_rclone_password()
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
@@ -958,20 +958,27 @@ class DataShuttle:
     # Rclone config password
     # -------------------------------------------------------------------------
 
-    def _try_set_rclone_password(self):
+    # TODO: LOAD AND SAVE CONFIG FILE ON EACH USE!!
+
+    def _try_set_rclone_password(
+        self, ask_for_input=True
+    ):  # TODO: handle this better
         """"""
-        pass_type = {
-            "Windows": "Windows credential manager",
-            "Linux": "the `pass` program",
-            "Darwin": "macOS inbuild `security`.",
-        }
+        if ask_for_input:
+            pass_type = {
+                "Windows": "Windows credential manager",
+                "Linux": "the `pass` program",
+                "Darwin": "macOS inbuild `security`.",
+            }
 
-        input_ = utils.get_user_input(
-            f"Would you like to set a password using {pass_type[platform.system()]}.\n"
-            f"Press 'y' to set password or leave blank to skip."
-        )
+            input_ = utils.get_user_input(
+                f"Would you like to set a password using {pass_type[platform.system()]}.\n"
+                f"Press 'y' to set password or leave blank to skip."
+            )
 
-        set_password = input_ == "y"
+            set_password = input_ == "y"
+        else:
+            set_password = True
 
         if set_password:
             try:
@@ -988,9 +995,11 @@ class DataShuttle:
 
             utils.log_and_message("Password set successfully")
 
+    # TODO: REMOVE from (e) just print (e)
+
     def set_rclone_password(self):
         """"""
-        if self.cfg.connection_method_rclone_config_has_password():
+        if self.cfg.get_rclone_has_password():
             raise RuntimeError(
                 "This config file already has a password set. "
                 "First, use `remove_rclone_password` to remove it."
@@ -998,13 +1007,11 @@ class DataShuttle:
 
         rclone_password.run_rclone_config_encrypt(self.cfg)
 
-        self.cfg.rclone_has_password[self.cfg["connection_method"]] = True
-
-        self.cfg.save_rclone_password_state()
+        self.cfg.set_rclone_has_password(True)
 
     def remove_rclone_password(self):
         """"""
-        if not self.cfg.connection_method_rclone_config_has_password():
+        if not self.cfg.get_rclone_has_password():
             raise RuntimeError(
                 f"The config for the current connection method: {self.cfg['connection_method']} "
                 f"does not have a password. Cannot remove."
@@ -1012,9 +1019,7 @@ class DataShuttle:
 
         rclone_password.remove_rclone_password(self.cfg)
 
-        self.cfg.rclone_has_password[self.cfg["connection_method"]] = False
-
-        self.cfg.save_rclone_password_state()
+        self.cfg.set_rclone_has_password(False)
 
     # -------------------------------------------------------------------------
     # Configs

@@ -67,24 +67,43 @@ class Configs(UserDict):
         self.rclone_password_state_file_path = (
             self.file_path.parent / "rclone_ps_state.yaml"
         )
-        self.rclone_has_password = {}
-        self.setup_rclone_has_password()
 
-    def connection_method_rclone_config_has_password(self):
-        return self.rclone_has_password[self["connection_method"]]
+    def load_rclone_has_password(self):
+        assert self["connection_method"] in ["ssh", "aws", "gdrive"]
 
-    def setup_rclone_has_password(self):
-        """"""
         if self.rclone_password_state_file_path.is_file():
             with open(self.rclone_password_state_file_path, "r") as file:
-                self.rclone_has_password = yaml.full_load(file)
+                rclone_has_password = yaml.full_load(file)
         else:
-            self.rclone_has_password = {
+            rclone_has_password = {
                 "ssh": False,
                 "gdrive": False,
                 "aws": False,
             }
-            self.save_rclone_password_state()
+
+            with open(self.rclone_password_state_file_path, "w") as file:
+                yaml.dump(rclone_has_password, file)
+
+        return rclone_has_password
+
+    def get_rclone_has_password(
+        self,
+    ):  # TODO: hmm this is used a lot... could hold state.. but nice to save...
+        """"""
+        rclone_has_password = self.load_rclone_has_password()
+
+        return rclone_has_password[self["connection_method"]]
+
+    def set_rclone_has_password(self, value):
+        """"""
+        assert self["connection_method"] in ["ssh", "aws", "gdrive"]
+
+        rclone_has_password = self.load_rclone_has_password()
+
+        rclone_has_password[self["connection_method"]] = value
+
+        with open(self.rclone_password_state_file_path, "w") as file:
+            yaml.dump(rclone_has_password, file)
 
     def setup_after_load(self) -> None:
         """Set up the config after loading it."""
