@@ -625,3 +625,13 @@ class Interface:
             return True, None
         except BaseException as e:
             return False, str(e)
+
+    # Set RClone Password
+    # ------------------------------------------------------------------------------------
+
+    def try_setup_rclone_password(self):
+        try:
+            self.project._try_set_password()
+            return True, None
+        except BaseException as e:
+            return False, str(e)

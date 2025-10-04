@@ -67,19 +67,28 @@ class SetupSshScreen(ModalScreen):
         input, multiple attempts are allowed.
         """
         if event.button.id == "setup_ssh_cancel_button":
-            self.dismiss()
+            if self.stage == 3:
+                self.show_connection_sucesssful_message()
+            else:
+                self.dismiss()
 
         if event.button.id == "setup_ssh_ok_button":
             if self.stage == 0:
                 self.ask_user_to_accept_hostkeys()
 
-            elif self.stage == 1:
+            elif self.stage == 1:  # TODO: use str for stages
                 self.save_hostkeys_and_prompt_password_input()
 
             elif self.stage == 2:
                 self.use_password_to_setup_ssh_key_pairs()
 
             elif self.stage == 3:
+                self.ask_setup_rclone_password()
+
+            elif self.stage == 4:
+                self.show_connection_sucesssful_message()
+
+            elif self.stage == 5:
                 self.dismiss()
 
     def ask_user_to_accept_hostkeys(self) -> None:
@@ -140,11 +149,7 @@ class SetupSshScreen(ModalScreen):
         self.stage += 1
 
     def use_password_to_setup_ssh_key_pairs(self) -> None:
-        """Get the user password for the central server.
-
-        If correct, SSH key pair is set up and 'OK' button changed
-        to 'Finish'. Otherwise, continue allowing failed password attempts.
-        """
+        """ """
         password = self.query_one("#setup_ssh_password_input").value
 
         success, output = self.interface.setup_key_pair_and_rclone_config(
@@ -152,10 +157,25 @@ class SetupSshScreen(ModalScreen):
         )
 
         if success:
-            message = "Connection successful! SSH key saved to the RClone config file."
-            self.query_one("#setup_ssh_ok_button").label = "Finish"
-            self.query_one("#setup_ssh_cancel_button").disabled = True
-            self.stage += 1
+            if self.interface.project.cfg.connection_method_rclone_config_has_password():
+                message = (
+                    "Password already set on config file, skipping password set up."
+                    "To remove the password, call project.remove_rclone_password()"
+                    "through the Python API."
+                )
+                self.query_one("#setup_ssh_ok_button").label = "Yes"
+                self.query_one("#setup_ssh_cancel_button").visible = False
+                self.query_one("#setup_ssh_password_input").visible = False
+                self.stage += 2  # Go to final screen
+            else:
+                message = (
+                    "Would you like to use Windows Credential Manager to set a password on "
+                    "the RClone config file on which your RClone is stored? ."
+                )
+                self.query_one("#setup_ssh_ok_button").label = "Yes"
+                self.query_one("#setup_ssh_cancel_button").label = "No"
+                self.query_one("#setup_ssh_password_input").visible = False
+                self.stage += 1  # Go to password set up screen
 
         else:
             message = (
@@ -166,3 +186,25 @@ class SetupSshScreen(ModalScreen):
             self.failed_password_attempts += 1
 
         self.query_one("#messagebox_message_label").update(message)
+
+    def ask_setup_rclone_password(self):
+        """"""
+        success = self.interface.try_setup_rclone_password()
+
+        if not self.interface.project.cfg.connection_method_rclone_config_has_password():
+            self._try_set_rclone_password()
+        else:
+            pass
+            # show message
+        #             message = "Connection successful! SSH key saved to the RClone config file."
+
+    def show_connection_sucesssful_message(self):
+        """"""
+        self.query_one("#setup_ssh_ok_button").label = "Finish"
+        self.query_one("#setup_ssh_cancel_button").disabled = True
+
+        message = (
+            "Connection successful! SSH key saved to the RClone config file."
+        )
+        self.query_one("#messagebox_message_label").update(message)
+        self.stage += 1
