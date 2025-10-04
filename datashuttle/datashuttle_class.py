@@ -4,6 +4,7 @@ import copy
 import glob
 import json
 import os
+import platform
 import shutil
 from pathlib import Path
 from typing import (
@@ -28,7 +29,6 @@ if TYPE_CHECKING:
         TopLevelFolder,
     )
 
-import paramiko
 import yaml
 
 from datashuttle.configs import (
@@ -46,6 +46,7 @@ from datashuttle.utils import (
     gdrive,
     getters,
     rclone,
+    rclone_password,
     ssh,
     utils,
     validation,
@@ -801,6 +802,17 @@ class DataShuttle:
     # SSH
     # -------------------------------------------------------------------------
 
+    # TODO: MAKE MORE NOTES ON HOW THE GDRIVE WORKER IS THE BEST MODEL
+    # IT MUST BE DONE WILL NOT WORK WITHOUT
+
+    # TODO: this is going to be a massive pain because old config files will not work
+    # will need to re-set up all connections
+    # this can just be a breaking change, but will have to handle error nicely
+    # We could just move it from the config file, then show a warning
+
+    # TODO: need the cancel button on tui in case we close the google window
+    # THEN we can hide it while we make the connection to check
+
     @requires_ssh_configs
     @check_is_not_local_project
     def setup_ssh_connection(self) -> None:
@@ -820,46 +832,34 @@ class DataShuttle:
             "setup-ssh-connection-to-central-server", local_vars=locals()
         )
 
-        verified = ssh.verify_ssh_central_host(
+        verified = ssh.verify_ssh_central_host_api(
             self.cfg["central_host_id"],
             self.cfg.hostkeys_path,
             log=True,
         )
 
         if verified:
-            ssh.setup_ssh_key(self.cfg, log=True)
-            self._setup_rclone_central_ssh_config(log=True)
+            private_key_str = ssh.setup_ssh_key_api(self.cfg, log=True)
+
+            self._setup_rclone_central_ssh_config(private_key_str, log=True)
+
+            utils.log_and_message(
+                f"Your SSH key will be stored in the rclone config at:\n "
+                f"{self.cfg.get_rclone_config_filepath()}.\n\n"
+            )
+
+            if not self.cfg.get_rclone_has_password():
+                self._try_set_rclone_password()
 
             rclone.check_successful_connection_and_raise_error_on_fail(
                 self.cfg
             )
 
+            utils.log_and_message(
+                "SSH key pair setup successfully. SSH key saved to the RClone config file."
+            )
+
         ds_logger.close_log_filehandler()
-
-    @requires_ssh_configs
-    @check_is_not_local_project
-    def write_public_key(self, filepath: str) -> None:
-        """Save the public SSH key to a specified filepath.
-
-        By default, only the SSH private key is stored in the
-        datashuttle configs folder. Use this function to save
-        the public key.
-
-        Parameters
-        ----------
-        filepath
-            Full filepath (including filename) to write the
-            public key to.
-
-        """
-        key: paramiko.RSAKey
-        key = paramiko.RSAKey.from_private_key_file(
-            self.cfg.ssh_key_path.as_posix()
-        )
-
-        with open(filepath, "w") as public:
-            public.write(key.get_base64())
-        public.close()
 
     # -------------------------------------------------------------------------
     # Google Drive
@@ -907,7 +907,12 @@ class DataShuttle:
             gdrive_client_secret, config_token
         )
 
-        rclone.await_call_rclone_with_popen_raise_on_fail(process, log=True)
+        rclone.await_call_rclone_with_popen_for_central_connection_raise_on_fail(
+            self.cfg, process, log=True
+        )
+
+        if not self.cfg.get_rclone_has_password():
+            self._try_set_rclone_password()
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
 
@@ -939,12 +944,82 @@ class DataShuttle:
 
         self._setup_rclone_aws_config(aws_secret_access_key, log=True)
 
+        if not self.cfg.get_rclone_has_password():
+            self._try_set_rclone_password()
+
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
         aws.raise_if_bucket_absent(self.cfg)
 
         utils.log_and_message("AWS Connection Successful.")
 
         ds_logger.close_log_filehandler()
+
+    # -------------------------------------------------------------------------
+    # Rclone config password
+    # -------------------------------------------------------------------------
+
+    # TODO: LOAD AND SAVE CONFIG FILE ON EACH USE!!
+
+    def _try_set_rclone_password(
+        self, ask_for_input=True
+    ):  # TODO: handle this better
+        """"""
+        if ask_for_input:
+            pass_type = {
+                "Windows": "Windows credential manager",
+                "Linux": "the `pass` program",
+                "Darwin": "macOS inbuild `security`.",
+            }
+
+            input_ = utils.get_user_input(
+                f"Would you like to set a password using {pass_type[platform.system()]}.\n"
+                f"Press 'y' to set password or leave blank to skip."
+            )
+
+            set_password = input_ == "y"
+        else:
+            set_password = True
+
+        if set_password:
+            try:
+                self.set_rclone_password()
+            except Exception as e:
+                config_path = self.cfg.get_rclone_config_filepath()
+
+                utils.log_and_raise_error(
+                    f"Password set up failed. The config at {config_path} contains the private ssh key without a password.\n"
+                    f"Use set_rclone_password()` to attempt to set the password again (see full error message above). ",
+                    RuntimeError,
+                    from_error=e,
+                )
+
+            utils.log_and_message("Password set successfully")
+
+    # TODO: REMOVE from (e) just print (e)
+
+    def set_rclone_password(self):
+        """"""
+        if self.cfg.get_rclone_has_password():
+            raise RuntimeError(
+                "This config file already has a password set. "
+                "First, use `remove_rclone_password` to remove it."
+            )
+
+        rclone_password.run_rclone_config_encrypt(self.cfg)
+
+        self.cfg.set_rclone_has_password(True)
+
+    def remove_rclone_password(self):
+        """"""
+        if not self.cfg.get_rclone_has_password():
+            raise RuntimeError(
+                f"The config for the current connection method: {self.cfg['connection_method']} "
+                f"does not have a password. Cannot remove."
+            )
+
+        rclone_password.remove_rclone_password(self.cfg)
+
+        self.cfg.set_rclone_has_password(False)
 
     # -------------------------------------------------------------------------
     # Configs
@@ -964,7 +1039,7 @@ class DataShuttle:
     ) -> None:
         """Initialize the configurations for datashuttle on the local machine.
 
-        Once initialised, these settings will be used each
+        Once initialized, these settings will be used each
         time the datashuttle is opened.
 
         These settings are stored in a config file on the
@@ -1578,11 +1653,13 @@ class DataShuttle:
         """
         folders.create_folders(self.cfg.project_metadata_path, log=False)
 
-    def _setup_rclone_central_ssh_config(self, log: bool) -> None:
+    def _setup_rclone_central_ssh_config(
+        self, private_key_str: str, log: bool
+    ) -> None:
         rclone.setup_rclone_config_for_ssh(
             self.cfg,
             self.cfg.get_rclone_config_name("ssh"),
-            self.cfg.ssh_key_path,
+            private_key_str,
             log=log,
         )
 

@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING, List, Tuple
 if TYPE_CHECKING:
     from datashuttle.utils.custom_types import TopLevelFolder
 
+import platform
+
 from datashuttle.configs import canonical_configs
 from datashuttle.utils.folder_class import Folder
 
@@ -91,3 +93,13 @@ def get_project_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
     temp_logs_path = base_path / "temp_logs"
 
     return base_path, temp_logs_path
+
+
+def get_rclone_config_base_path():
+    """TODO PLACEHOLDER."""
+    if platform.system() == "Windows":
+        return (
+            Path().home() / "AppData" / "Roaming" / "rclone"
+        )  #  # "$HOME/.config/rclone/rclone.conf")
+    else:  # TODO HANDLE platform.system() == "Linux":
+        return Path().home() / ".config" / "rclone"

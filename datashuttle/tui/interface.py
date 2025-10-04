@@ -511,10 +511,14 @@ class Interface:
     ) -> InterfaceOutput:
         """Set up SSH key pair and associated rclone configuration."""
         try:
+            rsa_key, private_key_str = ssh.generate_ssh_key_strings()
+
             ssh.add_public_key_to_central_authorized_keys(
-                self.project.cfg, password, log=False
+                self.project.cfg, rsa_key, password, log=False
             )
-            self.project._setup_rclone_central_ssh_config(log=False)
+            self.project._setup_rclone_central_ssh_config(
+                private_key_str, log=False
+            )
 
             rclone.check_successful_connection_and_raise_error_on_fail(
                 self.project.cfg
@@ -618,6 +622,16 @@ class Interface:
                 self.project.cfg
             )
             aws.raise_if_bucket_absent(self.project.cfg)
+            return True, None
+        except BaseException as e:
+            return False, str(e)
+
+    # Set RClone Password
+    # ------------------------------------------------------------------------------------
+
+    def try_setup_rclone_password(self):
+        try:
+            self.project._try_set_rclone_password(ask_for_input=False)
             return True, None
         except BaseException as e:
             return False, str(e)

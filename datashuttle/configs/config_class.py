@@ -62,8 +62,48 @@ class Configs(UserDict):
 
         self.logging_path: Path
         self.hostkeys_path: Path
-        self.ssh_key_path: Path
         self.project_metadata_path: Path
+
+        self.rclone_password_state_file_path = (
+            self.file_path.parent / "rclone_ps_state.yaml"
+        )
+
+    def load_rclone_has_password(self):
+        assert self["connection_method"] in ["ssh", "aws", "gdrive"]
+
+        if self.rclone_password_state_file_path.is_file():
+            with open(self.rclone_password_state_file_path, "r") as file:
+                rclone_has_password = yaml.full_load(file)
+        else:
+            rclone_has_password = {
+                "ssh": False,
+                "gdrive": False,
+                "aws": False,
+            }
+
+            with open(self.rclone_password_state_file_path, "w") as file:
+                yaml.dump(rclone_has_password, file)
+
+        return rclone_has_password
+
+    def get_rclone_has_password(
+        self,
+    ):  # TODO: hmm this is used a lot... could hold state.. but nice to save...
+        """"""
+        rclone_has_password = self.load_rclone_has_password()
+
+        return rclone_has_password[self["connection_method"]]
+
+    def set_rclone_has_password(self, value):
+        """"""
+        assert self["connection_method"] in ["ssh", "aws", "gdrive"]
+
+        rclone_has_password = self.load_rclone_has_password()
+
+        rclone_has_password[self["connection_method"]] = value
+
+        with open(self.rclone_password_state_file_path, "w") as file:
+            yaml.dump(rclone_has_password, file)
 
     def setup_after_load(self) -> None:
         """Set up the config after loading it."""
@@ -266,6 +306,13 @@ class Configs(UserDict):
 
         return f"central_{self.project_name}_{connection_method}"
 
+    def get_rclone_config_filepath(self) -> Path:
+        """"""
+        return (
+            canonical_folders.get_rclone_config_base_path()
+            / f"{self.get_rclone_config_name()}.conf"
+        )
+
     def make_rclone_transfer_options(
         self, overwrite_existing_files: OverwriteExistingFiles, dry_run: bool
     ) -> Dict:
@@ -299,8 +346,6 @@ class Configs(UserDict):
         datashuttle_path, _ = canonical_folders.get_project_datashuttle_path(
             self.project_name
         )
-
-        self.ssh_key_path = datashuttle_path / f"{self.project_name}_ssh_key"
 
         self.hostkeys_path = datashuttle_path / "hostkeys"
 
