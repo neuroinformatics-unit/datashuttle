@@ -157,7 +157,7 @@ def run_function_that_may_require_central_connection_password(
     cfg, lambda_func
 ):
     """ """
-    set_password = cfg.connection_method_rclone_config_has_password()
+    set_password = cfg.get_rclone_has_password()
 
     if set_password:
         rclone_password.set_credentials_as_password_command(cfg)
@@ -562,7 +562,7 @@ def transfer_data(
             f'{central_filepath}" "{local_filepath}"  {extra_arguments} {get_config_arg(cfg)} --ask-password=false',  # TODO: handle the error
         )
 
-    if cfg.connection_method_rclone_config_has_password():
+    if cfg.get_rclone_has_password():
         print("REMOVED")
         rclone_password.remove_credentials_as_password_command()
 
