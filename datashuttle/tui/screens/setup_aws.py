@@ -52,10 +52,17 @@ class SetupAwsScreen(ModalScreen):
         self.query_one("#setup_aws_secret_access_key_input").visible = False
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """Handle button press on the screen."""
+        """Handle button press on the screen.
+
+        The `setup_aws_ok_button` is used for all 'positive' events ('Yes, Ok')
+        and 'setup_aws_cancel_button' is used for 'negative' events ('No', 'Cancel').
+        The appropriate action to take on the button press is determined by the
+        current stage.
+
+        """
         if event.button.id == "setup_aws_cancel_button":
             if self.stage == "ask_password":
-                message = "AWS Connection Successful!"  # TODO: MOVE ADD
+                message = "AWS Connection Successful!"  #
                 self.query_one("#setup_aws_messagebox_message").update(message)
                 self.query_one("#setup_aws_ok_button").label = "Finish"
                 self.query_one("#setup_aws_cancel_button").remove()
@@ -63,7 +70,8 @@ class SetupAwsScreen(ModalScreen):
             else:
                 self.dismiss()
 
-        if event.button.id == "setup_aws_ok_button":
+        elif event.button.id == "setup_aws_ok_button":
+
             if self.stage == "init":
                 self.prompt_user_for_aws_secret_access_key()
 
@@ -83,10 +91,15 @@ class SetupAwsScreen(ModalScreen):
         self.query_one("#setup_aws_messagebox_message").update(message)
         self.query_one("#setup_aws_secret_access_key_input").visible = True
 
+        self.query_one("#setup_aws_ok_button")
+
         self.stage = "use_secret_access_key"
 
     def use_secret_access_key_to_setup_aws_connection(self) -> None:
-        """Set up the AWS connection and inform user of success or failure."""
+        """Set up the AWS connection and failure. If success, move onto the
+            password screen.
+
+        """
         secret_access_key = self.query_one(
             "#setup_aws_secret_access_key_input"
         ).value
@@ -124,7 +137,7 @@ class SetupAwsScreen(ModalScreen):
             message = "The password was successfully set. Setup complete!"
             self.query_one("#setup_aws_messagebox_message").update(message)
             self.query_one("#setup_aws_ok_button").label = "Finish"
-            self.query_one("#setup_aws_cancel_button").disabled = True
+            self.query_one("#setup_aws_cancel_button").remove()
             self.stage = "finished"
         else:
             message = f"The password set up failed. Exception: {output}"

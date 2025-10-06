@@ -69,7 +69,7 @@ class SetupSshScreen(ModalScreen):
         input, multiple attempts are allowed.
         """
         if event.button.id == "setup_ssh_cancel_button":
-            if self.stage == "show_success_message":
+            if self.stage == "set_up_password":
                 self.show_connection_successful_message()
             else:
                 self.dismiss()
@@ -186,10 +186,7 @@ class SetupSshScreen(ModalScreen):
             message = "Password successfully set on the config file."
             self.query_one("#messagebox_message_label").update(message)
             self.query_one("#setup_ssh_ok_button").label = "Ok"
-            self.query_one(
-                "#setup_ssh_cancel_button"
-            ).label = "Cancel"  # check this#
-            self.query_one("#setup_ssh_cancel_button").disabled = True
+            self.query_one("#setup_ssh_cancel_button").remove()
         else:
             message = f"The password set up failed. Exception: {output}"
             self.query_one("#messagebox_message_label").update(message)
@@ -203,7 +200,10 @@ class SetupSshScreen(ModalScreen):
     def show_connection_successful_message(self):
         """"""
         self.query_one("#setup_ssh_ok_button").label = "Finish"
-        self.query_one("#setup_ssh_cancel_button").disabled = True
+        try:
+            self.query_one("#setup_ssh_cancel_button").remove()
+        except BaseException:
+            pass
 
         message = "Connection was set up successfully. SSH key saved to the RClone config file."
         self.query_one("#messagebox_message_label").update(message)
