@@ -23,7 +23,12 @@ class SetupSshScreen(ModalScreen):
     """Dialog window that sets up an SSH connection.
 
     This asks to confirm the central hostkey, and takes password to setup
-    SSH key pair. Under the hood uses `project.setup_ssh_connection()`.
+    SSH key pair as well as setting a password to the RClone config.
+
+    Due to how textual works, it is simples for each button press to
+    trigger an action (e.g. set up host key) and then set up the widgets
+    for the next screen. Then, when the next button is pressed, we can
+    continue in this way of managing the screens.
     """
 
     def __init__(self, interface: Interface) -> None:
@@ -151,7 +156,13 @@ class SetupSshScreen(ModalScreen):
         self.stage = "ask_for_password"
 
     def use_password_to_setup_ssh_key_pairs(self) -> None:
-        """ """
+        """Set up the SSH key pair using the user-supplied password
+        to the central server.
+
+        Next, set up the request asking if they would like to set
+        a (separate) password on their RClone config, using the
+        system credential manager.
+        """
         password = self.query_one("#setup_ssh_password_input").value
 
         success, output = self.interface.setup_key_pair_and_rclone_config(
@@ -160,6 +171,7 @@ class SetupSshScreen(ModalScreen):
 
         if success:
             message = (
+                "Connection set up successfully.\n"
                 "Would you like to use Windows Credential Manager to set a password on "
                 "the RClone config file on which your RClone is stored? ."
             )
@@ -179,7 +191,9 @@ class SetupSshScreen(ModalScreen):
         self.query_one("#messagebox_message_label").update(message)
 
     def try_setup_rclone_password(self):
-        """"""
+        """Try and set up a password to the RClone config using the system
+        credential manager. If successful, the next screen confirms success.
+        """
         success, output = self.interface.try_setup_rclone_password()
 
         if success:
