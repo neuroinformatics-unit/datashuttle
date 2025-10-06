@@ -139,8 +139,7 @@ class SetupGdriveScreen(ModalScreen):
                 )
 
     #    elif event.button.id == "setup_gdrive_set_password_yes_button":
-     #       self.set_password()
-
+    #       self.set_password()
 
     def ask_user_for_browser(self) -> None:
         """Ask the user if their machine has access to a browser."""
@@ -333,7 +332,9 @@ class SetupGdriveScreen(ModalScreen):
         success, output = self.interface.try_setup_rclone_password()
 
         if success:
-            message = "Password successfully set on the config file. Setup complete!"
+            message = (
+                "Password successfully set on the config file. Setup complete!"
+            )
             message = "Setup Complete!"
             self.query_one("#setup_gdrive_cancel_button").remove()
 
@@ -346,7 +347,6 @@ class SetupGdriveScreen(ModalScreen):
             self.query_one("#messagebox_message_label").update(message)
 
         self.stage = "show_success_message"
-
 
     def display_failed(self, output) -> None:
         """Update the message box indicating the set up failed."""
