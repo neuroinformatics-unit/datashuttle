@@ -44,7 +44,9 @@ class SetupGdriveScreen(ModalScreen):
             id="setup_gdrive_generic_input_box",
             placeholder="Enter value here",
         )
-        self.enter_button = Button("Enter", id="setup_gdrive_enter_button")
+        self.enter_button = Button(
+            "Enter", id="setup_gdrive_no_browser_enter_button"
+        )
 
     def compose(self) -> ComposeResult:
         """Add widgets to the SetupGdriveScreen."""
@@ -102,18 +104,18 @@ class SetupGdriveScreen(ModalScreen):
             else:
                 self.ask_user_for_browser()
 
-        elif event.button.id == "setup_gdrive_yes_button":
-            self.remove_yes_no_buttons()
+        elif event.button.id == "setup_gdrive_has_browser_yes_button":
+            self.remove_yes_no_browser_buttons()
             self.open_browser_and_setup_gdrive_connection(
                 self.gdrive_client_secret
             )
 
         elif event.button.id == "setup_gdrive_no_button":
             self.is_browser_available = False
-            self.remove_yes_no_buttons()
+            self.remove_yes_no_browser_buttons()
             self.prompt_user_for_config_token()
 
-        elif event.button.id == "setup_gdrive_enter_button":
+        elif event.button.id == "setup_gdrive_no_browser_enter_button":
             if (
                 self.interface.project.cfg["gdrive_client_id"]
                 and self.stage == 0
@@ -150,7 +152,7 @@ class SetupGdriveScreen(ModalScreen):
             self.input_box.visible = False
 
         # Mount the Yes and No buttons
-        yes_button = Button("Yes", id="setup_gdrive_yes_button")
+        yes_button = Button("Yes", id="setup_gdrive_has_browser_yes_button")
         no_button = Button("No", id="setup_gdrive_no_button")
 
         self.query_one("#setup_gdrive_buttons_horizontal").mount(
@@ -211,7 +213,9 @@ class SetupGdriveScreen(ModalScreen):
             message + "\nPress shift+click to copy."
         )
 
-        self.enter_button = Button("Enter", id="setup_gdrive_enter_button")
+        self.enter_button = Button(
+            "Enter", id="setup_gdrive_no_browser_enter_button"
+        )
         self.query_one("#setup_gdrive_buttons_horizontal").mount(
             self.enter_button, before="#setup_gdrive_cancel_button"
         )
@@ -264,7 +268,8 @@ class SetupGdriveScreen(ModalScreen):
 
         success, output = worker.result
         if success:
-            self.show_finish_screen()
+            # self.show_finish_screen()
+            self.show_password_screen()
         else:
             self.input_box.disabled = False
             self.enter_button.disabled = False
@@ -302,6 +307,21 @@ class SetupGdriveScreen(ModalScreen):
             Button("Finish", id="setup_gdrive_finish_button")
         )
 
+    def show_password_screen(self):
+        """"""
+        assert False
+        self.show_password_screen()
+        self.remove_yes_no_browser_buttons()
+        self.query_one("setup_gdrive_cancel_button").remove()
+        yes_button = Button("Yes", id="setup_gdrive_set_password_yes_button")
+        no_button = Button("No", id="setup_gdrive_set_password_no_button")
+
+        self.query_one("#setup_gdrive_buttons_horizontal").mount(
+            yes_button, no_button
+        )
+        message = "Would you like to set a password?"
+        self.update_message_box_message(message)
+
     def display_failed(self, output) -> None:
         """Update the message box indicating the set up failed."""
         message = (
@@ -329,7 +349,7 @@ class SetupGdriveScreen(ModalScreen):
         self.input_box.visible = True
         self.input_box.value = ""
 
-    def remove_yes_no_buttons(self) -> None:
+    def remove_yes_no_browser_buttons(self) -> None:
         """Remove yes and no buttons."""
-        self.query_one("#setup_gdrive_yes_button").remove()
+        self.query_one("#setup_gdrive_has_browser_yes_button").remove()
         self.query_one("#setup_gdrive_no_button").remove()
