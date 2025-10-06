@@ -161,8 +161,8 @@ class SetupSshScreen(ModalScreen):
         if success:
             if self.interface.project.cfg.get_rclone_has_password():
                 message = (
-                    "Password already set on config file, skipping password set up."
-                    "To remove the password, call project.remove_rclone_password()"
+                    "Password already set on config file, skipping password set up.\n\n"
+                    "To remove the password, call `project.remove_rclone_password()` "
                     "through the Python API."
                 )
                 self.query_one("#setup_ssh_ok_button").label = "Ok"
@@ -199,7 +199,8 @@ class SetupSshScreen(ModalScreen):
             self.query_one("#setup_ssh_ok_button").label = "Ok"
             self.query_one(
                 "#setup_ssh_cancel_button"
-            ).label = "Cancel"  # check this
+            ).label = "Cancel"  # check this#
+            self.query_one("#setup_ssh_cancel_button").disabled = True
         else:
             message = f"The password set up failed. Exception: {output}"
             self.query_one("#messagebox_message_label").update(message)
