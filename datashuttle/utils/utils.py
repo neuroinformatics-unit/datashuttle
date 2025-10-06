@@ -45,15 +45,13 @@ def log_and_message(message: str, use_rich: bool = False) -> None:
     print_message_to_user(message, use_rich)
 
 
-def log_and_raise_error(
-    message: str, exception: Any, from_error: Exception | None = None
-) -> None:
+def log_and_raise_error(message: str, exception: Any) -> None:
     """Log the message before raising the same message as an error."""
     if ds_logger.logging_is_active():
         logger = ds_logger.get_logger()
         logger.error(f"\n\n{' '.join(traceback.format_stack(limit=5))}")
         logger.error(message)
-    raise_error(message, exception, from_error=from_error)
+    raise_error(message, exception)
 
 
 def warn(message: str, log: bool) -> None:
@@ -74,9 +72,7 @@ def warn(message: str, log: bool) -> None:
     warnings.warn(message)
 
 
-def raise_error(
-    message: str, exception, from_error: Exception | None = None
-) -> None:
+def raise_error(message: str, exception) -> None:
     """Centralized way to raise an error.
 
     The logger is closed to ensure it is not still running
@@ -84,10 +80,7 @@ def raise_error(
     """
     ds_logger.close_log_filehandler()
 
-    if from_error:
-        raise exception(message) from from_error
-    else:
-        raise exception(message)
+    raise exception(message)
 
 
 def print_message_to_user(

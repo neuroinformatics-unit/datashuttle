@@ -597,7 +597,11 @@ class Interface:
         The `self.gdrive_setup_process_killed` flag helps prevent raising errors in case the
         process was killed manually.
         """
-        stdout, stderr = process.communicate()
+        stdout, stderr = (
+            rclone.await_call_rclone_with_popen_for_central_connection_raise_on_fail(
+                self.project.cfg, process, log=False
+            )
+        )
 
         if not self.gdrive_setup_process_killed:
             if process.returncode != 0:

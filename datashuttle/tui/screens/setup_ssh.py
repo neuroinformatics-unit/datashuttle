@@ -159,25 +159,14 @@ class SetupSshScreen(ModalScreen):
         )
 
         if success:
-            if self.interface.project.cfg.get_rclone_has_password():
-                message = (
-                    "Password already set on config file, skipping password set up.\n\n"
-                    "To remove the password, call `project.remove_rclone_password()` "
-                    "through the Python API."
-                )
-                self.query_one("#setup_ssh_ok_button").label = "Ok"
-                self.query_one("#setup_ssh_cancel_button").disabled = True
-                self.query_one("#setup_ssh_password_input").visible = False
-                self.stage = "show_success_message"
-            else:
-                message = (
-                    "Would you like to use Windows Credential Manager to set a password on "
-                    "the RClone config file on which your RClone is stored? ."
-                )
-                self.query_one("#setup_ssh_ok_button").label = "Yes"
-                self.query_one("#setup_ssh_cancel_button").label = "No"
-                self.query_one("#setup_ssh_password_input").visible = False
-                self.stage = "set_up_password"  # Go to password set up screen
+            message = (
+                "Would you like to use Windows Credential Manager to set a password on "
+                "the RClone config file on which your RClone is stored? ."
+            )
+            self.query_one("#setup_ssh_ok_button").label = "Yes"
+            self.query_one("#setup_ssh_cancel_button").label = "No"
+            self.query_one("#setup_ssh_password_input").visible = False
+            self.stage = "set_up_password"  # Go to password set up screen
 
         else:
             message = (

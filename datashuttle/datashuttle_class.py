@@ -907,6 +907,9 @@ class DataShuttle:
             gdrive_client_secret, config_token
         )
 
+        print("got process")
+
+        # TODO: do something with stderr stdout here, in general handle errors better!
         rclone.await_call_rclone_with_popen_for_central_connection_raise_on_fail(
             self.cfg, process, log=True
         )
@@ -987,10 +990,10 @@ class DataShuttle:
                 config_path = self.cfg.get_rclone_config_filepath()
 
                 utils.log_and_raise_error(
+                    f"{str(e)}\n"
                     f"Password set up failed. The config at {config_path} contains the private ssh key without a password.\n"
                     f"Use set_rclone_password()` to attempt to set the password again (see full error message above). ",
                     RuntimeError,
-                    from_error=e,
                 )
 
             utils.log_and_message("Password set successfully")

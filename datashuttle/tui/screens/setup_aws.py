@@ -26,7 +26,7 @@ class SetupAwsScreen(ModalScreen):
         super(SetupAwsScreen, self).__init__()
 
         self.interface = interface
-        self.stage = 0
+        self.stage = "init"
 
     def compose(self) -> ComposeResult:
         """Set widgets on the SetupAwsScreen."""
@@ -54,16 +54,26 @@ class SetupAwsScreen(ModalScreen):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle button press on the screen."""
         if event.button.id == "setup_aws_cancel_button":
-            self.dismiss()
+            if self.stage == "ask_password":
+                message = "AWS Connection Successful!"  # TODO: MOVE ADD
+                self.query_one("#setup_aws_messagebox_message").update(message)
+                self.query_one("#setup_aws_ok_button").label = "Finish"
+                self.query_one("#setup_aws_cancel_button").remove()
+                self.stage = "finished"
+            else:
+                self.dismiss()
 
         if event.button.id == "setup_aws_ok_button":
-            if self.stage == 0:
+            if self.stage == "init":
                 self.prompt_user_for_aws_secret_access_key()
 
-            elif self.stage == 1:
+            elif self.stage == "use_secret_access_key":
                 self.use_secret_access_key_to_setup_aws_connection()
 
-            elif self.stage == 2:
+            elif self.stage == "ask_password":
+                self.ask_for_password()
+
+            elif self.stage == "finished":
                 self.dismiss()
 
     def prompt_user_for_aws_secret_access_key(self) -> None:
@@ -73,7 +83,7 @@ class SetupAwsScreen(ModalScreen):
         self.query_one("#setup_aws_messagebox_message").update(message)
         self.query_one("#setup_aws_secret_access_key_input").visible = True
 
-        self.stage += 1
+        self.stage = "use_secret_access_key"
 
     def use_secret_access_key_to_setup_aws_connection(self) -> None:
         """Set up the AWS connection and inform user of success or failure."""
@@ -86,21 +96,36 @@ class SetupAwsScreen(ModalScreen):
         )
 
         if success:
-            message = "AWS Connection Successful!"
-            self.query_one(
-                "#setup_aws_secret_access_key_input"
-            ).visible = False
+            message = "Would you like to set a password?"
+            self.query_one("#setup_aws_messagebox_message").update(message)
 
+            self.query_one("#setup_aws_secret_access_key_input").remove()
+            self.query_one("#setup_aws_ok_button").label = "Yes"
+            self.query_one("#setup_aws_cancel_button").label = "No"
+            self.stage = "ask_password"
         else:
             message = (
-                f"AWS setup failed. Please check your configs and secret access key"
+                f"AWS setup failed. Please check your configs and secret access key"  # TODO: check this
                 f"\n\n Traceback: {output}"
             )
             self.query_one(
                 "#setup_aws_secret_access_key_input"
             ).disabled = True
 
-        self.query_one("#setup_aws_ok_button").label = "Finish"
-        self.query_one("#setup_aws_messagebox_message").update(message)
-        self.query_one("#setup_aws_cancel_button").disabled = True
-        self.stage += 1
+            self.query_one("#setup_aws_ok_button").label = "Retry"
+            self.query_one("#setup_aws_messagebox_message").update(message)
+
+    # TODO: this is a direct copy
+    def ask_for_password(self):  # TODO: CHANGE NAME
+        """"""
+        success, output = self.interface.try_setup_rclone_password()
+
+        if success:
+            message = "The password was successfully set. Setup complete!"
+            self.query_one("#setup_aws_messagebox_message").update(message)
+            self.query_one("#setup_aws_ok_button").label = "Finish"
+            self.query_one("#setup_aws_cancel_button").disabled = True
+            self.stage = "finished"
+        else:
+            message = f"The password set up failed. Exception: {output}"
+            self.query_one("#setup_aws_messagebox_message").update(message)

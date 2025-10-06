@@ -122,18 +122,24 @@ def call_rclone_with_popen_for_central_connection(
     It is not possible to kill a process while running it using `subprocess.run`.
     Killing a process might be required when running rclone setup in a thread worker
     to allow the user to cancel the setup process. In such a case, cancelling the
-    thread worker alone will not kill the rclone process, so we need to kill the
+    thread worker alone will not kill the rclone process, so we need to kill thenothe env
+
     process explicitly.
     """
+    #   if cfg.get_rclone_has_password():
+    #      rclone_password.set_credentials_as_password_command(cfg)
+
     command = "rclone " + command
     process = subprocess.Popen(
-        shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        shlex.split(command),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,  # , env=copy.deepcopy(os.environ)
     )
     return process
 
 
 def await_call_rclone_with_popen_for_central_connection_raise_on_fail(
-    process: subprocess.Popen, log: bool = True
+    cfg: Configs, process: subprocess.Popen, log: bool = True
 ):
     """Await rclone the subprocess.Popen call.
 
@@ -152,21 +158,27 @@ def await_call_rclone_with_popen_for_central_connection_raise_on_fail(
     if log:
         log_rclone_config_output()
 
+    return stdout, stderr
+
 
 def run_function_that_may_require_central_connection_password(
     cfg, lambda_func
 ):
     """ """
     set_password = cfg.get_rclone_has_password()
+    print("set_password", set_password)
 
     if set_password:
         rclone_password.set_credentials_as_password_command(cfg)
+
+    print("os env", os.environ)
 
     results = lambda_func()
 
     if set_password:
         rclone_password.remove_credentials_as_password_command()
 
+    print("res")
     return results
 
 
@@ -244,6 +256,7 @@ def setup_rclone_config_for_ssh(
     )  # TODO: do this for everything TODO: maybe this config file can be created before setup in case of old file
     if rclone_config_filepath.exists():
         rclone_config_filepath.unlink()
+        cfg.set_rclone_has_password(False)
 
     command = (
         f"config create "
@@ -340,6 +353,14 @@ def setup_rclone_config_for_gdrive(
         else ""
     )
 
+    rclone_config_filepath = get_full_config_filepath(
+        cfg
+    )  # TODO: do this for everything TODO: maybe this config file can be created before setup in case of old file
+    if rclone_config_filepath.exists():
+        rclone_config_filepath.unlink()
+        cfg.set_rclone_has_password(False)
+
+    print("Trying to create gdrive config")
     process = call_rclone_with_popen_for_central_connection(
         f"config create "
         f"{rclone_config_name} "
@@ -349,9 +370,9 @@ def setup_rclone_config_for_gdrive(
         f"scope drive "
         f"root_folder_id {cfg['gdrive_root_folder_id']} "
         f"{extra_args} "
-        f"{get_config_arg(cfg)}"
+        f"{get_config_arg(cfg)}",
     )
-
+    print("Created gdrive config")
     return process
 
 
@@ -389,6 +410,13 @@ def setup_rclone_config_for_aws(
         if aws_region == "us-east-1"
         else f" location_constraint {aws_region}"
     )
+
+    rclone_config_filepath = get_full_config_filepath(
+        cfg
+    )  # TODO: do this for everything TODO: maybe this config file can be created before setup in case of old file
+    if rclone_config_filepath.exists():
+        rclone_config_filepath.unlink()
+        cfg.set_rclone_has_password(False)
 
     output = call_rclone(
         "config create "
