@@ -89,7 +89,6 @@ class SetupGdriveScreen(ModalScreen):
         if (
             event.button.id == "setup_gdrive_cancel_button"
             or event.button.id == "setup_gdrive_finish_button"
-            or event.button.id == "setup_gdrive_set_password_no_button"
         ):
             # see setup_gdrive_connection_and_update_ui()
             if self.setup_worker and self.setup_worker.is_running:
@@ -138,8 +137,17 @@ class SetupGdriveScreen(ModalScreen):
                     self.gdrive_client_secret, config_token
                 )
 
-    #    elif event.button.id == "setup_gdrive_set_password_yes_button":
-    #       self.set_password()
+        elif event.button.id == "setup_gdrive_set_password_yes_button":
+            self.set_password()
+
+        elif event.button.id == "setup_gdrive_skip_password_ok_button":
+            self.query_one("#setup_gdrive_skip_password_ok_button").remove()
+            self.set_finish_page()
+
+        elif event.button.id == "setup_gdrive_set_password_no_button":
+            self.query_one("#setup_gdrive_set_password_yes_button").remove()
+            self.query_one("#setup_gdrive_set_password_no_button").remove()
+            self.set_finish_page()
 
     def ask_user_for_browser(self) -> None:
         """Ask the user if their machine has access to a browser."""
@@ -194,12 +202,16 @@ class SetupGdriveScreen(ModalScreen):
         message = "Please authenticate through browser (it should open automatically)."
         self.update_message_box_message(message)
 
-        asyncio.create_task(
+        task = asyncio.create_task(
             self.setup_gdrive_connection_and_update_ui(
                 gdrive_client_secret=gdrive_client_secret
             ),
             name="setup_gdrive_connection_with_browser_task",
         )
+        task.add_done_callback(self.handle_task_result)
+
+    def handle_task_result(self, task):
+        task.result()
 
     def prompt_user_for_config_token(self) -> None:
         """Prompt the user for the rclone config token for Google Drive setup."""
@@ -272,8 +284,17 @@ class SetupGdriveScreen(ModalScreen):
 
         success, output = worker.result
         if success:
-            pass
-            # self.show_password_screen()
+            self.show_password_screen()
+            for id in [
+                "#setup_gdrive_cancel_button",
+                "#setup_gdrive_generic_input_box",
+                "#setup_gdrive_no_browser_enter_button",
+            ]:
+                try:
+                    widget = self.query_one(id)
+                    await widget.remove()
+                except BaseException:
+                    pass  # TODO
         else:
             self.input_box.disabled = False
             self.enter_button.disabled = False
@@ -301,10 +322,9 @@ class SetupGdriveScreen(ModalScreen):
     # UI Update Methods
     # ----------------------------------------------------------------------------------
 
-    def show_finish_screen(self) -> None:  # TODO: NOW DUPLCIATE
+    def set_finish_page(self) -> None:  # TODO: NOW DUPLCIATE
         """Show the final screen after successful set up."""
         message = "Setup Complete!"
-        self.query_one("#setup_gdrive_cancel_button").remove()
 
         self.update_message_box_message(message)
         self.query_one("#setup_gdrive_buttons_horizontal").mount(
@@ -313,9 +333,6 @@ class SetupGdriveScreen(ModalScreen):
 
     def show_password_screen(self):
         """"""
-        # self.remove_yes_no_browser_buttons()
-        self.query_one("#setup_gdrive_cancel_button").remove()
-
         message = "Would you like to set a password?"
         self.update_message_box_message(message)
 
@@ -332,21 +349,17 @@ class SetupGdriveScreen(ModalScreen):
         success, output = self.interface.try_setup_rclone_password()
 
         if success:
-            message = (
-                "Password successfully set on the config file. Setup complete!"
-            )
-            message = "Setup Complete!"
-            self.query_one("#setup_gdrive_cancel_button").remove()
+            self.query_one("#setup_gdrive_set_password_yes_button").remove()
+            self.query_one("#setup_gdrive_set_password_no_button").remove()
 
+            message = "The password was successfully set. Setup complete!"
             self.update_message_box_message(message)
             self.query_one("#setup_gdrive_buttons_horizontal").mount(
                 Button("Finish", id="setup_gdrive_finish_button")
             )
         else:
             message = f"The password set up failed. Exception: {output}"
-            self.query_one("#messagebox_message_label").update(message)
-
-        self.stage = "show_success_message"
+            self.update_message_box_message(message)
 
     def display_failed(self, output) -> None:
         """Update the message box indicating the set up failed."""

@@ -43,6 +43,8 @@ def set_password_windows(cfg: Configs):
         "(ConvertTo-SecureString ([System.Web.Security.Membership]::GeneratePassword(40,10)) -AsPlainText -Force) "
         f"| Export-Clixml -LiteralPath '{password_filepath}'"
     )
+    print("set password cmd windows: ", ps_cmd)
+
     output = subprocess.run(
         [shell, "-NoProfile", "-Command", ps_cmd],
         capture_output=True,
@@ -125,6 +127,8 @@ def set_credentials_as_password_command(cfg):
     if platform.system() == "Windows":
         password_filepath = get_password_filepath(cfg)
 
+        print("password_filepath ", password_filepath)
+
         assert password_filepath.exists(), (
             "Critical error: password file not found when setting password command."
         )
@@ -142,6 +146,9 @@ def set_credentials_as_password_command(cfg):
             f"[System.Runtime.InteropServices.Marshal]::SecureStringToBSTR("
             f"(Import-Clixml -LiteralPath '{password_filepath}' ).Password)))\""
         )
+
+        print("setting rclone cmd: ", cmd)
+
         os.environ["RCLONE_PASSWORD_COMMAND"] = cmd
 
     elif platform.system() == "Linux":
@@ -207,6 +214,9 @@ def remove_rclone_password(cfg):
         )
 
     remove_credentials_as_password_command()
+
+    if platform.system() == "Windows":
+        get_password_filepath(cfg).unlink()
 
     utils.log_and_message(
         f"Password removed from rclone config file: {config_filepath}"
