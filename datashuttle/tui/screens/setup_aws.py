@@ -71,7 +71,6 @@ class SetupAwsScreen(ModalScreen):
                 self.dismiss()
 
         elif event.button.id == "setup_aws_ok_button":
-
             if self.stage == "init":
                 self.prompt_user_for_aws_secret_access_key()
 
@@ -79,7 +78,7 @@ class SetupAwsScreen(ModalScreen):
                 self.use_secret_access_key_to_setup_aws_connection()
 
             elif self.stage == "ask_password":
-                self.ask_for_password()
+                self.set_password()
 
             elif self.stage == "finished":
                 self.dismiss()
@@ -97,7 +96,7 @@ class SetupAwsScreen(ModalScreen):
 
     def use_secret_access_key_to_setup_aws_connection(self) -> None:
         """Set up the AWS connection and failure. If success, move onto the
-            password screen.
+        password screen.
 
         """
         secret_access_key = self.query_one(
@@ -118,7 +117,7 @@ class SetupAwsScreen(ModalScreen):
             self.stage = "ask_password"
         else:
             message = (
-                f"AWS setup failed. Please check your configs and secret access key"  # TODO: check this
+                f"AWS setup failed. Please check your configs and secret access key"
                 f"\n\n Traceback: {output}"
             )
             self.query_one(
@@ -128,8 +127,7 @@ class SetupAwsScreen(ModalScreen):
             self.query_one("#setup_aws_ok_button").label = "Retry"
             self.query_one("#setup_aws_messagebox_message").update(message)
 
-    # TODO: this is a direct copy
-    def ask_for_password(self):  # TODO: CHANGE NAME
+    def set_password(self):
         """"""
         success, output = self.interface.try_setup_rclone_password()
 

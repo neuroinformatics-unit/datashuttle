@@ -295,8 +295,8 @@ class SetupGdriveScreen(ModalScreen):
                 try:
                     widget = self.query_one(id)
                     await widget.remove()
-                except BaseException:
-                    pass  # TODO
+                except textual.errors.NoMatches:
+                    pass
         else:
             self.input_box.disabled = False
             self.enter_button.disabled = False
@@ -324,6 +324,7 @@ class SetupGdriveScreen(ModalScreen):
     # UI Update Methods
     # ----------------------------------------------------------------------------------
 
+    # TODO: REFACTOR THIS IN GENERAL BIT CONFUSING NOW
     def set_finish_page(self) -> None:  # TODO: NOW DUPLCIATE
         """Show the final screen after successful set up."""
         message = "Setup Complete!"
@@ -345,7 +346,6 @@ class SetupGdriveScreen(ModalScreen):
             yes_button, no_button
         )
 
-    # TODO: DIRECT COPY
     def set_password(self):
         """"""
         success, output = self.interface.try_setup_rclone_password()

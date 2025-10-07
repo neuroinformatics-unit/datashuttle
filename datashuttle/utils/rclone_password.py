@@ -82,7 +82,7 @@ def set_password_linux(cfg):
             raise RuntimeError(
                 "Password store is not initialized. "
                 "Run `pass init <gpg-id>` before using `pass`."
-            ) from e
+            )
         else:
             raise RuntimeError(
                 f"\n--- STDOUT ---\n{output.stdout}",
@@ -159,7 +159,9 @@ def set_credentials_as_password_command(cfg):
 
 def run_rclone_config_encrypt(cfg: Configs):
     """"""
-    rclone_config_path = cfg.rclone.get_rclone_config_filepath()
+    rclone_config_path = (
+        cfg.rclone.get_rclone_central_connection_config_filepath()
+    )
 
     if not rclone_config_path.exists():
         connection_method = cfg["connection_method"]
@@ -193,7 +195,9 @@ def remove_rclone_password(cfg):
     """"""
     set_credentials_as_password_command(cfg)
 
-    config_filepath = cfg.rclone.get_rclone_config_filepath()
+    config_filepath = (
+        cfg.rclone.get_rclone_central_connection_config_filepath()
+    )
 
     output = subprocess.run(
         rf"rclone config encryption remove --config {config_filepath.as_posix()}",

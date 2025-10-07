@@ -156,7 +156,7 @@ def await_call_rclone_with_popen_for_central_connection_raise_on_fail(
         utils.log_and_raise_error(stderr.decode("utf-8"), ConnectionError)
 
     if log:
-        log_rclone_config_output()
+        log_rclone_config_output(cfg)
 
     return stdout, stderr
 
@@ -214,7 +214,7 @@ def setup_rclone_config_for_local_filesystem(
     call_rclone(f"config create {rclone_config_name} local", pipe_std=True)
 
     if log:
-        log_rclone_config_output()
+        log_rclone_config_output(cfg)
 
 
 def setup_rclone_config_for_ssh(
@@ -247,12 +247,7 @@ def setup_rclone_config_for_ssh(
     """
     key_escaped = private_key_str.replace("\n", "\\n")
 
-    rclone_config_filepath = get_full_config_filepath(
-        cfg
-    )  # TODO: do this for everything TODO: maybe this config file can be created before setup in case of old file
-    if rclone_config_filepath.exists():
-        rclone_config_filepath.unlink()
-        cfg.rclone.set_rclone_has_password(False)
+    delete_existing_rclone_config_file(cfg)
 
     command = (
         f"config create "
@@ -267,26 +262,37 @@ def setup_rclone_config_for_ssh(
     call_rclone(command, pipe_std=True)
 
     if log:
-        log_rclone_config_output()
-
-
-def get_config_path():
-    """TODO PLACEHOLDER."""
-    return (
-        Path().home() / "AppData" / "Roaming" / "rclone"
-    )  #  # "$HOME/.config/rclone/rclone.conf")
+        log_rclone_config_output(cfg)
 
 
 def get_full_config_filepath(cfg: Configs) -> Path:
-    return get_config_path() / f"{cfg.rclone.get_rclone_config_name()}.conf"
+    """ """
+    return (
+        canonical_folders.get_rclone_config_base_path()
+        / f"{cfg.rclone.get_rclone_config_name()}.conf"
+    )
+
+
+def delete_existing_rclone_config_file(cfg: Configs):
+    """ """
+    rclone_config_filepath = (
+        cfg.rclone.get_rclone_central_connection_config_filepath()
+    )
+
+    if delete_existing_file:
+        if rclone_config_filepath.exists():
+            rclone_config_filepath.unlink()
+            cfg.rclone.set_rclone_has_password(False)
 
 
 def get_config_arg(cfg):
     """TODO PLACEHOLDER."""
-    cfg.rclone.get_rclone_config_name()  # pass this? handle better...
+    rclone_config_path = (
+        cfg.rclone.get_rclone_central_connection_config_filepath()
+    )
 
     if cfg["connection_method"] in ["aws", "gdrive", "ssh"]:
-        return f'--config "{get_full_config_filepath(cfg)}"'
+        return f'--config "{rclone_config_path}"'
     else:
         return ""
 
@@ -349,12 +355,7 @@ def setup_rclone_config_for_gdrive(
         else ""
     )
 
-    rclone_config_filepath = get_full_config_filepath(
-        cfg
-    )  # TODO: do this for everything TODO: maybe this config file can be created before setup in case of old file
-    if rclone_config_filepath.exists():
-        rclone_config_filepath.unlink()
-        cfg.rclone.set_rclone_has_password(False)
+    delete_existing_rclone_config_file(cfg)
 
     command = (
         f"config create "
@@ -408,12 +409,7 @@ def setup_rclone_config_for_aws(
         else f" location_constraint {aws_region}"
     )
 
-    rclone_config_filepath = get_full_config_filepath(
-        cfg
-    )  # TODO: do this for everything TODO: maybe this config file can be created before setup in case of old file
-    if rclone_config_filepath.exists():
-        rclone_config_filepath.unlink()
-        cfg.rclone.set_rclone_has_password(False)
+    delete_existing_rclone_config_file(cfg)
 
     output = call_rclone(
         "config create "
@@ -433,7 +429,7 @@ def setup_rclone_config_for_aws(
         )
 
     if log:
-        log_rclone_config_output()
+        log_rclone_config_output(cfg)
 
 
 def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
@@ -475,12 +471,17 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
         )
 
 
-def log_rclone_config_output() -> None:  # TODO: remove or update this
+def log_rclone_config_output(cfg: Configs) -> None:
     """Log the output from creating Rclone config."""
-    output = call_rclone("config file", pipe_std=True)
-    utils.log(
-        f"Successfully created rclone config. {output.stdout.decode('utf-8')}"
-    )
+    if cfg["connection_method"] in ["aws", "ssh", "gdrive"]:
+        config_filepath = (
+            cfg.rclone.get_rclone_central_connection_config_filepath()
+        )
+    else:
+        output = call_rclone("config file", pipe_std=True)
+        config_filepath = output.stdout.decode("utf-8")
+
+    utils.log(f"Successfully created rclone config. {config_filepath}")
 
 
 def prompt_rclone_download_if_does_not_exist() -> None:
@@ -563,13 +564,6 @@ def transfer_data(
     ).as_posix()
 
     extra_arguments = handle_rclone_arguments(rclone_options, include_list)
-
-    #    if cfg.backend_has_password[cfg["connection_method"]]:  # TODO: one getter
-    #        print("SET")
-    #        config_filepath = rclone_password.get_password_filepath(
-    #            cfg
-    #        )  # TODO: ONE FUNCTION OR INCORPORATE INTO SINGLE FUNCTION
-    #        rclone_password.set_credentials_as_password_command(config_filepath)
 
     if upload_or_download == "upload":
         output = call_rclone_through_script_for_central_connection(
