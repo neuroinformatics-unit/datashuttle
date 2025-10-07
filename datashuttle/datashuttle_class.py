@@ -802,17 +802,6 @@ class DataShuttle:
     # SSH
     # -------------------------------------------------------------------------
 
-    # TODO: MAKE MORE NOTES ON HOW THE GDRIVE WORKER IS THE BEST MODEL
-    # IT MUST BE DONE WILL NOT WORK WITHOUT
-
-    # TODO: this is going to be a massive pain because old config files will not work
-    # will need to re-set up all connections
-    # this can just be a breaking change, but will have to handle error nicely
-    # We could just move it from the config file, then show a warning
-
-    # TODO: need the cancel button on tui in case we close the google window
-    # THEN we can hide it while we make the connection to check
-
     @requires_ssh_configs
     @check_is_not_local_project
     def setup_ssh_connection(self) -> None:
@@ -850,7 +839,7 @@ class DataShuttle:
 
             utils.log_and_message(
                 f"Your SSH key will be stored in the rclone config at:\n "
-                f"{self.cfg.rclone.get_rclone_config_filepath()}.\n\n"
+                f"{self.cfg.rclone.get_rclone_central_connection_config_filepath()}.\n\n"
             )
 
             if not self.cfg.rclone.get_rclone_has_password():
@@ -917,7 +906,6 @@ class DataShuttle:
             gdrive_client_secret, config_token
         )
 
-        # TODO: do something with stderr stdout here, in general handle errors better!
         rclone.await_call_rclone_with_popen_for_central_connection_raise_on_fail(
             self.cfg, process, log=True
         )
@@ -975,11 +963,7 @@ class DataShuttle:
     # Rclone config password
     # -------------------------------------------------------------------------
 
-    # TODO: LOAD AND SAVE CONFIG FILE ON EACH USE!!
-
-    def _try_set_rclone_password(
-        self, ask_for_input=True
-    ):  # TODO: handle this better
+    def _try_set_rclone_password(self, ask_for_input=True):
         """"""
         if ask_for_input:
             pass_type = {
@@ -1001,7 +985,7 @@ class DataShuttle:
             try:
                 self.set_rclone_password()
             except Exception as e:
-                config_path = self.cfg.rclone.get_rclone_config_filepath()
+                config_path = self.cfg.rclone.get_rclone_central_connection_config_filepath()
 
                 utils.log_and_raise_error(
                     f"{str(e)}\n"
@@ -1011,8 +995,6 @@ class DataShuttle:
                 )
 
             utils.log_and_message("Password set successfully")
-
-    # TODO: REMOVE from (e) just print (e)
 
     def set_rclone_password(self):
         """"""

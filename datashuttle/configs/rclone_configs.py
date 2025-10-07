@@ -109,7 +109,7 @@ class RCloneConfigs:
 
         return f"central_{self.datashuttle_configs.project_name}_{connection_method}"
 
-    def get_rclone_config_filepath(self) -> Path:
+    def get_rclone_central_connection_config_filepath(self) -> Path:
         """The full filepath to the rclone `.conf` config file"""
         return (
             canonical_folders.get_rclone_config_base_path()
