@@ -258,8 +258,28 @@ class BaseTransfer(BaseTest):
         """
         project.get_logging_path().mkdir(parents=True, exist_ok=True)
 
-    async def check_next_sub_002_ses_003_in_tui(self, project):
-        """ """
+    async def check_next_sub_ses_in_tui(self, project):
+        """A central function for testing next sub / ses in the TUI.
+
+        This test is shared between ssh, aws and gdrive tests that
+        use the same logic to test the get next sub / ses functionality.
+
+        First, sub / ses folders are created in the project and uploaded
+        centrally. Then, the folders are removed  from the local path.
+        In this way, we can be use that `include_central` (which searches
+        the remote for the next sub / ses) is behaving correctly and not just
+        reading the local path.
+
+        Because sub-001 is created, the suggested sub we expect is sub-002.
+        Because ses-002 is created in sub-001, the suggested ses we expect is ses-003.
+        """
+        test_utils.make_local_folders_with_files_in(
+            project, "rawdata", "sub-001", ["ses-001", "ses-002"]
+        )
+        project.upload_entire_project()
+
+        shutil.rmtree(project.get_local_path())
+
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
             await self.check_and_click_onto_existing_project(
@@ -290,7 +310,6 @@ class BaseTransfer(BaseTest):
                 == "ses-003"
             )
 
-            # Check subject suggestion called mocked function correctly
             await self.double_click_input(pilot, "sub")
 
             assert (

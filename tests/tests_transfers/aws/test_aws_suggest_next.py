@@ -1,5 +1,3 @@
-import shutil
-
 import pytest
 
 from datashuttle.utils import rclone
@@ -40,11 +38,4 @@ class TestAWSSuggestNext(BaseTransfer, TuiBase):
         """ """
         project = aws_setup
 
-        test_utils.make_local_folders_with_files_in(
-            project, "rawdata", "sub-001", ["ses-001", "ses-002"]
-        )
-        project.upload_entire_project()
-
-        shutil.rmtree(project.get_local_path())
-
-        await self.check_next_sub_002_ses_003_in_tui(project)
+        await self.check_next_sub_ses_in_tui(project)
