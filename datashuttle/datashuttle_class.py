@@ -791,7 +791,7 @@ class DataShuttle:
             upload_or_download,
             top_level_folder,
             include_list,
-            self.cfg.make_rclone_transfer_options(
+            self.cfg.rclone.make_rclone_transfer_options(
                 overwrite_existing_files, dry_run
             ),
         )
@@ -845,7 +845,7 @@ class DataShuttle:
 
             utils.log_and_message(
                 f"Your SSH key will be stored in the rclone config at:\n "
-                f"{self.cfg.get_rclone_config_filepath()}.\n\n"
+                f"{self.cfg.rclone.get_rclone_config_filepath()}.\n\n"
             )
 
             if not self.cfg.get_rclone_has_password():
@@ -897,7 +897,7 @@ class DataShuttle:
             config_token = gdrive.prompt_and_get_config_token(
                 self.cfg,
                 gdrive_client_secret,
-                self.cfg.get_rclone_config_name("gdrive"),
+                self.cfg.rclone.get_rclone_config_name("gdrive"),
                 log=True,
             )
         else:
@@ -987,7 +987,7 @@ class DataShuttle:
             try:
                 self.set_rclone_password()
             except Exception as e:
-                config_path = self.cfg.get_rclone_config_filepath()
+                config_path = self.cfg.rclone.get_rclone_config_filepath()
 
                 utils.log_and_raise_error(
                     f"{str(e)}\n"
@@ -1010,7 +1010,7 @@ class DataShuttle:
 
         rclone_password.run_rclone_config_encrypt(self.cfg)
 
-        self.cfg.set_rclone_has_password(True)
+        self.cfg.rclone.set_rclone_has_password(True)
 
     def remove_rclone_password(self):
         """"""
@@ -1022,7 +1022,7 @@ class DataShuttle:
 
         rclone_password.remove_rclone_password(self.cfg)
 
-        self.cfg.set_rclone_has_password(False)
+        self.cfg.rclone.set_rclone_has_password(False)
 
     # -------------------------------------------------------------------------
     # Configs
@@ -1671,14 +1671,14 @@ class DataShuttle:
     ) -> None:
         rclone.setup_rclone_config_for_ssh(
             self.cfg,
-            self.cfg.get_rclone_config_name("ssh"),
+            self.cfg.rclone.get_rclone_config_name("ssh"),
             private_key_str,
             log=log,
         )
 
     def _setup_rclone_central_local_filesystem_config(self) -> None:
         rclone.setup_rclone_config_for_local_filesystem(
-            self.cfg.get_rclone_config_name("local_filesystem"),
+            self.cfg.rclone.get_rclone_config_name("local_filesystem"),
         )
 
     def _setup_rclone_gdrive_config(
@@ -1688,7 +1688,7 @@ class DataShuttle:
     ) -> subprocess.Popen:
         return rclone.setup_rclone_config_for_gdrive(
             self.cfg,
-            self.cfg.get_rclone_config_name("gdrive"),
+            self.cfg.rclone.get_rclone_config_name("gdrive"),
             gdrive_client_secret,
             config_token,
         )
@@ -1698,7 +1698,7 @@ class DataShuttle:
     ) -> None:
         rclone.setup_rclone_config_for_aws(
             self.cfg,
-            self.cfg.get_rclone_config_name("aws"),
+            self.cfg.rclone.get_rclone_config_name("aws"),
             aws_secret_access_key,
             log=log,
         )

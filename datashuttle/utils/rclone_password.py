@@ -92,7 +92,7 @@ def set_password_linux(cfg):
             )
 
     output = subprocess.run(
-        f"echo $(openssl rand -base64 40) | pass insert -m {cfg.get_rclone_config_name()}",
+        f"echo $(openssl rand -base64 40) | pass insert -m {cfg.rclone.get_rclone_config_name()}",
         shell=True,
         capture_output=True,
         text=True,
@@ -108,7 +108,7 @@ def set_password_linux(cfg):
 def set_password_macos(cfg: Configs):
     """"""
     output = subprocess.run(
-        f"security add-generic-password -a datashuttle -s {cfg.get_rclone_config_name()} -w $(openssl rand -base64 40) -U",
+        f"security add-generic-password -a datashuttle -s {cfg.rclone.get_rclone_config_name()} -w $(openssl rand -base64 40) -U",
         shell=True,
         capture_output=True,
         text=True,
@@ -153,18 +153,18 @@ def set_credentials_as_password_command(cfg):
 
     elif platform.system() == "Linux":
         os.environ["RCLONE_PASSWORD_COMMAND"] = (
-            f"/usr/bin/pass {cfg.get_rclone_config_name()}"
+            f"/usr/bin/pass {cfg.rclone.get_rclone_config_name()}"
         )
 
     elif platform.system() == "Darwin":
         os.environ["RCLONE_PASSWORD_COMMAND"] = (
-            f"/usr/bin/security find-generic-password -a datashuttle -s {cfg.get_rclone_config_name()} -w"
+            f"/usr/bin/security find-generic-password -a datashuttle -s {cfg.rclone.get_rclone_config_name()} -w"
         )
 
 
 def run_rclone_config_encrypt(cfg: Configs):
     """"""
-    rclone_config_path = cfg.get_rclone_config_filepath()
+    rclone_config_path = cfg.rclone.get_rclone_config_filepath()
 
     if not rclone_config_path.exists():
         connection_method = cfg["connection_method"]
@@ -198,7 +198,7 @@ def remove_rclone_password(cfg):
     """"""
     set_credentials_as_password_command(cfg)
 
-    config_filepath = cfg.get_rclone_config_filepath()
+    config_filepath = cfg.rclone.get_rclone_config_filepath()
 
     output = subprocess.run(
         rf"rclone config encryption remove --config {config_filepath.as_posix()}",
@@ -240,7 +240,7 @@ def get_password_filepath(
 
     base_path.mkdir(exist_ok=True, parents=True)
 
-    return base_path / f"{cfg.get_rclone_config_name()}.xml"
+    return base_path / f"{cfg.rclone.rclone.get_rclone_config_name()}.xml"
 
 
 def run_raise_if_fail(command, command_description):

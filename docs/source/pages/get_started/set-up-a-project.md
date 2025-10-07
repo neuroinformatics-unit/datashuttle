@@ -546,3 +546,34 @@ project.setup_aws_connection()
 
 Running [](setup_aws_connection()) will require entering your
 `AWS Secret Access Key` and the setup will be completed.
+
+
+(password-protection)=
+### Password protecting your connection credentials
+
+Datashuttle uses the software `RClone` for all data transfers by default.
+RClone stores the credentials for connection by default in an unencrypted configuration file.
+This includes:
+
+- ssh connection: the private SSH key
+- Google Drive: some API thing
+- Amazon S3: Access key ID and XXX
+
+By default, these are stored in your  home directory which should be secure. However, for an
+additional layer of security, it is possible to encrpy the Rclone config file.
+
+When setting up the connection, datashuttle will offer the option to set the RClone configuration.
+This automatically uses the system credential manager:
+
+Windows : (requires powershell)
+macOS : set up
+Linux : requires pass
+
+This means the file is only uncryptable on your local machine or user) CHECK USER.
+
+TODO: think more about the credentials file... its' stupid to have this itself plain text in datashuttle?
+
+Despite this layer of security, it is not reccomended to use datashuttle for remote connectivity on
+a machine to which you do not have secure access, even with password protection of the RClone config.
+
+TODO: test if `pass` is not installed on linux that the error is propagated to the TUI properly

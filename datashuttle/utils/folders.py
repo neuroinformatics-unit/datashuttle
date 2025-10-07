@@ -695,7 +695,7 @@ def search_central_via_connection(
         If `True`, return the full filepath, otherwise return only the folder/file name.
 
     """
-    rclone_config_name = cfg.get_rclone_config_name(
+    rclone_config_name = cfg.rclone.get_rclone_config_name(
         cfg["connection_method"]
     )  # TODO: this is not good because we get the config name here and in get_config_arg
 

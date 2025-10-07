@@ -571,7 +571,7 @@ class Interface:
             output = gdrive.preliminary_for_setup_without_browser(
                 self.project.cfg,
                 gdrive_client_secret,
-                self.project.cfg.get_rclone_config_name("gdrive"),
+                self.project.cfg.rclone.get_rclone_config_name("gdrive"),
                 log=False,
             )
             return True, output

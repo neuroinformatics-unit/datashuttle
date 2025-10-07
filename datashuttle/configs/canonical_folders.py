@@ -96,10 +96,19 @@ def get_project_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
 
 
 def get_rclone_config_base_path():
-    """TODO PLACEHOLDER."""
+    """Get the path to the Rclone config file. This is used for
+    RClone config files for transfer targets (ssh, aws, gdrive).
+    This should match where RClone itself stores the config by default,
+    as described here: https://rclone.org/docs/#config-string
+
+    Because RClone's resolution is a little complex, in some rare cases the
+    below may not match where RClone stores its configs. This just means that
+    local filesystem configs and transfer configs are stored in a separate place,
+    which is not a huge deal.
+    """
     if platform.system() == "Windows":
-        return (
-            Path().home() / "AppData" / "Roaming" / "rclone"
-        )  #  # "$HOME/.config/rclone/rclone.conf")
-    else:  # TODO HANDLE platform.system() == "Linux":
-        return Path().home() / ".config" / "rclone"
+        appdata_path = Path().home() / "AppData" / "Roaming"
+        if appdata_path.is_dir():
+            return appdata_path / "rclone"
+
+    return Path().home() / ".config" / "rclone"
