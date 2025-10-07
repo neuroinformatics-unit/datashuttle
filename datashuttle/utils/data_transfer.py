@@ -397,8 +397,8 @@ class TransferData:
             [name in ["all", "all_datatype"] for name in self.datatype]
         ):
             utils.log_and_raise_error(
-                "'datatype' must only include 'all' "
-                "or 'all_datatype' if these options are used.",
+                "If either `all` or `all_datatype` is selected for datatype, "
+                "it must be the only selected option.",
                 ValueError,
             )
 
