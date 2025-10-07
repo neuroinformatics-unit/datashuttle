@@ -21,7 +21,7 @@ class TestSSHTransfer(BaseSSHTransfer):
     @pytest.fixture(
         scope="class",
     )
-    def ssh_setup(self, pathtable_and_project, setup_ssh_container):
+    def ssh_setup(self, pathtable_and_project, setup_ssh_container_fixture):
         """
         After initial project setup (in `pathtable_and_project`)
         setup a container and the project's SSH connection to the container.
