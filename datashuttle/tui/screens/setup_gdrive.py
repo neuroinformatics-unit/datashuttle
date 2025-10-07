@@ -25,8 +25,10 @@ class SetupGdriveScreen(ModalScreen):
 
     If the config contains a "gdrive_client_id", the user is prompted
     to enter a client secret. If the user has access to a browser, a Google Drive
-    authentication page will open. Otherwise, the user is asked to run an rclone command
+    authentication page will open. Otherwise, the user is asked to run a rclone command
     and input a config token.
+
+
     """
 
     def __init__(self, interface: Interface) -> None:
