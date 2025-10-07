@@ -828,6 +828,11 @@ class DataShuttle:
         cluster. Once input, SSH private / public key pair
         will be setup.
         """
+        if self.cfg["connection_method"] != "ssh":
+            raise RuntimeError(
+                "configs `connection_method` must be 'ssh' to set up SSH connection."
+            )
+
         self._start_log(
             "setup-ssh-connection-to-central-server", local_vars=locals()
         )
@@ -848,7 +853,7 @@ class DataShuttle:
                 f"{self.cfg.rclone.get_rclone_config_filepath()}.\n\n"
             )
 
-            if not self.cfg.get_rclone_has_password():
+            if not self.cfg.rclone.get_rclone_has_password():
                 self._try_set_rclone_password()
 
             rclone.check_successful_connection_and_raise_error_on_fail(
@@ -881,6 +886,11 @@ class DataShuttle:
         Next, with the provided credentials, the final setup will be done. This
         opens up a browser if the user confirmed access to a browser.
         """
+        if self.cfg["connection_method"] != "gdrive":
+            raise RuntimeError(
+                "configs `connection_method` must be 'gdrive' to set up Google Drive connection."
+            )
+
         self._start_log(
             "setup-google-drive-connection-to-central-server",
             local_vars=locals(),
@@ -907,14 +917,12 @@ class DataShuttle:
             gdrive_client_secret, config_token
         )
 
-        print("got process")
-
         # TODO: do something with stderr stdout here, in general handle errors better!
         rclone.await_call_rclone_with_popen_for_central_connection_raise_on_fail(
             self.cfg, process, log=True
         )
 
-        if not self.cfg.get_rclone_has_password():
+        if not self.cfg.rclone.get_rclone_has_password():
             self._try_set_rclone_password()
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
@@ -938,6 +946,12 @@ class DataShuttle:
 
         Next, with the provided credentials, the final connection setup will be done.
         """
+        if self.cfg["connection_method"] != "aws":
+            raise RuntimeError(
+                "configs `connection_method` must be 'aws' to "
+                "set up Amazon Web Services S3 Bucket connection."
+            )
+
         self._start_log(
             "setup-aws-connection-to-central-server",
             local_vars=locals(),
@@ -947,7 +961,7 @@ class DataShuttle:
 
         self._setup_rclone_aws_config(aws_secret_access_key, log=True)
 
-        if not self.cfg.get_rclone_has_password():
+        if not self.cfg.rclone.get_rclone_has_password():
             self._try_set_rclone_password()
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
@@ -1002,7 +1016,7 @@ class DataShuttle:
 
     def set_rclone_password(self):
         """"""
-        if self.cfg.get_rclone_has_password():
+        if self.cfg.rclone.get_rclone_has_password():
             raise RuntimeError(
                 "This config file already has a password set. "
                 "First, use `remove_rclone_password` to remove it."
@@ -1014,7 +1028,7 @@ class DataShuttle:
 
     def remove_rclone_password(self):
         """"""
-        if not self.cfg.get_rclone_has_password():
+        if not self.cfg.rclone.get_rclone_has_password():
             raise RuntimeError(
                 f"The config for the current connection method: {self.cfg['connection_method']} "
                 f"does not have a password. Cannot remove."

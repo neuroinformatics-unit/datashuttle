@@ -43,7 +43,6 @@ def set_password_windows(cfg: Configs):
         "(ConvertTo-SecureString ([System.Web.Security.Membership]::GeneratePassword(40,10)) -AsPlainText -Force) "
         f"| Export-Clixml -LiteralPath '{password_filepath}'"
     )
-    print("set password cmd windows: ", ps_cmd)
 
     output = subprocess.run(
         [shell, "-NoProfile", "-Command", ps_cmd],
@@ -127,8 +126,6 @@ def set_credentials_as_password_command(cfg):
     if platform.system() == "Windows":
         password_filepath = get_password_filepath(cfg)
 
-        print("password_filepath ", password_filepath)
-
         assert password_filepath.exists(), (
             "Critical error: password file not found when setting password command."
         )
@@ -146,8 +143,6 @@ def set_credentials_as_password_command(cfg):
             f"[System.Runtime.InteropServices.Marshal]::SecureStringToBSTR("
             f"(Import-Clixml -LiteralPath '{password_filepath}' ).Password)))\""
         )
-
-        print("setting rclone cmd: ", cmd)
 
         os.environ["RCLONE_PASSWORD_COMMAND"] = cmd
 
@@ -240,7 +235,7 @@ def get_password_filepath(
 
     base_path.mkdir(exist_ok=True, parents=True)
 
-    return base_path / f"{cfg.rclone.rclone.get_rclone_config_name()}.xml"
+    return base_path / f"{cfg.rclone.get_rclone_config_name()}.xml"
 
 
 def run_raise_if_fail(command, command_description):
