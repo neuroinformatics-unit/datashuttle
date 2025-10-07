@@ -36,7 +36,7 @@ class RCloneConfigs:
     """
 
     def __init__(self, datashuttle_configs, config_base_path):
-        self.datashuttle_configs = configs
+        self.datashuttle_configs = datashuttle_configs
         self.rclone_password_state_file_path = (
             config_base_path / "rclone_ps_state.yaml"
         )
@@ -75,7 +75,11 @@ class RCloneConfigs:
         Note that this is stored to disk each call (rather than tracked locally) to ensure
         it is updated live if updated through the Python API while the TUI is also running.
         """
-        assert self["connection_method"] in ["ssh", "aws", "gdrive"]
+        assert self.datashuttle_configs["connection_method"] in [
+            "ssh",
+            "aws",
+            "gdrive",
+        ]
 
         rclone_has_password = self.load_rclone_has_password()
 
@@ -103,7 +107,7 @@ class RCloneConfigs:
         if connection_method is None:
             connection_method = self.datashuttle_configs["connection_method"]
 
-        return f"central_{self.project_name}_{connection_method}"
+        return f"central_{self.datashuttle_configs.project_name}_{connection_method}"
 
     def get_rclone_config_filepath(self) -> Path:
         """The full filepath to the rclone `.conf` config file"""

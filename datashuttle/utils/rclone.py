@@ -126,7 +126,7 @@ def call_rclone_with_popen_for_central_connection(
 
     process explicitly.
     """
-    #   if cfg.get_rclone_has_password():
+    #   if cfg.rclone.get_rclone_has_password():
     #      rclone_password.set_credentials_as_password_command(cfg)
 
     command = "rclone " + command
@@ -165,20 +165,16 @@ def run_function_that_may_require_central_connection_password(
     cfg, lambda_func
 ):
     """ """
-    set_password = cfg.get_rclone_has_password()
-    print("set_password", set_password)
+    set_password = cfg.rclone.get_rclone_has_password()
 
     if set_password:
         rclone_password.set_credentials_as_password_command(cfg)
-
-    print("os env", os.environ)
 
     results = lambda_func()
 
     if set_password:
         rclone_password.remove_credentials_as_password_command()
 
-    print("res")
     return results
 
 
@@ -360,8 +356,7 @@ def setup_rclone_config_for_gdrive(
         rclone_config_filepath.unlink()
         cfg.rclone.set_rclone_has_password(False)
 
-    print("Trying to create gdrive config")
-    process = call_rclone_with_popen_for_central_connection(
+    command = (
         f"config create "
         f"{rclone_config_name} "
         f"drive "
@@ -370,9 +365,11 @@ def setup_rclone_config_for_gdrive(
         f"scope drive "
         f"root_folder_id {cfg['gdrive_root_folder_id']} "
         f"{extra_args} "
-        f"{get_config_arg(cfg)}",
+        f"{get_config_arg(cfg)}"
     )
-    print("Created gdrive config")
+
+    process = call_rclone_with_popen_for_central_connection(command)
+
     return process
 
 
@@ -590,8 +587,7 @@ def transfer_data(
             f'{central_filepath}" "{local_filepath}"  {extra_arguments} {get_config_arg(cfg)} --ask-password=false',  # TODO: handle the error
         )
 
-    if cfg.get_rclone_has_password():
-        print("REMOVED")
+    if cfg.rclone.get_rclone_has_password():
         rclone_password.remove_credentials_as_password_command()
 
     return output
