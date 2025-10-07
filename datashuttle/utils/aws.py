@@ -12,7 +12,7 @@ def check_if_aws_bucket_exists(cfg: Configs) -> bool:
     """
     output = rclone.call_rclone_for_central_connection(
         cfg,
-        f"lsjson {cfg.get_rclone_config_name()}: {rclone.get_config_arg(cfg)}",
+        f"lsjson {cfg.rclone.get_rclone_config_name()}: {rclone.get_config_arg(cfg)}",
         pipe_std=True,
     )
 
