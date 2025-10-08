@@ -279,10 +279,9 @@ def delete_existing_rclone_config_file(cfg: Configs):
         cfg.rclone.get_rclone_central_connection_config_filepath()
     )
 
-    if delete_existing_file:
-        if rclone_config_filepath.exists():
-            rclone_config_filepath.unlink()
-            cfg.rclone.set_rclone_has_password(False)
+    if rclone_config_filepath.exists():
+        rclone_config_filepath.unlink()
+        cfg.rclone.set_rclone_has_password(False)
 
 
 def get_config_arg(cfg):
