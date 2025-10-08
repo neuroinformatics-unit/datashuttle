@@ -981,12 +981,16 @@ class DataShuttle:
 
         return input_ == "y"
 
-    def _try_set_rclone_password(self):  # TODO: use different nomeclature... encrypted not password
+    def _try_set_rclone_password(
+        self,
+    ):  # TODO: use different nomeclature... encrypted not password
         """"""
         try:
             self.set_rclone_password()
         except Exception as e:
-            config_path = self.cfg.rclone.get_rclone_central_connection_config_filepath()
+            config_path = (
+                self.cfg.rclone.get_rclone_central_connection_config_filepath()
+            )
 
             utils.log_and_raise_error(
                 f"{str(e)}\n"
