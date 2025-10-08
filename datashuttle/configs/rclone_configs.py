@@ -136,3 +136,13 @@ class RCloneConfigs:
             "transfer_verbosity": "vv",
             "dry_run": dry_run,
         }
+
+    def delete_existing_rclone_config_file(self):
+        """ """
+        rclone_config_filepath = (
+            self.get_rclone_central_connection_config_filepath()
+        )
+
+        if rclone_config_filepath.exists():
+            rclone_config_filepath.unlink()
+            self.set_rclone_has_password(False)
