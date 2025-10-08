@@ -634,6 +634,7 @@ class Interface:
     # ------------------------------------------------------------------------------------
 
     def try_setup_rclone_password(self):
+        """"""
         try:
             self.project._try_set_rclone_password()
             return True, None

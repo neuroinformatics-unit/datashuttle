@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 from textual import work
 from textual.containers import Container, Horizontal, Vertical
 from textual.screen import ModalScreen
+from textual.css.query import NoMatches
 from textual.widgets import (
     Button,
     Input,
@@ -293,6 +294,10 @@ class SetupGdriveScreen(ModalScreen):
         success, output = worker.result
         if success:
             self.show_password_screen()
+
+            # This function is called from different screens that
+            # contain different widgets. Therefore remove all possible
+            # widgets that may / may not be present on the previous screen.
             for id in [
                 "#setup_gdrive_cancel_button",
                 "#setup_gdrive_generic_input_box",
@@ -301,7 +306,7 @@ class SetupGdriveScreen(ModalScreen):
                 try:
                     widget = self.query_one(id)
                     await widget.remove()
-                except textual.errors.NoMatches:
+                except  NoMatches:
                     pass
         else:
             self.input_box.disabled = False

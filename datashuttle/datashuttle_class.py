@@ -1676,7 +1676,7 @@ class DataShuttle:
 
     def _setup_rclone_central_local_filesystem_config(self) -> None:
         rclone.setup_rclone_config_for_local_filesystem(
-            self.cfg.rclone.get_rclone_config_name("local_filesystem"),
+            self.cfg, self.cfg.rclone.get_rclone_config_name("local_filesystem"),
         )
 
     def _setup_rclone_gdrive_config(

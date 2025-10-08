@@ -51,6 +51,7 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
 def call_rclone_for_central_connection(
     cfg, command: str, pipe_std: bool = False
 ) -> CompletedProcess:
+    """PLACEHOLDER"""
     return run_function_that_may_require_central_connection_password(
         cfg, lambda: call_rclone(command, pipe_std)
     )
@@ -114,7 +115,7 @@ def call_rclone_through_script_for_central_connection(
     return output
 
 
-def call_rclone_with_popen_for_central_connection(
+def call_rclone_with_popen(
     command: str,
 ) -> subprocess.Popen:
     """Call rclone using `subprocess.Popen` for control over process termination.
@@ -122,18 +123,14 @@ def call_rclone_with_popen_for_central_connection(
     It is not possible to kill a process while running it using `subprocess.run`.
     Killing a process might be required when running rclone setup in a thread worker
     to allow the user to cancel the setup process. In such a case, cancelling the
-    thread worker alone will not kill the rclone process, so we need to kill thenothe env
-
-    process explicitly.
+    thread worker alone will not kill the rclone process, so we need to kill the
+    env process explicitly.
     """
-    #   if cfg.rclone.get_rclone_has_password():
-    #      rclone_password.set_credentials_as_password_command(cfg)
-
     command = "rclone " + command
     process = subprocess.Popen(
         shlex.split(command),
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,  # , env=copy.deepcopy(os.environ)
+        stderr=subprocess.PIPE,
     )
     return process
 
@@ -184,6 +181,7 @@ def run_function_that_may_require_central_connection_password(
 
 
 def setup_rclone_config_for_local_filesystem(
+    cfg: Configs,
     rclone_config_name: str,
     log: bool = True,
 ) -> None:
@@ -247,7 +245,7 @@ def setup_rclone_config_for_ssh(
     """
     key_escaped = private_key_str.replace("\n", "\\n")
 
-    delete_existing_rclone_config_file(cfg)
+    cfg.rclone.delete_existing_rclone_config_file()
 
     command = (
         f"config create "
@@ -265,46 +263,6 @@ def setup_rclone_config_for_ssh(
         log_rclone_config_output(cfg)
 
 
-def get_full_config_filepath(cfg: Configs) -> Path:
-    """ """
-    return (
-        canonical_folders.get_rclone_config_base_path()
-        / f"{cfg.rclone.get_rclone_config_name()}.conf"
-    )
-
-
-def delete_existing_rclone_config_file(cfg: Configs):
-    """ """
-    rclone_config_filepath = (
-        cfg.rclone.get_rclone_central_connection_config_filepath()
-    )
-
-    if rclone_config_filepath.exists():
-        rclone_config_filepath.unlink()
-        cfg.rclone.set_rclone_has_password(False)
-
-
-def get_config_arg(cfg):
-    """TODO PLACEHOLDER."""
-    rclone_config_path = (
-        cfg.rclone.get_rclone_central_connection_config_filepath()
-    )
-
-    if cfg["connection_method"] in ["aws", "gdrive", "ssh"]:
-        return f'--config "{rclone_config_path}"'
-    else:
-        return ""
-
-
-def set_password(cfg, password: str):
-    subprocess.run(
-        f"rclone config encryption set {get_config_arg(cfg)}", text=True
-    )
-
-
-# def remove_password():
-
-
 def setup_rclone_config_for_gdrive(
     cfg: Configs,
     rclone_config_name: str,
@@ -313,7 +271,7 @@ def setup_rclone_config_for_gdrive(
 ) -> subprocess.Popen:
     """Set up rclone config for connections to Google Drive.
 
-    This function uses `call_rclone_with_popen_for_central_connection` instead of `call_rclone`. This
+    This function uses `call_rclone_with_popen` instead of `call_rclone`. This
     is done to have more control over the setup process in case the user wishes to
     cancel the setup. Since the rclone setup for google drive uses a local web server
     for authentication to google drive, the running process must be killed before the
@@ -354,7 +312,7 @@ def setup_rclone_config_for_gdrive(
         else ""
     )
 
-    delete_existing_rclone_config_file(cfg)
+    cfg.rclone.delete_existing_rclone_config_file()
 
     command = (
         f"config create "
@@ -368,7 +326,7 @@ def setup_rclone_config_for_gdrive(
         f"{get_config_arg(cfg)}"
     )
 
-    process = call_rclone_with_popen_for_central_connection(command)
+    process = call_rclone_with_popen(command)
 
     return process
 
@@ -408,7 +366,7 @@ def setup_rclone_config_for_aws(
         else f" location_constraint {aws_region}"
     )
 
-    delete_existing_rclone_config_file(cfg)
+    cfg.rclone.delete_existing_rclone_config_file()
 
     output = call_rclone(
         "config create "
@@ -429,6 +387,18 @@ def setup_rclone_config_for_aws(
 
     if log:
         log_rclone_config_output(cfg)
+
+
+def get_config_arg(cfg: Configs) -> str:
+    """TODO PLACEHOLDER."""
+    rclone_config_path = (
+        cfg.rclone.get_rclone_central_connection_config_filepath()
+    )
+
+    if cfg["connection_method"] in ["aws", "gdrive", "ssh"]:
+        return f'--config "{rclone_config_path}"'
+    else:
+        return ""
 
 
 def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
