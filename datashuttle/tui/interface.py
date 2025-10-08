@@ -635,7 +635,7 @@ class Interface:
 
     def try_setup_rclone_password(self):
         try:
-            self.project._try_set_rclone_password(ask_for_input=False)
+            self.project._try_set_rclone_password()
             return True, None
         except BaseException as e:
             return False, str(e)

@@ -843,7 +843,8 @@ class DataShuttle:
             )
 
             if not self.cfg.rclone.get_rclone_has_password():
-                self._try_set_rclone_password()
+                if self._ask_user_if_set_password():
+                    self._try_set_rclone_password()
 
             rclone.check_successful_connection_and_raise_error_on_fail(
                 self.cfg
@@ -911,7 +912,8 @@ class DataShuttle:
         )
 
         if not self.cfg.rclone.get_rclone_has_password():
-            self._try_set_rclone_password()
+            if self._ask_user_if_set_password():
+                self._try_set_rclone_password()
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
 
@@ -950,7 +952,8 @@ class DataShuttle:
         self._setup_rclone_aws_config(aws_secret_access_key, log=True)
 
         if not self.cfg.rclone.get_rclone_has_password():
-            self._try_set_rclone_password()
+            if self._ask_user_if_set_password():
+                self._try_set_rclone_password()
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
         aws.raise_if_bucket_absent(self.cfg)
@@ -963,38 +966,37 @@ class DataShuttle:
     # Rclone config password
     # -------------------------------------------------------------------------
 
-    def _try_set_rclone_password(self, ask_for_input=True):
+    def _ask_user_if_set_password(self) -> bool:
         """"""
-        if ask_for_input:
-            pass_type = {
-                "Windows": "Windows credential manager",
-                "Linux": "the `pass` program",
-                "Darwin": "macOS inbuild `security`.",
-            }
+        pass_type = {
+            "Windows": "Windows credential manager",
+            "Linux": "the `pass` program",
+            "Darwin": "macOS inbuild `security`.",
+        }
 
-            input_ = utils.get_user_input(
-                f"Would you like to set a password using {pass_type[platform.system()]}.\n"
-                f"Press 'y' to set password or leave blank to skip."
+        input_ = utils.get_user_input(
+            f"Would you like to set a password using {pass_type[platform.system()]}.\n"
+            f"Press 'y' to set password or leave blank to skip."
+        )
+
+        return input_ == "y"
+
+    def _try_set_rclone_password(self):  # TODO: use different nomeclature... encrypted not password
+        """"""
+        try:
+            self.set_rclone_password()
+        except Exception as e:
+            config_path = self.cfg.rclone.get_rclone_central_connection_config_filepath()
+
+            utils.log_and_raise_error(
+                f"{str(e)}\n"
+                f"Password set up failed.\n"
+                f"Use set_rclone_password()` to attempt to set the password again (see full error message above).\n"
+                f"IMPORTANT NOTE: The config at {config_path} does not have a password.\n",
+                RuntimeError,
             )
 
-            set_password = input_ == "y"
-        else:
-            set_password = True
-
-        if set_password:
-            try:
-                self.set_rclone_password()
-            except Exception as e:
-                config_path = self.cfg.rclone.get_rclone_central_connection_config_filepath()
-
-                utils.log_and_raise_error(
-                    f"{str(e)}\n"
-                    f"Password set up failed. The config at {config_path} contains the private ssh key without a password.\n"
-                    f"Use set_rclone_password()` to attempt to set the password again (see full error message above). ",
-                    RuntimeError,
-                )
-
-            utils.log_and_message("Password set successfully")
+        utils.log_and_message("Password set successfully")
 
     def set_rclone_password(self):
         """"""
