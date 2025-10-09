@@ -171,9 +171,8 @@ class SetupSshScreen(ModalScreen):
 
         if success:
             message = (
-                "Connection set up successfully.\n"
-                "Would you like to use Windows Credential Manager to set a password on "
-                "the RClone config file on which your RClone is stored? ."
+                f"Connection set up successfully.\n"
+                f"{rclone_password.get_password_explanation_message(self.cfg)}"
             )
             self.query_one("#setup_ssh_ok_button").label = "Yes"
             self.query_one("#setup_ssh_cancel_button").label = "No"

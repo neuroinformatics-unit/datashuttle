@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import traceback
 from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
 
 from textual import work
 from textual.containers import Container, Horizontal, Vertical
+from textual.dom import NoMatches
 from textual.screen import ModalScreen
 from textual.css.query import NoMatches
 from textual.widgets import (
@@ -19,6 +21,8 @@ from textual.widgets import (
     Input,
     Static,
 )
+
+from datashuttle.utils import rclone_password
 
 
 class SetupGdriveScreen(ModalScreen):
@@ -205,22 +209,17 @@ class SetupGdriveScreen(ModalScreen):
         """
         message = (
             "Please authenticate through your browser (it should open automatically).\n\n"
-            "It may take a moment for the connection to register after you confirm in the browser.\n"
-            "Only click 'Cancel' if you are sure you want to stop the setup."
+            "It may take a moment for the connection to register after you confirm in the browser.\n\n"
         )
 
         self.update_message_box_message(message)
 
-        task = asyncio.create_task(
+        self._task = asyncio.create_task(
             self.setup_gdrive_connection_and_update_ui(
                 gdrive_client_secret=gdrive_client_secret
             ),
             name="setup_gdrive_connection_with_browser_task",
         )
-        task.add_done_callback(self.handle_task_result)
-
-    def handle_task_result(self, task):
-        task.result()
 
     def prompt_user_for_config_token(self) -> None:
         """Prompt the user for the rclone config token for Google Drive setup."""
@@ -253,7 +252,7 @@ class SetupGdriveScreen(ModalScreen):
         message = "Setting up connection..."
         self.update_message_box_message(message)
 
-        asyncio.create_task(
+        self._task = asyncio.create_task(
             self.setup_gdrive_connection_and_update_ui(
                 gdrive_client_secret=gdrive_client_secret,
                 config_token=config_token,
@@ -284,34 +283,40 @@ class SetupGdriveScreen(ModalScreen):
         self.input_box.disabled = True
         self.enter_button.disabled = True
 
-        worker = self.setup_gdrive_connection(
-            gdrive_client_secret, config_token
-        )
-        self.setup_worker = worker
-        if worker.is_running:
-            await worker.wait()
+        try:
+            worker = self.setup_gdrive_connection(
+                gdrive_client_secret, config_token
+            )
+            self.setup_worker = worker
+            if worker.is_running:
+                await worker.wait()
 
-        success, output = worker.result
-        if success:
-            self.show_password_screen()
+            success, output = worker.result
+            if success:
+                self.show_password_screen()
+                # This function is called from different screens that
+                # contain different widgets. Therefore, remove all possible
+                # widgets that may / may not be present on the previous screen.
+                for id in [
+                    "#setup_gdrive_cancel_button",
+                    "#setup_gdrive_generic_input_box",
+                    "#setup_gdrive_no_browser_enter_button",
+                ]:
+                    try:
+                        widget = self.query_one(id)
+                        await widget.remove()
+                    except NoMatches:
+                        pass
+            else:
+                self.input_box.disabled = False
+                self.enter_button.disabled = False
+                self.display_failed(output)
 
-            # This function is called from different screens that
-            # contain different widgets. Therefore remove all possible
-            # widgets that may / may not be present on the previous screen.
-            for id in [
-                "#setup_gdrive_cancel_button",
-                "#setup_gdrive_generic_input_box",
-                "#setup_gdrive_no_browser_enter_button",
-            ]:
-                try:
-                    widget = self.query_one(id)
-                    await widget.remove()
-                except  NoMatches:
-                    pass
-        else:
-            self.input_box.disabled = False
-            self.enter_button.disabled = False
-            self.display_failed(output)
+        except Exception as exc:
+            tb = "".join(
+                traceback.format_exception(type(exc), exc, exc.__traceback__)
+            )
+            self.display_failed(tb)
 
     @work(exclusive=True, thread=True)
     def setup_gdrive_connection(
@@ -336,7 +341,7 @@ class SetupGdriveScreen(ModalScreen):
 
     def show_password_screen(self):
         """"""
-        message = "Would you like to set a password?"
+        message = f"{rclone_password.get_password_explanation_message(self.interface.project.cfg)}"
         self.update_message_box_message(message)
 
         yes_button = Button("Yes", id="setup_gdrive_set_password_yes_button")
