@@ -4,7 +4,6 @@ import copy
 import glob
 import json
 import os
-import platform
 import shutil
 from pathlib import Path
 from typing import (
@@ -819,11 +818,11 @@ class DataShuttle:
 
             utils.log_and_message(
                 f"Your SSH key will be stored in the rclone config at:\n "
-                f"{self.cfg.rclone.get_rclone_central_connection_config_filepath()}.\n\n"
+                f"{self.cfg.rclone.get_rclone_central_connection_config_filepath()}.\n"
             )
 
             if not self.cfg.rclone.get_rclone_has_password():
-                if self._ask_user_if_set_password():
+                if self._ask_user_if_they_want_rclone_password():
                     self._try_set_rclone_password()
 
             rclone.check_successful_connection_and_raise_error_on_fail(
@@ -892,7 +891,7 @@ class DataShuttle:
         )
 
         if not self.cfg.rclone.get_rclone_has_password():
-            if self._ask_user_if_set_password():
+            if self._ask_user_if_they_want_rclone_password():
                 self._try_set_rclone_password()
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
@@ -932,7 +931,7 @@ class DataShuttle:
         self._setup_rclone_aws_config(aws_secret_access_key, log=True)
 
         if not self.cfg.rclone.get_rclone_has_password():
-            if self._ask_user_if_set_password():
+            if self._ask_user_if_they_want_rclone_password():
                 self._try_set_rclone_password()
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
@@ -946,16 +945,10 @@ class DataShuttle:
     # Rclone config password
     # -------------------------------------------------------------------------
 
-    def _ask_user_if_set_password(self) -> bool:
+    def _ask_user_if_they_want_rclone_password(self) -> bool:
         """"""
-        pass_type = {
-            "Windows": "Windows credential manager",
-            "Linux": "the `pass` program",
-            "Darwin": "macOS inbuild `security`.",
-        }
-
         input_ = utils.get_user_input(
-            f"Would you like to set a password using {pass_type[platform.system()]}.\n"
+            f"{rclone_password.get_password_explanation_message(self.cfg)}\n"
             f"Press 'y' to set password or leave blank to skip."
         )
 

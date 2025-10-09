@@ -255,3 +255,28 @@ def run_raise_if_fail(command, command_description):
             f"\n--- STDOUT ---\n{output.stdout}\n"
             f"\n--- STDERR ---\n{output.stderr}\n"
         )
+
+
+def get_password_explanation_message(
+    cfg: Configs,
+):  # TODO: type when other PR is merged
+    """"""
+    system_pass_manager = {
+        "Windows": "Windows Credential Manager",
+        "Linux": "the `pass` program",
+        "Darwin": "macOS built-in `security` tool",
+    }
+
+    pass_type = {
+        "ssh": "your private SSH key",
+        "aws": "your IAM access key ID and seceret access key",
+        "gdrive": "your Google Drive access token and client secret (if set)",
+    }
+
+    message = (
+        f"By default, RClone stores {pass_type[cfg['connection_method']]} in plain text at the below location:\n\n"
+        f"{cfg.rclone.get_rclone_central_connection_config_filepath()}\n\n"
+        f"Would you like to encrypt the RClone config file using {system_pass_manager[platform.system()]}?"
+    )
+
+    return message
