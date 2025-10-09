@@ -1215,6 +1215,10 @@ class DataShuttle:
         return self._config_path
 
     @check_configs_set
+    def get_rclone_central_config_path(self) -> Path:
+        return rclone.get_rclone_config_filepath(self.cfg)
+
+    @check_configs_set
     def get_configs(self) -> Configs:
         """Return the datashuttle configs."""
         return self.cfg

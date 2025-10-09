@@ -9,3 +9,7 @@ try:
 except PackageNotFoundError:
     # package is not installed
     pass
+
+
+def get_datashuttle_version():
+    return __version__
