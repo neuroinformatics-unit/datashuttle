@@ -196,7 +196,7 @@ def run_function_that_may_require_central_connection_password(
 
 
 # -----------------------------------------------------------------------------
-# Setup
+# RClone Configs
 # -----------------------------------------------------------------------------
 
 
@@ -281,16 +281,6 @@ def setup_rclone_config_for_ssh(
 
     if log:
         log_rclone_config_output(cfg)
-
-def delete_existing_rclone_config_file(cfg: Configs):
-    """ """
-    rclone_config_filepath = (
-        cfg.rclone.get_rclone_central_connection_config_filepath()
-    )
-
-    if rclone_config_filepath.exists():
-        rclone_config_filepath.unlink()
-        cfg.rclone.set_rclone_has_password(False)
 
 def setup_rclone_config_for_gdrive(
     cfg: Configs,
@@ -416,6 +406,16 @@ def setup_rclone_config_for_aws(
 
     if log:
         log_rclone_config_output(cfg)
+
+def delete_existing_rclone_config_file(cfg: Configs):
+    """ """
+    rclone_config_filepath = (
+        cfg.rclone.get_rclone_central_connection_config_filepath()
+    )
+
+    if rclone_config_filepath.exists():
+        rclone_config_filepath.unlink()
+        cfg.rclone.set_rclone_has_password(False)
 
 
 def get_config_arg(cfg: Configs) -> str:
