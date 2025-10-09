@@ -14,6 +14,8 @@ import tempfile
 from pathlib import Path
 from subprocess import CompletedProcess
 
+from packaging import version
+
 from datashuttle.configs import canonical_configs
 from datashuttle.utils import rclone_password, utils
 
@@ -165,6 +167,24 @@ def run_function_that_may_require_central_connection_password(
     cfg, lambda_func
 ):
     """ """
+    from datashuttle import get_datashuttle_version  # avoid circular import
+
+    rclone_config_filepath = (
+        cfg.rclone.get_rclone_central_connection_config_filepath()
+    )
+
+    if not rclone_config_filepath.is_file():
+        if version.parse(get_datashuttle_version()) <= version.parse("0.7.1"):
+            raise RuntimeError(
+                f"The way RClone configs are managed has changed since version v0.7.1\n"
+                f"Please set up the {cfg['connection_method']} connection again."
+            )
+        else:
+            raise RuntimeError(
+                f"An unexpected error occurred. Could not find the rclone config file at: {rclone_config_filepath}\n"
+                f"Please set up the {cfg['connection_method']} connection again."
+            )
+
     set_password = cfg.rclone.get_rclone_has_password()
 
     if set_password:
@@ -265,14 +285,6 @@ def setup_rclone_config_for_ssh(
         log_rclone_config_output(cfg)
 
 
-def get_full_config_filepath(cfg: Configs) -> Path:
-    """ """
-    return (
-        canonical_folders.get_rclone_config_base_path()
-        / f"{cfg.rclone.get_rclone_config_name()}.conf"
-    )
-
-
 def delete_existing_rclone_config_file(cfg: Configs):
     """ """
     rclone_config_filepath = (
@@ -294,15 +306,6 @@ def get_config_arg(cfg):
         return f'--config "{rclone_config_path}"'
     else:
         return ""
-
-
-def set_password(cfg, password: str):
-    subprocess.run(
-        f"rclone config encryption set {get_config_arg(cfg)}", text=True
-    )
-
-
-# def remove_password():
 
 
 def setup_rclone_config_for_gdrive(
@@ -470,8 +473,8 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
         )
 
 
-def log_rclone_config_output(cfg: Configs) -> None:
-    """Log the output from creating Rclone config."""
+def get_rclone_config_filepath(cfg: Configs) -> Path:
+    """"""
     if cfg["connection_method"] in ["aws", "ssh", "gdrive"]:
         config_filepath = (
             cfg.rclone.get_rclone_central_connection_config_filepath()
@@ -480,6 +483,12 @@ def log_rclone_config_output(cfg: Configs) -> None:
         output = call_rclone("config file", pipe_std=True)
         config_filepath = output.stdout.decode("utf-8")
 
+    return config_filepath
+
+
+def log_rclone_config_output(cfg: Configs) -> None:
+    """Log the output from creating Rclone config."""
+    config_filepath = get_rclone_config_filepath(cfg)
     utils.log(f"Successfully created rclone config. {config_filepath}")
 
 
