@@ -108,7 +108,9 @@ class SetupAwsScreen(ModalScreen):
         )
 
         if success:
-            message = "Would you like to set a password?"
+            message = (
+                f"{rclone_password.get_password_explanation_message(self.cfg)}"
+            )
             self.query_one("#setup_aws_messagebox_message").update(message)
 
             self.query_one("#setup_aws_secret_access_key_input").remove()

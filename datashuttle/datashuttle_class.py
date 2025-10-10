@@ -4,7 +4,6 @@ import copy
 import glob
 import json
 import os
-import platform
 import shutil
 from pathlib import Path
 from typing import (
@@ -819,11 +818,11 @@ class DataShuttle:
 
             utils.log_and_message(
                 f"Your SSH key will be stored in the rclone config at:\n "
-                f"{self.cfg.rclone.get_rclone_central_connection_config_filepath()}.\n\n"
+                f"{self.cfg.rclone.get_rclone_central_connection_config_filepath()}.\n"
             )
 
             if not self.cfg.rclone.get_rclone_has_password():
-                if self._ask_user_if_set_password():
+                if self._ask_user_if_they_want_rclone_password():
                     self._try_set_rclone_password()
 
             rclone.check_successful_connection_and_raise_error_on_fail(
@@ -892,7 +891,7 @@ class DataShuttle:
         )
 
         if not self.cfg.rclone.get_rclone_has_password():
-            if self._ask_user_if_set_password():
+            if self._ask_user_if_they_want_rclone_password():
                 self._try_set_rclone_password()
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
@@ -932,7 +931,7 @@ class DataShuttle:
         self._setup_rclone_aws_config(aws_secret_access_key, log=True)
 
         if not self.cfg.rclone.get_rclone_has_password():
-            if self._ask_user_if_set_password():
+            if self._ask_user_if_they_want_rclone_password():
                 self._try_set_rclone_password()
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
@@ -946,27 +945,25 @@ class DataShuttle:
     # Rclone config password
     # -------------------------------------------------------------------------
 
-    def _ask_user_if_set_password(self) -> bool:
+    def _ask_user_if_they_want_rclone_password(self) -> bool:
         """"""
-        pass_type = {
-            "Windows": "Windows credential manager",
-            "Linux": "the `pass` program",
-            "Darwin": "macOS inbuild `security`.",
-        }
-
         input_ = utils.get_user_input(
-            f"Would you like to set a password using {pass_type[platform.system()]}.\n"
+            f"{rclone_password.get_password_explanation_message(self.cfg)}\n"
             f"Press 'y' to set password or leave blank to skip."
         )
 
         return input_ == "y"
 
-    def _try_set_rclone_password(self):  # TODO: use different nomeclature... encrypted not password
+    def _try_set_rclone_password(
+        self,
+    ):  # TODO: use different nomeclature... encrypted not password
         """"""
         try:
             self.set_rclone_password()
         except Exception as e:
-            config_path = self.cfg.rclone.get_rclone_central_connection_config_filepath()
+            config_path = (
+                self.cfg.rclone.get_rclone_central_connection_config_filepath()
+            )
 
             utils.log_and_raise_error(
                 f"{str(e)}\n"
@@ -1176,6 +1173,10 @@ class DataShuttle:
     def get_config_path(self) -> Path:
         """Return the full path to the DataShuttle config file."""
         return self._config_path
+
+    @check_configs_set
+    def get_rclone_central_config_path(self) -> Path:
+        return rclone.get_rclone_config_filepath(self.cfg)
 
     @check_configs_set
     def get_configs(self) -> Configs:
@@ -1612,7 +1613,8 @@ class DataShuttle:
 
     def _setup_rclone_central_local_filesystem_config(self) -> None:
         rclone.setup_rclone_config_for_local_filesystem(
-            self.cfg, self.cfg.rclone.get_rclone_config_name("local_filesystem"),
+            self.cfg,
+            self.cfg.rclone.get_rclone_config_name("local_filesystem"),
         )
 
     def _setup_rclone_gdrive_config(
