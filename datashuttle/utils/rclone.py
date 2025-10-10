@@ -11,10 +11,13 @@ import platform
 import shlex
 import subprocess
 import tempfile
+from pathlib import Path
 from subprocess import CompletedProcess
 
+from packaging import version
+
 from datashuttle.configs import canonical_configs
-from datashuttle.utils import utils
+from datashuttle.utils import rclone_password, utils
 
 
 def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
@@ -47,7 +50,18 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
     return output
 
 
-def call_rclone_through_script(command: str) -> CompletedProcess:
+def call_rclone_for_central_connection(
+    cfg, command: str, pipe_std: bool = False
+) -> CompletedProcess:
+    """PLACEHOLDER"""
+    return run_function_that_may_require_central_connection_password(
+        cfg, lambda: call_rclone(command, pipe_std)
+    )
+
+
+def call_rclone_through_script_for_central_connection(
+    cfg, command: str
+) -> CompletedProcess:
     """Call rclone through a script.
 
     This is to avoid limits on command-line calls (in particular on Windows).
@@ -83,11 +97,15 @@ def call_rclone_through_script(command: str) -> CompletedProcess:
         if system != "Windows":
             os.chmod(tmp_script_path, 0o700)
 
-        output = subprocess.run(
+        lambda_func = lambda: subprocess.run(
             [tmp_script_path],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=False,
+        )
+
+        output = run_function_that_may_require_central_connection_password(
+            cfg, lambda_func
         )
 
         if output.returncode != 0:
@@ -99,45 +117,91 @@ def call_rclone_through_script(command: str) -> CompletedProcess:
     return output
 
 
-def call_rclone_with_popen(command: str) -> subprocess.Popen:
+def call_rclone_with_popen(
+    command: str,
+) -> subprocess.Popen:
     """Call rclone using `subprocess.Popen` for control over process termination.
 
     It is not possible to kill a process while running it using `subprocess.run`.
     Killing a process might be required when running rclone setup in a thread worker
     to allow the user to cancel the setup process. In such a case, cancelling the
     thread worker alone will not kill the rclone process, so we need to kill the
-    process explicitly.
+    env process explicitly.
     """
     command = "rclone " + command
     process = subprocess.Popen(
-        shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        shlex.split(command),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
     return process
 
 
-def await_call_rclone_with_popen_raise_on_fail(
-    process: subprocess.Popen, log: bool = True
+def await_call_rclone_with_popen_for_central_connection_raise_on_fail(
+    cfg: Configs, process: subprocess.Popen, log: bool = True
 ):
     """Await rclone the subprocess.Popen call.
 
     Calling `process.communicate()` waits for the process to complete and returns
     the stdout and stderr.
     """
-    stdout, stderr = process.communicate()
+    lambda_func = lambda: process.communicate()
+
+    stdout, stderr = run_function_that_may_require_central_connection_password(
+        cfg, lambda_func
+    )
 
     if process.returncode != 0:
         utils.log_and_raise_error(stderr.decode("utf-8"), ConnectionError)
 
     if log:
-        log_rclone_config_output()
+        log_rclone_config_output(cfg)
+
+    return stdout, stderr
+
+
+def run_function_that_may_require_central_connection_password(
+    cfg, lambda_func
+):
+    """ """
+    from datashuttle import get_datashuttle_version  # avoid circular import
+
+    rclone_config_filepath = (
+        cfg.rclone.get_rclone_central_connection_config_filepath()
+    )
+
+    if not rclone_config_filepath.is_file():
+        if version.parse(get_datashuttle_version()) <= version.parse("0.7.1"):
+            raise RuntimeError(
+                f"The way RClone configs are managed has changed since version v0.7.1\n"
+                f"Please set up the {cfg['connection_method']} connection again."
+            )
+        else:
+            raise RuntimeError(
+                f"An unexpected error occurred. Could not find the rclone config file at: {rclone_config_filepath}\n"
+                f"Please set up the {cfg['connection_method']} connection again."
+            )
+
+    set_password = cfg.rclone.get_rclone_has_password()
+
+    if set_password:
+        rclone_password.set_credentials_as_password_command(cfg)
+
+    results = lambda_func()
+
+    if set_password:
+        rclone_password.remove_credentials_as_password_command()
+
+    return results
 
 
 # -----------------------------------------------------------------------------
-# Setup
+# RClone Configs
 # -----------------------------------------------------------------------------
 
 
 def setup_rclone_config_for_local_filesystem(
+    cfg: Configs,
     rclone_config_name: str,
     log: bool = True,
 ) -> None:
@@ -159,7 +223,7 @@ def setup_rclone_config_for_local_filesystem(
     ----------
     rclone_config_name
         canonical config name, generated by
-        datashuttle.cfg.get_rclone_config_name()
+        datashuttle.cfg.rclone.get_rclone_config_name()
 
     log
         whether to log, if True logger must already be initialised.
@@ -168,7 +232,7 @@ def setup_rclone_config_for_local_filesystem(
     call_rclone(f"config create {rclone_config_name} local", pipe_std=True)
 
     if log:
-        log_rclone_config_output()
+        log_rclone_config_output(cfg)
 
 
 def setup_rclone_config_for_ssh(
@@ -190,7 +254,7 @@ def setup_rclone_config_for_ssh(
 
     rclone_config_name
         canonical config name, generated by
-        datashuttle.cfg.get_rclone_config_name()
+        datashuttle.cfg.rclone.get_rclone_config_name()
 
     private_key_str
         PEM encoded sssh private key to pass to RClone.
@@ -201,6 +265,8 @@ def setup_rclone_config_for_ssh(
     """
     key_escaped = private_key_str.replace("\n", "\\n")
 
+    cfg.rclone.delete_existing_rclone_config_file()
+
     command = (
         f"config create "
         f"{rclone_config_name} "
@@ -208,13 +274,13 @@ def setup_rclone_config_for_ssh(
         f"host {cfg['central_host_id']} "
         f"user {cfg['central_host_username']} "
         f"port {canonical_configs.get_default_ssh_port()} "
+        f"{get_config_arg(cfg)} "
         f'-- key_pem "{key_escaped}"'
     )
-
     call_rclone(command, pipe_std=True)
 
     if log:
-        log_rclone_config_output()
+        log_rclone_config_output(cfg)
 
 
 def setup_rclone_config_for_gdrive(
@@ -240,7 +306,7 @@ def setup_rclone_config_for_gdrive(
 
     rclone_config_name
          Canonical config name, generated by
-         datashuttle.cfg.get_rclone_config_name()
+         datashuttle.cfg.rclone.get_rclone_config_name()
 
     gdrive_client_secret
         Google Drive client secret, mandatory when using a Google Drive client.
@@ -266,7 +332,9 @@ def setup_rclone_config_for_gdrive(
         else ""
     )
 
-    process = call_rclone_with_popen(
+    cfg.rclone.delete_existing_rclone_config_file()
+
+    command = (
         f"config create "
         f"{rclone_config_name} "
         f"drive "
@@ -274,8 +342,11 @@ def setup_rclone_config_for_gdrive(
         f"{client_secret_key_value}"
         f"scope drive "
         f"root_folder_id {cfg['gdrive_root_folder_id']} "
-        f"{extra_args}"
+        f"{extra_args} "
+        f"{get_config_arg(cfg)}"
     )
+
+    process = call_rclone_with_popen(command)
 
     return process
 
@@ -296,7 +367,7 @@ def setup_rclone_config_for_aws(
 
     rclone_config_name
         Canonical RClone config name, generated by
-        datashuttle.cfg.get_rclone_config_name()
+        datashuttle.cfg.rclone.get_rclone_config_name()
 
     aws_secret_access_key
         The aws secret access key provided by the user.
@@ -315,6 +386,8 @@ def setup_rclone_config_for_aws(
         else f" location_constraint {aws_region}"
     )
 
+    cfg.rclone.delete_existing_rclone_config_file()
+
     output = call_rclone(
         "config create "
         f"{rclone_config_name} "
@@ -322,7 +395,8 @@ def setup_rclone_config_for_aws(
         f"access_key_id {cfg['aws_access_key_id']} "
         f"secret_access_key {aws_secret_access_key} "
         f"region {aws_region}"
-        f"{location_constraint_key_value}",
+        f"{location_constraint_key_value} "
+        f"{get_config_arg(cfg)}",
         pipe_std=True,
     )
 
@@ -332,7 +406,19 @@ def setup_rclone_config_for_aws(
         )
 
     if log:
-        log_rclone_config_output()
+        log_rclone_config_output(cfg)
+
+
+def get_config_arg(cfg: Configs) -> str:
+    """TODO PLACEHOLDER."""
+    rclone_config_path = (
+        cfg.rclone.get_rclone_central_connection_config_filepath()
+    )
+
+    if cfg["connection_method"] in ["aws", "gdrive", "ssh"]:
+        return f'--config "{rclone_config_path}"'
+    else:
+        return ""
 
 
 def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
@@ -351,16 +437,22 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
     else:
         tempfile_path = (cfg["central_path"] / filename).as_posix()
 
-    output = call_rclone(
-        f"touch {cfg.get_rclone_config_name()}:{tempfile_path}", pipe_std=True
+    config_name = cfg.rclone.get_rclone_config_name()
+
+    output = call_rclone_for_central_connection(
+        cfg,
+        f"touch {config_name}:{tempfile_path} {get_config_arg(cfg)}",
+        pipe_std=True,
     )
     if output.returncode != 0:
         utils.log_and_raise_error(
             output.stderr.decode("utf-8"), ConnectionError
         )
 
-    output = call_rclone(
-        f"delete {cfg.get_rclone_config_name()}:{tempfile_path}", pipe_std=True
+    output = call_rclone_for_central_connection(
+        cfg,
+        f"delete {cfg.rclone.get_rclone_config_name()}:{tempfile_path} {get_config_arg(cfg)}",
+        pipe_std=True,
     )
     if output.returncode != 0:
         utils.log_and_raise_error(
@@ -368,12 +460,23 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
         )
 
 
-def log_rclone_config_output() -> None:
+def get_rclone_config_filepath(cfg: Configs) -> Path:
+    """"""
+    if cfg["connection_method"] in ["aws", "ssh", "gdrive"]:
+        config_filepath = (
+            cfg.rclone.get_rclone_central_connection_config_filepath()
+        )
+    else:
+        output = call_rclone("config file", pipe_std=True)
+        config_filepath = output.stdout.decode("utf-8")
+
+    return config_filepath
+
+
+def log_rclone_config_output(cfg: Configs) -> None:
     """Log the output from creating Rclone config."""
-    output = call_rclone("config file", pipe_std=True)
-    utils.log(
-        f"Successfully created rclone config. {output.stdout.decode('utf-8')}"
-    )
+    config_filepath = get_rclone_config_filepath(cfg)
+    utils.log(f"Successfully created rclone config. {config_filepath}")
 
 
 def prompt_rclone_download_if_does_not_exist() -> None:
@@ -437,7 +540,7 @@ def transfer_data(
 
     rclone_options
         A list of options to pass to Rclone's copy function.
-        see `cfg.make_rclone_transfer_options()`.
+        see `cfg.rclone.make_rclone_transfer_options()`.
 
     Returns
     -------
@@ -458,18 +561,23 @@ def transfer_data(
     extra_arguments = handle_rclone_arguments(rclone_options, include_list)
 
     if upload_or_download == "upload":
-        output = call_rclone_through_script(
+        output = call_rclone_through_script_for_central_connection(
+            cfg,
             f"{rclone_args('copy')} "
-            f'"{local_filepath}" "{cfg.get_rclone_config_name()}:'
-            f'{central_filepath}" {extra_arguments}',
+            f'"{local_filepath}" "{cfg.rclone.get_rclone_config_name()}:'
+            f'{central_filepath}" {extra_arguments} {get_config_arg(cfg)} --ask-password=false',  # TODO: handle the error
         )
 
     elif upload_or_download == "download":
-        output = call_rclone_through_script(
+        output = call_rclone_through_script_for_central_connection(
+            cfg,
             f"{rclone_args('copy')} "
-            f'"{cfg.get_rclone_config_name()}:'
-            f'{central_filepath}" "{local_filepath}"  {extra_arguments}',
+            f'"{cfg.rclone.get_rclone_config_name()}:'
+            f'{central_filepath}" "{local_filepath}"  {extra_arguments} {get_config_arg(cfg)} --ask-password=false',  # TODO: handle the error
         )
+
+    if cfg.rclone.get_rclone_has_password():
+        rclone_password.remove_credentials_as_password_command()
 
     return output
 
@@ -569,11 +677,13 @@ def perform_rclone_check(
         "central", top_level_folder
     ).parent.as_posix()
 
-    output = call_rclone(
+    output = call_rclone_for_central_connection(
+        cfg,
         f"{rclone_args('check')} "
         f'"{local_filepath}" '
-        f'"{cfg.get_rclone_config_name()}:{central_filepath}"'
-        f" --combined -",
+        f'"{cfg.rclone.get_rclone_config_name()}:{central_filepath}"'
+        f"{get_config_arg(cfg)} "
+        f"--combined -",
         pipe_std=True,
     )
 

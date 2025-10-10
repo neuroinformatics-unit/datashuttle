@@ -28,7 +28,7 @@ class TestAwsTransfer(BaseTransfer):
         yield [pathtable, project]
 
         rclone.call_rclone(
-            f"purge central_{project.project_name}_aws:{project.cfg['central_path'].parent}"
+            f"purge central_{project.project_name}_aws:{project.cfg['central_path'].parent} {rclone.get_config_arg(project.cfg)}"
         )
 
     @pytest.mark.parametrize(
