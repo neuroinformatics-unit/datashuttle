@@ -38,13 +38,13 @@ for details on the options.
 ```{image} /_static/screenshots/tutorial-validation-light.png
 :align: center
 :class: only-light
-:width: 600px
+:width: 800px
 ```
 
 ```{image} /_static/screenshots/tutorial-validation-dark.png
 :align: center
 :class: only-dark
-:width: 600px
+:width: 800px
 ```
 
 :::
@@ -53,7 +53,7 @@ for details on the options.
 :sync: python
 
 
-Project validation can be run with the [](datashuttle.DataShuttle.validate_project) function.
+Project validation can be run with the [](validate_project) function.
 
 Violations of the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) can be set to raise an error, be displayed as warnings or printed as output.
 They are also returned in a list of strings.
