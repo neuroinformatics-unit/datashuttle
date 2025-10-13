@@ -94,6 +94,12 @@ class RCloneConfigs:
         self,
     ):
         """Return whether the config file associated with the current `connection_method`."""
+        assert self.datashuttle_configs["connection_method"] in [
+            "ssh",
+            "aws",
+            "gdrive",
+        ]
+
         rclone_has_password = self.load_rclone_has_password()
 
         return rclone_has_password[

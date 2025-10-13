@@ -966,7 +966,7 @@ class DataShuttle:
     # -------------------------------------------------------------------------
 
     def _ask_user_if_they_want_rclone_password(self) -> bool:
-        """"""
+        """Get user input to determine if they want to set a password on the rclone config."""
         input_ = utils.get_user_input(
             f"{rclone_password.get_password_explanation_message(self.cfg)}\n"
             f"Press 'y' to set password or leave blank to skip."
@@ -976,8 +976,11 @@ class DataShuttle:
 
     def _try_set_rclone_password(
         self,
-    ):  # TODO: use different nomeclature... encrypted not password
-        """"""
+    ) -> None:
+        """Try to encrypt the rclone config file.
+
+        If it fails, warn the user the config file is unencrypted.
+        """
         try:
             self.set_rclone_password()
         except Exception as e:
@@ -989,14 +992,14 @@ class DataShuttle:
                 f"{str(e)}\n"
                 f"Password set up failed.\n"
                 f"Use set_rclone_password()` to attempt to set the password again (see full error message above).\n"
-                f"IMPORTANT NOTE: The config at {config_path} does not have a password.\n",
+                f"IMPORTANT: The config at {config_path} is not currently encrpyted.\n",
                 RuntimeError,
             )
 
         utils.log_and_message("Password set successfully")
 
-    def set_rclone_password(self):
-        """"""
+    def set_rclone_password(self) -> None:
+        """Encrypt the rclone config file for the central connection."""
         if self.cfg.rclone.get_rclone_has_password():
             raise RuntimeError(
                 "This config file already has a password set. "
@@ -1007,8 +1010,8 @@ class DataShuttle:
 
         self.cfg.rclone.set_rclone_has_password(True)
 
-    def remove_rclone_password(self):
-        """"""
+    def remove_rclone_password(self) -> None:
+        """Unencrypt the rclone config file for the central connection."""
         if not self.cfg.rclone.get_rclone_has_password():
             raise RuntimeError(
                 f"The config for the current connection method: {self.cfg['connection_method']} "
