@@ -18,7 +18,7 @@ class TestAWSSuggestNext(BaseTransfer, TuiBase):
     )
     def aws_setup(self, setup_project_paths):
         """
-        Setup pathtable and project for GDrive transfer tests.
+        Setup pathtable and project for AWS transfer tests.
         """
         project = test_utils.make_project(setup_project_paths["project_name"])
         aws_test_utils.setup_project_for_aws(project)
