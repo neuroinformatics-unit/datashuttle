@@ -23,9 +23,9 @@ class RCloneConfigs:
     In datashuttle, local filesystem configs uses the Rclone default configuration file,
     that RClone manages. However, remote transfers to ssh, aws and gdrive are held in
     separate config files (set using RClone's --config argument). Then being separate
-    means passwords can be set on these files.
+    means these files can be separately encrypted.
 
-    This class tracks the state on whether a RClone config has a password, as well
+    This class tracks the state on whether a RClone config is encrypted, as well
     as provides the default names for the rclone conf (e.g. central_<project_name>_<connection_method>).
 
     Parameters
@@ -37,15 +37,15 @@ class RCloneConfigs:
 
     def __init__(self, datashuttle_configs, config_base_path):
         self.datashuttle_configs = datashuttle_configs
-        self.rclone_password_state_file_path = (
+        self.rclone_encryption_state_file_path = (
             config_base_path / "rclone_ps_state.yaml"
         )
 
-    def load_rclone_has_password(self):
-        """Track whether the Rclone config file has a password set. This could be
+    def load_rclone_config_is_encrypted(self):
+        """Track whether the Rclone config file is encrypted. This could be
         read directly from the RClone config file, but requires a subprocess call
         which can be slow on Windows. As this function is called a lot, we track
-        this explicitly when a rclone config password is set / removed
+        this explicitly when a rclone config is encrypted / unencrypted
         and store to disk between sessions.
         """
         assert self.datashuttle_configs["connection_method"] in [
@@ -54,23 +54,23 @@ class RCloneConfigs:
             "gdrive",
         ]
 
-        if self.rclone_password_state_file_path.is_file():
-            with open(self.rclone_password_state_file_path, "r") as file:
-                rclone_has_password = yaml.full_load(file)
+        if self.rclone_encryption_state_file_path.is_file():
+            with open(self.rclone_encryption_state_file_path, "r") as file:
+                rclone_config_is_encrypted = yaml.full_load(file)
         else:
-            rclone_has_password = {
+            rclone_config_is_encrypted = {
                 "ssh": False,
                 "gdrive": False,
                 "aws": False,
             }
 
-            with open(self.rclone_password_state_file_path, "w") as file:
-                yaml.dump(rclone_has_password, file)
+            with open(self.rclone_encryption_state_file_path, "w") as file:
+                yaml.dump(rclone_config_is_encrypted, file)
 
-        return rclone_has_password
+        return rclone_config_is_encrypted
 
-    def set_rclone_has_password(self, value):
-        """Store the current state of the rclone config file password for the `connection_method`.
+    def set_rclone_config_encryption_state(self, value):
+        """Store the current state of the rclone config encryption for the `connection_method`.
 
         Note that this is stored to disk each call (rather than tracked locally) to ensure
         it is updated live if updated through the Python API while the TUI is also running.
@@ -81,16 +81,16 @@ class RCloneConfigs:
             "gdrive",
         ]
 
-        rclone_has_password = self.load_rclone_has_password()
+        rclone_config_is_encrypted = self.load_rclone_config_is_encrypted()
 
-        rclone_has_password[self.datashuttle_configs["connection_method"]] = (
-            value
-        )
+        rclone_config_is_encrypted[
+            self.datashuttle_configs["connection_method"]
+        ] = value
 
-        with open(self.rclone_password_state_file_path, "w") as file:
-            yaml.dump(rclone_has_password, file)
+        with open(self.rclone_encryption_state_file_path, "w") as file:
+            yaml.dump(rclone_config_is_encrypted, file)
 
-    def get_rclone_has_password(
+    def get_rclone_config_encryption_state(
         self,
     ):
         """Return whether the config file associated with the current `connection_method`."""
@@ -100,9 +100,9 @@ class RCloneConfigs:
             "gdrive",
         ]
 
-        rclone_has_password = self.load_rclone_has_password()
+        rclone_config_is_encrypted = self.load_rclone_config_is_encrypted()
 
-        return rclone_has_password[
+        return rclone_config_is_encrypted[
             self.datashuttle_configs["connection_method"]
         ]
 
@@ -151,4 +151,4 @@ class RCloneConfigs:
 
         if rclone_config_filepath.exists():
             rclone_config_filepath.unlink()
-            self.set_rclone_has_password(False)
+            self.set_rclone_config_encryption_state(False)

@@ -45,7 +45,7 @@ from datashuttle.utils import (
     gdrive,
     getters,
     rclone,
-    rclone_password,
+    rclone_encryption,
     ssh,
     utils,
     validation,
@@ -841,8 +841,8 @@ class DataShuttle:
                 f"{self.cfg.rclone.get_rclone_central_connection_config_filepath()}.\n"
             )
 
-            if not self.cfg.rclone.get_rclone_has_password():
-                if self._ask_user_if_they_want_rclone_password():
+            if not self.cfg.rclone.get_rclone_config_encryption_state():
+                if self._ask_user_rclone_encryption():
                     self._try_encrypt_rclone_config()
 
             rclone.check_successful_connection_and_raise_error_on_fail(
@@ -910,8 +910,8 @@ class DataShuttle:
             self.cfg, process, log=True
         )
 
-        if not self.cfg.rclone.get_rclone_has_password():
-            if self._ask_user_if_they_want_rclone_password():
+        if not self.cfg.rclone.get_rclone_config_encryption_state():
+            if self._ask_user_rclone_encryption():
                 self._try_encrypt_rclone_config()
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
@@ -950,8 +950,8 @@ class DataShuttle:
 
         self._setup_rclone_aws_config(aws_secret_access_key, log=True)
 
-        if not self.cfg.rclone.get_rclone_has_password():
-            if self._ask_user_if_they_want_rclone_password():
+        if not self.cfg.rclone.get_rclone_config_encryption_state():
+            if self._ask_user_rclone_encryption():
                 self._try_encrypt_rclone_config()
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
@@ -962,14 +962,14 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     # -------------------------------------------------------------------------
-    # Rclone config password
+    # Rclone config encryption
     # -------------------------------------------------------------------------
 
-    def _ask_user_if_they_want_rclone_password(self) -> bool:
-        """Get user input to determine if they want to set a password on the rclone config."""
+    def _ask_user_rclone_encryption(self) -> bool:
+        """Get user input to determine if they want to encrypt the rclone config."""
         input_ = utils.get_user_input(
-            f"{rclone_password.get_password_explanation_message(self.cfg)}\n"
-            f"Press 'y' to set password or leave blank to skip."
+            f"{rclone_encryption.get_explanation_message(self.cfg)}\n"
+            f"Press 'y' to encrypt the Rclone config or leave blank to skip."
         )
 
         return input_ == "y"
@@ -990,8 +990,9 @@ class DataShuttle:
 
             utils.log_and_raise_error(
                 f"{str(e)}\n"
-                f"Password set up failed.\n"
-                f"Use encrypt_rclone_config()` to attempt to set the password again (see full error message above).\n"
+                f"Config encryption failed.\n"
+                f"Use encrypt_rclone_config()` to attempt to encrypt the file again "
+                f"(see full error message above).\n"
                 f"IMPORTANT: The config at {config_path} is not currently encrypted.\n",
                 RuntimeError,
             )
@@ -1003,27 +1004,28 @@ class DataShuttle:
 
     def encrypt_rclone_config(self) -> None:
         """Encrypt the rclone config file for the central connection."""
-        if self.cfg.rclone.get_rclone_has_password():
+        if self.cfg.rclone.get_rclone_config_encryption_state():
             raise RuntimeError(
-                "This config file already has a password set. "
-                "First, use `remove_rclone_password` to remove it."
+                "This config file is already encrypted. "
+                "First, use `remove_rclone_encryption` to remove it."
             )
 
-        rclone_password.run_rclone_config_encrypt(self.cfg)
+        rclone_encryption.run_rclone_config_encrypt(self.cfg)
 
-        self.cfg.rclone.set_rclone_has_password(True)
+        self.cfg.rclone.set_rclone_config_encryption_state(True)
 
-    def remove_rclone_password(self) -> None:
+    def remove_rclone_encryption(self) -> None:
         """Unencrypt the rclone config file for the central connection."""
-        if not self.cfg.rclone.get_rclone_has_password():
+        if not self.cfg.rclone.get_rclone_config_encryption_state():
             raise RuntimeError(
-                f"The config for the current connection method: {self.cfg['connection_method']} "
-                f"does not have a password. Cannot remove."
+                f"The config for the current connection method: "
+                f"{self.cfg['connection_method']} "
+                f"is not encrypted. Cannot unencrypt."
             )
 
-        rclone_password.remove_rclone_password(self.cfg)
+        rclone_encryption.remove_rclone_encryption(self.cfg)
 
-        self.cfg.rclone.set_rclone_has_password(False)
+        self.cfg.rclone.set_rclone_config_encryption_state(False)
 
     # -------------------------------------------------------------------------
     # Configs

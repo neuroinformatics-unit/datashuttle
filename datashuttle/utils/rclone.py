@@ -17,7 +17,7 @@ from subprocess import CompletedProcess
 from packaging import version
 
 from datashuttle.configs import canonical_configs
-from datashuttle.utils import rclone_password, utils
+from datashuttle.utils import rclone_encryption, utils
 
 
 def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
@@ -54,7 +54,7 @@ def call_rclone_for_central_connection(
     cfg, command: str, pipe_std: bool = False
 ) -> CompletedProcess:
     """PLACEHOLDER"""
-    return run_function_that_may_require_central_connection_password(
+    return run_function_that_requires_encrpyted_rclone_config_access(
         cfg, lambda: call_rclone(command, pipe_std)
     )
 
@@ -104,7 +104,7 @@ def call_rclone_through_script_for_central_connection(
             shell=False,
         )
 
-        output = run_function_that_may_require_central_connection_password(
+        output = run_function_that_requires_encrpyted_rclone_config_access(
             cfg, lambda_func
         )
 
@@ -147,7 +147,7 @@ def await_call_rclone_with_popen_for_central_connection_raise_on_fail(
     """
     lambda_func = lambda: process.communicate()
 
-    stdout, stderr = run_function_that_may_require_central_connection_password(
+    stdout, stderr = run_function_that_requires_encrpyted_rclone_config_access(
         cfg, lambda_func
     )
 
@@ -160,7 +160,7 @@ def await_call_rclone_with_popen_for_central_connection_raise_on_fail(
     return stdout, stderr
 
 
-def run_function_that_may_require_central_connection_password(
+def run_function_that_requires_encrpyted_rclone_config_access(
     cfg, lambda_func
 ):
     """ """
@@ -182,15 +182,15 @@ def run_function_that_may_require_central_connection_password(
                 f"Please set up the {cfg['connection_method']} connection again."
             )
 
-    set_password = cfg.rclone.get_rclone_has_password()
+    is_encrypted = cfg.rclone.get_rclone_config_encryption_state()
 
-    if set_password:
-        rclone_password.set_credentials_as_password_command(cfg)
+    if is_encrypted:
+        rclone_encryption.set_credentials_as_password_command(cfg)
 
     results = lambda_func()
 
-    if set_password:
-        rclone_password.remove_credentials_as_password_command()
+    if is_encrypted:
+        rclone_encryption.remove_credentials_as_password_command()
 
     return results
 
@@ -585,8 +585,8 @@ def transfer_data(
             f'{central_filepath}" "{local_filepath}"  {extra_arguments} {get_config_arg(cfg)} --ask-password=false',  # TODO: handle the error
         )
 
-    if cfg.rclone.get_rclone_has_password():
-        rclone_password.remove_credentials_as_password_command()
+    if cfg.rclone.get_rclone_config_encryption_state():
+        rclone_encryption.remove_credentials_as_password_command()
 
     return output
 

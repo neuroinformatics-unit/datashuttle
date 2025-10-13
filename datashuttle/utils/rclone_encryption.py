@@ -191,7 +191,7 @@ def run_rclone_config_encrypt(cfg: Configs):
     remove_credentials_as_password_command()
 
 
-def remove_rclone_password(cfg):
+def remove_rclone_encryption(cfg):
     """"""
     set_credentials_as_password_command(cfg)
 
@@ -242,22 +242,7 @@ def get_password_filepath(
     return base_path / f"{cfg.rclone.get_rclone_config_name()}.xml"
 
 
-def run_raise_if_fail(command, command_description):
-    output = run_subprocess.run(
-        command,
-        shell=True,  # TODO: handle shell
-        capture_output=True,
-        text=True,
-    )
-
-    if output.returncode != 0:
-        raise RuntimeError(
-            f"\n--- STDOUT ---\n{output.stdout}\n"
-            f"\n--- STDERR ---\n{output.stderr}\n"
-        )
-
-
-def get_password_explanation_message(
+def get_explanation_message(
     cfg: Configs,
 ):  # TODO: type when other PR is merged
     """"""

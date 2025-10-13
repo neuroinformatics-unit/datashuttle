@@ -630,10 +630,10 @@ class Interface:
         except BaseException as e:
             return False, str(e)
 
-    # Set RClone Password
+    # Set RClone Encryption
     # ------------------------------------------------------------------------------------
 
-    def try_setup_rclone_password(self):
+    def try_setup_rclone_encryption(self):
         """"""
         try:
             self.project._try_encrypt_rclone_config()

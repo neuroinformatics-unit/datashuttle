@@ -22,8 +22,6 @@ from textual.widgets import (
     Static,
 )
 
-from datashuttle.utils import rclone_password
-
 
 class SetupGdriveScreen(ModalScreen):
     """Dialog window that sets up a Google Drive connection.
@@ -87,9 +85,9 @@ class SetupGdriveScreen(ModalScreen):
 
         4) `setup_gdrive_no_browser_enter_button` : To enter the client secret or config token.
 
-        5) `setup_gdrive_set_password_yes_button` : To set a password on the RClone config file
+        5) `setup_gdrive_set_encryption_yes_button` : To set a password on the RClone config file
 
-        6) `setup_gdrive_set_password_no_button` : To skip setting a password on the RClone config file
+        6) `setup_gdrive_set_encryption_no_button` : To skip setting a password on the RClone config file
 
         7) `setup_gdrive_finish_button` button : To finish the setup.
 
@@ -148,10 +146,10 @@ class SetupGdriveScreen(ModalScreen):
                     self.gdrive_client_secret, config_token
                 )
 
-        elif event.button.id == "setup_gdrive_set_password_yes_button":
-            self.set_password()
+        elif event.button.id == "setup_gdrive_set_encryption_yes_button":
+            self.set_rclone_encryption()
 
-        elif event.button.id == "setup_gdrive_set_password_no_button":
+        elif event.button.id == "setup_gdrive_set_encryption_no_button":
             self.set_finish_page("Setup complete!")
 
     # Setup the connection (with or without browser)
@@ -336,24 +334,12 @@ class SetupGdriveScreen(ModalScreen):
         )
         return success, output
 
-    # Set password on RClone config
+    # Set encryption on RClone config
     # ----------------------------------------------------------------------------------
 
-    def show_password_screen(self):
+    def set_rclone_encryption(self):
         """"""
-        message = f"{rclone_password.get_password_explanation_message(self.interface.project.cfg)}"
-        self.update_message_box_message(message)
-
-        yes_button = Button("Yes", id="setup_gdrive_set_password_yes_button")
-        no_button = Button("No", id="setup_gdrive_set_password_no_button")
-
-        self.query_one("#setup_gdrive_buttons_horizontal").mount(
-            yes_button, no_button
-        )
-
-    def set_password(self):
-        """"""
-        success, output = self.interface.try_setup_rclone_password()
+        success, output = self.interface.try_setup_rclone_encryption()
 
         if success:
             self.set_finish_page(
@@ -365,8 +351,8 @@ class SetupGdriveScreen(ModalScreen):
 
     def set_finish_page(self, message) -> None:
         """Show the final screen after successful set up."""
-        self.query_one("#setup_gdrive_set_password_yes_button").remove()
-        self.query_one("#setup_gdrive_set_password_no_button").remove()
+        self.query_one("#setup_gdrive_set_encryption_yes_button").remove()
+        self.query_one("#setup_gdrive_set_encryption_no_button").remove()
 
         self.update_message_box_message(message)
         self.query_one("#setup_gdrive_buttons_horizontal").mount(

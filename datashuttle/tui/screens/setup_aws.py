@@ -11,6 +11,8 @@ from textual.containers import Container, Horizontal, Vertical
 from textual.screen import ModalScreen
 from textual.widgets import Button, Input, Static
 
+from datashuttle.utils import rclone_encryption
+
 
 class SetupAwsScreen(ModalScreen):
     """Dialog window that sets up connection to an Amazon Web Service S3 bucket.
@@ -61,7 +63,7 @@ class SetupAwsScreen(ModalScreen):
 
         """
         if event.button.id == "setup_aws_cancel_button":
-            if self.stage == "ask_password":
+            if self.stage == "ask_rclone_encryption":
                 message = "AWS Connection Successful!"  #
                 self.query_one("#setup_aws_messagebox_message").update(message)
                 self.query_one("#setup_aws_ok_button").label = "Finish"
@@ -77,8 +79,8 @@ class SetupAwsScreen(ModalScreen):
             elif self.stage == "use_secret_access_key":
                 self.use_secret_access_key_to_setup_aws_connection()
 
-            elif self.stage == "ask_password":
-                self.set_password()
+            elif self.stage == "ask_rclone_encryption":
+                self.set_rclone_encryption()
 
             elif self.stage == "finished":
                 self.dismiss()
@@ -96,7 +98,7 @@ class SetupAwsScreen(ModalScreen):
 
     def use_secret_access_key_to_setup_aws_connection(self) -> None:
         """Set up the AWS connection and failure. If success, move onto the
-        password screen.
+        rclone_encryption screen.
 
         """
         secret_access_key = self.query_one(
@@ -108,15 +110,13 @@ class SetupAwsScreen(ModalScreen):
         )
 
         if success:
-            message = (
-                f"{rclone_password.get_password_explanation_message(self.cfg)}"
-            )
+            message = f"{rclone_encryption.get_explanation_message(self.cfg)}"
             self.query_one("#setup_aws_messagebox_message").update(message)
 
             self.query_one("#setup_aws_secret_access_key_input").remove()
             self.query_one("#setup_aws_ok_button").label = "Yes"
             self.query_one("#setup_aws_cancel_button").label = "No"
-            self.stage = "ask_password"
+            self.stage = "ask_rclone_encryption"
         else:
             message = (
                 f"AWS setup failed. Please check your configs and secret access key"
@@ -129,16 +129,20 @@ class SetupAwsScreen(ModalScreen):
             self.query_one("#setup_aws_ok_button").label = "Retry"
             self.query_one("#setup_aws_messagebox_message").update(message)
 
-    def set_password(self):
+    def set_rclone_encryption(self):
         """"""
-        success, output = self.interface.try_setup_rclone_password()
+        success, output = self.interface.try_setup_rclone_encryption()
 
         if success:
-            message = "The password was successfully set. Setup complete!"
+            message = (
+                "The rclone_encryption was successfully set. Setup complete!"
+            )
             self.query_one("#setup_aws_messagebox_message").update(message)
             self.query_one("#setup_aws_ok_button").label = "Finish"
             self.query_one("#setup_aws_cancel_button").remove()
             self.stage = "finished"
         else:
-            message = f"The password set up failed. Exception: {output}"
+            message = (
+                f"The rclone_encryption set up failed. Exception: {output}"
+            )
             self.query_one("#setup_aws_messagebox_message").update(message)
