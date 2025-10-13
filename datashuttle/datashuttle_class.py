@@ -843,7 +843,7 @@ class DataShuttle:
 
             if not self.cfg.rclone.get_rclone_has_password():
                 if self._ask_user_if_they_want_rclone_password():
-                    self._try_set_rclone_password()
+                    self._try_encrypt_rclone_config()
 
             rclone.check_successful_connection_and_raise_error_on_fail(
                 self.cfg
@@ -912,7 +912,7 @@ class DataShuttle:
 
         if not self.cfg.rclone.get_rclone_has_password():
             if self._ask_user_if_they_want_rclone_password():
-                self._try_set_rclone_password()
+                self._try_encrypt_rclone_config()
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
 
@@ -952,7 +952,7 @@ class DataShuttle:
 
         if not self.cfg.rclone.get_rclone_has_password():
             if self._ask_user_if_they_want_rclone_password():
-                self._try_set_rclone_password()
+                self._try_encrypt_rclone_config()
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
         aws.raise_if_bucket_absent(self.cfg)
@@ -974,7 +974,7 @@ class DataShuttle:
 
         return input_ == "y"
 
-    def _try_set_rclone_password(
+    def _try_encrypt_rclone_config(
         self,
     ) -> None:
         """Try to encrypt the rclone config file.
@@ -982,7 +982,7 @@ class DataShuttle:
         If it fails, warn the user the config file is unencrypted.
         """
         try:
-            self.set_rclone_password()
+            self.encrypt_rclone_config()
         except Exception as e:
             config_path = (
                 self.cfg.rclone.get_rclone_central_connection_config_filepath()
@@ -991,14 +991,17 @@ class DataShuttle:
             utils.log_and_raise_error(
                 f"{str(e)}\n"
                 f"Password set up failed.\n"
-                f"Use set_rclone_password()` to attempt to set the password again (see full error message above).\n"
-                f"IMPORTANT: The config at {config_path} is not currently encrpyted.\n",
+                f"Use encrypt_rclone_config()` to attempt to set the password again (see full error message above).\n"
+                f"IMPORTANT: The config at {config_path} is not currently encrypted.\n",
                 RuntimeError,
             )
 
-        utils.log_and_message("Password set successfully")
+        utils.log_and_message(
+            f"Rclone config file for the central connection "
+            f"{self.cfg['connection_method']} was successfully encrypted."
+        )
 
-    def set_rclone_password(self) -> None:
+    def encrypt_rclone_config(self) -> None:
         """Encrypt the rclone config file for the central connection."""
         if self.cfg.rclone.get_rclone_has_password():
             raise RuntimeError(
