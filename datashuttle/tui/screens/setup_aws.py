@@ -130,7 +130,7 @@ class SetupAwsScreen(ModalScreen):
             self.query_one("#setup_aws_messagebox_message").update(message)
 
     def set_rclone_encryption(self):
-        """"""
+        """Try and encrypt the Rclone config file and inform the user of success / failure."""
         success, output = self.interface.try_setup_rclone_encryption()
 
         if success:

@@ -697,7 +697,7 @@ def search_central_via_connection(
     """
     rclone_config_name = cfg.rclone.get_rclone_config_name(
         cfg["connection_method"]
-    )  # TODO: this is not good because we get the config name here and in get_config_arg
+    )
 
     output = rclone.call_rclone_for_central_connection(
         cfg,

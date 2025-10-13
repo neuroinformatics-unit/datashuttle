@@ -8,7 +8,6 @@ if TYPE_CHECKING:
 
     from datashuttle.tui.interface import Interface
 
-from textual import work
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import (
@@ -209,13 +208,12 @@ class SetupSshScreen(ModalScreen):
 
         self.stage = "show_success_message"
 
-    @work(exclusive=True, thread=True)
-    def run_interface(self):
-        self.interface.try_setup_rclone_encryption()
-
     def show_connection_successful_message(self):
-        """"""
+        """Show the final screen indicating the connection was successfully set up."""
         self.query_one("#setup_ssh_ok_button").label = "Finish"
+
+        # Depending on what was the previous screen, `setup_ssh_cancel_button`
+        # may or may not be displayed.
         try:
             self.query_one("#setup_ssh_cancel_button").remove()
         except BaseException:

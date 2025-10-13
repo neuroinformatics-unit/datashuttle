@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict, List, Literal, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional
 
 if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
@@ -53,8 +53,14 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
 def call_rclone_for_central_connection(
     cfg, command: str, pipe_std: bool = False
 ) -> CompletedProcess:
-    """PLACEHOLDER"""
-    return run_function_that_requires_encrpyted_rclone_config_access(
+    """Call RClone when the config file may need to be unencrypted.
+
+    This is a convenience function to call RClone in places where
+    the config file may need to be unencrypted. This is for connecting
+    to the central storage through aws, ssh or gdrive. It wraps the
+    function call in a set-up / teardown of the config password.
+    """
+    return run_function_that_requires_encrypted_rclone_config_access(
         cfg, lambda: call_rclone(command, pipe_std)
     )
 
@@ -104,7 +110,7 @@ def call_rclone_through_script_for_central_connection(
             shell=False,
         )
 
-        output = run_function_that_requires_encrpyted_rclone_config_access(
+        output = run_function_that_requires_encrypted_rclone_config_access(
             cfg, lambda_func
         )
 
@@ -147,7 +153,7 @@ def await_call_rclone_with_popen_for_central_connection_raise_on_fail(
     """
     lambda_func = lambda: process.communicate()
 
-    stdout, stderr = run_function_that_requires_encrpyted_rclone_config_access(
+    stdout, stderr = run_function_that_requires_encrypted_rclone_config_access(
         cfg, lambda_func
     )
 
@@ -160,10 +166,15 @@ def await_call_rclone_with_popen_for_central_connection_raise_on_fail(
     return stdout, stderr
 
 
-def run_function_that_requires_encrpyted_rclone_config_access(
+def run_function_that_requires_encrypted_rclone_config_access(
     cfg, lambda_func
-):
-    """ """
+) -> Any:
+    """Run command that requires possibly encrypted Rclone config file.
+
+    The Rclone config file may be encrypted for aws, gdrive or ssh connections.
+    In this case we need to set an environment variable to tell Rclone how
+    to decrypt the config file (and remove the variable afterwards).
+    """
     from datashuttle import get_datashuttle_version  # avoid circular import
 
     rclone_config_filepath = (
@@ -178,7 +189,8 @@ def run_function_that_requires_encrpyted_rclone_config_access(
             )
         else:
             raise RuntimeError(
-                f"An unexpected error occurred. Could not find the rclone config file at: {rclone_config_filepath}\n"
+                f"An unexpected error occurred. Could not find the rclone config "
+                f"file at: {rclone_config_filepath}\n"
                 f"Please set up the {cfg['connection_method']} connection again."
             )
 
@@ -187,10 +199,11 @@ def run_function_that_requires_encrpyted_rclone_config_access(
     if is_encrypted:
         rclone_encryption.set_credentials_as_password_command(cfg)
 
-    results = lambda_func()
-
-    if is_encrypted:
-        rclone_encryption.remove_credentials_as_password_command()
+    try:
+        results = lambda_func()
+    finally:
+        if is_encrypted:
+            rclone_encryption.remove_credentials_as_password_command()
 
     return results
 
@@ -419,7 +432,7 @@ def delete_existing_rclone_config_file(cfg: Configs):
 
 
 def get_config_arg(cfg: Configs) -> str:
-    """TODO PLACEHOLDER."""
+    """Get the full argument to run Rclone commands with a specific config."""
     rclone_config_path = (
         cfg.rclone.get_rclone_central_connection_config_filepath()
     )
@@ -470,7 +483,7 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
 
 
 def get_rclone_config_filepath(cfg: Configs) -> Path:
-    """"""
+    """Get the path to the central Rclone config for the current `connection_method`."""
     if cfg["connection_method"] in ["aws", "ssh", "gdrive"]:
         config_filepath = (
             cfg.rclone.get_rclone_central_connection_config_filepath()

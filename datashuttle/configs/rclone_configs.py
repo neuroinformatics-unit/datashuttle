@@ -41,7 +41,7 @@ class RCloneConfigs:
             config_base_path / "rclone_ps_state.yaml"
         )
 
-    def load_rclone_config_is_encrypted(self):
+    def load_rclone_config_is_encrypted(self) -> dict:
         """Track whether the Rclone config file is encrypted. This could be
         read directly from the RClone config file, but requires a subprocess call
         which can be slow on Windows. As this function is called a lot, we track
@@ -69,7 +69,7 @@ class RCloneConfigs:
 
         return rclone_config_is_encrypted
 
-    def set_rclone_config_encryption_state(self, value):
+    def set_rclone_config_encryption_state(self, value: bool) -> None:
         """Store the current state of the rclone config encryption for the `connection_method`.
 
         Note that this is stored to disk each call (rather than tracked locally) to ensure
@@ -92,7 +92,7 @@ class RCloneConfigs:
 
     def get_rclone_config_encryption_state(
         self,
-    ):
+    ) -> dict:
         """Return whether the config file associated with the current `connection_method`."""
         assert self.datashuttle_configs["connection_method"] in [
             "ssh",
@@ -143,7 +143,7 @@ class RCloneConfigs:
             "dry_run": dry_run,
         }
 
-    def delete_existing_rclone_config_file(self):
+    def delete_existing_rclone_config_file(self) -> None:
         """ """
         rclone_config_filepath = (
             self.get_rclone_central_connection_config_filepath()
