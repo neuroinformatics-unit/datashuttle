@@ -461,14 +461,14 @@ def transfer_data(
         output = call_rclone_through_script(
             f"{rclone_args('copy')} "
             f'"{local_filepath}" "{cfg.get_rclone_config_name()}:'
-            f'{central_filepath}" {extra_arguments}',
+            f'{central_filepath}" {extra_arguments} --use-json-log',
         )
 
     elif upload_or_download == "download":
         output = call_rclone_through_script(
             f"{rclone_args('copy')} "
             f'"{cfg.get_rclone_config_name()}:'
-            f'{central_filepath}" "{local_filepath}"  {extra_arguments}',
+            f'{central_filepath}" "{local_filepath}" {extra_arguments} --use-json-log',
         )
 
     return output

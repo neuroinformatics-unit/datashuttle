@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from typing import List, Literal, Optional, Union
 
@@ -9,6 +10,37 @@ from datashuttle.utils.custom_types import (
     Prefix,
     TopLevelFolder,
 )
+
+
+def parse_rclone_copy_output(
+    stream: bytes, capture_errors: bool = False
+) -> tuple[str, list[str]]:
+    """"""
+    split_stream = stream.decode("utf-8").split("\n")
+
+    errors = []
+    for idx, line in enumerate(split_stream):
+        try:
+            line_json = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+
+        if capture_errors:
+            if line_json["level"] == "error":
+                if "object" in line_json:
+                    errors.append(
+                        f"The file {line_json['object']} failed to transfer. Reason: {line_json['msg']}"
+                    )
+                else:
+                    errors.append(f"ERROR : {line_json['msg']}")
+
+        split_stream[idx] = (
+            f"{line_json['time'][:19]} {line_json['level'].upper()} : {line_json['msg']}"
+        )
+
+    format_stream = "\n".join(split_stream)
+
+    return format_stream, errors
 
 
 class TransferData:
@@ -33,7 +65,6 @@ class TransferData:
         datatype: Union[str, List[str]],
         overwrite_existing_files: OverwriteExistingFiles,
         dry_run: bool,
-        log: bool,
     ):
         """Initialise TransferData.
 
@@ -71,9 +102,6 @@ class TransferData:
             Perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved.
 
-        log
-            if `True`, log and print the transfer output.
-
         """
         self.__cfg = cfg
         self.__upload_or_download = upload_or_download
@@ -84,6 +112,8 @@ class TransferData:
         self.__base_folder = self.__cfg.get_base_folder(
             self.__local_or_central, self.__top_level_folder
         )
+        self.__overwrite_existing_files = overwrite_existing_files
+        self.__dry_run = dry_run
 
         self.sub_names = self.to_list(sub_names)
         self.ses_names = self.to_list(ses_names)
@@ -91,6 +121,7 @@ class TransferData:
 
         self.check_input_arguments()
 
+    def run(self):
         include_list = self.build_a_list_of_all_files_and_folders_to_transfer()
 
         if any(include_list):
@@ -99,16 +130,28 @@ class TransferData:
                 self.__upload_or_download,
                 self.__top_level_folder,
                 include_list,
-                cfg.make_rclone_transfer_options(
-                    overwrite_existing_files, dry_run
+                self.__cfg.make_rclone_transfer_options(
+                    self.__overwrite_existing_files, self.__dry_run
                 ),
             )
 
-            if log:
-                utils.log_and_message(output.stderr.decode("utf-8"))
+            stdout, errors = parse_rclone_copy_output(
+                output.stdout, capture_errors=True
+            )
+            stderr, errors = parse_rclone_copy_output(output.stderr)
+
+            utils.log_and_message(
+                f"\n\n**************  STDOUT  **************\n"
+                f"{stdout}"
+                f"\n\n**************  STDERR  **************\n"
+                f"{stderr}"
+            )
+
         else:
-            if log:
-                utils.log_and_message("No files included. None transferred.")
+            utils.log_and_message("No files included. None transferred.")
+            errors = []
+
+        return errors
 
     # -------------------------------------------------------------------------
     # Build the --include list
