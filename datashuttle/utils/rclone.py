@@ -518,7 +518,7 @@ def parse_rclone_copy_output(top_level_folder, output):
 def reformat_rclone_copy_output(
     stream: bytes,
     capture_errors: bool = False,
-    top_level_folder: str | None = None,
+    top_level_folder: TopLevelFolder | None = None,
 ) -> tuple[str, TransferErrors]:
     """"""
     # TODO: assert top level fodlers

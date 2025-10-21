@@ -272,7 +272,7 @@ class Interface:
             return False, str(e)
 
     def transfer_top_level_only(
-        self, selected_top_level_folder: str, upload: bool
+        self, selected_top_level_folder: TopLevelFolder, upload: bool
     ) -> InterfaceOutput:
         """Transfer all files within a selected top level folder.
 
