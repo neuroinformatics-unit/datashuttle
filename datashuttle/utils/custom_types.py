@@ -13,3 +13,5 @@ InterfaceOutput = Tuple[bool, Any]
 ConnectionMethods = Literal[
     "ssh", "local_filesystem", "gdrive", "aws", "local_only"
 ]
+
+TransferErrors = dict[str, list[str]]

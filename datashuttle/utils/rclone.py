@@ -4,8 +4,9 @@ from typing import TYPE_CHECKING, Dict, List, Literal, Optional
 
 if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
-    from datashuttle.utils.custom_types import TopLevelFolder
+    from datashuttle.utils.custom_types import TopLevelFolder, TransferErrors
 
+import json
 import os
 import platform
 import shlex
@@ -472,6 +473,87 @@ def transfer_data(
         )
 
     return output
+
+
+def log_rclone_output_python_api(stdout, stderr):
+    """"""
+    message = (
+        f"\n\n**************  STDOUT  **************\n"
+        f"{stdout}"
+        f"\n\n**************  STDERR  **************\n"
+        f"{stderr}"
+    )
+
+    utils.log_and_message(message)
+
+
+def log_rclone_copy_errors_api(errors):
+    """"""
+    if any(errors["messages"]):
+        message = (
+            "\n\nErrors were detected, in files:"
+            "\n-------------------------------\n"
+        )
+        message += "\n".join(errors["file_names"])
+        message += "\n\nThe error messages are:\n-----------------------\n"
+        message += "\n".join(errors["messages"])
+        message += "\n"
+    else:
+        message = "No transfer errors were detected.\n"
+
+    utils.log_and_message(message)
+
+
+def parse_rclone_copy_output(top_level_folder, output):
+    """"""
+    stdout, errors = reformat_rclone_copy_output(
+        output.stdout, capture_errors=True, top_level_folder=top_level_folder
+    )
+
+    stderr, _ = reformat_rclone_copy_output(output.stderr)
+
+    return stdout, stderr, errors
+
+
+def reformat_rclone_copy_output(
+    stream: bytes,
+    capture_errors: bool = False,
+    top_level_folder: str | None = None,
+) -> tuple[str, TransferErrors]:
+    """"""
+    # TODO: assert top level fodlers
+
+    split_stream = stream.decode("utf-8").split("\n")
+
+    errors: TransferErrors = {
+        "file_names": [],
+        "messages": [],
+    }
+
+    for idx, line in enumerate(split_stream):
+        try:
+            line_json = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+
+        if capture_errors:
+            if line_json["level"] == "error":
+                if "object" in line_json:
+                    full_filepath = f"{top_level_folder}/{line_json['object']}"
+                    errors["file_names"].append(full_filepath)
+                    errors["messages"].append(
+                        f"The file {full_filepath} failed to transfer. Reason: {line_json['msg']}"
+                    )
+                else:
+                    errors["messages"].append(f"ERROR : {line_json['msg']}")
+
+        split_stream[idx] = (
+            f"{line_json['time'][:19]} {line_json['level'].upper()} : {line_json['msg']}"
+        )
+
+    format_stream = "\n".join(split_stream)
+
+    return format_stream, errors
 
 
 def get_local_and_central_file_differences(

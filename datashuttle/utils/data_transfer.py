@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 from typing import List, Literal, Optional, Union
 
@@ -10,37 +9,6 @@ from datashuttle.utils.custom_types import (
     Prefix,
     TopLevelFolder,
 )
-
-
-def parse_rclone_copy_output(
-    stream: bytes, capture_errors: bool = False
-) -> tuple[str, list[str]]:
-    """"""
-    split_stream = stream.decode("utf-8").split("\n")
-
-    errors = []
-    for idx, line in enumerate(split_stream):
-        try:
-            line_json = json.loads(line)
-        except json.JSONDecodeError:
-            continue
-
-        if capture_errors:
-            if line_json["level"] == "error":
-                if "object" in line_json:
-                    errors.append(
-                        f"The file {line_json['object']} failed to transfer. Reason: {line_json['msg']}"
-                    )
-                else:
-                    errors.append(f"ERROR : {line_json['msg']}")
-
-        split_stream[idx] = (
-            f"{line_json['time'][:19]} {line_json['level'].upper()} : {line_json['msg']}"
-        )
-
-    format_stream = "\n".join(split_stream)
-
-    return format_stream, errors
 
 
 class TransferData:
@@ -135,17 +103,11 @@ class TransferData:
                 ),
             )
 
-            stdout, errors = parse_rclone_copy_output(
-                output.stdout, capture_errors=True
+            stdout, stderr, errors = rclone.parse_rclone_copy_output(
+                self.__top_level_folder, output
             )
-            stderr, errors = parse_rclone_copy_output(output.stderr)
 
-            utils.log_and_message(
-                f"\n\n**************  STDOUT  **************\n"
-                f"{stdout}"
-                f"\n\n**************  STDERR  **************\n"
-                f"{stderr}"
-            )
+            rclone.log_rclone_output_python_api(stdout, stderr)
 
         else:
             utils.log_and_message("No files included. None transferred.")

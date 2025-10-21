@@ -49,7 +49,13 @@ class MessageBox(ModalScreen):
 
     """
 
-    def __init__(self, message: str, border_color: str) -> None:
+    def __init__(
+        self,
+        message: str,
+        border_color: str,
+        width: str = "65",
+        height: str = "15",
+    ) -> None:
         """Initialise the MessageBox.
 
         Parameters
@@ -65,10 +71,12 @@ class MessageBox(ModalScreen):
 
         self.message = message
         self.border_color = border_color
+        self.top_container_width = width
+        self.top_container_height = height
 
     def compose(self) -> ComposeResult:
         """Add widgets to the MessageBox."""
-        yield Container(
+        self.top_container = Container(
             Container(
                 Static(self.message, id="messagebox_message_label"),
                 id="messagebox_message_container",
@@ -76,6 +84,8 @@ class MessageBox(ModalScreen):
             Container(Button("OK"), id="messagebox_ok_button"),
             id="messagebox_top_container",
         )
+
+        yield self.top_container
 
     def on_mount(self) -> None:
         """Update widgets immediately after mounting."""
@@ -92,6 +102,9 @@ class MessageBox(ModalScreen):
             "thick",
             color,
         )
+
+        self.top_container.styles.width = self.top_container_width
+        self.top_container.styles.height = self.top_container_height
 
     def on_button_pressed(self) -> None:
         """Handle button press."""
@@ -219,23 +232,44 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
 
     async def handle_transfer_and_update_ui_when_complete(self) -> None:
         """Run the data transfer worker and updates the UI on completion."""
-        data_transfer_worker = self.transfer_func()
-        await data_transfer_worker.wait()
-        success, output = data_transfer_worker.result
-        self.dismiss()
+        try:
+            data_transfer_worker = self.transfer_func()
+            await data_transfer_worker.wait()
+            success, output = data_transfer_worker.result
 
-        if success:
-            self.app.push_screen(
-                MessageBox(
-                    "Transfer finished."
-                    "\n\n"
-                    "Check the most recent logs to "
-                    "ensure transfer completed successfully.",
-                    border_color="grey",
+            self.dismiss()
+
+            if success:
+                errors = output
+
+                if any(errors["messages"]):
+                    errors_message = "[red]Errors detected, in files:[/red]\n"
+                    errors_message += "\n".join(errors["file_names"])
+                    errors_message += (
+                        "[red]\n\nThe error messages are:[/red]\n"
+                    )
+                    errors_message += "\n\n".join(errors["messages"])
+                    messagebox_kwargs = {"width": "75%", "height": "75%"}
+                else:
+                    errors_message = "No errors detected"
+                    messagebox_kwargs = {}
+
+                message = (
+                    f"Transfer finished.\n\n"
+                    f"{errors_message}\n\n"
+                    f"Check the most recent logs for full details."
                 )
-            )
-        else:
-            self.app.show_modal_error_dialog(output)
+
+                self.app.push_screen(
+                    MessageBox(
+                        message, border_color="grey", **messagebox_kwargs
+                    )
+                )
+            else:
+                self.app.show_modal_error_dialog(output)
+
+        except BaseException as e:
+            self.app.show_modal_error_dialog(str(e))
 
 
 class SearchingCentralForNextSubSesPopup(ModalScreen):
