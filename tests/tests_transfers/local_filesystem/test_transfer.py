@@ -641,6 +641,77 @@ class TestFileTransfer(BaseTest):
         elif overwrite_existing_files == "always":
             assert test_utils.read_file(central_file_path) == ["file earlier"]
 
+    def test_errors_variable(self, project, monkeypatch):
+        """
+        Test that the `errors` variable is correctly
+        returned from every transfer function. `errors` is a variable
+        that contains information about any errors that were encountered
+        during transfer.
+        """
+
+        def test_errors(top_level_folder):
+            return {
+                "file_names": [f"{top_level_folder}/hello_world.txt"],
+                "messages": ["how are you?"],
+            }
+
+        def monkeypatch_parse_output(top_level_folder, b):
+            stdout = "stdout"
+            stderr = "stderr"
+            return stdout, stderr, test_errors(top_level_folder)
+
+        import datashuttle
+
+        monkeypatch.setattr(
+            datashuttle.utils.rclone,
+            "parse_rclone_copy_output",
+            monkeypatch_parse_output,
+        )
+
+        subs, sessions = test_utils.get_default_sub_sessions_to_test()
+
+        for top_level_folder in ["rawdata", "derivatives"]:
+            test_utils.make_and_check_local_project_folders(
+                project,
+                top_level_folder,
+                subs,
+                sessions,
+                get_broad_datatypes(),
+            )
+
+        specific_file = (
+            lambda path_: f"{path_}/rawdata/{subs[0]}/{sessions[0]}/ephys/placeholder_file.txt"
+        )
+
+        for func in [
+            lambda: project.upload_specific_folder_or_file(
+                specific_file(project.get_local_path())
+            ),
+            lambda: project.download_specific_folder_or_file(
+                specific_file(project.get_central_path())
+            ),
+            lambda: project.upload_custom("rawdata", "all", "all", "all"),
+            lambda: project.download_custom("rawdata", "all", "all", "all"),
+            project.upload_rawdata,
+            project.download_rawdata,
+        ]:
+            assert func() == test_errors("rawdata")
+
+        for func in [project.upload_derivatives, project.download_derivatives]:
+            assert func() == test_errors("derivatives")
+
+        for func in [
+            project.upload_entire_project,
+            project.download_entire_project,
+        ]:
+            assert func() == {
+                "file_names": [
+                    "rawdata/hello_world.txt",
+                    "derivatives/hello_world.txt",
+                ],
+                "messages": ["how are you?", "how are you?"],
+            }
+
     def get_paths_to_a_local_and_central_file(self, project, top_level_folder):
         path_to_test_file = (
             Path(top_level_folder)
