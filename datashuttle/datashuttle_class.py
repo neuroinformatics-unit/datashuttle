@@ -316,6 +316,7 @@ class DataShuttle:
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
         init_log: bool = True,
+        display_errors: bool = True,
     ) -> TransferErrors:
         """Upload data from a local project to the central project folder.
 
@@ -355,6 +356,9 @@ class DataShuttle:
             always be ``True``, unless logger is handled elsewhere
             (e.g. in a calling function).
 
+        display_errors
+            if `True`, a summary of errors will be printed alongside the Rclone logs.
+
         """
         if init_log:
             self._start_log("upload-custom", local_vars=locals())
@@ -372,6 +376,9 @@ class DataShuttle:
             dry_run,
         ).run()
 
+        if display_errors:
+            rclone.log_rclone_copy_errors_api(errors)
+
         if init_log:
             ds_logger.close_log_filehandler()
 
@@ -388,6 +395,7 @@ class DataShuttle:
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
         init_log: bool = True,
+        display_errors: bool = True,
     ) -> TransferErrors:
         """Download data from the central project to the local project folder.
 
@@ -427,6 +435,9 @@ class DataShuttle:
             always be ``True``, unless logger is handled elsewhere
             (e.g. in a calling function).
 
+        display_errors
+            if `True`, a summary of errors will be printed alongside the Rclone logs.
+
         """
         if init_log:
             self._start_log("download-custom", local_vars=locals())
@@ -443,6 +454,9 @@ class DataShuttle:
             overwrite_existing_files,
             dry_run,
         ).run()
+
+        if display_errors:
+            rclone.log_rclone_copy_errors_api(errors)
 
         if init_log:
             ds_logger.close_log_filehandler()
@@ -761,10 +775,8 @@ class DataShuttle:
             overwrite_existing_files=overwrite_existing_files,
             dry_run=dry_run,
             init_log=False,
+            display_errors=display_errors,
         )
-
-        if display_errors:
-            rclone.log_rclone_copy_errors_api(errors)
 
         if init_log:
             ds_logger.close_log_filehandler()

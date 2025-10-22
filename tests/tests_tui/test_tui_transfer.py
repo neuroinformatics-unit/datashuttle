@@ -218,6 +218,60 @@ class TestTuiTransfer(TuiBase):
 
             await pilot.pause()
 
+    @pytest.mark.asyncio
+    async def test_errors_are_reported_on_pop_up(self, setup_project_paths):
+        """"""
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        subs, sessions = test_utils.get_default_sub_sessions_to_test()
+
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+            await self.check_and_click_onto_existing_project(
+                pilot, project_name
+            )
+            await self.switch_tab(pilot, "transfer")
+
+            project = pilot.app.screen.interface.project
+
+            self.setup_project_for_data_transfer(
+                project,
+                subs,
+                sessions,
+                ["rawdata", "derivatives"],
+                "upload",
+            )
+
+            from pathlib import Path
+
+            relative_path = (
+                Path("rawdata")
+                / subs[0]
+                / sessions[0]
+                / "ephys"
+                / "placeholder_file.txt"
+            )
+            a_transferred_file = project.get_local_path() / relative_path
+
+            from filelock import FileLock
+
+            lock = FileLock(a_transferred_file, timeout=5)
+            with lock:
+                await self.run_transfer(
+                    pilot, "upload", close_final_messagebox=False
+                )
+
+            from datashuttle.tui.screens.modal_dialogs import MessageBox
+
+            assert isinstance(app.screen, MessageBox)
+            displayed_message = app.screen.message
+
+            assert relative_path.as_posix() in displayed_message
+            assert (
+                " another process has locked a portion of the file"
+                in displayed_message
+            )
+
     async def switch_top_level_folder_select(
         self, pilot, id, top_level_folder
     ):
@@ -227,14 +281,16 @@ class TestTuiTransfer(TuiBase):
             await self.move_select_to_position(pilot, id, position=5)
             assert pilot.app.screen.query_one(id).value == "derivatives"
 
-    async def run_transfer(self, pilot, upload_or_download):
+    async def run_transfer(
+        self, pilot, upload_or_download, close_final_messagebox=True
+    ):
         # Check assumed default is correct on the transfer switch
         assert pilot.app.screen.query_one("#transfer_switch").value is False
 
         if upload_or_download == "download":
             await self.scroll_to_click_pause(pilot, "#transfer_switch")
 
-        await self.click_and_await_transfer(pilot)
+        await self.click_and_await_transfer(pilot, close_final_messagebox)
 
     def setup_project_for_data_transfer(
         self,

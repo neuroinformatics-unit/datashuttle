@@ -522,7 +522,16 @@ def parse_rclone_copy_output(top_level_folder, output):
         "messages": out_errors["messages"] + err_errors["messages"],
     }
 
+    all_errors["file_names"] = list(set(all_errors["file_names"]))
+
     return stdout, stderr, all_errors
+
+
+def get_empty_errors_dict() -> TransferErrors:
+    return {
+        "file_names": [],
+        "messages": [],
+    }
 
 
 def reformat_rclone_copy_output(
@@ -533,10 +542,7 @@ def reformat_rclone_copy_output(
     """"""
     split_stream = stream.decode("utf-8").split("\n")
 
-    errors: TransferErrors = {
-        "file_names": [],
-        "messages": [],
-    }
+    errors = get_empty_errors_dict()
 
     for idx, line in enumerate(split_stream):
         try:

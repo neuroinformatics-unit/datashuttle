@@ -239,7 +239,9 @@ class TuiBase:
         await pilot.click(id, offset=(2, position))
         await pilot.pause()
 
-    async def click_and_await_transfer(self, pilot):
+    async def click_and_await_transfer(
+        self, pilot, close_final_messagebox=True
+    ):
         await self.scroll_to_click_pause(pilot, "#transfer_transfer_button")
         await self.scroll_to_click_pause(pilot, "#confirm_ok_button")
 
@@ -248,7 +250,8 @@ class TuiBase:
         if transfer_task:
             await transfer_task
 
-        await self.close_messagebox(pilot)
+        if close_final_messagebox:
+            await self.close_messagebox(pilot)
 
     async def double_click_input(self, pilot, sub_or_ses, control=False):
         """Helper function to double click input to suggest next sub or ses.

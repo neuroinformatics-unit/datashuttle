@@ -647,6 +647,8 @@ class TestFileTransfer(BaseTest):
         returned from every transfer function. `errors` is a variable
         that contains information about any errors that were encountered
         during transfer.
+
+        DOCS TODO this doesn't matter if its top level folder or whatever
         """
 
         def test_errors(top_level_folder):
@@ -711,6 +713,47 @@ class TestFileTransfer(BaseTest):
                 ],
                 "messages": ["how are you?", "how are you?"],
             }
+
+    def test_errors_are_caught_and_logged(self, project):
+        """"""  # TODO DOC OMD TODO!
+        subs, sessions = test_utils.get_default_sub_sessions_to_test()
+
+        test_utils.make_and_check_local_project_folders(
+            project,
+            "rawdata",
+            subs,
+            sessions,
+            get_broad_datatypes(),
+        )
+
+        relative_path = (
+            Path("rawdata")
+            / subs[0]
+            / sessions[0]
+            / "ephys"
+            / "placeholder_file.txt"
+        )
+        a_transferred_file = project.get_local_path() / relative_path
+
+        test_utils.delete_log_files(project.cfg.logging_path)
+
+        from filelock import FileLock
+
+        lock = FileLock(a_transferred_file, timeout=5)
+        with lock:
+            errors = project.upload_custom("rawdata", "all", "all", "all")
+
+        assert errors["file_names"] == [relative_path.as_posix()]
+        assert (
+            "another process has locked a portion of the file"
+            in errors["messages"][0]
+        )
+
+        log = test_utils.read_log_file(project.cfg.logging_path)
+
+        assert errors["file_names"][0] in log
+        assert "Errors were detected!" in log
+        assert "another process has locked a portion of the file" in log
 
     def get_paths_to_a_local_and_central_file(self, project, top_level_folder):
         path_to_test_file = (

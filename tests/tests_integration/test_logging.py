@@ -291,6 +291,7 @@ class TestLogging:
         assert "--include" in log
         assert "sub-11/ses-123/anat/**" in log
         assert "/central/test_project/rawdata" in log
+        assert "No transfer errors were detected" in log
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_logs_upload_and_download_folder_or_file(
@@ -329,6 +330,7 @@ class TestLogging:
         )
         assert "sub-001/ses-001" in log
         assert "Elapsed time" in log
+        assert "No transfer errors were detected" in log
 
     # ----------------------------------------------------------------------------------
     # Test temporary logging path
