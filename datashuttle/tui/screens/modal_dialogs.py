@@ -243,8 +243,13 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
                 errors = output
 
                 if any(errors["messages"]):
-                    errors_message = "[red]Errors detected, in files:[/red]\n"
-                    errors_message += "\n".join(errors["file_names"])
+                    if errors["file_names"]:
+                        errors_message = (
+                            "[red]Errors detected! in files:[/red]\n"
+                        )
+                        errors_message += "\n".join(errors["file_names"])
+                    else:
+                        errors_message = "[red]Errors detected![/red]"
                     errors_message += (
                         "[red]\n\nThe error messages are:[/red]\n"
                     )

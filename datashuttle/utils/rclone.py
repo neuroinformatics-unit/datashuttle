@@ -490,29 +490,39 @@ def log_rclone_output_python_api(stdout, stderr):
 def log_rclone_copy_errors_api(errors):
     """"""
     if any(errors["messages"]):
-        message = (
-            "\n\nErrors were detected, in files:"
-            "\n-------------------------------\n"
-        )
-        message += "\n".join(errors["file_names"])
+        if any(errors["file_names"]):
+            message = (
+                "\n\nErrors were detected! In files:"
+                "\n-------------------------------\n"
+            )
+            message += "\n".join(errors["file_names"])
+        else:
+            message = "\n\n[red]Errors detected![/red]"
         message += "\n\nThe error messages are:\n-----------------------\n"
         message += "\n".join(errors["messages"])
         message += "\n"
     else:
         message = "No transfer errors were detected.\n"
 
-    utils.log_and_message(message)
+    utils.log_and_message(message, use_rich=True)
 
 
 def parse_rclone_copy_output(top_level_folder, output):
     """"""
-    stdout, errors = reformat_rclone_copy_output(
+    stdout, out_errors = reformat_rclone_copy_output(
         output.stdout, capture_errors=True, top_level_folder=top_level_folder
     )
 
-    stderr, _ = reformat_rclone_copy_output(output.stderr)
+    stderr, err_errors = reformat_rclone_copy_output(
+        output.stderr, capture_errors=True
+    )
 
-    return stdout, stderr, errors
+    all_errors = {
+        "file_names": out_errors["file_names"] + err_errors["file_names"],
+        "messages": out_errors["messages"] + err_errors["messages"],
+    }
+
+    return stdout, stderr, all_errors
 
 
 def reformat_rclone_copy_output(
@@ -521,8 +531,6 @@ def reformat_rclone_copy_output(
     top_level_folder: TopLevelFolder | None = None,
 ) -> tuple[str, TransferErrors]:
     """"""
-    # TODO: assert top level fodlers
-
     split_stream = stream.decode("utf-8").split("\n")
 
     errors: TransferErrors = {
@@ -537,7 +545,7 @@ def reformat_rclone_copy_output(
             continue
 
         if capture_errors:
-            if line_json["level"] == "error":
+            if line_json["level"] in ["error", "critical"]:
                 if "object" in line_json:
                     full_filepath = f"{top_level_folder}/{line_json['object']}"
                     errors["file_names"].append(full_filepath)

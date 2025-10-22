@@ -107,6 +107,12 @@ class TransferData:
                 self.__top_level_folder, output
             )
 
+            if output.returncode != 0 and not any(errors["messages"]):
+                raise RuntimeError(
+                    "Errors were detected in transfer but not reported properly. "
+                    "Please contact the datashuttle team."
+                )
+
             rclone.log_rclone_output_python_api(stdout, stderr)
 
         else:
