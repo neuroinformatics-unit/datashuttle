@@ -162,6 +162,9 @@ class TestBackwardsCompatibility:
         # thus correct for the most recent datashuttle version.
         project = test_utils.make_project(TEST_PROJECT_NAME)
         project.make_config_file("cur_ver", "cur_ver", "local_filesystem")
+        project.set_validation_templates(
+            {"on": True, "sub": "hello_sub", "ses": None}
+        )
 
         current_ver_configs = project.get_configs()
         current_ver_persistent_settings = project._load_persistent_settings()

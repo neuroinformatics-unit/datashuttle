@@ -20,6 +20,6 @@ tui:
   overwrite_existing_files: never
   dry_run: false
 name_templates:
-  'on': false
-  sub: null
+  'on': true
+  sub: "hello_sub"
   ses: null
