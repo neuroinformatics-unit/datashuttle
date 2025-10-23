@@ -90,6 +90,7 @@ class TransferData:
         self.check_input_arguments()
 
     def run(self):
+        """Run the transfer."""
         include_list = self.build_a_list_of_all_files_and_folders_to_transfer()
 
         if any(include_list):
@@ -113,7 +114,7 @@ class TransferData:
                     "Please contact the datashuttle team."
                 )
 
-            rclone.log_rclone_output_python_api(stdout, stderr)
+            rclone.log_stdout_stderr_python_api(stdout, stderr)
 
         else:
             utils.log_and_message("No files included. None transferred.")

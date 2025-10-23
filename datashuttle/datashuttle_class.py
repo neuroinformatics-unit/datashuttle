@@ -829,7 +829,7 @@ class DataShuttle:
         stdout, stderr, errors = rclone.parse_rclone_copy_output(
             top_level_folder, output
         )
-        rclone.log_rclone_output_python_api(stdout, stderr)
+        rclone.log_stdout_stderr_python_api(stdout, stderr)
         rclone.log_rclone_copy_errors_api(errors)
 
         return errors

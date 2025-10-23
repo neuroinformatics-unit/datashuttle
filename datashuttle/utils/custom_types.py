@@ -1,23 +1,25 @@
-from typing import Any, Literal, Tuple, TypeAlias, TypedDict
+from __future__ import annotations
 
-DisplayMode: TypeAlias = Literal["error", "warn", "print"]
+from typing import Any, Literal, Tuple, TypedDict
 
-TopLevelFolder: TypeAlias = Literal["rawdata", "derivatives"]
+DisplayMode = Literal["error", "warn", "print"]
 
-OverwriteExistingFiles: TypeAlias = Literal[
-    "never", "always", "if_source_newer"
-]
+TopLevelFolder = Literal["rawdata", "derivatives"]
 
-Prefix: TypeAlias = Literal["sub", "ses"]
+OverwriteExistingFiles = Literal["never", "always", "if_source_newer"]
 
-InterfaceOutput: TypeAlias = Tuple[bool, Any]
+Prefix = Literal["sub", "ses"]
 
-ConnectionMethods: TypeAlias = Literal[
+InterfaceOutput = Tuple[bool, Any]
+
+ConnectionMethods = Literal[
     "ssh", "local_filesystem", "gdrive", "aws", "local_only"
 ]
 
 
 class TransferErrors(TypedDict):
+    """Type `errors` dictionary (used for collecting `rclone copy` output)."""
+
     file_names: list[str]
     messages: list[str]
     nothing_was_transferred_rawdata: bool | None
