@@ -237,7 +237,11 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
             self.dismiss()
 
     async def handle_transfer_and_update_ui_when_complete(self) -> None:
-        """Run the data transfer worker and updates the UI on completion."""
+        """Run the data transfer worker and updates the UI on completion.
+
+        Note this function is very similar to `log_rclone_copy_errors_api`
+        but kept separate for flexibility.
+        """
         try:
             data_transfer_worker = self.transfer_func()
             await data_transfer_worker.wait()

@@ -493,6 +493,10 @@ def log_rclone_copy_errors_api(errors):
     The `errors` dictionary contains all pertinent information on
     issues that occurred when running `rclone copy`. Note this logs
     for the API, the TUI display is handled separately.
+
+    Note this function is very similar
+    to `handle_transfer_and_update_ui_when_complete`
+    but kept separate for flexibility.
     """
     message = ""
 
@@ -516,7 +520,7 @@ def log_rclone_copy_errors_api(errors):
         message += "\n"
 
     if message == "":
-        message = "No transfer errors were detected.\n"
+        message = "No errors detected"
 
     utils.log_and_message(message, use_rich=True)
 
@@ -558,6 +562,28 @@ def get_empty_errors_dict() -> TransferErrors:
 
     The `errors` dictionary holds information
     about errors which occurred during `rclone copy` transfer.
+    The dict entries are:
+
+    file_names
+        A list of file names associated with errors.
+
+    messages
+        A list of messages associated with errors. For each file name,
+        there will be an associated message, but it is also possible to
+        have messages that are not associated with any file name.
+
+    nothing_was_transferred_rawdata
+        A flag that can take the value `None`, `True` or `False`.
+        If `None`, this top-level folder was not attempted to be transferred.
+        If `True`, it was attempted and nothing was transferred. If `False`,
+        it was attempted and something was transferred.
+
+    nothing_was_transferred_derivatives
+        See `nothing_was_transferred_rawdata`, this is the equivalent for
+        the derivatives' folder.
+
+    The rawdata and derivatives flags must be split as some functions
+    transfer a single, or both, top level folders in one command.
     """
     return {
         "file_names": [],
