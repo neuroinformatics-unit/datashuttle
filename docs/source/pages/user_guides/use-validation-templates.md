@@ -46,9 +46,9 @@ Validation Templates can include [convenience tags](create-folders-convenience-t
 
 
 Click the `Settings` button in the `Create` tab. Scroll down to the
-`Template Validation` section.
+`Validation templates` section.
 
-Clicking the checkbox will turn on `Template Validation` and these
+Clicking the checkbox will turn on `Validation templates` and these
 can be set for subject and session independent. If the input is left empty,
 no Validation Template will be applied.
 

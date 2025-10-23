@@ -433,12 +433,12 @@ class TestTuiWidgets(TuiBase):
                 is False
             )
 
-            # Template validation
+            # Validation templates
             assert (
                 pilot.app.screen.query_one(
                     "#template_settings_validation_on_checkbox"
                 ).label._text
-                == "Template validation"
+                == "Validation templates"
             )
             assert (
                 pilot.app.screen.query_one(
