@@ -1,7 +1,11 @@
+from pathlib import Path
+
 import pytest
+from filelock import FileLock
 
 from datashuttle.configs import canonical_configs
 from datashuttle.tui.app import TuiApp
+from datashuttle.tui.screens.modal_dialogs import MessageBox
 
 from .. import test_utils
 from .tui_base import TuiBase
@@ -220,13 +224,19 @@ class TestTuiTransfer(TuiBase):
 
     @pytest.mark.asyncio
     async def test_errors_are_reported_on_pop_up(self, setup_project_paths):
-        """"""
+        """
+        Check that transfer errors, or the case where no files are transferred,
+        are displayed properly on the modal dialog that displays following
+        the transfer.
+        """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
+            # Set up the project files to transfer and navigate
+            # to the transfer screen
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
@@ -242,8 +252,6 @@ class TestTuiTransfer(TuiBase):
                 "upload",
             )
 
-            from pathlib import Path
-
             relative_path = (
                 Path("rawdata")
                 / subs[0]
@@ -251,17 +259,16 @@ class TestTuiTransfer(TuiBase):
                 / "ephys"
                 / "placeholder_file.txt"
             )
-            a_transferred_file = project.get_local_path() / relative_path
 
-            from filelock import FileLock
+            # Lock a file and perform the transfer, which will have errors.
+            # Check the errors are displayed in the pop-up window.
+            a_transferred_file = project.get_local_path() / relative_path
 
             lock = FileLock(a_transferred_file, timeout=5)
             with lock:
                 await self.run_transfer(
                     pilot, "upload", close_final_messagebox=False
                 )
-
-            from datashuttle.tui.screens.modal_dialogs import MessageBox
 
             assert isinstance(app.screen, MessageBox)
             displayed_message = app.screen.message
@@ -271,6 +278,23 @@ class TestTuiTransfer(TuiBase):
                 " another process has locked a portion of the file"
                 in displayed_message
             )
+            await self.close_messagebox(pilot)
+
+            # Now run a transfer so that all files are transferred,
+            # then transfer again to check the message displays indicating
+            # no files were transferred.
+            await self.run_transfer(pilot, "upload")
+
+            await self.run_transfer(
+                pilot, "upload", close_final_messagebox=False
+            )
+
+            assert (
+                "Note! Nothing was transferred from rawdata"
+                in app.screen.message
+            )
+
+            await pilot.pause()
 
     async def switch_top_level_folder_select(
         self, pilot, id, top_level_folder

@@ -1500,7 +1500,6 @@ class DataShuttle:
             all_errors["messages"] += errors["messages"]
 
             key = f"nothing_was_transferred_{top_level_folder}"
-
             all_errors[key] = errors[key]  # type: ignore
 
         rclone.log_rclone_copy_errors_api(all_errors)

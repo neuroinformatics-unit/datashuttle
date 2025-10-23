@@ -4,6 +4,7 @@ import time
 from pathlib import Path
 
 import pytest
+from filelock import FileLock
 
 from datashuttle.configs import canonical_folders
 from datashuttle.configs.canonical_configs import get_broad_datatypes
@@ -647,14 +648,18 @@ class TestFileTransfer(BaseTest):
         returned from every transfer function. `errors` is a variable
         that contains information about any errors that were encountered
         during transfer.
-
-        DOCS TODO this doesn't matter if its top level folder or whatever
         """
+
+        # Monkeypatch the error-parsing function so it returns
+        # predictable values.
+        import datashuttle
 
         def test_errors(top_level_folder):
             return {
                 "file_names": [f"{top_level_folder}/hello_world.txt"],
                 "messages": ["how are you?"],
+                "nothing_was_transferred_rawdata": None,
+                "nothing_was_transferred_derivatives": None,
             }
 
         def monkeypatch_parse_output(top_level_folder, b):
@@ -662,14 +667,13 @@ class TestFileTransfer(BaseTest):
             stderr = "stderr"
             return stdout, stderr, test_errors(top_level_folder)
 
-        import datashuttle
-
         monkeypatch.setattr(
             datashuttle.utils.rclone,
             "parse_rclone_copy_output",
             monkeypatch_parse_output,
         )
 
+        # Generate some test files so the transfer runs properly
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
         for top_level_folder in ["rawdata", "derivatives"]:
@@ -681,10 +685,13 @@ class TestFileTransfer(BaseTest):
                 get_broad_datatypes(),
             )
 
+        # Run every transfer function and check that
+        # `errors` is returned correctly.
         specific_file = (
             lambda path_: f"{path_}/rawdata/{subs[0]}/{sessions[0]}/ephys/placeholder_file.txt"
         )
 
+        # All 'rawdata' functions
         for func in [
             lambda: project.upload_specific_folder_or_file(
                 specific_file(project.get_local_path())
@@ -699,9 +706,12 @@ class TestFileTransfer(BaseTest):
         ]:
             assert func() == test_errors("rawdata")
 
+        # All 'derivatives' functions
         for func in [project.upload_derivatives, project.download_derivatives]:
             assert func() == test_errors("derivatives")
 
+        # Entire project functions should merge the errors
+        # of rawdata and derivatives
         for func in [
             project.upload_entire_project,
             project.download_entire_project,
@@ -712,10 +722,19 @@ class TestFileTransfer(BaseTest):
                     "derivatives/hello_world.txt",
                 ],
                 "messages": ["how are you?", "how are you?"],
+                "nothing_was_transferred_rawdata": None,
+                "nothing_was_transferred_derivatives": None,
             }
 
     def test_errors_are_caught_and_logged(self, project):
-        """"""  # TODO DOC OMD TODO!
+        """
+        Create errors in the transfer by locking files, and check
+        the errors are correctly flagged in logs and `errors`. Also,
+        perform a transfer where no files are transferred, and check
+        this is flagged in logs and `errors`.
+        """
+
+        # Set up a folder to transfer
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
         test_utils.make_and_check_local_project_folders(
@@ -726,6 +745,7 @@ class TestFileTransfer(BaseTest):
             get_broad_datatypes(),
         )
 
+        # Lock a file then perform the transfer, causing errors.
         relative_path = (
             Path("rawdata")
             / subs[0]
@@ -737,12 +757,11 @@ class TestFileTransfer(BaseTest):
 
         test_utils.delete_log_files(project.cfg.logging_path)
 
-        from filelock import FileLock
-
         lock = FileLock(a_transferred_file, timeout=5)
         with lock:
             errors = project.upload_custom("rawdata", "all", "all", "all")
 
+        # Check that errors and logs flag the transfer errors
         assert errors["file_names"] == [relative_path.as_posix()]
         assert (
             "another process has locked a portion of the file"
@@ -754,6 +773,45 @@ class TestFileTransfer(BaseTest):
         assert errors["file_names"][0] in log
         assert "Errors were detected!" in log
         assert "another process has locked a portion of the file" in log
+
+        # Now, we'll perform full transfer so that all future
+        # transfers do not actually transfera nything
+        project.upload_entire_project()
+
+        test_utils.delete_log_files(project.cfg.logging_path)
+
+        # Check that it is flagged that no transfer took place for rawdata
+        errors = project.upload_custom("rawdata", "all", "all", "all")
+
+        assert errors["nothing_was_transferred_rawdata"] is True
+        assert errors["nothing_was_transferred_derivatives"] is None
+
+        log = test_utils.read_log_file(project.cfg.logging_path)
+        assert "Note! Nothing was transferred from rawdata!" in log
+
+        test_utils.delete_log_files(project.cfg.logging_path)
+
+        # Check that it is flagged that no transfer took place for derivatives
+        errors = project.upload_custom("derivatives", "all", "all", "all")
+
+        assert errors["nothing_was_transferred_rawdata"] is None
+        assert errors["nothing_was_transferred_derivatives"] is True
+
+        log = test_utils.read_log_file(project.cfg.logging_path)
+        assert "Note! Nothing was transferred from derivatives!" in log
+
+        test_utils.delete_log_files(project.cfg.logging_path)
+
+        # Check that it is flagged that no transfer took place
+        # for both rawdata and derivatives
+        errors = project.upload_entire_project()
+
+        assert errors["nothing_was_transferred_rawdata"] is True
+        assert errors["nothing_was_transferred_derivatives"] is True
+
+        log = test_utils.read_log_file(project.cfg.logging_path)
+        assert "Note! Nothing was transferred from rawdata!" in log
+        assert "Note! Nothing was transferred from derivatives!" in log
 
     def get_paths_to_a_local_and_central_file(self, project, top_level_folder):
         path_to_test_file = (
