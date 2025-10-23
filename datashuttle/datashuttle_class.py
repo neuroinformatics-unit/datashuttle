@@ -1478,10 +1478,7 @@ class DataShuttle:
         i.e. every 'top level folder' (e.g. 'rawdata', 'derivatives').
         See ``upload_custom()`` or ``download_custom()`` for parameters.
         """
-        all_errors: TransferErrors = {
-            "file_names": [],
-            "messages": [],
-        }
+        all_errors = rclone.get_empty_errors_dict()
 
         for top_level_folder in canonical_folders.get_top_level_folders():
             utils.log_and_message(
@@ -1501,6 +1498,10 @@ class DataShuttle:
 
             all_errors["file_names"] += errors["file_names"]
             all_errors["messages"] += errors["messages"]
+
+            key = f"nothing_was_transferred_{top_level_folder}"
+
+            all_errors[key] = errors[key]  # type: ignore
 
         rclone.log_rclone_copy_errors_api(all_errors)
 

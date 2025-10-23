@@ -118,6 +118,7 @@ class TransferData:
         else:
             utils.log_and_message("No files included. None transferred.")
             errors = rclone.get_empty_errors_dict()
+            errors[f"nothing_was_transferred_{self.__top_level_folder}"] = True
 
         return errors
 

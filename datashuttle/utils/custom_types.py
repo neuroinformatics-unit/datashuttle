@@ -1,17 +1,24 @@
-from typing import Any, Literal, Tuple
+from typing import Any, Literal, Tuple, TypeAlias, TypedDict
 
-DisplayMode = Literal["error", "warn", "print"]
+DisplayMode: TypeAlias = Literal["error", "warn", "print"]
 
-TopLevelFolder = Literal["rawdata", "derivatives"]
+TopLevelFolder: TypeAlias = Literal["rawdata", "derivatives"]
 
-OverwriteExistingFiles = Literal["never", "always", "if_source_newer"]
+OverwriteExistingFiles: TypeAlias = Literal[
+    "never", "always", "if_source_newer"
+]
 
-Prefix = Literal["sub", "ses"]
+Prefix: TypeAlias = Literal["sub", "ses"]
 
-InterfaceOutput = Tuple[bool, Any]
+InterfaceOutput: TypeAlias = Tuple[bool, Any]
 
-ConnectionMethods = Literal[
+ConnectionMethods: TypeAlias = Literal[
     "ssh", "local_filesystem", "gdrive", "aws", "local_only"
 ]
 
-TransferErrors = dict[str, list[str]]
+
+class TransferErrors(TypedDict):
+    file_names: list[str]
+    messages: list[str]
+    nothing_was_transferred_rawdata: bool | None
+    nothing_was_transferred_derivatives: bool | None

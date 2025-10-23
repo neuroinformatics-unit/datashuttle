@@ -489,19 +489,28 @@ def log_rclone_output_python_api(stdout, stderr):
 
 def log_rclone_copy_errors_api(errors):
     """"""
+    message = ""
+
+    if errors["nothing_was_transferred_rawdata"] is True:
+        message += "\n\nNote! Nothing was transferred from rawdata!\n"
+
+    if errors["nothing_was_transferred_derivatives"] is True:
+        message += "\n\nNote! Nothing was transferred from derivatives!\n"
+
     if any(errors["messages"]):
         if any(errors["file_names"]):
-            message = (
+            message += (
                 "\n\nErrors were detected! In files:"
                 "\n-------------------------------\n"
             )
             message += "\n".join(errors["file_names"])
         else:
-            message = "\n\n[red]Errors detected![/red]"
+            message += "\n\n[red]Errors detected![/red]"
         message += "\n\nThe error messages are:\n-----------------------\n"
         message += "\n".join(errors["messages"])
         message += "\n"
-    else:
+
+    if message == "":
         message = "No transfer errors were detected.\n"
 
     utils.log_and_message(message, use_rich=True)
@@ -510,16 +519,23 @@ def log_rclone_copy_errors_api(errors):
 def parse_rclone_copy_output(top_level_folder, output):
     """"""
     stdout, out_errors = reformat_rclone_copy_output(
-        output.stdout, capture_errors=True, top_level_folder=top_level_folder
+        output.stdout, top_level_folder=top_level_folder
     )
 
     stderr, err_errors = reformat_rclone_copy_output(
-        output.stderr, capture_errors=True
+        output.stderr, top_level_folder=top_level_folder
     )
 
     all_errors = {
-        "file_names": out_errors["file_names"] + err_errors["file_names"],
+        "file_names": out_errors["file_names"]
+        + err_errors["file_names"],  # TODO: this is so messy
         "messages": out_errors["messages"] + err_errors["messages"],
+        "nothing_was_transferred_rawdata": err_errors[
+            "nothing_was_transferred_rawdata"
+        ],
+        "nothing_was_transferred_derivatives": err_errors[
+            "nothing_was_transferred_derivatives"
+        ],
     }
 
     all_errors["file_names"] = list(set(all_errors["file_names"]))
@@ -531,15 +547,16 @@ def get_empty_errors_dict() -> TransferErrors:
     return {
         "file_names": [],
         "messages": [],
+        "nothing_was_transferred_rawdata": None,
+        "nothing_was_transferred_derivatives": None,
     }
 
 
 def reformat_rclone_copy_output(
     stream: bytes,
-    capture_errors: bool = False,
     top_level_folder: TopLevelFolder | None = None,
 ) -> tuple[str, TransferErrors]:
-    """"""
+    """:return:"""
     split_stream = stream.decode("utf-8").split("\n")
 
     errors = get_empty_errors_dict()
@@ -550,16 +567,21 @@ def reformat_rclone_copy_output(
         except json.JSONDecodeError:
             continue
 
-        if capture_errors:
-            if line_json["level"] in ["error", "critical"]:
-                if "object" in line_json:
-                    full_filepath = f"{top_level_folder}/{line_json['object']}"
-                    errors["file_names"].append(full_filepath)
-                    errors["messages"].append(
-                        f"The file {full_filepath} failed to transfer. Reason: {line_json['msg']}"
-                    )
-                else:
-                    errors["messages"].append(f"ERROR : {line_json['msg']}")
+        if line_json["level"] in ["error", "critical"]:
+            if "object" in line_json:
+                full_filepath = f"{top_level_folder}/{line_json['object']}"
+                errors["file_names"].append(full_filepath)
+                errors["messages"].append(
+                    f"The file {full_filepath} failed to transfer. Reason: {line_json['msg']}"
+                )
+            else:
+                errors["messages"].append(f"ERROR : {line_json['msg']}")
+
+        elif "stats" in line_json and "totalTransfers" in line_json["stats"]:
+            if line_json["stats"]["totalTransfers"] == 0:
+                errors[f"nothing_was_transferred_{top_level_folder}"] = True  # type:ignore
+            else:
+                errors[f"nothing_was_transferred_{top_level_folder}"] = False  # type:ignore
 
         split_stream[idx] = (
             f"{line_json['time'][:19]} {line_json['level'].upper()} : {line_json['msg']}"
