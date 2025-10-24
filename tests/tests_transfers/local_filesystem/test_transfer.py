@@ -4,7 +4,6 @@ import time
 from pathlib import Path
 
 import pytest
-from filelock import FileLock
 
 from datashuttle.configs import canonical_folders
 from datashuttle.configs.canonical_configs import get_broad_datatypes
@@ -757,22 +756,34 @@ class TestFileTransfer(BaseTest):
 
         test_utils.delete_log_files(project.cfg.logging_path)
 
-        lock = FileLock(a_transferred_file, timeout=5)
-        with lock:
-            errors = project.upload_custom("rawdata", "all", "all", "all")
+        def lock_a_file(path, duration=5):
+            # Keep appending for a few seconds to simulate a mid-transfer write
+            end_time = time.time() + duration
+            with open(path, "a") as f:
+                while time.time() < end_time:
+                    f.write("LOCKED / corrupted mid-transfer\n")
+                    f.flush()
+                #  time.sleep(0.01)  # small delay to simulate ongoing write
+
+        test_utils.delete_log_files(project.cfg.logging_path)
+
+        thread = test_utils.lock_a_file(a_transferred_file)
+        errors = project.upload_custom("rawdata", "all", "all", "all")
+        thread.join()
 
         # Check that errors and logs flag the transfer errors
         assert errors["file_names"] == [relative_path.as_posix()]
-        assert (
-            "another process has locked a portion of the file"
-            in errors["messages"][0]
-        )
+        assert "size changed" in errors["messages"][0]
 
         log = test_utils.read_log_file(project.cfg.logging_path)
 
         assert errors["file_names"][0] in log
         assert "Errors were detected!" in log
-        assert "another process has locked a portion of the file" in log
+        assert "size changed" in log
+
+        # now just upload everything
+        project.upload_entire_project()
+        test_utils.delete_log_files(project.cfg.logging_path)
 
         # Check that it is flagged that no transfer took place for rawdata
         errors = project.upload_custom("rawdata", "all", "all", "all")
