@@ -263,10 +263,10 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
                 )
 
                 if errors["nothing_was_transferred_rawdata"] is True:
-                    errors_message += f"[{no_transfer_col}]\nNote! Nothing was transferred from rawdata[/{no_transfer_col}]\n"
+                    errors_message += f"[{no_transfer_col}]\nNote! Nothing was transferred from rawdata.[/{no_transfer_col}]\n"
 
                 if errors["nothing_was_transferred_derivatives"] is True:
-                    errors_message += f"[{no_transfer_col}]\nNote! Nothing was transferred from derivatives[/{no_transfer_col}]\n"
+                    errors_message += f"[{no_transfer_col}]\nNote! Nothing was transferred from derivatives.[/{no_transfer_col}]\n"
 
                 if any(errors["messages"]):
                     if errors["file_names"]:

@@ -501,10 +501,10 @@ def log_rclone_copy_errors_api(errors):
     message = ""
 
     if errors["nothing_was_transferred_rawdata"] is True:
-        message += "\n\nNote! Nothing was transferred from rawdata!\n"
+        message += "\n\nNote! Nothing was transferred from rawdata.\n"
 
     if errors["nothing_was_transferred_derivatives"] is True:
-        message += "\n\nNote! Nothing was transferred from derivatives!\n"
+        message += "\n\nNote! Nothing was transferred from derivatives.\n"
 
     if any(errors["messages"]):
         if any(errors["file_names"]):
@@ -795,7 +795,7 @@ def handle_rclone_arguments(
         extra_arguments_list += [rclone_args("never_overwrite")]
 
     elif overwrite == "always":
-        pass
+        extra_arguments_list += ["--ignore-times"]
 
     elif overwrite == "if_source_newer":
         extra_arguments_list += [rclone_args("if_source_newer_overwrite")]

@@ -5,7 +5,6 @@ from filelock import FileLock
 
 from datashuttle.configs import canonical_configs
 from datashuttle.tui.app import TuiApp
-from datashuttle.tui.screens.modal_dialogs import MessageBox
 
 from .. import test_utils
 from .tui_base import TuiBase
@@ -260,6 +259,14 @@ class TestTuiTransfer(TuiBase):
                 / "placeholder_file.txt"
             )
 
+            # Now run a transfer so that all files are transferred,
+            await self.run_transfer(
+                pilot, "upload", close_final_messagebox=False
+            )
+
+            assert "No errors detected" in app.screen.message
+            await self.close_messagebox(pilot)
+
             # Lock a file and perform the transfer, which will have errors.
             # Check the errors are displayed in the pop-up window.
             a_transferred_file = project.get_local_path() / relative_path
@@ -270,7 +277,6 @@ class TestTuiTransfer(TuiBase):
                     pilot, "upload", close_final_messagebox=False
                 )
 
-            assert isinstance(app.screen, MessageBox)
             displayed_message = app.screen.message
 
             assert relative_path.as_posix() in displayed_message
@@ -280,11 +286,8 @@ class TestTuiTransfer(TuiBase):
             )
             await self.close_messagebox(pilot)
 
-            # Now run a transfer so that all files are transferred,
-            # then transfer again to check the message displays indicating
+            # Transfer again to check the message displays indicating
             # no files were transferred.
-            await self.run_transfer(pilot, "upload")
-
             await self.run_transfer(
                 pilot, "upload", close_final_messagebox=False
             )

@@ -774,12 +774,6 @@ class TestFileTransfer(BaseTest):
         assert "Errors were detected!" in log
         assert "another process has locked a portion of the file" in log
 
-        # Now, we'll perform full transfer so that all future
-        # transfers do not actually transfera nything
-        project.upload_entire_project()
-
-        test_utils.delete_log_files(project.cfg.logging_path)
-
         # Check that it is flagged that no transfer took place for rawdata
         errors = project.upload_custom("rawdata", "all", "all", "all")
 
@@ -787,7 +781,7 @@ class TestFileTransfer(BaseTest):
         assert errors["nothing_was_transferred_derivatives"] is None
 
         log = test_utils.read_log_file(project.cfg.logging_path)
-        assert "Note! Nothing was transferred from rawdata!" in log
+        assert "Note! Nothing was transferred from rawdata." in log
 
         test_utils.delete_log_files(project.cfg.logging_path)
 
@@ -798,7 +792,7 @@ class TestFileTransfer(BaseTest):
         assert errors["nothing_was_transferred_derivatives"] is True
 
         log = test_utils.read_log_file(project.cfg.logging_path)
-        assert "Note! Nothing was transferred from derivatives!" in log
+        assert "Note! Nothing was transferred from derivatives." in log
 
         test_utils.delete_log_files(project.cfg.logging_path)
 
@@ -810,8 +804,8 @@ class TestFileTransfer(BaseTest):
         assert errors["nothing_was_transferred_derivatives"] is True
 
         log = test_utils.read_log_file(project.cfg.logging_path)
-        assert "Note! Nothing was transferred from rawdata!" in log
-        assert "Note! Nothing was transferred from derivatives!" in log
+        assert "Note! Nothing was transferred from rawdata." in log
+        assert "Note! Nothing was transferred from derivatives." in log
 
     def get_paths_to_a_local_and_central_file(self, project, top_level_folder):
         path_to_test_file = (
