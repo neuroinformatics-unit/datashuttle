@@ -68,33 +68,9 @@ jobs:
         # run SSH tests only on Linux because Windows and macOS
         # are already run within a virtual container and so cannot
         # run Linux containers because nested containerisation is disabled.
-      - name: Test SSH (Linux only)
-        if: runner.os == 'Linux'
-        run: |
-          sudo service mysql stop  # free up port 3306 for ssh tests
-          pytest tests/tests_transfers/ssh
-
-      - name: Test Google Drive
-        env:
-          GDRIVE_CLIENT_ID: ${{ secrets.GDRIVE_CLIENT_ID }}
-          GDRIVE_CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
-          GDRIVE_ROOT_FOLDER_ID: ${{ secrets.GDRIVE_ROOT_FOLDER_ID }}
-          GDRIVE_CONFIG_TOKEN: ${{ secrets.GDRIVE_CONFIG_TOKEN }}
-        run: |
-          pytest tests/tests_transfers/gdrive
-
-      - name: Test AWS
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
-        run: |
-          pytest tests/tests_transfers/aws
-
       - name: All Other Tests
         run: |
-          pytest --ignore=tests/tests_transfers/ssh --ignore=tests/tests_transfers/gdrive --ignore=tests/tests_transfers/aws
+          pytest -k test_transfer
 
 
   build_sdist_wheels:

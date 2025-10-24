@@ -1,4 +1,5 @@
 import os
+import platform
 import re
 import time
 from pathlib import Path
@@ -725,6 +726,9 @@ class TestFileTransfer(BaseTest):
                 "nothing_was_transferred_derivatives": None,
             }
 
+    @pytest.mark.skipif(
+        platform.system() != "Windows", reason="Only run on windows."
+    )
     def test_errors_are_caught_and_logged(self, project):
         """
         Create errors in the transfer by locking files, and check
@@ -755,15 +759,6 @@ class TestFileTransfer(BaseTest):
         a_transferred_file = project.get_local_path() / relative_path
 
         test_utils.delete_log_files(project.cfg.logging_path)
-
-        def lock_a_file(path, duration=5):
-            # Keep appending for a few seconds to simulate a mid-transfer write
-            end_time = time.time() + duration
-            with open(path, "a") as f:
-                while time.time() < end_time:
-                    f.write("LOCKED / corrupted mid-transfer\n")
-                    f.flush()
-                #  time.sleep(0.01)  # small delay to simulate ongoing write
 
         test_utils.delete_log_files(project.cfg.logging_path)
 
