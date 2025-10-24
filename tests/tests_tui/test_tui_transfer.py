@@ -259,14 +259,6 @@ class TestTuiTransfer(TuiBase):
                 / "placeholder_file.txt"
             )
 
-            # Now run a transfer so that all files are transferred,
-            await self.run_transfer(
-                pilot, "upload", close_final_messagebox=False
-            )
-
-            assert "No errors detected" in app.screen.message
-            await self.close_messagebox(pilot)
-
             # Lock a file and perform the transfer, which will have errors.
             # Check the errors are displayed in the pop-up window.
             a_transferred_file = project.get_local_path() / relative_path

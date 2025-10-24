@@ -795,7 +795,7 @@ def handle_rclone_arguments(
         extra_arguments_list += [rclone_args("never_overwrite")]
 
     elif overwrite == "always":
-        extra_arguments_list += ["--ignore-times"]
+        pass
 
     elif overwrite == "if_source_newer":
         extra_arguments_list += [rclone_args("if_source_newer_overwrite")]
