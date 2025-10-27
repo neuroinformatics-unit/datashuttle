@@ -262,7 +262,7 @@ def make_list_of_zero_padded_names_across_range(
 
 
 def update_names_with_datetime(names: List[str]) -> None:
-    """Replace @DATE@ and @DATETIME@ flag with date and datetime respectively.
+    """Replace @DATE@, @TIME@, and @DATETIME@ flag with date, time or datetime respectively.
 
     `names` is a list of subject or session names.
     Format using key-value pair for bids, i.e. date-20221223_time-
@@ -345,6 +345,8 @@ def add_underscore_before_after_if_not_there(string: str, key: str) -> str:
     """
     key_len = len(key)
     key_start_idx = string.index(key)
+
+    breakpoint()
 
     # Handle left edge
     if string[key_start_idx - 1] != "_":
