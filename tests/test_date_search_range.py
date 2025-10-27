@@ -235,28 +235,19 @@ class TestDateSearchRange(BaseTest):
             "ses-002_date-20240201",
         ]
 
-        datatypes_used = test_utils.get_all_broad_folders_used(value=False)
-        datatypes_used.update({"behav": True})
-        test_utils.make_and_check_local_project_folders(
-            project, "rawdata", subs, sessions, ["behav"], datatypes_used
-        )
-
-        project.upload_custom(
-            "rawdata",
-            sub_names=subs,
-            ses_names=[
+        transferred_sessions = self.run_session_upload(
+            project,
+            subs,
+            sessions,
+            [
                 f"ses-{canonical_tags.tags('*')}_20240301{canonical_tags.tags('DATETO')}20240401"
             ],
-            datatype=["behav"],
         )
 
-        central_path = project.get_central_path() / "rawdata"
-        transferred_items = list(central_path.glob("*"))
-
-        if transferred_items:
+        if transferred_sessions:
             transferred_sub_names = [
                 item.name
-                for item in transferred_items
+                for item in transferred_sessions
                 if item.name.startswith("sub-")
             ]
             assert len(transferred_sub_names) == 0
@@ -319,25 +310,16 @@ class TestDateSearchRange(BaseTest):
             "ses-003_datetime-20240301T020101",
         ]
 
-        datatypes_used = test_utils.get_all_broad_folders_used(value=False)
-        datatypes_used.update({"behav": True})
-        test_utils.make_and_check_local_project_folders(
-            project, "rawdata", subs, sessions, ["behav"], datatypes_used
-        )
-
-        project.upload_custom(
-            "rawdata",
-            sub_names=subs,
-            ses_names=[
+        transferred_sessions = self.run_session_upload(
+            project,
+            subs,
+            sessions,
+            [
                 f"ses-{canonical_tags.tags('*')}_20240301{canonical_tags.tags('DATETO')}20240301",
                 f"ses-{canonical_tags.tags('*')}_020101{canonical_tags.tags('TIMETO')}020101",
                 f"ses-{canonical_tags.tags('*')}_20240301T020101{canonical_tags.tags('DATETIMETO')}20240301T020101",
             ],
-            datatype=["behav"],
         )
-
-        central_path = project.get_central_path() / "rawdata" / "sub-001"
-        transferred_sessions = [ses.name for ses in central_path.glob("ses-*")]
 
         expected_sessions = [
             "ses-001_date-20240301",
@@ -358,25 +340,14 @@ class TestDateSearchRange(BaseTest):
             "ses-004_date-20240415",
         ]
 
-        datatypes_used = test_utils.get_all_broad_folders_used(value=False)
-        datatypes_used.update({"behav": True})
-        test_utils.make_and_check_local_project_folders(
-            project, "rawdata", subs, sessions, ["behav"], datatypes_used
-        )
-
-        # Select such that ses-002 onwards is selected, and
-        # ses-004 is excluded based on date.
-        project.upload_custom(
-            "rawdata",
-            sub_names=subs,
-            ses_names=[
+        transferred_sessions = self.run_session_upload(
+            project,
+            subs,
+            sessions,
+            [
                 f"ses-002@TO@004_20240301{canonical_tags.tags('DATETO')}20240406"
             ],
-            datatype=["behav"],
         )
-
-        central_path = project.get_central_path() / "rawdata" / "sub-001"
-        transferred_sessions = [ses.name for ses in central_path.glob("ses-*")]
 
         expected_sessions = [
             "ses-002_date-20240301",
@@ -400,26 +371,116 @@ class TestDateSearchRange(BaseTest):
             "ses-004_date-20240415",
         ]
 
+        transferred_sessions = self.run_session_upload(
+            project,
+            subs,
+            sessions,
+            [f"ses-002_20240301{canonical_tags.tags('DATETO')}20240302"],
+        )
+
+        expected_sessions = [
+            "ses-002_date-20240301",
+        ]
+        assert sorted(transferred_sessions) == sorted(expected_sessions)
+
+    def test_date_as_sub_or_ses_value(self, project):
+        """ """
+        subs = ["sub-001"]
+
+        sessions = [
+            "ses-20240301",
+            "ses-20240401",
+            "ses-20240405",
+            "ses-20240415",
+        ]
+
+        transferred_sessions = self.run_session_upload(
+            project,
+            subs,
+            sessions,
+            [f"ses-20240301{canonical_tags.tags('DATETO')}20240402"],
+        )
+
+        expected_sessions = [
+            "ses-20240301",
+            "ses-20240401",
+        ]
+        assert sorted(transferred_sessions) == sorted(expected_sessions)
+
+    def test_time_as_sub_or_ses_value(self, project):
+        """ """
+        subs = ["sub-001"]
+
+        sessions = [
+            "ses-110101",
+            "ses-114510",
+            "ses-135021",
+            "ses-231022",
+        ]
+        transferred_sessions = self.run_session_upload(
+            project,
+            subs,
+            sessions,
+            [f"ses-114510{canonical_tags.tags('TIMETO')}135021"],
+        )
+
+        expected_sessions = [
+            "ses-114510",
+            "ses-135021",
+        ]
+        assert sorted(transferred_sessions) == sorted(expected_sessions)
+
+    def test_datetime_as_sub_or_ses_value(self, project):
+        """ """
+        subs = ["sub-001"]
+
+        sessions = [
+            "ses-20240301T110101",
+            "ses-20240301T114510",
+            "ses-20240405T135021",
+            "ses-20240415T231022",
+        ]
+        transferred_sessions = self.run_session_upload(
+            project,
+            subs,
+            sessions,
+            [
+                f"ses-20240301T114509{canonical_tags.tags('DATETIMETO')}20240406T135021"
+            ],
+        )
+
+        expected_sessions = [
+            "ses-20240301T114510",
+            "ses-20240405T135021",
+        ]
+        assert sorted(transferred_sessions) == sorted(expected_sessions)
+
+    def run_session_upload(
+        self, project, subs, sessions, session_search_string
+    ):
+        """"""
         datatypes_used = test_utils.get_all_broad_folders_used(value=False)
         datatypes_used.update({"behav": True})
+
         test_utils.make_and_check_local_project_folders(
-            project, "rawdata", subs, sessions, ["behav"], datatypes_used
+            project,
+            "rawdata",
+            subs,
+            sessions,
+            ["behav"],
+            datatypes_used,
+            allow_letters_in_sub_ses_values=True,
         )
 
         # Select such that ses-002 is selected (and it is in range)
         project.upload_custom(
             "rawdata",
             sub_names=subs,
-            ses_names=[
-                f"ses-002_20240301{canonical_tags.tags('DATETO')}20240302"
-            ],
+            ses_names=session_search_string,
             datatype=["behav"],
         )
 
         central_path = project.get_central_path() / "rawdata" / "sub-001"
         transferred_sessions = [ses.name for ses in central_path.glob("ses-*")]
 
-        expected_sessions = [
-            "ses-002_date-20240301",
-        ]
-        assert sorted(transferred_sessions) == sorted(expected_sessions)
+        return transferred_sessions
