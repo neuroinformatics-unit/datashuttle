@@ -314,9 +314,8 @@ class TestDateSearchRange(BaseTest):
         subs = ["sub-001"]
         sessions = [
             "ses-001_date-20240301",
-            "ses-002_date-20240315",
-            "ses-003_date-20240401",
-            "ses-004_date-20240415",
+            "ses-002_time-020101",
+            "ses-003_datetime-20240301T020101",
         ]
 
         datatypes_used = test_utils.get_all_broad_folders_used(value=False)
@@ -329,7 +328,9 @@ class TestDateSearchRange(BaseTest):
             "rawdata",
             sub_names=subs,
             ses_names=[
-                f"ses-{canonical_tags.tags('*')}_20240301{canonical_tags.tags('DATETO')}20240401"
+                f"ses-{canonical_tags.tags('*')}_20240301{canonical_tags.tags('DATETO')}20240301",
+                f"ses-{canonical_tags.tags('*')}_020101{canonical_tags.tags('TIMETO')}020101",
+                f"ses-{canonical_tags.tags('*')}_20240301T020101{canonical_tags.tags('DATETIMETO')}20240301T020101",
             ],
             datatype=["behav"],
         )
@@ -339,9 +340,10 @@ class TestDateSearchRange(BaseTest):
 
         expected_sessions = [
             "ses-001_date-20240301",
-            "ses-002_date-20240315",
-            "ses-003_date-20240401",
+            "ses-002_time-020101",
+            "ses-003_datetime-20240301T020101",
         ]
+
         assert sorted(transferred_sessions) == sorted(expected_sessions)
 
     def test_with_range_to_flag(self, project):
