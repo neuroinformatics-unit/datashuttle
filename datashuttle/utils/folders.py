@@ -455,53 +455,18 @@ def search_with_tags(
     Examples
     --------
     Wildcards:
-    >>> search_with_tags(cfg, path, "local", ["sub-@*@"])
-    ["sub-001", "sub-002", "sub-003"]
+        search_with_tags(cfg, path, "local", ["sub-@*@"])
+        ["sub-001", "sub-002", "sub-003"]
 
     Date range:
-    >>> search_with_tags(
-    ...     cfg, path, "local", ["sub-001_20240101@DATETO@20241231_id-*"]
-    ... )
-    ["sub-001_date-20240315_id-1", "sub-001_date-20240401_id-2"]
+        search_with_tags(
+            cfg, path, "local", ["sub-001_20240101@DATETO@20241231_id-*"]
+        )
+        ["sub-001_date-20240315_id-1", "sub-001_date-20240401_id-2"]
 
     Time range:
-    >>> search_with_tags(cfg, path, "local", ["sub-002_000000@TIMETO@120000"])
-    ["sub-002_time-083000", "sub-002_time-113000"]
-    =======
-
-    Parameters
-    ----------
-    cfg
-        datashuttle configs
-
-    project
-        initialised datashuttle project
-
-    base_folder
-        folder to search for wildcards in
-
-    local_or_central
-        "local" or "central" project path to
-        search in
-
-    all_names
-        list of subject or session names that
-        may or may not include the wildcard flag. If sub (below)
-        is passed, it is assumed these are session names. Otherwise,
-        it is assumed these are subject names.
-
-    sub
-        optional subject to search for sessions in. If not provided,
-        will search for subjects rather than sessions.
-
-    Returns
-    -------
-    new_all_names
-        A new list of names including all original names
-        but where @*@-containing names have been replaced with
-        search results.
-
-    >>>>>>> upstream/main
+        search_with_tags(cfg, path, "local", ["sub-002_000000@TIMETO@120000"])
+        ["sub-002_time-083000", "sub-002_time-113000"]
 
     """
     new_all_names: List[str] = []
