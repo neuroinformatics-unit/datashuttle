@@ -803,7 +803,18 @@ def format_and_validate_datetime_search_str(
     # Replace datetime range with wildcard pattern
     full_tag_regex = get_datetime_to_search_regexp(format_type, tag)
 
-    return re.sub(full_tag_regex, f"{format_type}-*", search_str)
+    full_search_str = re.sub(full_tag_regex, f"{format_type}-*", search_str)
+
+    already_has_wildcard_at_end = re.search(
+        rf"{full_tag_regex}(?=\*)", search_str
+    )
+
+    if already_has_wildcard_at_end:
+        # Handle edge case where @*@ tag is immediately after @DATETIMETO@
+        # or similar tag. This results in "datetime-**" which cases errors.
+        full_search_str = full_search_str.replace("**", "*")
+
+    return full_search_str
 
 
 def datetime_object_from_string(

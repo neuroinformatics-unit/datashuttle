@@ -260,13 +260,21 @@ class TestDateSearchRange(BaseTest):
             ]
             assert len(transferred_sub_names) == 0
 
-    def test_subject_level_date_range(self, project):
-        """Test date ranges work at the subject level too."""
+    def test_subject_level_ranges(self, project):
+        """Test date, time and datetime ranges at the subject level."""
         subs = [
             "sub-001_date-20240301",
             "sub-002_date-20240315",
             "sub-003_date-20240401",
             "sub-004_date-20240415",
+            "sub-005_time-020101_id-123",
+            "sub-006_time-090101_id-123",
+            "sub-007_time-130523_id-123",
+            "sub-008_time-130525_id-123",
+            "sub-009_datetime-20240301T020101_id-123",
+            "sub-010_datetime-20240301T020105_id-123",
+            "sub-011_datetime-20240506T110101_id-123",
+            "sub-012_datetime-20240508T110101_id-123",
         ]
         sessions = ["ses-001"]
 
@@ -279,7 +287,9 @@ class TestDateSearchRange(BaseTest):
         project.upload_custom(
             "rawdata",
             sub_names=[
-                f"sub-{canonical_tags.tags('*')}_20240310{canonical_tags.tags('DATETO')}20240410"
+                f"sub-{canonical_tags.tags('*')}_20240310{canonical_tags.tags('DATETO')}20240410",
+                f"sub-{canonical_tags.tags('*')}_090100{canonical_tags.tags('TIMETO')}130524{canonical_tags.tags('*')}",
+                f"sub-{canonical_tags.tags('*')}_20240301T020104{canonical_tags.tags('DATETIMETO')}20240506T110701{canonical_tags.tags('*')}",
             ],
             ses_names=sessions,
             datatype=["behav"],
@@ -288,7 +298,15 @@ class TestDateSearchRange(BaseTest):
         central_path = project.get_central_path() / "rawdata"
         transferred_subs = [sub.name for sub in central_path.glob("sub-*")]
 
-        expected_subs = ["sub-002_date-20240315", "sub-003_date-20240401"]
+        expected_subs = [
+            "sub-002_date-20240315",
+            "sub-003_date-20240401",
+            "sub-006_time-090101_id-123",
+            "sub-007_time-130523_id-123",
+            "sub-010_datetime-20240301T020105_id-123",
+            "sub-011_datetime-20240506T110101_id-123",
+        ]
+
         assert sorted(transferred_subs) == sorted(expected_subs)
 
     def test_edge_case_exact_boundary_dates(self, project):
