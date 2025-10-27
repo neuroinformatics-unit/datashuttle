@@ -1,6 +1,3 @@
-import os
-import shutil
-
 import pytest
 
 from datashuttle.configs import canonical_tags
@@ -12,7 +9,8 @@ from .base import BaseTest
 class TestDateSearchRange(BaseTest):
     """Test date/time range search functionality with real datashuttle projects."""
 
-    def test_date_range_transfer(self, project):
+    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    def test_date_range_transfer(self, project, upload_or_download):
         """Test that date range patterns correctly filter folders during transfer."""
         subs = ["sub-001", "sub-002"]
         sessions = [
@@ -24,27 +22,35 @@ class TestDateSearchRange(BaseTest):
         ]
 
         datatypes_used = test_utils.get_all_broad_folders_used(value=False)
-        datatypes_used.update({"behav": True, "ephys": True})
+        datatypes_used.update({"behav": True})
+
         test_utils.make_and_check_local_project_folders(
             project,
             "rawdata",
             subs,
             sessions,
-            ["behav", "ephys"],
+            ["behav"],
             datatypes_used,
         )
 
-        project.upload_custom(
+        (
+            transfer_function,
+            base_path_to_check,
+        ) = test_utils.handle_upload_or_download(
+            project, upload_or_download, "custom", "rawdata"
+        )
+
+        transfer_function(
             "rawdata",
             sub_names=subs,
             ses_names=[
                 f"ses-{canonical_tags.tags('*')}_20240315{canonical_tags.tags('DATETO')}20240401"
             ],
-            datatype=["behav", "ephys"],
+            datatype=["behav"],
         )
 
-        central_path = project.get_central_path() / "rawdata"
-        transferred_subs = list(central_path.glob("sub-*"))
+        path_to_check = base_path_to_check / "rawdata"
+        transferred_subs = list(path_to_check.glob("sub-*"))
 
         assert len(transferred_subs) == 2
 
@@ -262,57 +268,6 @@ class TestDateSearchRange(BaseTest):
 
         expected_subs = ["sub-002_date-20240315", "sub-003_date-20240401"]
         assert sorted(transferred_subs) == sorted(expected_subs)
-
-    @pytest.mark.parametrize("project", ["full"], indirect=True)
-    def test_download_with_date_range(self, project):
-        """Test that date range patterns work for downloads as well as uploads."""
-        subs = ["sub-001", "sub-002"]
-        sessions = [
-            "ses-001_date-20240301",
-            "ses-002_date-20240315",
-            "ses-003_date-20240401",
-            "ses-004_date-20240415",
-        ]
-
-        datatypes_used = test_utils.get_all_broad_folders_used(value=False)
-        datatypes_used.update({"behav": True})
-        test_utils.make_and_check_local_project_folders(
-            project, "rawdata", subs, sessions, ["behav"], datatypes_used
-        )
-
-        project.upload_custom(
-            "rawdata",
-            sub_names=subs,
-            ses_names=sessions,
-            datatype=["behav"],
-        )
-
-        os.chdir(project.get_local_path())
-        local_rawdata = project.get_local_path() / "rawdata"
-        if local_rawdata.exists():
-            shutil.rmtree(local_rawdata)
-
-        project.download_custom(
-            "rawdata",
-            sub_names=subs,
-            ses_names=[
-                f"ses-{canonical_tags.tags('*')}_20240310{canonical_tags.tags('DATETO')}20240401"
-            ],
-            datatype=["behav"],
-        )
-
-        local_path = project.get_local_path() / "rawdata"
-        downloaded_subs = list(local_path.glob("sub-*"))
-
-        assert len(downloaded_subs) == 2
-
-        for sub_path in downloaded_subs:
-            downloaded_sessions = [ses.name for ses in sub_path.glob("ses-*")]
-            expected_sessions = [
-                "ses-002_date-20240315",
-                "ses-003_date-20240401",
-            ]
-            assert sorted(downloaded_sessions) == sorted(expected_sessions)
 
     def test_edge_case_exact_boundary_dates(self, project):
         """Test that boundary dates are handled correctly (inclusive ranges)."""
