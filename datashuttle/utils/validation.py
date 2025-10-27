@@ -442,12 +442,12 @@ def replace_tags_in_regexp(regexp: str) -> str:
     date_regexp = r"\d{8}"
     time_regexp = r"\d{6}"
 
+    datetime_regexp = formatting.format_datetime(date_regexp, time_regexp)
+
     formatting.replace_date_time_tags_in_name(
         regexp_list,
-        datetime_=formatting.format_datetime(date_regexp, time_regexp),
-        datetime_with_key=formatting.format_datetime_with_key(
-            date_regexp, time_regexp
-        ),
+        datetime_=datetime_regexp,
+        datetime_with_key=formatting.format_datetime_with_key(datetime_regexp),
         date=date_regexp,
         date_with_key=formatting.format_date_with_key(date_regexp),
         time_=time_regexp,

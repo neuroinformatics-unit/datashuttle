@@ -279,7 +279,7 @@ def update_names_with_datetime(names: List[str]) -> None:
     time_with_key = format_time(time_)
 
     datetime_ = format_datetime(date, time_)
-    datetime_with_key = format_datetime_with_key(date, time_)
+    datetime_with_key = format_datetime_with_key(datetime_)
 
     replace_date_time_tags_in_name(
         names,
@@ -303,19 +303,37 @@ def replace_date_time_tags_in_name(
 ) -> None:
     """Replace tags with their final value for every name in a list.
 
+    @DATE@, @TIME@ and @DATETIME@ keys can be positioed directly
+    after the sub- or ses- key. In this case, they are replaced with
+    the date, time or datetime directly e.g. sub-@DATE@ becomes sub-20250101.
+
+    They can also be positioned elsewhere in the name, where they are
+    included with the corresponding key, e.g.
+        sub-001_@DATE@ becomes sub-001_date-20250101
+    similarly for @TIME@, @DATETIME@.
+
+    This function replaces the @DATE@, @TIME@ or @DATETIME@ key
+    with the appropriate value. This function is used for both
+    replacement with actual date times, or regexp values in validation,
+    so all formatted date, time etc. with and without keys must
+    be generated up front and passed.
+
     Parameters
     ----------
     names
         A list of subject or session names.
 
-    datetime_with_key
-        Formatted datetime key-value pair .e.g datetime-20220101T010101.
+   datetime_ /  datetime_with_key
+        Value to replace @DATETIME@ with, either the datetime_ or
+        datetime_ with "datetime-" key.
 
-    date_with_key
-        Formatted date key-value pair .e.g date-20220101.
+    date / date_with_key
+        Value to replace @DATE@ with, either the date or
+        date with "date-" key.
 
-    time_with_key
-        Formatted time key-value pair .e.g time-010101.
+    time_ / time_with_key
+        Value to replace @TIME@ with, either the time or
+        time with "time-" key.
 
     """
     for i, name in enumerate(names):
@@ -365,8 +383,9 @@ def format_datetime(date: str, time_: str) -> str:
     return f"{date}T{time_}"
 
 
-def format_datetime_with_key(date: str, time: str) -> str:
-    return f"datetime-{format_datetime(date, time)}"
+def format_datetime_with_key(datetime_: str) -> str:
+    """Add the `datetime` key to a formatted datetime."""
+    return f"datetime-{datetime_}"
 
 
 def add_underscore_before_after_if_not_there(string: str, key: str) -> str:

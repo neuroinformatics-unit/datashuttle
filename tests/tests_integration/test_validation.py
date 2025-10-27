@@ -1,10 +1,13 @@
 import os.path
+import re
 import shutil
 import warnings
+from datetime import datetime
 
 import pytest
 
 from datashuttle import validate_project_from_path
+from datashuttle.configs import canonical_tags
 from datashuttle.utils import formatting, validation
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
@@ -782,6 +785,77 @@ class TestValidation(BaseTest):
             "TEMPLATE: The name: ses-02_id-aa does not match the template: ses-\\d\\d_id-\\d.?"
             in str(w[1].message)
         )
+
+    @pytest.mark.parametrize("format", ["date", "time", "datetime"])
+    def test_template_datetime_tag_after_sub_ses_key(self, project, format):
+        """Test validation and folder creation for sub-<datetime>, ses-<datetime> positioning.
+
+        sub- and ses- keys can be followed by a @DATE@, @TIME@ or @DATETIME
+        tag. Check that in this case, validation runs as expected and
+        that folders created with these tags are created as expected.
+        """
+        tag = canonical_tags.tags(format)
+
+        name_templates = {
+            "on": True,
+            "sub": rf"sub-{tag}_id-123",
+            "ses": rf"ses-{tag}_id-123",
+        }
+        project.set_name_templates(name_templates)
+
+        allow_letters = format == "datetime"
+
+        # Create names that match, check this does not error
+        project.create_folders(
+            "rawdata",
+            [f"sub-{tag}_id-123"],
+            [f"ses-{tag}_id-123"],
+            allow_letters_in_sub_ses_values=allow_letters,
+        )
+
+        # Check full validation runs without errors
+        assert (
+            project.validate_project(
+                "rawdata",
+                "error",
+                include_central=False,
+                allow_letters_in_sub_ses_values=allow_letters,
+            )
+            == []
+        )
+
+        # Check the folders are created correctly
+        sub = list((project.get_local_path() / "rawdata").glob("sub*"))
+        ses = list(
+            (project.get_local_path() / "rawdata" / sub[0]).glob("ses*")
+        )
+
+        datetime_fmt = canonical_tags.get_datetime_formats()[format]
+
+        sub_value = re.split("-|_", sub[0].name)[1]
+        ses_value = re.split("-|_", ses[0].name)[1]
+
+        # will crash if name not created properly.
+        datetime.strptime(sub_value, datetime_fmt)
+        datetime.strptime(ses_value, datetime_fmt)
+
+        # Make some bad folder dates, check these are caught in full validation.
+        project.create_folders(
+            "rawdata",
+            [f"sub-{tag}x_id-123"],
+            [f"ses-{tag}x_id-123"],
+            bypass_validation=True,
+        )
+
+        with pytest.raises(NeuroBlueprintError) as e:
+            project.validate_project(
+                "rawdata",
+                "error",
+                include_central=False,
+                allow_letters_in_sub_ses_values=True,
+            )
+
+        assert "does not match the template" in str(e)
 
     # ----------------------------------------------------------------------------------
     # Test Quick Validation Function
