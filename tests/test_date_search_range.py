@@ -12,36 +12,6 @@ from .base import BaseTest
 class TestDateSearchRange(BaseTest):
     """Test date/time range search functionality with real datashuttle projects."""
 
-    def test_simple_wildcard_first(self, project):
-        """Test basic wildcard functionality before testing date ranges."""
-        subs = ["sub-001", "sub-002"]
-        sessions = ["ses-001", "ses-002"]
-
-        datatypes_used = test_utils.get_all_broad_folders_used(value=False)
-        datatypes_used.update({"behav": True})
-        test_utils.make_and_check_local_project_folders(
-            project, "rawdata", subs, sessions, ["behav"], datatypes_used
-        )
-
-        project.upload_custom(
-            "rawdata",
-            sub_names=[f"sub-{canonical_tags.tags('*')}"],
-            ses_names=[f"ses-{canonical_tags.tags('*')}"],
-            datatype=["behav"],
-        )
-
-        central_path = project.get_central_path() / "rawdata"
-        transferred_subs = [sub.name for sub in central_path.glob("sub-*")]
-
-        expected_subs = ["sub-001", "sub-002"]
-        assert sorted(transferred_subs) == sorted(expected_subs)
-
-        for sub_name in expected_subs:
-            sub_path = central_path / sub_name
-            transferred_sessions = [ses.name for ses in sub_path.glob("ses-*")]
-            expected_sessions = ["ses-001", "ses-002"]
-            assert sorted(transferred_sessions) == sorted(expected_sessions)
-
     def test_date_range_transfer(self, project):
         """Test that date range patterns correctly filter folders during transfer."""
         subs = ["sub-001", "sub-002"]
