@@ -647,23 +647,40 @@ def filter_names_by_datetime_range(
 # -----------------------------------------------------------------------------
 
 
-def get_expected_datetime_len(format_type: str) -> int:
-    """Get the expected length of characters for a datetime format.
+def get_datetime_to_search_regexp(format_type: str, tag: str) -> str:
+    r"""Get the full regexp to find the full @DATETIMETO@ and similar tags.
+
+    Users will write "<date>@DATETO@<date>", "<time>@TIMETO@<time>",
+    or "<datetime>@DATETIMETO@<datetime>". This creates the full regexp for finding
+    this string.
 
     Parameters
     ----------
     format_type
         One of "datetime", "time", or "date"
 
+    tag
+        The tag used for the range (e.g. @DATETIMETO@)
+
     Returns
     -------
-    int
-        The number of characters expected for the format
+    full_tag_regex
+        The full regexp to search for e.g.
+        "\d{8}T\d{6}@DATETIMETO@\d{8}T\d{6}"
 
     """
-    format_str = canonical_tags.get_datetime_formats()[format_type]
-    today = datetime.now()
-    return len(today.strftime(format_str))
+    if format_type == "date":
+        regexp = "\d{8}"
+
+    elif format_type == "time":
+        regexp = "\d{6}"
+
+    elif format_type == "datetime":
+        regexp = "\d{8}T\d{6}"
+
+    full_tag_regex = rf"({regexp}){re.escape(tag)}({regexp})"
+
+    return full_tag_regex
 
 
 def find_datetime_in_name(
@@ -688,11 +705,10 @@ def find_datetime_in_name(
         None if no match is found
 
     """
-    expected_len = get_expected_datetime_len(format_type)
-    full_tag_regex = (
-        rf"(\d{{{expected_len}}}){re.escape(tag)}(\d{{{expected_len}}})"
-    )
+    full_tag_regex = get_datetime_to_search_regexp(format_type, tag)
+
     match = re.search(full_tag_regex, name)
+
     return match.groups() if match else None
 
 
@@ -723,10 +739,8 @@ def strip_start_end_date_from_datetime_tag(
         or end datetime is before start datetime
 
     """
-    expected_len = get_expected_datetime_len(format_type)
-    full_tag_regex = (
-        rf"(\d{{{expected_len}}}){re.escape(tag)}(\d{{{expected_len}}})"
-    )
+    full_tag_regex = get_datetime_to_search_regexp(format_type, tag)
+
     match = re.search(full_tag_regex, search_str)
 
     if not match:
@@ -787,10 +801,8 @@ def format_and_validate_datetime_search_str(
     strip_start_end_date_from_datetime_tag(search_str, format_type, tag)
 
     # Replace datetime range with wildcard pattern
-    expected_len = get_expected_datetime_len(format_type)
-    full_tag_regex = (
-        rf"(\d{{{expected_len}}}){re.escape(tag)}(\d{{{expected_len}}})"
-    )
+    full_tag_regex = get_datetime_to_search_regexp(format_type, tag)
+
     return re.sub(full_tag_regex, f"{format_type}-*", search_str)
 
 
