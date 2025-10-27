@@ -323,7 +323,7 @@ def replace_date_time_tags_in_name(
     names
         A list of subject or session names.
 
-   datetime_ /  datetime_with_key
+    datetime_ /  datetime_with_key
         Value to replace @DATETIME@ with, either the datetime_ or
         datetime_ with "datetime-" key.
 
