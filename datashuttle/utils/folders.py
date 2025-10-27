@@ -670,9 +670,7 @@ def get_datetime_to_search_regexp(format_type: str, tag: str) -> str:
     elif format_type == "datetime":
         regexp = "\d{8}T\d{6}"
 
-    full_tag_regex = (
-        rf"({regexp}){re.escape(tag)}({regexp})"
-    )
+    full_tag_regex = rf"({regexp}){re.escape(tag)}({regexp})"
 
     return full_tag_regex
 
