@@ -44,7 +44,7 @@ class TestDateSearchRange(BaseTest):
             "rawdata",
             sub_names=subs,
             ses_names=[
-                f"ses-{canonical_tags.tags('*')}_20240315{canonical_tags.tags('DATETO')}20240401"
+                f"ses-{canonical_tags.tags('*')}_20240315{canonical_tags.tags('DATETO')}20240415"
             ],
             datatype=["behav"],
         )
@@ -59,6 +59,7 @@ class TestDateSearchRange(BaseTest):
             expected_sessions = [
                 "ses-002_date-20240315",
                 "ses-003_date-20240401",
+                "ses-004_date-20240415",
             ]
             assert sorted(transferred_sessions) == sorted(expected_sessions)
 
