@@ -182,7 +182,7 @@ class TestDateSearchRange(BaseTest):
             project, "rawdata", subs, sessions, ["behav"], datatypes_used
         )
 
-        with pytest.raises(Exception) as exc_info:
+        with pytest.raises(Exception) as e:
             project.upload_custom(
                 "rawdata",
                 sub_names=subs,
@@ -191,9 +191,10 @@ class TestDateSearchRange(BaseTest):
                 ],
                 datatype=["behav"],
             )
-        assert "before start" in str(exc_info.value)
 
-        with pytest.raises(Exception) as exc_info:
+        assert "End date is before start date." in str(e.value)
+
+        with pytest.raises(Exception) as e:
             project.upload_custom(
                 "rawdata",
                 sub_names=subs,
@@ -202,7 +203,7 @@ class TestDateSearchRange(BaseTest):
                 ],
                 datatype=["behav"],
             )
-        assert "Invalid" in str(exc_info.value)
+        assert "Invalid" in str(e.value)
 
     def test_no_matches_in_date_range(self, project):
         """Test behavior when no folders match the date range."""
