@@ -5,6 +5,7 @@ import time
 from pathlib import Path
 
 import pytest
+from filelock import FileLock
 
 from datashuttle.configs import canonical_folders
 from datashuttle.configs.canonical_configs import get_broad_datatypes
@@ -762,19 +763,26 @@ class TestFileTransfer(BaseTest):
 
         test_utils.delete_log_files(project.cfg.logging_path)
 
-        thread = test_utils.lock_a_file(a_transferred_file)
-        errors = project.upload_custom("rawdata", "all", "all", "all")
-        thread.join()
+        if platform.system() == "Windows":
+            lock = FileLock(a_transferred_file, timeout=5)
+            with lock:
+                errors = project.upload_custom("rawdata", "all", "all", "all")
+            error_message = "because another process has locked "
+        else:
+            thread = test_utils.lock_a_file(a_transferred_file)
+            errors = project.upload_custom("rawdata", "all", "all", "all")
+            thread.join()
+            error_message = "size changed"
 
         # Check that errors and logs flag the transfer errors
         assert errors["file_names"] == [relative_path.as_posix()]
-        assert "size changed" in errors["messages"][0]
+        assert error_message in errors["messages"][0]
 
         log = test_utils.read_log_file(project.cfg.logging_path)
 
         assert errors["file_names"][0] in log
         assert "Errors were detected!" in log
-        assert "size changed" in log
+        assert error_message in log
 
         # now just upload everything
         project.upload_entire_project()

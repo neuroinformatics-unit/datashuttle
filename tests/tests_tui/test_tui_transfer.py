@@ -1,6 +1,8 @@
+import platform
 from pathlib import Path
 
 import pytest
+from filelock import FileLock
 
 from datashuttle.configs import canonical_configs
 from datashuttle.tui.app import TuiApp
@@ -262,19 +264,29 @@ class TestTuiTransfer(TuiBase):
             # Check the errors are displayed in the pop-up window.
             a_transferred_file = project.get_local_path() / relative_path
 
-            thread = test_utils.lock_a_file(a_transferred_file, duration=20)
+            if platform.system() == "Windows":
+                lock = FileLock(a_transferred_file, timeout=5)
+                with lock:
+                    await self.run_transfer(
+                        pilot, "upload", close_final_messagebox=False
+                    )
+                error_message = "because another process has locked "
+            else:
+                thread = test_utils.lock_a_file(
+                    a_transferred_file, duration=20
+                )
 
-            await self.run_transfer(
-                pilot, "upload", close_final_messagebox=False
-            )
-
-            thread.join()
+                await self.run_transfer(
+                    pilot, "upload", close_final_messagebox=False
+                )
+                thread.join()
+                error_message = "size changed"
 
             displayed_message = app.screen.message
 
             assert relative_path.as_posix() in displayed_message
 
-            assert "size changed" in displayed_message
+            assert error_message in displayed_message
 
             await self.close_messagebox(pilot)
 
