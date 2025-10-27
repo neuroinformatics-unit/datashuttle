@@ -29,8 +29,18 @@ class TestBackwardsCompatibility:
         However, this version is missing narrow datatypes added later (e.g. "motion").
         In the test file, all 'displayed' are turned off except f2pe.
         """
-        reloaded_ver_configs, reloaded_ver_persistent_settings = (
-            self.load_and_check_old_version_yamls(project, tmp_path, "v0.6.0")
+        (
+            reloaded_ver_configs,
+            reloaded_ver_persistent_settings,
+            current_ver_configs,
+            current_ver_persistent_settings,
+        ) = self.load_old_version_yamls(project, tmp_path, "v0.6.0")
+
+        self.compare_reloaded_and_current_settings(
+            reloaded_ver_configs,
+            reloaded_ver_persistent_settings,
+            current_ver_configs,
+            current_ver_persistent_settings,
         )
 
         assert reloaded_ver_configs["local_path"] == Path("old_ver")
@@ -54,8 +64,18 @@ class TestBackwardsCompatibility:
         """This version did not have narrow datatypes, and the persistent checkbox setting was only a
         bool. Therefore, the "displayed" uses the canonical defaults (because they don't exist in the file yet).
         """
-        reloaded_ver_configs, reloaded_ver_persistent_settings = (
-            self.load_and_check_old_version_yamls(project, tmp_path, "v0.5.3")
+        (
+            reloaded_ver_configs,
+            reloaded_ver_persistent_settings,
+            current_ver_configs,
+            current_ver_persistent_settings,
+        ) = self.load_old_version_yamls(project, tmp_path, "v0.5.3")
+
+        self.compare_reloaded_and_current_settings(
+            reloaded_ver_configs,
+            reloaded_ver_persistent_settings,
+            current_ver_configs,
+            current_ver_persistent_settings,
         )
 
         assert reloaded_ver_configs["local_path"] == Path("old_ver")
@@ -85,9 +105,20 @@ class TestBackwardsCompatibility:
         This is tested by loading an old version of config.yaml and checking if it has the
         new config values.
         """
-        reloaded_ver_configs, reloaded_ver_persistent_settings = (
-            self.load_and_check_old_version_yamls(project, tmp_path, "v0.6.0")
+        (
+            reloaded_ver_configs,
+            reloaded_ver_persistent_settings,
+            current_ver_configs,
+            current_ver_persistent_settings,
+        ) = self.load_old_version_yamls(project, tmp_path, "v0.6.0")
+
+        self.compare_reloaded_and_current_settings(
+            reloaded_ver_configs,
+            reloaded_ver_persistent_settings,
+            current_ver_configs,
+            current_ver_persistent_settings,
         )
+
         assert reloaded_ver_configs["local_path"] == Path("old_ver")
 
         new_config_keys = [
@@ -101,13 +132,19 @@ class TestBackwardsCompatibility:
             assert key in reloaded_ver_configs
             assert reloaded_ver_configs[key] is None
 
-    def load_and_check_old_version_yamls(
-        self, project, tmp_path, datashuttle_version
-    ):
+    def test_connection_method_none(self, project, tmp_path):
+        """Check an old version of the configs where `connection_method` can equal `None` is loaded correctly."""
+
+        reloaded_ver_configs = self.load_old_version_yamls(
+            project, tmp_path, "connection_method_none"
+        )[0]
+        assert reloaded_ver_configs["connection_method"] == "local_only"
+
+    def load_old_version_yamls(self, project, tmp_path, datashuttle_version):
         """Load an old config file in the current datashuttle version,
-        and check that the new-version ('canonical') configs
-        and persistent settings match the structure of the
-        files loaded from the old datashuttle version.
+        and return the reloaded version as well as the current (correct)
+        version. Use `compare_reloaded_and_current_settings` to check these are the same.
+
         """
         # Switch dir so folders created in `DataShuttle` init do
         # not pollute the users test drive.
@@ -141,14 +178,33 @@ class TestBackwardsCompatibility:
         reloaded_ver_configs = project.get_configs()
         reloaded_ver_persistent_settings = project._load_persistent_settings()
 
+        return (
+            reloaded_ver_configs,
+            reloaded_ver_persistent_settings,
+            current_ver_configs,
+            current_ver_persistent_settings,
+        )
+
+    def compare_reloaded_and_current_settings(
+        self,
+        reloaded_ver_configs,
+        reloaded_ver_persistent_settings,
+        current_ver_configs,
+        current_ver_persistent_settings,
+    ):
+        """
+        In these tests, a current 'correct' version of the configs / settings
+        is generated, as well as a reloaded old version of the configs which should
+        match the current, correct version. Test recursively all elements in the
+        configs / settings dictionaries to ensure they match.
+        """
         self.recursive_test_dictionary(
             current_ver_configs, reloaded_ver_configs
         )
         self.recursive_test_dictionary(
-            current_ver_persistent_settings, reloaded_ver_persistent_settings
+            current_ver_persistent_settings,
+            reloaded_ver_persistent_settings,
         )
-
-        return reloaded_ver_configs, reloaded_ver_persistent_settings
 
     def recursive_test_dictionary(self, dict_canonical, dict_to_test):
         """A dictionary to check all keys in a nested dictionary

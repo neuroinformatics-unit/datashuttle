@@ -4,7 +4,7 @@ import warnings
 
 import pytest
 
-from datashuttle import quick_validate_project
+from datashuttle import validate_project_from_path
 from datashuttle.utils import formatting, validation
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
@@ -794,7 +794,7 @@ class TestValidation(BaseTest):
         os.makedirs(project.cfg["local_path"] / "derivatives" / "sub-02")
 
         with pytest.warns(UserWarning) as w:
-            quick_validate_project(
+            validate_project_from_path(
                 project.get_local_path(),
                 display_mode="warn",
                 top_level_folder=None,
@@ -812,7 +812,7 @@ class TestValidation(BaseTest):
             datashuttle.datashuttle_functions.validation, "validate_project"
         )
 
-        quick_validate_project(
+        validate_project_from_path(
             project.get_local_path(),
             display_mode="print",
             top_level_folder="derivatives",
@@ -829,7 +829,7 @@ class TestValidation(BaseTest):
         bad project path input.
         """
         with pytest.raises(FileNotFoundError) as e:
-            quick_validate_project(
+            validate_project_from_path(
                 project.get_local_path() / "does not exist",
                 display_mode="error",
             )
@@ -960,3 +960,121 @@ class TestValidation(BaseTest):
             "PROJECT_NAME: The central project name folder bad@project@name@"
             in str(w[1].message)
         )
+
+    # ----------------------------------------------------------------------------------
+    # Test allow_letters_in_sub_ses_values
+    # ----------------------------------------------------------------------------------
+
+    def test_allow_letters_in_sub_ses_values(self, project):
+        """Test `allow_letters_in_sub_ses_values` for validation functions.
+
+        When `allow_letters_in_sub_ses_values=True`, any alphanumeric sub- or ses-
+        key is allowed, and it is not restricted to integer only.
+
+        Additionally, a few other restrictions are loosened:
+            - Identical sub / ses key is based on alphanumeric not integer values (e.g. "sub-001" != "sub-01"
+            - Sub / ses labels do not have to be the same length (e.g. "sub-a" and "sub-ab" is okay.
+        """
+        sub_names = ["sub-abc", "sub-123a", "sub-001", "sub-01"]
+        ses_names = ["ses-abc", "ses-123a", "ses-001", "ses-01"]
+
+        # Cannot create folders with alphanumeric characters by default
+        with pytest.raises(NeuroBlueprintError) as e:
+            project.create_folders("rawdata", sub_names, ses_names, "ephys")
+
+        assert "sub-abc is not an integer." in str(e.value)
+
+        # Now, we can create alphanumeric characters
+        project.create_folders(
+            "rawdata",
+            sub_names,
+            ses_names,
+            "ephys",
+            allow_letters_in_sub_ses_values=True,
+        )
+
+        # Check that duplicate names are still detected for alphanumeric labels
+        # for sub and ses when creating new folders.
+        with pytest.raises(NeuroBlueprintError) as e:
+            project.create_folders(
+                "rawdata",
+                "sub-abc_id-123",
+                allow_letters_in_sub_ses_values=True,
+            )
+
+        assert (
+            "DUPLICATE_NAME: The prefix for sub-abc_id-123 duplicates the name: sub-abc."
+            in str(e.value)
+        )
+
+        with pytest.raises(NeuroBlueprintError) as e:
+            project.create_folders(
+                "rawdata",
+                "sub-abc",
+                "ses-abc_id-123",
+                allow_letters_in_sub_ses_values=True,
+            )
+
+        assert (
+            "DUPLICATE_NAME: The prefix for ses-abc_id-123 duplicates the name: ses-abc."
+            in str(e.value)
+        )
+
+        # Check that the validation functions also catch alphanumeric characters
+        # but allow them if `allow_letters_in_sub_ses_values=True`
+        with pytest.raises(NeuroBlueprintError) as e_val:
+            project.validate_project("rawdata", "error")
+
+        with pytest.raises(NeuroBlueprintError) as e_val_from_path:
+            validate_project_from_path(
+                project.get_local_path(), display_mode="error"
+            )
+
+        for e in [e_val, e_val_from_path]:
+            assert (
+                "BAD_VALUE: The value for prefix sub in name sub-123a is not an integer."
+                in str(e.value)
+            )
+
+        project.validate_project(
+            "rawdata", "error", allow_letters_in_sub_ses_values=True
+        )
+
+        validate_project_from_path(
+            project.get_local_path(),
+            display_mode="error",
+            allow_letters_in_sub_ses_values=True,
+        )
+
+        # Create a duplicate alphanumeric label and check that the validation functions throw validation error
+        (project.get_local_path() / "rawdata" / "sub-abc_id-123").mkdir(
+            parents=True
+        )
+        (
+            project.get_local_path() / "rawdata" / "sub-abc" / "ses-abc_id-123"
+        ).mkdir(parents=True)
+
+        with pytest.warns(UserWarning) as w_val:
+            project.validate_project(
+                "rawdata",
+                display_mode="warn",
+                allow_letters_in_sub_ses_values=True,
+            )
+
+        with pytest.warns(UserWarning) as w_val_from_path:
+            validate_project_from_path(
+                project.get_local_path(),
+                display_mode="warn",
+                allow_letters_in_sub_ses_values=True,
+            )
+
+        for w in [w_val, w_val_from_path]:
+            assert (
+                "DUPLICATE_NAME: The prefix for sub-abc duplicates the name: sub-abc_id-123."
+                in str(w[0].message)
+            )
+
+            assert (
+                "DUPLICATE_NAME: The prefix for ses-abc duplicates the name: ses-abc_id-123."
+                in str(w[2].message)
+            )

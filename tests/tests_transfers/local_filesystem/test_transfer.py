@@ -198,6 +198,39 @@ class TestFileTransfer(BaseTest):
             sessions,
         )
 
+    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    def test_transfer_with_letters_in_sub_ses_values(
+        self, project, upload_or_download
+    ):
+        """Test transferring with letters_in values rather than integer."""
+        subs = ["sub-abc", "sub-243sdfcxa1"]
+        sessions = ["ses-abc", "ses-tg34asdf"]
+
+        test_utils.make_and_check_local_project_folders(
+            project,
+            "rawdata",
+            subs,
+            sessions,
+            get_broad_datatypes(),
+            allow_letters_in_sub_ses_values=True,
+        )
+
+        (
+            transfer_function,
+            base_path_to_check,
+        ) = test_utils.handle_upload_or_download(
+            project, upload_or_download, transfer_method="custom"
+        )
+
+        transfer_function("rawdata", subs, sessions, ["anat"])
+
+        test_utils.check_datatype_sub_ses_uploaded_correctly(
+            os.path.join(base_path_to_check, "rawdata"),
+            ["anat"],
+            subs,
+            sessions,
+        )
+
     @pytest.mark.parametrize(
         "sub_idx_to_upload", [[0], [1], [2], [0, 1], [1, 2], [0, 2], [0, 1, 2]]
     )
@@ -612,7 +645,7 @@ class TestFileTransfer(BaseTest):
         path_to_test_file = (
             Path(top_level_folder)
             / "sub-001"
-            / "ses-001"
+            / "ses-abc"
             / "anat"
             / "test_file.txt"
         )

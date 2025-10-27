@@ -61,10 +61,10 @@ will be automatically saved. These settings will persist across
 :::{tab-item} Python API
 :sync: python
 
-The `set_name_templates()` and `get_name_templates()` can be used
+The [](set_name_templates()) and [](get_name_templates()) can be used
 to set and get current name template settings.
 
-`set_name_templates` takes as input the `name_template` dictionary,
+[](set_name_templates()) takes as input the `name_template` dictionary,
 which is formatted as below:
 
 ```

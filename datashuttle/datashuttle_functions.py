@@ -22,12 +22,13 @@ from datashuttle.utils import (
 )
 
 
-def quick_validate_project(
+def validate_project_from_path(
     project_path: str | Path,
     top_level_folder: Optional[TopLevelFolder] = "rawdata",
     display_mode: DisplayMode = "warn",
     strict_mode: bool = False,
     name_templates: Optional[Dict] = None,
+    allow_letters_in_sub_ses_values: bool = False,
 ) -> List[str]:
     """Perform validation on a NeuroBlueprint-formatted project.
 
@@ -57,6 +58,13 @@ def quick_validate_project(
         A dictionary of templates for subject and session name
         to validate against. See ``DataShuttle.set_name_templates()``
         for details.
+
+    allow_letters_in_sub_ses_values
+        If `True`, any alphanumeric character are allowed for the values associated
+        with sub- or ses-  keys. Otherwise, values must be integer
+        and the following additional checks are performed:
+
+        - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
 
     Returns
     -------
@@ -95,6 +103,7 @@ def quick_validate_project(
         display_mode=display_mode,
         name_templates=name_templates,
         strict_mode=strict_mode,
+        allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
     )
 
     return error_messages

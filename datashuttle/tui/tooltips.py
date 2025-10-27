@@ -180,11 +180,22 @@ def get_tooltip(id: str) -> str:
             "Allow folder creation even when there is a validation error."
         )
 
+    elif (
+        id == "#create_folders_settings_allow_letters_in_checkbox"
+        or id == "validate_allow_letters_in_sub_ses_values_checkbox"
+    ):
+        tooltip = (
+            "If `True`, any alphanumeric character are allowed for the values associated "
+            "with sub- or ses- keys. \n\n"
+            "Otherwise, values must be integer and the following additional checks are performed:\n"
+            " - Labels must be the same length (e.g. sub-01 and sub-002 is invalid)."
+        )
+
     # template validation checkbox
     elif id == "#template_settings_validation_on_checkbox":
         tooltip = "Turn on the 'name templates' feature."
 
-    # Tabscreen - Tranfser tab
+    # Tabscreen - Transfer tab
     # -------------------------------------------------------------------------
 
     # directorytree

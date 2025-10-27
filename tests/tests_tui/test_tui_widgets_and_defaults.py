@@ -397,7 +397,7 @@ class TestTuiWidgets(TuiBase):
                 pilot.app.screen.query_one(
                     "#suggest_next_sub_ses_central_checkbox"
                 ).label._text
-                == "Search Central For Suggestions"
+                == "Search central for suggestions"
             )
             assert (
                 pilot.app.screen.query_one(
@@ -416,6 +416,19 @@ class TestTuiWidgets(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_settings_bypass_validation_checkbox"
+                ).value
+                is False
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_settings_allow_letters_in_checkbox"
+                ).label._text
+                == "Allow letters in sub- and ses- values"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_settings_allow_letters_in_checkbox"
                 ).value
                 is False
             )
@@ -654,11 +667,26 @@ class TestTuiWidgets(TuiBase):
             await pilot.pause()
 
     @pytest.mark.asyncio
-    async def test_bypass_validation_settings(self, setup_project_paths):
-        """Test all configs that underly the 'bypass validation'
+    @pytest.mark.parametrize(
+        "parameter_name",
+        ["bypass_validation", "allow_letters_in_sub_ses_values"],
+    )
+    async def test_create_folders_validation_settings(
+        self, setup_project_paths, parameter_name
+    ):
+        """Test all configs that underly the 'bypass validation' and `allow_letters_in_sub_ses_values`
         setting are updated correctly by the widget.
+
+        These two options are similar and are both default off, we so we can test
+        them using the same process (turning them on and checking the underlying
+        parameters in the stored dictionaries are also changed as expected).
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        if parameter_name == "bypass_validation":
+            checkbox_id = "#create_folders_settings_bypass_validation_checkbox"
+        else:
+            checkbox_id = "#create_folders_settings_allow_letters_in_checkbox"
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
@@ -669,30 +697,17 @@ class TestTuiWidgets(TuiBase):
                 pilot, "#create_folders_settings_button"
             )
 
+            assert pilot.app.screen.query_one(checkbox_id).value is False
             assert (
-                pilot.app.screen.query_one(
-                    "#create_folders_settings_bypass_validation_checkbox"
-                ).value
-                is False
-            )
-            assert (
-                pilot.app.screen.interface.tui_settings["bypass_validation"]
+                pilot.app.screen.interface.tui_settings[parameter_name]
                 is False
             )
 
-            await self.scroll_to_click_pause(
-                pilot, "#create_folders_settings_bypass_validation_checkbox"
-            )
+            await self.scroll_to_click_pause(pilot, checkbox_id)
 
+            assert pilot.app.screen.query_one(checkbox_id).value is True
             assert (
-                pilot.app.screen.query_one(
-                    "#create_folders_settings_bypass_validation_checkbox"
-                ).value
-                is True
-            )
-            assert (
-                pilot.app.screen.interface.tui_settings["bypass_validation"]
-                is True
+                pilot.app.screen.interface.tui_settings[parameter_name] is True
             )
 
             await self.scroll_to_click_pause(
@@ -705,15 +720,9 @@ class TestTuiWidgets(TuiBase):
                 pilot, "#create_folders_settings_button"
             )
 
+            assert pilot.app.screen.query_one(checkbox_id).value is True
             assert (
-                pilot.app.screen.query_one(
-                    "#create_folders_settings_bypass_validation_checkbox"
-                ).value
-                is True
-            )
-            assert (
-                pilot.app.screen.interface.tui_settings["bypass_validation"]
-                is True
+                pilot.app.screen.interface.tui_settings[parameter_name] is True
             )
 
             await pilot.pause()

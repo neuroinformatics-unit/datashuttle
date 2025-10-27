@@ -124,18 +124,25 @@ the top-level folder, and bypass validation.
 ```{image} /_static/screenshots/how-to-create-folders-settings-dark.png
    :align: center
    :class: only-dark
-   :width: 500px
+   :width: 900px
 ```
 ```{image} /_static/screenshots/how-to-create-folders-settings-light.png
    :align: center
    :class: only-light
-   :width: 500px
+   :width: 900px
+
 ```
 <br>
 
 Top level folder
 : This dropdown box will set whether folders are created in the
 `rawdata` or `derivatives` top-level folder.
+
+Search central for suggestions
+: By default, suggesting the next `sub-` or `ses-` number will
+be based only on the local project. Select this to also search
+the project on central. If a `local only` project, this will have
+no effect.
 
 Bypass validation
 : This setting will allow folder creation even if the names
@@ -145,12 +152,16 @@ are not valid (i.e. they break with
 This screen is also used to validate and autofill with
 [Name Templates](how-to-use-name-templates).
 
+Allow letters in sub- and ses- values
+: This setting allows `sub-` or `ses-` values in created folders to be
+any alphanumeric character, rather than restricted to integers.
+
 :::
 
 :::{tab-item} Python API
 :sync: python
 
-The `create_folders()` method is used for folder creation.
+The [](create_folders()) method is used for folder creation.
 
 We simply need to provide the subject, session and datatypes to create:
 
@@ -167,9 +178,8 @@ created_folders = project.create_folders(
 )
 ```
 
-The method outputs `created_folders`, which contains the
-`Path`s to created datatype folders. See the below section for
-details on the `@DATE@` and other convenience tags.
+`created_folders` is a list containing  `Path`s to created datatype folders.
+See the below section for details on the `@DATE@` and other convenience tags.
 
 By default, an error will be raised if the folder names break
 with [Neuroblueprint](https://neuroblueprint.neuroinformatics.dev/)
