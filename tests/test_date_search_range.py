@@ -94,7 +94,8 @@ class TestDateSearchRange(BaseTest):
             "ses-001_datetime-20240301T080000",
             "ses-002_datetime-20240315T120000",
             "ses-003_datetime-20240401T160000",
-            "ses-004_datetime-20240415T200000",
+            "ses-004_datetime-20240401T160001",
+            "ses-005_datetime-20240415T200000",
         ]
 
         datatypes_used = test_utils.get_all_broad_folders_used(value=False)
@@ -107,10 +108,10 @@ class TestDateSearchRange(BaseTest):
             "rawdata",
             sub_names=subs,
             ses_names=[
-                f"ses-{canonical_tags.tags('*')}_datetime-20240315{canonical_tags.tags('*')}",
-                f"ses-{canonical_tags.tags('*')}_datetime-20240401{canonical_tags.tags('*')}",
+                f"ses-{canonical_tags.tags('*')}_20240315T120000{canonical_tags.tags('DATETIMETO')}20240401T160002",
+                f"ses-{canonical_tags.tags('*')}_20240415T200000{canonical_tags.tags('DATETIMETO')}20240415T200000",
             ],
-            datatype=["behav"],
+            datatype=["all"],
         )
 
         central_path = project.get_central_path() / "rawdata" / "sub-001"
@@ -119,7 +120,10 @@ class TestDateSearchRange(BaseTest):
         expected_sessions = [
             "ses-002_datetime-20240315T120000",
             "ses-003_datetime-20240401T160000",
+            "ses-004_datetime-20240401T160001",
+            "ses-005_datetime-20240415T200000",
         ]
+
         assert sorted(transferred_sessions) == sorted(expected_sessions)
 
     def test_combined_wildcard_and_date_range(self, project):
