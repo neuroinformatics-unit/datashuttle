@@ -62,7 +62,8 @@ class TestDateSearchRange(BaseTest):
             ]
             assert sorted(transferred_sessions) == sorted(expected_sessions)
 
-    def test_time_range_transfer(self, project):
+    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    def test_time_range_transfer(self, project, upload_or_download):
         """Test that time range patterns work correctly."""
         subs = ["sub-001"]
         sessions = [
@@ -74,11 +75,19 @@ class TestDateSearchRange(BaseTest):
 
         datatypes_used = test_utils.get_all_broad_folders_used(value=False)
         datatypes_used.update({"behav": True})
+
         test_utils.make_and_check_local_project_folders(
             project, "rawdata", subs, sessions, ["behav"], datatypes_used
         )
 
-        project.upload_custom(
+        (
+            transfer_function,
+            base_path_to_check,
+        ) = test_utils.handle_upload_or_download(
+            project, upload_or_download, "custom", "rawdata"
+        )
+
+        transfer_function(
             "rawdata",
             sub_names=subs,
             ses_names=[
@@ -87,13 +96,16 @@ class TestDateSearchRange(BaseTest):
             datatype=["behav"],
         )
 
-        central_path = project.get_central_path() / "rawdata" / "sub-001"
-        transferred_sessions = [ses.name for ses in central_path.glob("ses-*")]
+        path_to_check = base_path_to_check / "rawdata" / "sub-001"
+        transferred_sessions = [
+            ses.name for ses in path_to_check.glob("ses-*")
+        ]
 
         expected_sessions = ["ses-002_time-120000", "ses-003_time-160000"]
         assert sorted(transferred_sessions) == sorted(expected_sessions)
 
-    def test_datetime_range_transfer(self, project):
+    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    def test_datetime_range_transfer(self, project, upload_or_download):
         """Test that wildcard matching works with datetime-tagged sessions."""
         subs = ["sub-001"]
         sessions = [
@@ -110,7 +122,14 @@ class TestDateSearchRange(BaseTest):
             project, "rawdata", subs, sessions, ["behav"], datatypes_used
         )
 
-        project.upload_custom(
+        (
+            transfer_function,
+            base_path_to_check,
+        ) = test_utils.handle_upload_or_download(
+            project, upload_or_download, "custom", "rawdata"
+        )
+
+        transfer_function(
             "rawdata",
             sub_names=subs,
             ses_names=[
@@ -120,8 +139,10 @@ class TestDateSearchRange(BaseTest):
             datatype=["all"],
         )
 
-        central_path = project.get_central_path() / "rawdata" / "sub-001"
-        transferred_sessions = [ses.name for ses in central_path.glob("ses-*")]
+        path_to_check = base_path_to_check / "rawdata" / "sub-001"
+        transferred_sessions = [
+            ses.name for ses in path_to_check.glob("ses-*")
+        ]
 
         expected_sessions = [
             "ses-002_datetime-20240315T120000",
