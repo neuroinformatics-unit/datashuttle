@@ -273,22 +273,32 @@ def update_names_with_datetime(names: List[str]) -> None:
     Format using key-value pair for bids, i.e. date-20221223_time-
     """
     date = str(datetime.datetime.now().date().strftime("%Y%m%d"))
-    date_with_key = format_date(date)
+    date_with_key = format_date_with_key(date)
 
     time_ = datetime.datetime.now().time().strftime("%H%M%S")
     time_with_key = format_time(time_)
 
-    datetime_with_key = format_datetime(date, time_)
+    datetime_ = format_datetime(date, time_)
+    datetime_with_key = format_datetime_with_key(date, time_)
 
     replace_date_time_tags_in_name(
-        names, datetime_with_key, date_with_key, time_with_key
+        names,
+        datetime_,
+        datetime_with_key,
+        date,
+        date_with_key,
+        time_,
+        time_with_key,
     )
 
 
 def replace_date_time_tags_in_name(
     names: List[str],
+    datetime_: str,
     datetime_with_key: str,
+    date: str,
     date_with_key: str,
+    time_: str,
     time_with_key: str,
 ) -> None:
     """Replace tags with their final value for every name in a list.
@@ -311,21 +321,36 @@ def replace_date_time_tags_in_name(
     for i, name in enumerate(names):
         # datetime conditional must come first.
         if tags("datetime") in name:
-            name = add_underscore_before_after_if_not_there(
-                name, tags("datetime")
-            )
-            names[i] = name.replace(tags("datetime"), datetime_with_key)
+            if re.search(
+                rf"(sub-|ses-)(?={re.escape(tags('datetime'))})", name
+            ):
+                names[i] = name.replace(tags("datetime"), datetime_)
+            else:
+                name = add_underscore_before_after_if_not_there(
+                    name, tags("datetime")
+                )
+                names[i] = name.replace(tags("datetime"), datetime_with_key)
 
         elif tags("date") in name:
-            name = add_underscore_before_after_if_not_there(name, tags("date"))
-            names[i] = name.replace(tags("date"), date_with_key)
+            if re.search(rf"(sub-|ses-)(?={re.escape(tags('date'))})", name):
+                names[i] = name.replace(tags("date"), date)
+            else:
+                name = add_underscore_before_after_if_not_there(
+                    name, tags("date")
+                )
+                names[i] = name.replace(tags("date"), date_with_key)
 
         elif tags("time") in name:
-            name = add_underscore_before_after_if_not_there(name, tags("time"))
-            names[i] = name.replace(tags("time"), time_with_key)
+            if re.search(rf"(sub-|ses-)(?={re.escape(tags('time'))})", name):
+                names[i] = name.replace(tags("time"), time_)
+            else:
+                name = add_underscore_before_after_if_not_there(
+                    name, tags("time")
+                )
+                names[i] = name.replace(tags("time"), time_with_key)
 
 
-def format_date(date: str) -> str:
+def format_date_with_key(date: str) -> str:
     """Return the date formatted as `date-<date>`."""
     return f"date-{date}"
 
@@ -337,7 +362,11 @@ def format_time(time_: str) -> str:
 
 def format_datetime(date: str, time_: str) -> str:
     """Return the `date` and `time_` formatted as `datetime-<date>T<time_>`."""
-    return f"datetime-{date}T{time_}"
+    return f"{date}T{time_}"
+
+
+def format_datetime_with_key(date: str, time: str) -> str:
+    return f"datetime-{format_datetime(date, time)}"
 
 
 def add_underscore_before_after_if_not_there(string: str, key: str) -> str:
@@ -346,12 +375,10 @@ def add_underscore_before_after_if_not_there(string: str, key: str) -> str:
     If names are passed with @DATE@, @TIME@, or @DATETIME@
     but not surrounded by underscores, check and insert
     if required. e.g. sub-001@DATE@ becomes sub-001_@DATE@
-    or sub-001@DATEid-101 becomes sub-001_@DATE_id-101.
+    or sub-001@DATEid-101 becomes sub-001_@DATE@_id-101.
     """
     key_len = len(key)
     key_start_idx = string.index(key)
-
-    breakpoint()
 
     # Handle left edge
     if string[key_start_idx - 1] != "_":

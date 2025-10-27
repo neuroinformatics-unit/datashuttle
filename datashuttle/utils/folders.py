@@ -720,6 +720,7 @@ def strip_start_end_date_from_datetime_tag(
     try:
         start_timepoint = datetime_object_from_string(start_str, format_type)
         end_timepoint = datetime_object_from_string(end_str, format_type)
+
     except ValueError as e:
         utils.log_and_raise_error(
             f"Invalid {format_type} format in search string: {search_str}. Error: {str(e)}",

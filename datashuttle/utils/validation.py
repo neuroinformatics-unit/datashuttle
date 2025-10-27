@@ -444,8 +444,13 @@ def replace_tags_in_regexp(regexp: str) -> str:
 
     formatting.replace_date_time_tags_in_name(
         regexp_list,
-        datetime_with_key=formatting.format_datetime(date_regexp, time_regexp),
-        date_with_key=formatting.format_date(date_regexp),
+        datetime_=formatting.format_datetime(date_regexp, time_regexp),
+        datetime_with_key=formatting.format_datetime_with_key(
+            date_regexp, time_regexp
+        ),
+        date=date_regexp,
+        date_with_key=formatting.format_date_with_key(date_regexp),
+        time_=time_regexp,
         time_with_key=formatting.format_time(time_regexp),
     )
     return regexp_list[0]
