@@ -173,7 +173,7 @@ def generate_ssh_key_strings():
 
 
 def generate_ssh_key() -> paramiko.RSAKey:
-    """Generate an RSA SSH key and save it to the specified file path."""
+    """Generate an RSA SSH key."""
     return paramiko.RSAKey.generate(4096)
 
 
