@@ -263,19 +263,19 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
                 )
 
                 if errors["nothing_was_transferred_rawdata"] is True:
-                    errors_message += f"[{no_transfer_col}]\nNote! Nothing was transferred from rawdata.[/{no_transfer_col}]\n"
+                    errors_message += f"[{no_transfer_col}]\nNothing was transferred from rawdata.[/{no_transfer_col}]\n"
 
                 if errors["nothing_was_transferred_derivatives"] is True:
-                    errors_message += f"[{no_transfer_col}]\nNote! Nothing was transferred from derivatives.[/{no_transfer_col}]\n"
+                    errors_message += f"[{no_transfer_col}]\nNothing was transferred from derivatives.[/{no_transfer_col}]\n"
 
                 if any(errors["messages"]):
                     if errors["file_names"]:
                         errors_message += (
-                            "[red]Errors detected! in files:[/red]\n"
+                            "\n[red]Errors detected! in files:[/red]\n"
                         )
                         errors_message += "\n".join(errors["file_names"])
                     else:
-                        errors_message += "[red]Errors detected![/red]"
+                        errors_message += "\n[red]Errors detected![/red]"
                     errors_message += (
                         "[red]\n\nThe error messages are:[/red]\n"
                     )
@@ -287,7 +287,7 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
 
                 message = (
                     f"Transfer finished.\n"
-                    f"{errors_message}\n"
+                    f"{errors_message}\n\n"
                     f"Check the most recent logs for full details."
                 )
 

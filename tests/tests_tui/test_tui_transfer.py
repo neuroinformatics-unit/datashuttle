@@ -298,10 +298,7 @@ class TestTuiTransfer(TuiBase):
                 pilot, "upload", close_final_messagebox=False
             )
 
-            assert (
-                "Note! Nothing was transferred from rawdata"
-                in app.screen.message
-            )
+            assert "Nothing was transferred from rawdata" in app.screen.message
 
             await pilot.pause()
 

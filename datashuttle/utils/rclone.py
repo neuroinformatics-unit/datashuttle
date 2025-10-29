@@ -501,10 +501,10 @@ def log_rclone_copy_errors_api(errors):
     message = ""
 
     if errors["nothing_was_transferred_rawdata"] is True:
-        message += "\n\nNote! Nothing was transferred from rawdata.\n"
+        message += "\n\nNothing was transferred from rawdata.\n"
 
     if errors["nothing_was_transferred_derivatives"] is True:
-        message += "\n\nNote! Nothing was transferred from derivatives.\n"
+        message += "\n\nNothing was transferred from derivatives.\n"
 
     if any(errors["messages"]):
         if any(errors["file_names"]):

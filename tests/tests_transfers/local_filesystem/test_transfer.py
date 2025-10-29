@@ -795,7 +795,7 @@ class TestFileTransfer(BaseTest):
         assert errors["nothing_was_transferred_derivatives"] is None
 
         log = test_utils.read_log_file(project.cfg.logging_path)
-        assert "Note! Nothing was transferred from rawdata." in log
+        assert "Nothing was transferred from rawdata." in log
 
         test_utils.delete_log_files(project.cfg.logging_path)
 
@@ -806,7 +806,7 @@ class TestFileTransfer(BaseTest):
         assert errors["nothing_was_transferred_derivatives"] is True
 
         log = test_utils.read_log_file(project.cfg.logging_path)
-        assert "Note! Nothing was transferred from derivatives." in log
+        assert "Nothing was transferred from derivatives." in log
 
         test_utils.delete_log_files(project.cfg.logging_path)
 
@@ -818,8 +818,8 @@ class TestFileTransfer(BaseTest):
         assert errors["nothing_was_transferred_derivatives"] is True
 
         log = test_utils.read_log_file(project.cfg.logging_path)
-        assert "Note! Nothing was transferred from rawdata." in log
-        assert "Note! Nothing was transferred from derivatives." in log
+        assert "Nothing was transferred from rawdata." in log
+        assert "Nothing was transferred from derivatives." in log
 
     def get_paths_to_a_local_and_central_file(self, project, top_level_folder):
         path_to_test_file = (
