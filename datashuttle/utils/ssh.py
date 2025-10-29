@@ -84,9 +84,10 @@ def setup_ssh_key_api(
 ) -> str:
     """Set up an SSH private / public key pair with central server.
 
-    First, a private key is generated and saved in the .datashuttle config path.
+    First, a private key is generated.
     Next a connection requiring input password made, and the public part of the key
     added to ~/.ssh/authorized_keys.
+    The private key is returned so it can be stored in the Rclone config.
 
     Parameters
     ----------
@@ -166,7 +167,6 @@ def generate_ssh_key_strings():
 
     private_key_io.seek(0)
 
-    private_key_io.seek(0)
     private_key_str = private_key_io.read()
 
     return rsa_key, private_key_str
