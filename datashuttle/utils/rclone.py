@@ -193,7 +193,7 @@ def setup_rclone_config_for_ssh(
         datashuttle.cfg.get_rclone_config_name()
 
     private_key_str
-        PEM encoded sssh private key to pass to RClone.
+        PEM encoded ssh private key to pass to RClone.
 
     log
         whether to log, if True logger must already be initialised.
