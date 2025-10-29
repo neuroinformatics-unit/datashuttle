@@ -323,17 +323,26 @@ def replace_date_time_tags_in_name(
     names
         A list of subject or session names.
 
-    datetime_ /  datetime_with_key
-        Value to replace @DATETIME@ with, either the datetime_ or
-        datetime_ with "datetime-" key.
+    datetime_
+        Value to replace @DATETIME@ with when it is located after the sub- or ses- key.
 
-    date / date_with_key
-        Value to replace @DATE@ with, either the date or
-        date with "date-" key.
+    datetime_with_key
+        Value to replace @DATETIME@ with when it is located anywhere else in the
+        name and requires a "datetime-" key.
 
-    time_ / time_with_key
-        Value to replace @TIME@ with, either the time or
-        time with "time-" key.
+    date
+        Value to replace @DATE@ with when it is located after the sub- or ses- key.
+
+    date_with_key
+        Value to replace @DATE@ with when it is located anywhere else in the
+        name and requires a "date-" key.
+
+    time_
+        Value to replace @TIME@ with when it is located after the sub- or ses- key.
+
+    time_with_key
+        Value to replace @TIME@ with when it is located anywhere else in the
+        name and requires a "time-" key.
 
     """
     for i, name in enumerate(names):
