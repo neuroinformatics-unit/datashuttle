@@ -3,11 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Dict, Optional
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from datashuttle.utils.custom_types import (
         OverwriteExistingFiles,
     )
-
-from pathlib import Path
 
 import yaml
 
@@ -16,9 +16,10 @@ from datashuttle.utils import utils
 
 
 class RCloneConfigs:
-    """This class manages the RClone configuration file. This is a file that RClone creates
-    to hold all information about local and remote transfer targets. For example, the
-    ssh RClone config holds the private key.
+    """Class to manage the RClone configuration file.
+
+    This is a file that RClone creates to hold all information about local and
+    remote transfer targets. For example, the ssh RClone config holds the private key.
 
     In datashuttle, local filesystem configs uses the Rclone default configuration file,
     that RClone manages. However, remote transfers to ssh, aws and gdrive are held in
@@ -36,17 +37,19 @@ class RCloneConfigs:
     """
 
     def __init__(self, datashuttle_configs, config_base_path):
+        """Construct the class."""
         self.datashuttle_configs = datashuttle_configs
         self.rclone_encryption_state_file_path = (
             config_base_path / "rclone_ps_state.yaml"
         )
 
     def load_rclone_config_is_encrypted(self) -> dict:
-        """Track whether the Rclone config file is encrypted. This could be
-        read directly from the RClone config file, but requires a subprocess call
-        which can be slow on Windows. As this function is called a lot, we track
-        this explicitly when a rclone config is encrypted / unencrypted
-        and store to disk between sessions.
+        """Track whether the Rclone config file is encrypted.
+
+        This could be read directly from the RClone config file, but requires
+        a subprocess call which can be slow on Windows. As this function is
+        called a lot, we track this explicitly when a rclone config is
+        encrypted / unencrypted and store to disk between sessions.
         """
         assert self.datashuttle_configs["connection_method"] in [
             "ssh",
@@ -116,7 +119,7 @@ class RCloneConfigs:
         return f"central_{self.datashuttle_configs.project_name}_{connection_method}"
 
     def get_rclone_central_connection_config_filepath(self) -> Path:
-        """The full filepath to the rclone `.conf` config file"""
+        """Return the full filepath to the rclone `.conf` config file."""
         return (
             canonical_folders.get_rclone_config_base_path()
             / f"{self.get_rclone_config_name()}.conf"
@@ -144,7 +147,7 @@ class RCloneConfigs:
         }
 
     def delete_existing_rclone_config_file(self) -> None:
-        """ """
+        """Delete the Rclone config file if it exists."""
         rclone_config_filepath = (
             self.get_rclone_central_connection_config_filepath()
         )

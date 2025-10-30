@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 from rich.text import Text
 from textual import work
 from textual.containers import Container, Horizontal, Vertical
+from textual.css.query import NoMatches
 from textual.widgets import (
     Button,
     Checkbox,
@@ -217,8 +218,6 @@ class TransferTab(TreeAndInputTab):
             "#transfer_tab_overwrite_select",
             "#transfer_tab_dry_run_checkbox",
         ]:
-            from textual.css.query import NoMatches
-
             try:
                 # if checkbox is removed by user, hard to predict, skip.
                 self.query_one(id).tooltip = get_tooltip(id)

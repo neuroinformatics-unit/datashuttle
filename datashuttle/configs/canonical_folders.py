@@ -96,8 +96,9 @@ def get_project_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
 
 
 def get_rclone_config_base_path():
-    """Get the path to the Rclone config file. This is used for
-    RClone config files for transfer targets (ssh, aws, gdrive).
+    """Return the path to the Rclone config file.
+
+    This is used for RClone config files for transfer targets (ssh, aws, gdrive).
     This should match where RClone itself stores the config by default,
     as described here: https://rclone.org/docs/#config-string
 

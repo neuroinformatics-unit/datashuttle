@@ -13,9 +13,8 @@ if TYPE_CHECKING:
 
 from textual import work
 from textual.containers import Container, Horizontal, Vertical
-from textual.dom import NoMatches
-from textual.screen import ModalScreen
 from textual.css.query import NoMatches
+from textual.screen import ModalScreen
 from textual.widgets import (
     Button,
     Input,

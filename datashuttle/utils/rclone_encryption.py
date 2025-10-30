@@ -1,5 +1,6 @@
-"""Module for encrypthing the RClone config file. Methods based on:
-https://rclone.org/docs/#configuration-encryption
+"""Module for encrypting the RClone config file.
+
+Methods based on: https://rclone.org/docs/#configuration-encryption.
 """
 
 from __future__ import annotations
@@ -7,13 +8,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from datashuttle.configs.configs_class import Configs
 
 import os
 import platform
 import shutil
 import subprocess
-from pathlib import Path
 
 from datashuttle.configs import canonical_folders
 from datashuttle.utils import utils
@@ -297,6 +299,7 @@ def remove_rclone_encryption(cfg: Configs) -> None:
 
 
 def remove_credentials_as_password_command():
+    """Tidy up the rclone password environment variable."""
     if "RCLONE_PASSWORD_COMMAND" in os.environ:
         os.environ.pop("RCLONE_PASSWORD_COMMAND")
 

@@ -156,8 +156,7 @@ class SetupSshScreen(ModalScreen):
         self.stage = "ask_for_encryption"
 
     def use_password_to_setup_ssh_key_pairs(self) -> None:
-        """Set up the SSH key pair using the user-supplied password
-        to the central server.
+        """Set up the SSH key pair using the user-supplied password to the central server.
 
         Next, set up the request asking if they would like to set
         a (separate) password on their RClone config, using the
@@ -192,8 +191,9 @@ class SetupSshScreen(ModalScreen):
         self.query_one("#messagebox_message_label").update(message)
 
     def try_setup_rclone_encryption(self):
-        """Try and encrypt the RClone config using the system
-        credential manager. If successful, the next screen confirms success.
+        """Try and encrypt the RClone config using the system credential manager.
+
+        If successful, the next screen confirms success.
         """
         success, output = self.interface.try_setup_rclone_encryption()
 

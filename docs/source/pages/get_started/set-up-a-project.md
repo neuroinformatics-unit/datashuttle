@@ -573,7 +573,7 @@ This means the file is only uncryptable on your local machine or user) CHECK USE
 
 TODO: think more about the credentials file... its' stupid to have this itself plain text in datashuttle?
 
-Despite this layer of security, it is not reccomended to use datashuttle for remote connectivity on
+Despite this layer of security, it is not recommended to use datashuttle for remote connectivity on
 a machine to which you do not have secure access, even with password protection of the RClone config.
 
 TODO: test if `pass` is not installed on linux that the error is propagated to the TUI properly
