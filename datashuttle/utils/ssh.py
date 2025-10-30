@@ -18,7 +18,7 @@ from datashuttle.utils import utils
 # -----------------------------------------------------------------------------
 # Setup SSH - API Wrappers
 # -----------------------------------------------------------------------------
-# These functions wrap core SSH setup functions (above) for the API. See
+# These functions wrap core SSH setup functions for the API. See
 # tui/screens/setup_ssh for the TUI equivalents.
 
 
@@ -84,9 +84,8 @@ def setup_ssh_key_api(
 ) -> str:
     """Set up an SSH private / public key pair with central server.
 
-    First, a private key is generated.
-    Next a connection requiring input password made, and the public part of the key
-    added to ~/.ssh/authorized_keys.
+    First, a private key is generated. Next a connection requiring input
+    password made, and the public part of the key added to ~/.ssh/authorized_keys.
     The private key is returned so it can be stored in the Rclone config.
 
     Parameters
