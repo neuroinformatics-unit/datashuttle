@@ -100,13 +100,29 @@ jobs:
       - name: Install pass on Linux
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get update && sudo apt-get install -y pass gnupg
-          export GNUPGHOME=$(mktemp -d)
-          gpg --batch --passphrase '' --quick-gen-key "CI Key" default default never
-          pass init "CI Key"
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y pass gnupg git
+
+          # Create a dedicated GPG home for this job
+          export GNUPGHOME="$(mktemp -d)"
+          echo "GNUPGHOME=$GNUPGHOME" >> "$GITHUB_ENV"   # <-- make it available to later steps
+
+          # Generate a non-interactive key (no passphrase), no expiry
+          gpg --batch --yes --pinentry-mode loopback --passphrase '' \
+              --quick-gen-key "CI Key <ci@example.invalid>" default default 0
+
+          # Initialize pass with the key fingerprint (more robust than UID)
+          FPR="$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr:/ {print $10; exit}')"
+          pass init "$FPR"
+
+          # (Optional) smoke test: ensure pass can encrypt
+          printf '%s\n' "$(openssl rand -base64 16)" | pass insert -m -f ci/smoke-test
 
       - name: RClone Encryption
         run: |
+          set -euo pipefail
+          # GNUPGHOME is available here because we wrote it to $GITHUB_ENV
           pytest -k test_rclone_encryption
 
 
