@@ -503,6 +503,7 @@ def search_with_tags(
 
         if format_type is not None:
             assert tag is not None
+
             search_str = format_and_validate_datetime_search_str(
                 search_str, format_type, tag
             )
@@ -523,7 +524,7 @@ def search_with_tags(
 
             # Filter results by datetime range
             start_timepoint, end_timepoint = (
-                strip_start_end_date_from_datetime_tag(name, format_type, tag)
+                validate_and_extract_start_end_dates(name, format_type, tag)
             )
             matching_names = filter_names_by_datetime_range(
                 matching_names, format_type, start_timepoint, end_timepoint
@@ -586,9 +587,19 @@ def filter_names_by_datetime_range(
         candidate_basename = (
             candidate if isinstance(candidate, str) else candidate.name
         )
-        value = get_values_from_bids_formatted_name(
-            [candidate_basename], format_type
-        )[0]
+
+        # If the datetime has a key, use that, otherwise
+        # we assume it is in the position of the prefix (e.g. sub-<date>)
+        if format_type in candidate_basename:
+            value = get_values_from_bids_formatted_name(
+                [candidate_basename], format_type
+            )[0]
+
+        else:
+            prefix = candidate_basename[:3]
+            value = get_values_from_bids_formatted_name(
+                [candidate_basename], prefix
+            )[0]
 
         try:
             candidate_timepoint = datetime_object_from_string(
@@ -677,7 +688,7 @@ def find_datetime_in_name(
     return match.groups() if match else None
 
 
-def strip_start_end_date_from_datetime_tag(
+def validate_and_extract_start_end_dates(
     search_str: str, format_type: str, tag: str
 ) -> tuple[datetime, datetime]:
     """Extract and validate start and end datetime values from a search string.
@@ -764,12 +775,17 @@ def format_and_validate_datetime_search_str(
 
     """
     # Validate the datetime range format
-    strip_start_end_date_from_datetime_tag(search_str, format_type, tag)
+    validate_and_extract_start_end_dates(search_str, format_type, tag)
 
     # Replace datetime range with wildcard pattern
     full_tag_regex = get_datetime_to_search_regexp(format_type, tag)
 
-    full_search_str = re.sub(full_tag_regex, f"{format_type}-*", search_str)
+    if re.search(rf"\b(?:sub|ses)-{full_tag_regex}", search_str):
+        replace_tag_with = "*"
+    else:
+        replace_tag_with = f"{format_type}-*"
+
+    full_search_str = re.sub(full_tag_regex, replace_tag_with, search_str)
 
     already_has_wildcard_at_end = re.search(
         rf"{full_tag_regex}(?=\*)", search_str
