@@ -169,10 +169,6 @@ class Configs(UserDict):
         if config_dict["connection_method"] is None:
             config_dict["connection_method"] = "local_only"
 
-    def save_rclone_password_state(self):
-        with open(self.rclone_password_state_file_path, "w") as file:
-            yaml.dump(self.rclone_has_password, file)
-
     # -------------------------------------------------------------------------
     # Utils
     # -------------------------------------------------------------------------
