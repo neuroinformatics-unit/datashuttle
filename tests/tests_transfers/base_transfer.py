@@ -1,6 +1,7 @@
 """ """
 
 import copy
+import json
 import shutil
 from pathlib import Path
 
@@ -200,7 +201,7 @@ class BaseTransfer(BaseTest):
 
         # Search the paths that were transferred and tidy them up,
         # then check against the paths that were expected to be transferred.
-        transferred_files = test_utils.recursive_search_central(project)
+        transferred_files = self.recursive_search_central(project)
         paths_to_transferred_files = self.remove_path_before_rawdata(
             transferred_files
         )
@@ -241,8 +242,9 @@ class BaseTransfer(BaseTest):
 
         # Clean up, removing the temp directories and
         # resetting the project paths.
-        rclone.call_rclone(
-            f"purge {project.cfg.get_rclone_config_name()}:{tmp_central_path.as_posix()} {rclone.get_config_arg(project.cfg)}"
+        rclone.call_rclone_for_central_connection(
+            project.cfg,
+            f"purge {project.cfg.rclone.get_rclone_config_name()}:{tmp_central_path.as_posix()} {rclone.get_config_arg(project.cfg)}",
         )
 
         shutil.rmtree(tmp_local_path)
@@ -256,3 +258,30 @@ class BaseTransfer(BaseTest):
         local_path location in the test environment.
         """
         project.get_logging_path().mkdir(parents=True, exist_ok=True)
+
+    @staticmethod
+    def recursive_search_central(project):
+        """
+        A convenience function to search project for files on remote folders
+        using rclone's recursive search.
+        """
+        all_filenames: list[str] = []
+
+        path_ = (project.cfg["central_path"] / "rawdata").as_posix()
+
+        # -R flag searches recursively
+        output = rclone.call_rclone_for_central_connection(
+            project.cfg,
+            f"lsjson -R {project.cfg.rclone.get_rclone_config_name()}:{path_} {rclone.get_config_arg(project.cfg)}",
+            pipe_std=True,
+        )
+        all_files_or_folders = json.loads(output.stdout)
+
+        for file_or_folder in all_files_or_folders:
+            is_dir = file_or_folder.get("IsDir", False)
+
+            if not is_dir:
+                file_path = file_or_folder["Path"]
+                all_filenames.append(f"{path_}/{file_path}")
+
+        return all_filenames

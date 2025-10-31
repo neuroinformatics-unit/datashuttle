@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
     from datashuttle.utils.custom_types import TopLevelFolder
 
+import json
 import os
 import platform
 import shlex
@@ -158,7 +159,7 @@ def await_call_rclone_with_popen_for_central_connection_raise_on_fail(
     lambda_func = lambda: process.communicate()
 
     stdout, stderr = run_function_that_requires_encrypted_rclone_config_access(
-        cfg, lambda_func
+        cfg, lambda_func, check_config_exists=False
     )
 
     if process.returncode != 0:
@@ -171,7 +172,7 @@ def await_call_rclone_with_popen_for_central_connection_raise_on_fail(
 
 
 def run_function_that_requires_encrypted_rclone_config_access(
-    cfg, lambda_func
+    cfg, lambda_func, check_config_exists: bool = True
 ) -> Any:
     """Run command that requires possibly encrypted Rclone config file.
 
@@ -185,7 +186,7 @@ def run_function_that_requires_encrypted_rclone_config_access(
         cfg.rclone.get_rclone_central_connection_config_filepath()
     )
 
-    if not rclone_config_filepath.is_file():
+    if check_config_exists and not rclone_config_filepath.is_file():
         if version.parse(get_datashuttle_version()) <= version.parse("0.7.1"):
             raise RuntimeError(
                 f"The way RClone configs are managed has changed since version v0.7.1\n"
@@ -368,6 +369,71 @@ def setup_rclone_config_for_gdrive(
     process = call_rclone_with_popen(command)
 
     return process
+
+
+def preliminary_setup_gdrive_config_for_without_browser(
+    cfg: Configs,
+    gdrive_client_secret: str | None,
+    rclone_config_name: str,
+    log: bool = True,
+) -> str:
+    """Prepare rclone configuration for Google Drive without using a browser.
+
+    This function prepares the rclone configuration for Google Drive without using a browser.
+
+    The `config_is_local=false` flag tells rclone that the configuration process is being run
+    on a headless machine which does not have access to a browser.
+
+    The `--non-interactive` flag is used to control rclone's behaviour while running it through
+    external applications. An `rclone config create` command would assume default values for config
+    variables in an interactive mode. If the `--non-interactive` flag is provided and rclone needs
+    the user to input some detail, a JSON blob will be returned with the question in it. For this
+    particular setup, rclone outputs a command for user to run on a machine with a browser.
+
+    This function runs `rclone config create` with the user credentials and returns the rclone's output info.
+    This output info is presented to the user while asking for a `config_token`.
+
+    Next, the user will run rclone's given command, authenticate with google drive and input the
+    config token given by rclone for datashuttle to proceed with the setup.
+    """
+    client_id_key_value = (
+        f"client_id {cfg['gdrive_client_id']} "
+        if cfg["gdrive_client_id"]
+        else " "
+    )
+    client_secret_key_value = (
+        f"client_secret {gdrive_client_secret} "
+        if gdrive_client_secret
+        else ""
+    )
+
+    cfg.rclone.delete_existing_rclone_config_file()
+
+    output = call_rclone(
+        f"config create "
+        f"{get_config_arg(cfg)} "
+        f"{rclone_config_name} "
+        f"drive "
+        f"{client_id_key_value}"
+        f"{client_secret_key_value}"
+        f"scope drive "
+        f"root_folder_id {cfg['gdrive_root_folder_id']} "
+        f"config_is_local=false "
+        f"--non-interactive",
+        pipe_std=True,
+    )
+
+    try:
+        # Extracting rclone's message from the json
+        output_json = json.loads(output.stdout)
+        message = output_json["Option"]["Help"]
+    except:
+        assert False, f"{output.stderr}"
+
+    if log:
+        utils.log(message)
+
+    return message
 
 
 def setup_rclone_config_for_aws(

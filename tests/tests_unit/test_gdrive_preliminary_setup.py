@@ -4,7 +4,7 @@ from typing import Dict
 
 import pytest
 
-from datashuttle.utils import gdrive
+from datashuttle.utils import rclone
 
 
 class TestGdrivePreliminarySetup:
@@ -16,14 +16,14 @@ class TestGdrivePreliminarySetup:
     def test_preliminary_setup_for_gdrive(
         self, client_id, root_folder_id, client_secret
     ):
-        """Test the outputs of `preliminary_for_setup_without_browser` and check
+        """Test the outputs of `preliminary_setup_gdrive_config_for_without_browser` and check
         that they contain the correct credentials in the encoded format.
         """
         mock_configs = {
             "gdrive_client_id": client_id,
             "gdrive_root_folder_id": root_folder_id,
         }
-        output = gdrive.preliminary_for_setup_without_browser(
+        output = rclone.preliminary_setup_gdrive_config_for_without_browser(
             mock_configs, client_secret, "test_gdrive_preliminary"
         )
 

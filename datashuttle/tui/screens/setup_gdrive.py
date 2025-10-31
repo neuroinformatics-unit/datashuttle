@@ -21,6 +21,8 @@ from textual.widgets import (
     Static,
 )
 
+from datashuttle.utils import rclone_encryption
+
 
 class SetupGdriveScreen(ModalScreen):
     """Dialog window that sets up a Google Drive connection.
@@ -294,6 +296,7 @@ class SetupGdriveScreen(ModalScreen):
                 # This function is called from different screens that
                 # contain different widgets. Therefore, remove all possible
                 # widgets that may / may not be present on the previous screen.
+                self.show_encryption_screen()
                 for id in [
                     "#setup_gdrive_cancel_button",
                     "#setup_gdrive_generic_input_box",
@@ -335,6 +338,18 @@ class SetupGdriveScreen(ModalScreen):
 
     # Set encryption on RClone config
     # ----------------------------------------------------------------------------------
+
+    def show_encryption_screen(self):
+        """Show the screen asking the user whether to encrypt the Rclone password."""
+        message = f"{rclone_encryption.get_explanation_message(self.interface.project.cfg)}"
+        self.update_message_box_message(message)
+
+        yes_button = Button("Yes", id="setup_gdrive_set_encryption_yes_button")
+        no_button = Button("No", id="setup_gdrive_set_encryption_no_button")
+
+        self.query_one("#setup_gdrive_buttons_horizontal").mount(
+            yes_button, no_button
+        )
 
     def set_rclone_encryption(self):
         """Try and encrypt the Rclone config file and inform the user of success / failure."""

@@ -242,7 +242,7 @@ def run_rclone_config_encrypt(cfg: Configs) -> None:
 
 
 def remove_rclone_encryption(cfg: Configs) -> None:
-    """Remove encryption from an Rclone config file.
+    """Remove encryption from a Rclone config file.
 
     Set the credentials one last time to remove encryption from
     the RClone config file. Once removed, clean up the password
@@ -322,7 +322,7 @@ def get_windows_password_filepath(
 def get_explanation_message(
     cfg: Configs,
 ) -> str:
-    """Explaining rclone's default credential storage and OS-specific encryption options.
+    """Explaining Rclone's default credential storage and OS-specific encryption options.
 
     Displayed in both the Python API and the TUI.
     """

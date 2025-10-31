@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 from datashuttle import DataShuttle
 from datashuttle.configs import load_configs
-from datashuttle.utils import aws, gdrive, rclone, ssh, utils
+from datashuttle.utils import aws, rclone, ssh, utils
 
 
 class Interface:
@@ -568,11 +568,13 @@ class Interface:
     ) -> InterfaceOutput:
         """Get the rclone message for Google Drive setup without a browser."""
         try:
-            output = gdrive.preliminary_for_setup_without_browser(
-                self.project.cfg,
-                gdrive_client_secret,
-                self.project.cfg.rclone.get_rclone_config_name("gdrive"),
-                log=False,
+            output = (
+                rclone.preliminary_setup_gdrive_config_for_without_browser(
+                    self.project.cfg,
+                    gdrive_client_secret,
+                    self.project.cfg.rclone.get_rclone_config_name("gdrive"),
+                    log=False,
+                )
             )
             return True, output
         except BaseException as e:
