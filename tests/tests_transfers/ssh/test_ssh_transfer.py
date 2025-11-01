@@ -3,6 +3,7 @@ import platform
 
 import pytest
 
+from ... import test_utils
 from . import ssh_test_utils
 from .base_ssh import BaseSSHTransfer
 
@@ -156,4 +157,12 @@ class TestSSHTransfer(BaseSSHTransfer):
 
         self.run_and_check_transfers(
             project, sub_names, ses_names, datatype, expected_transferred_paths
+        )
+
+    def test_rclone_config_file_encrypted(self, ssh_setup):
+        """Quick confidence check the set up rclone config is indeed ecrypted."""
+        pathtable, project = ssh_setup
+
+        test_utils.check_rclone_file_is_encrypted(
+            project.cfg.rclone.get_rclone_central_connection_config_filepath()
         )

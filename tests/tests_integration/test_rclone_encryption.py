@@ -2,6 +2,7 @@ import os
 
 from datashuttle.utils import rclone_encryption
 
+from .. import test_utils
 from ..base import BaseTest
 from ..tests_transfers.ssh import ssh_test_utils
 
@@ -42,10 +43,7 @@ class TestRcloneEncryption(BaseTest):
 
         assert "RCLONE_PASSWORD_COMMAND" not in os.environ
 
-        with open(rclone_config_path, "r", encoding="utf-8") as f:
-            first_line = f.readline().strip()
-
-        assert first_line == "# Encrypted rclone configuration File"
+        test_utils.check_rclone_file_is_encrypted(rclone_config_path)
 
         rclone_encryption.remove_rclone_encryption(project.cfg)
 

@@ -432,6 +432,13 @@ def check_config_file(config_path, *kwargs):
             assert value == config_yaml[name], f"{name}"
 
 
+def check_rclone_file_is_encrypted(rclone_config_path):
+    with open(rclone_config_path, "r", encoding="utf-8") as file:
+        first_line = file.readline().strip()
+
+    assert first_line == "# Encrypted rclone configuration File"
+
+
 # -----------------------------------------------------------------------------
 # Test Helpers
 # -----------------------------------------------------------------------------

@@ -117,10 +117,16 @@ class TestTuiSetupGdrive(TuiBase):
                 )
 
                 assert (
-                    "The password was successfully set. Setup complete!"
+                    "The encryption was successful. Setup complete!"
                     in pilot.app.screen.query_one(
                         "#gdrive_setup_messagebox_message"
                     ).renderable
+                )
+
+                project = pilot.app.screen.interface.project
+
+                test_utils.check_rclone_file_is_encrypted(
+                    project.cfg.rclone.get_rclone_central_connection_config_filepath()
                 )
 
             else:

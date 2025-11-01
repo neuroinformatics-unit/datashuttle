@@ -357,7 +357,7 @@ class SetupGdriveScreen(ModalScreen):
 
         if success:
             self.set_finish_page(
-                "The password was successfully set. Setup complete!"
+                "The encryption was successful. Setup complete!"
             )
         else:
             message = f"The password set up failed. Exception: {output}"
