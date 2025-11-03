@@ -1,0 +1,54 @@
+# Secure Tests Workflow
+#
+# Runs the Google Drive and AWS transfer tests that need secrets.
+# GitHub doesn’t pass secrets to pull requests from forks, so this
+# workflow exists to let maintainers explicitly approve those runs.
+
+name: Secure tests (label gated)
+
+on:
+  pull_request_target:
+    types: [labeled]
+
+jobs:
+  run-secure-tests:
+    if: github.event.label.name == 'ok-to-run-gdrive-aws'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout PR merge ref
+        uses: actions/checkout@v4
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
+
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: 3.12
+          channels: conda-forge
+          activate-environment: datashuttle-test
+
+      - name: Install deps
+        run: |
+          conda activate datashuttle-test
+          conda install -c conda-forge -y rclone
+          python -m pip install --upgrade pip
+          pip install .[dev]
+
+      - name: Google Drive tests
+        env:
+          GDRIVE_CLIENT_ID: ${{ secrets.GDRIVE_CLIENT_ID }}
+          GDRIVE_CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
+          GDRIVE_ROOT_FOLDER_ID: ${{ secrets.GDRIVE_ROOT_FOLDER_ID }}
+          GDRIVE_CONFIG_TOKEN: ${{ secrets.GDRIVE_CONFIG_TOKEN }}
+        run: pytest tests/tests_transfers/gdrive
+
+      - name: AWS tests
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
+        run: pytest tests/tests_transfers/aws

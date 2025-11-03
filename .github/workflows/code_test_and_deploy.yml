@@ -7,7 +7,7 @@ on:
     tags:
       - 'v*'
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+
   schedule:
     # Cron runs on the 1st and 15th of every month.
     # This will only run on main by default.
@@ -20,6 +20,7 @@ jobs:
       - uses: neuroinformatics-unit/actions/lint@v2
 
   test:
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     needs: [linting]
     name: ${{ matrix.os }} py${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
@@ -74,22 +75,29 @@ jobs:
           sudo service mysql stop  # free up port 3306 for ssh tests
           pytest tests/tests_transfers/ssh
 
-      - name: Test Google Drive
+      - name: Test Google Drive and AWS
+        # AWS and GDrive tests require secrets, which are empty string by default on forked repositories.
+        # The below flag ensures that these tests do not run on forked repositories. To run, the
+        # ok-to-run-gdrive-aws label must be manually added, after checking no malicious code
+        # that extracts the secrets is found on the PR.
+        if: >
+          github.event_name != 'pull_request' ||
+          github.event.pull_request.head.repo.full_name == github.repository ||
+          contains(
+            join(fromJSON('["' + join(github.event.pull_request.labels.*.name, '","') + '"]')),
+            'ok-to-run-gdrive-aws'
+          )
         env:
           GDRIVE_CLIENT_ID: ${{ secrets.GDRIVE_CLIENT_ID }}
           GDRIVE_CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
           GDRIVE_ROOT_FOLDER_ID: ${{ secrets.GDRIVE_ROOT_FOLDER_ID }}
           GDRIVE_CONFIG_TOKEN: ${{ secrets.GDRIVE_CONFIG_TOKEN }}
-        run: |
-          pytest tests/tests_transfers/gdrive
-
-      - name: Test AWS
-        env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
         run: |
+          pytest tests/tests_transfers/gdrive
           pytest tests/tests_transfers/aws
 
       - name: All Other Tests
