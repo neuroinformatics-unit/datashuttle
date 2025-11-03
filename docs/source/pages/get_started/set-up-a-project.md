@@ -551,6 +551,8 @@ Running [](setup_aws_connection()) will require entering your
 (password-protection)=
 ### Password protecting your connection credentials
 
++ Add links to this page in the TUI / Api
+
 Datashuttle uses the software `RClone` for all data transfers by default.
 RClone stores the credentials for connection by default in an unencrypted configuration file.
 This includes:
