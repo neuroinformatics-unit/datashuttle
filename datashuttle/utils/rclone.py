@@ -12,6 +12,7 @@ import platform
 import shlex
 import subprocess
 import tempfile
+from pathlib import Path
 from subprocess import CompletedProcess
 
 from datashuttle.configs import canonical_configs
@@ -637,7 +638,9 @@ def reformat_rclone_copy_output(
 
         if line_json["level"] in ["error", "critical"]:
             if "object" in line_json:
-                full_filepath = f"{top_level_folder}/{line_json['object']}"
+                full_filepath = Path(
+                    f"{top_level_folder}/{line_json['object']}"
+                ).as_posix()
                 errors["file_names"].append(full_filepath)
                 errors["messages"].append(
                     f"The file {full_filepath} failed to transfer. Reason: {line_json['msg']}"
