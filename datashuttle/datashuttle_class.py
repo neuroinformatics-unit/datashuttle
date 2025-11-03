@@ -28,7 +28,6 @@ if TYPE_CHECKING:
         TopLevelFolder,
     )
 
-import paramiko
 import yaml
 
 from datashuttle.configs import (
@@ -820,46 +819,26 @@ class DataShuttle:
             "setup-ssh-connection-to-central-server", local_vars=locals()
         )
 
-        verified = ssh.verify_ssh_central_host(
+        verified = ssh.verify_ssh_central_host_api(
             self.cfg["central_host_id"],
             self.cfg.hostkeys_path,
             log=True,
         )
 
         if verified:
-            ssh.setup_ssh_key(self.cfg, log=True)
-            self._setup_rclone_central_ssh_config(log=True)
+            private_key_str = ssh.setup_ssh_key_api(self.cfg, log=True)
+
+            self._setup_rclone_central_ssh_config(private_key_str, log=True)
 
             rclone.check_successful_connection_and_raise_error_on_fail(
                 self.cfg
             )
 
+            utils.log_and_message(
+                "SSH key pair setup successfully. SSH key saved to the RClone config file."
+            )
+
         ds_logger.close_log_filehandler()
-
-    @requires_ssh_configs
-    @check_is_not_local_project
-    def write_public_key(self, filepath: str) -> None:
-        """Save the public SSH key to a specified filepath.
-
-        By default, only the SSH private key is stored in the
-        datashuttle configs folder. Use this function to save
-        the public key.
-
-        Parameters
-        ----------
-        filepath
-            Full filepath (including filename) to write the
-            public key to.
-
-        """
-        key: paramiko.RSAKey
-        key = paramiko.RSAKey.from_private_key_file(
-            self.cfg.ssh_key_path.as_posix()
-        )
-
-        with open(filepath, "w") as public:
-            public.write(key.get_base64())
-        public.close()
 
     # -------------------------------------------------------------------------
     # Google Drive
@@ -1588,11 +1567,13 @@ class DataShuttle:
         """
         folders.create_folders(self.cfg.project_metadata_path, log=False)
 
-    def _setup_rclone_central_ssh_config(self, log: bool) -> None:
+    def _setup_rclone_central_ssh_config(
+        self, private_key_str: str, log: bool
+    ) -> None:
         rclone.setup_rclone_config_for_ssh(
             self.cfg,
             self.cfg.get_rclone_config_name("ssh"),
-            self.cfg.ssh_key_path,
+            private_key_str,
             log=log,
         )
 
