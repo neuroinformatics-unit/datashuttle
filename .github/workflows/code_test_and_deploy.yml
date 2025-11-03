@@ -7,6 +7,7 @@ on:
     tags:
       - 'v*'
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
 
   schedule:
     # Cron runs on the 1st and 15th of every month.
@@ -20,7 +21,6 @@ jobs:
       - uses: neuroinformatics-unit/actions/lint@v2
 
   test:
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     needs: [linting]
     name: ${{ matrix.os }} py${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}

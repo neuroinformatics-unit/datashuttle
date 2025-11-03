@@ -17,23 +17,38 @@ jobs:
     permissions:
       contents: read
 
+    strategy:
+      fail-fast: true
+      matrix:
+        os: ${{ fromJson(github.event_name == 'schedule'
+          && '["ubuntu-latest","windows-latest","macos-14", "macos-13"]'
+          || '["ubuntu-latest","windows-latest","macos-latest"]') }}
+        python-version: ${{ fromJson(github.event_name == 'schedule'
+          && '["3.9","3.10","3.11","3.12","3.13"]'
+          || '["3.9","3.13"]') }}
+
     steps:
       - name: Checkout PR merge ref
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: refs/pull/${{ github.event.pull_request.number }}/merge
 
+      - uses: actions/checkout@v5
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v3
         with:
-          python-version: 3.12
+          python-version: ${{ matrix.python-version }}
+          auto-update-conda: true
           channels: conda-forge
-          activate-environment: datashuttle-test
+          activate-environment: "datashuttle-test"
 
-      - name: Install deps
+      - name: Install rclone
         run: |
           conda activate datashuttle-test
-          conda install -c conda-forge -y rclone
+          conda install -c conda-forge rclone
+
+      - name: Install datashuttle from repo
+        run: |
           python -m pip install --upgrade pip
           pip install .[dev]
 
