@@ -780,7 +780,7 @@ class TestFileTransfer(BaseTest):
 
         log = test_utils.read_log_file(project.cfg.logging_path)
 
-        assert errors["file_names"][0] in log
+        assert str(Path(errors["file_names"][0])) in log
         assert "Errors were detected!" in log
         assert error_message in log
 
