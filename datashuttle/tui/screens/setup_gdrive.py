@@ -292,7 +292,6 @@ class SetupGdriveScreen(ModalScreen):
 
             success, output = worker.result
             if success:
-                self.show_password_screen()
                 # This function is called from different screens that
                 # contain different widgets. Therefore, remove all possible
                 # widgets that may / may not be present on the previous screen.
