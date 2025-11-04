@@ -24,6 +24,8 @@ jobs:
     needs: [linting]
     name: ${{ matrix.os }} py${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
+    env:
+      DATASHUTTLE_GDRIVE_ROOT_FOLDER_ID: test-root-folder-id
 
     defaults:
       run:
