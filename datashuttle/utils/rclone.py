@@ -115,9 +115,12 @@ def call_rclone_through_script_for_central_connection(
             shell=False,
         )
 
-        output = run_function_that_requires_encrypted_rclone_config_access(
-            cfg, lambda_func
-        )
+        if cfg["connection_method"] in ["ssh", "gdrive", "aws"]:
+            output = run_function_that_requires_encrypted_rclone_config_access(
+                cfg, lambda_func
+            )
+        else:
+            output = lambda_func()
 
         if output.returncode != 0:
             prompt_rclone_download_if_does_not_exist()
@@ -662,8 +665,14 @@ def transfer_data(
             f'{central_filepath}" "{local_filepath}"  {extra_arguments} {get_config_arg(cfg)} --ask-password=false',  # TODO: handle the error
         )
 
-    if cfg.rclone.get_rclone_config_encryption_state():
+    if (
+        cfg["connection_method"] in ["ssh", "aws", "gdrive"]
+        and cfg.rclone.get_rclone_config_encryption_state()
+    ):  # TODO: this is a quick and dirty fix but this MUST be handled better
         rclone_encryption.remove_credentials_as_password_command()
+
+    # 1) now 'for central connection' terminology is confused, one is for all and the other checks internally if it is aws or not. This is okay but must be consistent
+    # 2) make a utils function to do the connection method check, this is still kind of weird / error prone
 
     return output
 
