@@ -89,8 +89,8 @@ class CreateFoldersSettingsScreen(ModalScreen):
         ses_on = not sub_on
 
         explanation = r"""
-        A 'Template' can be set check subject or session names are
-        formatted in a specific way.
+        You can define a custom “Template” to ensure subject or
+        session names follow a particular pattern or format.
 
         For example:
             sub-\d\d_id-.?.?.?_.*

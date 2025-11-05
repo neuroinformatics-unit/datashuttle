@@ -464,7 +464,7 @@ class TestTuiWidgets(TuiBase):
             )
 
             assert (
-                " A 'Template' can be set check subject or session names"
+                "You can define a custom “Template” to ensure"
                 in pilot.app.screen.query_one(
                     "#template_message_label"
                 ).renderable

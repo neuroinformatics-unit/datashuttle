@@ -5,7 +5,7 @@
 Validation in ``datashuttle`` is by default restricted to the
 NeuroBlueprint specification. Any subject or session names
 that are not formatted correctly (e.g. not starting with
-"sub-" or "ses-" will be flagged.
+"sub-" or "ses-" will be flagged).
 
 However, it is also possible to add custom templates to validate against
 by defining template names using 'regular expressions'.
