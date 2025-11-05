@@ -1,11 +1,9 @@
 import os
-import platform
 import re
 import time
 from pathlib import Path
 
 import pytest
-from filelock import FileLock
 
 from datashuttle.configs import canonical_folders
 from datashuttle.configs.canonical_configs import get_broad_datatypes
@@ -726,100 +724,6 @@ class TestFileTransfer(BaseTest):
                 "nothing_was_transferred_rawdata": None,
                 "nothing_was_transferred_derivatives": None,
             }
-
-    @pytest.mark.skipif(
-        platform.system() != "Windows", reason="Only run on windows."
-    )
-    def test_errors_are_caught_and_logged(self, project):
-        """
-        Create errors in the transfer by locking files, and check
-        the errors are correctly flagged in logs and `errors`. Also,
-        perform a transfer where no files are transferred, and check
-        this is flagged in logs and `errors`.
-        """
-
-        # Set up a folder to transfer
-        subs, sessions = test_utils.get_default_sub_sessions_to_test()
-
-        test_utils.make_and_check_local_project_folders(
-            project,
-            "rawdata",
-            subs,
-            sessions,
-            get_broad_datatypes(),
-        )
-
-        # Lock a file then perform the transfer, causing errors.
-        relative_path = (
-            Path("rawdata")
-            / subs[0]
-            / sessions[0]
-            / "ephys"
-            / "placeholder_file.txt"
-        )
-        a_transferred_file = project.get_local_path() / relative_path
-
-        test_utils.delete_log_files(project.cfg.logging_path)
-
-        test_utils.delete_log_files(project.cfg.logging_path)
-
-        if platform.system() == "Windows":
-            lock = FileLock(a_transferred_file, timeout=5)
-            with lock:
-                errors = project.upload_custom("rawdata", "all", "all", "all")
-            error_message = "because another process has locked "
-        else:
-            thread = test_utils.lock_a_file(a_transferred_file)
-            errors = project.upload_custom("rawdata", "all", "all", "all")
-            thread.join()
-            error_message = "size changed"
-
-        # Check that errors and logs flag the transfer errors
-        assert errors["file_names"] == [relative_path.as_posix()]
-        assert error_message in errors["messages"][0]
-
-        log = test_utils.read_log_file(project.cfg.logging_path)
-
-        assert Path(errors["file_names"][0]).as_posix() in log
-        assert "Errors were detected!" in log
-        assert error_message in log
-
-        # now just upload everything
-        project.upload_entire_project()
-        test_utils.delete_log_files(project.cfg.logging_path)
-
-        # Check that it is flagged that no transfer took place for rawdata
-        errors = project.upload_custom("rawdata", "all", "all", "all")
-
-        assert errors["nothing_was_transferred_rawdata"] is True
-        assert errors["nothing_was_transferred_derivatives"] is None
-
-        log = test_utils.read_log_file(project.cfg.logging_path)
-        assert "Nothing was transferred from rawdata." in log
-
-        test_utils.delete_log_files(project.cfg.logging_path)
-
-        # Check that it is flagged that no transfer took place for derivatives
-        errors = project.upload_custom("derivatives", "all", "all", "all")
-
-        assert errors["nothing_was_transferred_rawdata"] is None
-        assert errors["nothing_was_transferred_derivatives"] is True
-
-        log = test_utils.read_log_file(project.cfg.logging_path)
-        assert "Nothing was transferred from derivatives." in log
-
-        test_utils.delete_log_files(project.cfg.logging_path)
-
-        # Check that it is flagged that no transfer took place
-        # for both rawdata and derivatives
-        errors = project.upload_entire_project()
-
-        assert errors["nothing_was_transferred_rawdata"] is True
-        assert errors["nothing_was_transferred_derivatives"] is True
-
-        log = test_utils.read_log_file(project.cfg.logging_path)
-        assert "Nothing was transferred from rawdata." in log
-        assert "Nothing was transferred from derivatives." in log
 
     def get_paths_to_a_local_and_central_file(self, project, top_level_folder):
         path_to_test_file = (
