@@ -26,8 +26,9 @@ class TestAWSSuggestNext(BaseTransfer, TuiBase):
 
         yield project
 
-        rclone.call_rclone(
-            f"purge central_{project.project_name}_aws:{project.cfg['central_path'].parent} {rclone.get_config_arg(project.cfg)}"
+        rclone.call_rclone_for_central_connection(
+            project.cfg,
+            f"purge central_{project.project_name}_aws:{project.cfg['central_path'].parent} {rclone.get_config_arg(project.cfg)}",
         )
 
     @pytest.mark.asyncio
