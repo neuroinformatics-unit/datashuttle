@@ -94,7 +94,7 @@ jobs:
 
       - name: All Other Tests
         run: |
-          pytest -k test_transfers
+          pytest . -k test_logging
 # --ignore=tests/tests_transfers/ssh --ignore=tests/tests_transfers/gdrive --ignore=tests/tests_transfers/aws
 
 
