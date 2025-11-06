@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import traceback
 from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
 
 from textual import work
 from textual.containers import Container, Horizontal, Vertical
+from textual.css.query import NoMatches
 from textual.screen import ModalScreen
 from textual.widgets import (
     Button,
@@ -19,13 +21,15 @@ from textual.widgets import (
     Static,
 )
 
+from datashuttle.utils import rclone_encryption
+
 
 class SetupGdriveScreen(ModalScreen):
     """Dialog window that sets up a Google Drive connection.
 
     If the config contains a "gdrive_client_id", the user is prompted
     to enter a client secret. If the user has access to a browser, a Google Drive
-    authentication page will open. Otherwise, the user is asked to run an rclone command
+    authentication page will open. Otherwise, the user is asked to run a rclone command
     and input a config token.
     """
 
@@ -34,7 +38,7 @@ class SetupGdriveScreen(ModalScreen):
         super(SetupGdriveScreen, self).__init__()
 
         self.interface = interface
-        self.stage: int = 0
+        self.no_browser_stage: None | str = "show_command_to_generate_code"
         self.setup_worker: Worker | None = None
         self.is_browser_available: bool = True
         self.gdrive_client_secret: Optional[str] = None
@@ -44,7 +48,9 @@ class SetupGdriveScreen(ModalScreen):
             id="setup_gdrive_generic_input_box",
             placeholder="Enter value here",
         )
-        self.enter_button = Button("Enter", id="setup_gdrive_enter_button")
+        self.enter_button = Button(
+            "Enter", id="setup_gdrive_no_browser_enter_button"
+        )
 
     def compose(self) -> ComposeResult:
         """Add widgets to the SetupGdriveScreen."""
@@ -69,20 +75,24 @@ class SetupGdriveScreen(ModalScreen):
 
         This dialog window operates using 6 buttons:
 
-        1) "ok" button : Starts the connection setup process.
+        1) `setup_gdrive_ok_button` : Starts the connection setup process.
 
-        2) "yes" button : A "yes" answer to the availability of browser question. On click,
-            if "gdrive_client_id" is present in configs, the user is asked for client secret
+        2) `setup_gdrive_has_browser_yes_button`  : A "yes" answer to the availability of browser question.
+            On click, if "gdrive_client_id" is present in configs, the user is asked for client secret
             and proceeds to a browser authentication.
 
-        3) "no" button : A "no" answer to the availability of browser question. On click,
+        3) `setup_gdrive_no_button`  : A "no" answer to the availability of browser question. On click,
             prompts the user to enter a config token by running an rclone command.
 
-        4) "enter" button : To enter the client secret or config token.
+        4) `setup_gdrive_no_browser_enter_button` : To enter the client secret or config token.
 
-        5) "finish" button : To finish the setup.
+        5) `setup_gdrive_set_encryption_yes_button` : To set a password on the RClone config file
 
-        6) "cancel" button : To cancel the setup at any step before completion.
+        6) `setup_gdrive_set_encryption_no_button` : To skip setting a password on the RClone config file
+
+        7) `setup_gdrive_finish_button` button : To finish the setup.
+
+        8) "`setup_gdrive_cancel_button` : To cancel the setup at any step before completion.
         """
         if (
             event.button.id == "setup_gdrive_cancel_button"
@@ -90,7 +100,7 @@ class SetupGdriveScreen(ModalScreen):
         ):
             # see setup_gdrive_connection_and_update_ui()
             if self.setup_worker and self.setup_worker.is_running:
-                self.setup_worker.cancel()  # fix
+                self.setup_worker.cancel()
                 self.interface.terminate_gdrive_setup()
             self.dismiss()
 
@@ -102,28 +112,30 @@ class SetupGdriveScreen(ModalScreen):
             else:
                 self.ask_user_for_browser()
 
-        elif event.button.id == "setup_gdrive_yes_button":
-            self.remove_yes_no_buttons()
+        elif event.button.id == "setup_gdrive_has_browser_yes_button":
+            self.query_one("#setup_gdrive_has_browser_yes_button").remove()
+            self.query_one("#setup_gdrive_no_button").remove()
             self.open_browser_and_setup_gdrive_connection(
                 self.gdrive_client_secret
             )
 
         elif event.button.id == "setup_gdrive_no_button":
             self.is_browser_available = False
-            self.remove_yes_no_buttons()
+            self.query_one("#setup_gdrive_has_browser_yes_button").remove()
+            self.query_one("#setup_gdrive_no_button").remove()
             self.prompt_user_for_config_token()
 
-        elif event.button.id == "setup_gdrive_enter_button":
+        elif event.button.id == "setup_gdrive_no_browser_enter_button":
             if (
                 self.interface.project.cfg["gdrive_client_id"]
-                and self.stage == 0
+                and self.no_browser_stage == "show_command_to_generate_code"
             ):
                 self.gdrive_client_secret = (
                     self.input_box.value.strip()
                     if self.input_box.value.strip()
                     else None
                 )
-                self.stage += 1
+                self.no_browser_stage = "setup_with_code"
                 self.ask_user_for_browser()
             else:
                 config_token = (
@@ -134,6 +146,15 @@ class SetupGdriveScreen(ModalScreen):
                 self.setup_gdrive_connection_using_config_token(
                     self.gdrive_client_secret, config_token
                 )
+
+        elif event.button.id == "setup_gdrive_set_encryption_yes_button":
+            self.set_rclone_encryption()
+
+        elif event.button.id == "setup_gdrive_set_encryption_no_button":
+            self.set_finish_page("Setup complete!")
+
+    # Setup the connection (with or without browser)
+    # ----------------------------------------------------------------------------------
 
     def ask_user_for_browser(self) -> None:
         """Ask the user if their machine has access to a browser."""
@@ -150,7 +171,7 @@ class SetupGdriveScreen(ModalScreen):
             self.input_box.visible = False
 
         # Mount the Yes and No buttons
-        yes_button = Button("Yes", id="setup_gdrive_yes_button")
+        yes_button = Button("Yes", id="setup_gdrive_has_browser_yes_button")
         no_button = Button("No", id="setup_gdrive_no_button")
 
         self.query_one("#setup_gdrive_buttons_horizontal").mount(
@@ -185,10 +206,14 @@ class SetupGdriveScreen(ModalScreen):
         The connection setup is asynchronous so that the user is able to
         cancel the setup if anything goes wrong without quitting datashuttle altogether.
         """
-        message = "Please authenticate through browser (it should open automatically)."
+        message = (
+            "Please authenticate through your browser (it should open automatically).\n\n"
+            "It may take a moment for the connection to register after you confirm in the browser.\n\n"
+        )
+
         self.update_message_box_message(message)
 
-        asyncio.create_task(
+        self._task = asyncio.create_task(
             self.setup_gdrive_connection_and_update_ui(
                 gdrive_client_secret=gdrive_client_secret
             ),
@@ -211,7 +236,9 @@ class SetupGdriveScreen(ModalScreen):
             message + "\nPress shift+click to copy."
         )
 
-        self.enter_button = Button("Enter", id="setup_gdrive_enter_button")
+        self.enter_button = Button(
+            "Enter", id="setup_gdrive_no_browser_enter_button"
+        )
         self.query_one("#setup_gdrive_buttons_horizontal").mount(
             self.enter_button, before="#setup_gdrive_cancel_button"
         )
@@ -221,10 +248,10 @@ class SetupGdriveScreen(ModalScreen):
         self, gdrive_client_secret: str | None, config_token: str | None
     ) -> None:
         """Set up the Google Drive connection using rclone config token."""
-        message = "Setting up connection."
+        message = "Setting up connection..."
         self.update_message_box_message(message)
 
-        asyncio.create_task(
+        self._task = asyncio.create_task(
             self.setup_gdrive_connection_and_update_ui(
                 gdrive_client_secret=gdrive_client_secret,
                 config_token=config_token,
@@ -249,26 +276,46 @@ class SetupGdriveScreen(ModalScreen):
         The rclone process object is stored in the `Interface` class to handle closing
         the process as the thread does not kill the process itself upon cancellation and
         the process is awaited ensure that the process finishes and any raised errors are caught.
-        Therefore, the worker thread thread and the rclone process are separately cancelled
+        Therefore, the worker thread and the rclone process are separately cancelled
         when the user presses the cancel button. (see `on_button_pressed`)
         """
         self.input_box.disabled = True
         self.enter_button.disabled = True
 
-        worker = self.setup_gdrive_connection(
-            gdrive_client_secret, config_token
-        )
-        self.setup_worker = worker
-        if worker.is_running:
-            await worker.wait()
+        try:
+            worker = self.setup_gdrive_connection(
+                gdrive_client_secret, config_token
+            )
+            self.setup_worker = worker
+            if worker.is_running:
+                await worker.wait()
 
-        success, output = worker.result
-        if success:
-            self.show_finish_screen()
-        else:
-            self.input_box.disabled = False
-            self.enter_button.disabled = False
-            self.display_failed(output)
+            success, output = worker.result
+            if success:
+                # This function is called from different screens that
+                # contain different widgets. Therefore, remove all possible
+                # widgets that may / may not be present on the previous screen.
+                self.show_encryption_screen()
+                for id in [
+                    "#setup_gdrive_cancel_button",
+                    "#setup_gdrive_generic_input_box",
+                    "#setup_gdrive_no_browser_enter_button",
+                ]:
+                    try:
+                        widget = self.query_one(id)
+                        await widget.remove()
+                    except NoMatches:
+                        pass
+            else:
+                self.input_box.disabled = False
+                self.enter_button.disabled = False
+                self.display_failed(output)
+
+        except Exception as exc:
+            tb = "".join(
+                traceback.format_exception(type(exc), exc, exc.__traceback__)
+            )
+            self.display_failed(tb)
 
     @work(exclusive=True, thread=True)
     def setup_gdrive_connection(
@@ -288,22 +335,48 @@ class SetupGdriveScreen(ModalScreen):
         )
         return success, output
 
-    # ----------------------------------------------------------------------------------
-    # UI Update Methods
+    # Set encryption on RClone config
     # ----------------------------------------------------------------------------------
 
-    def show_finish_screen(self) -> None:
+    def show_encryption_screen(self):
+        """Show the screen asking the user whether to encrypt the Rclone password."""
+        message = f"{rclone_encryption.get_explanation_message(self.interface.project.cfg)}"
+        self.update_message_box_message(message)
+
+        yes_button = Button("Yes", id="setup_gdrive_set_encryption_yes_button")
+        no_button = Button("No", id="setup_gdrive_set_encryption_no_button")
+
+        self.query_one("#setup_gdrive_buttons_horizontal").mount(
+            yes_button, no_button
+        )
+
+    def set_rclone_encryption(self):
+        """Try and encrypt the Rclone config file and inform the user of success / failure."""
+        success, output = self.interface.try_setup_rclone_encryption()
+
+        if success:
+            self.set_finish_page(
+                "The encryption was successful. Setup complete!"
+            )
+        else:
+            message = f"The password set up failed. Exception: {output}"
+            self.update_message_box_message(message)
+
+    def set_finish_page(self, message) -> None:
         """Show the final screen after successful set up."""
-        message = "Setup Complete!"
-        self.query_one("#setup_gdrive_cancel_button").remove()
+        self.query_one("#setup_gdrive_set_encryption_yes_button").remove()
+        self.query_one("#setup_gdrive_set_encryption_no_button").remove()
 
         self.update_message_box_message(message)
         self.query_one("#setup_gdrive_buttons_horizontal").mount(
             Button("Finish", id="setup_gdrive_finish_button")
         )
 
+    # UI Update Methods
+    # ----------------------------------------------------------------------------------
+
     def display_failed(self, output) -> None:
-        """Update the message box indicating the set up failed."""
+        """Update the message box indicating the set-up failed."""
         message = (
             f"Google Drive setup failed. Please check your credentials"
             f"\n\n Traceback: {output}"
@@ -328,8 +401,3 @@ class SetupGdriveScreen(ModalScreen):
         )
         self.input_box.visible = True
         self.input_box.value = ""
-
-    def remove_yes_no_buttons(self) -> None:
-        """Remove yes and no buttons."""
-        self.query_one("#setup_gdrive_yes_button").remove()
-        self.query_one("#setup_gdrive_no_button").remove()

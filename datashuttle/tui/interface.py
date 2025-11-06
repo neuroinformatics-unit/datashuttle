@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 from datashuttle import DataShuttle
 from datashuttle.configs import load_configs
-from datashuttle.utils import aws, gdrive, rclone, ssh, utils
+from datashuttle.utils import aws, rclone, ssh, utils
 
 
 class Interface:
@@ -570,11 +570,13 @@ class Interface:
     ) -> InterfaceOutput:
         """Get the rclone message for Google Drive setup without a browser."""
         try:
-            output = gdrive.preliminary_for_setup_without_browser(
-                self.project.cfg,
-                gdrive_client_secret,
-                self.project.cfg.get_rclone_config_name("gdrive"),
-                log=False,
+            output = (
+                rclone.preliminary_setup_gdrive_config_for_without_browser(
+                    self.project.cfg,
+                    gdrive_client_secret,
+                    self.project.cfg.rclone.get_rclone_config_name("gdrive"),
+                    log=False,
+                )
             )
             return True, output
         except BaseException as e:
@@ -599,7 +601,11 @@ class Interface:
         The `self.gdrive_setup_process_killed` flag helps prevent raising errors in case the
         process was killed manually.
         """
-        stdout, stderr = process.communicate()
+        stdout, stderr = (
+            rclone.await_call_rclone_with_popen_for_central_connection_raise_on_fail(
+                self.project.cfg, process, log=False
+            )
+        )
 
         if not self.gdrive_setup_process_killed:
             if process.returncode != 0:
@@ -624,6 +630,17 @@ class Interface:
                 self.project.cfg
             )
             aws.raise_if_bucket_absent(self.project.cfg)
+            return True, None
+        except BaseException as e:
+            return False, str(e)
+
+    # Set RClone Encryption
+    # ------------------------------------------------------------------------------------
+
+    def try_setup_rclone_encryption(self):
+        """Try and encrypt the RClone config file for the current `connection_method`."""
+        try:
+            self.project._try_encrypt_rclone_config()
             return True, None
         except BaseException as e:
             return False, str(e)

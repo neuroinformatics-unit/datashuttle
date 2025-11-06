@@ -35,14 +35,24 @@ def setup_gdrive_connection(project: DataShuttle):
     connection without a browser. The credentials are set in the environment
     by the CI. To run tests locally, the developer must set them themselves.
     """
-    state = {"first": True}
+    state = {"count": 0}
 
     def mock_input(_: str) -> str:
-        if state["first"]:
-            state["first"] = False
-            return "n"
+        if state["count"] == 0:
+            return_value = "n"
+            state["count"] += 1
+        elif state["count"] == 1:
+            return_value = os.environ["GDRIVE_CONFIG_TOKEN"]
+            state["count"] += 1
+        elif state["count"] == 2:
+            return_value = "y"
+            state["count"] += 1
+        elif state["count"] == 3:
+            return_value = "y"
         else:
-            return os.environ["GDRIVE_CONFIG_TOKEN"]
+            raise ValueError(f"return count is {state['count']}")
+
+        return return_value
 
     original_input = copy.deepcopy(builtins.input)
     builtins.input = mock_input  # type: ignore
