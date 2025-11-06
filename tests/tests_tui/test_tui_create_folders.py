@@ -374,7 +374,7 @@ class TestTuiCreateFolders(TuiBase):
     # -------------------------------------------------------------------------
 
     @pytest.mark.asyncio
-    async def test_name_template_next_sub_or_ses_and_validation(
+    async def test_validation_template_next_sub_or_ses_and_validation(
         self, setup_project_paths
     ):
         """Test validation and double-click for next sub / ses
@@ -390,7 +390,7 @@ class TestTuiCreateFolders(TuiBase):
 
             # Set some name template and check the tooltips
             # indicate mismatches correctly
-            pilot.app.screen.interface.project.set_name_templates(
+            pilot.app.screen.interface.project.set_validation_templates(
                 {"on": True, "sub": r"sub-\d\d\d", "ses": "ses-...."}
             )
 

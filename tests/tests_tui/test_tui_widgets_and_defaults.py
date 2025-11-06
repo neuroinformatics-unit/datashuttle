@@ -433,12 +433,12 @@ class TestTuiWidgets(TuiBase):
                 is False
             )
 
-            # Template validation
+            # Validation templates
             assert (
                 pilot.app.screen.query_one(
                     "#template_settings_validation_on_checkbox"
                 ).label._text
-                == "Template validation"
+                == "Validation templates"
             )
             assert (
                 pilot.app.screen.query_one(
@@ -464,7 +464,7 @@ class TestTuiWidgets(TuiBase):
             )
 
             assert (
-                " A 'Template' can be set check subject or session names"
+                "You can define a custom “Template” to ensure"
                 in pilot.app.screen.query_one(
                     "#template_message_label"
                 ).renderable
@@ -504,7 +504,7 @@ class TestTuiWidgets(TuiBase):
             await pilot.pause()
 
     @pytest.mark.asyncio
-    async def test_name_templates_widgets_and_settings(
+    async def test_validation_templates_widgets_and_settings(
         self, setup_project_paths
     ):
         """Check the 'Name Templates' section of the 'Create' tab 'Settings
@@ -526,11 +526,11 @@ class TestTuiWidgets(TuiBase):
             # Check the default template settings are as expected
             expected_template = {"on": False, "sub": None, "ses": None}
             assert (
-                pilot.app.screen.interface.get_name_templates()
+                pilot.app.screen.interface.get_validation_templates()
                 == expected_template
             )
             assert (
-                pilot.app.screen.interface.project.get_name_templates()
+                pilot.app.screen.interface.project.get_validation_templates()
                 == expected_template
             )
 
@@ -554,11 +554,11 @@ class TestTuiWidgets(TuiBase):
 
             expected_template = {"on": True, "sub": sub_regexp, "ses": None}
             assert (
-                pilot.app.screen.interface.get_name_templates()
+                pilot.app.screen.interface.get_validation_templates()
                 == expected_template
             )
             assert (
-                pilot.app.screen.interface.project.get_name_templates()
+                pilot.app.screen.interface.project.get_validation_templates()
                 == expected_template
             )
 
@@ -568,11 +568,11 @@ class TestTuiWidgets(TuiBase):
             )
 
             assert (
-                pilot.app.screen.interface.get_name_templates()
+                pilot.app.screen.interface.get_validation_templates()
                 == expected_template
             )
             assert (
-                pilot.app.screen.interface.project.get_name_templates()
+                pilot.app.screen.interface.project.get_validation_templates()
                 == expected_template
             )
 
@@ -617,11 +617,11 @@ class TestTuiWidgets(TuiBase):
                 "ses": ses_regexp,
             }
             assert (
-                pilot.app.screen.interface.get_name_templates()
+                pilot.app.screen.interface.get_validation_templates()
                 == expected_template
             )
             assert (
-                pilot.app.screen.interface.project.get_name_templates()
+                pilot.app.screen.interface.project.get_validation_templates()
                 == expected_template
             )
 
@@ -631,11 +631,11 @@ class TestTuiWidgets(TuiBase):
                 pilot, project_name
             )
             assert (
-                pilot.app.screen.interface.get_name_templates()
+                pilot.app.screen.interface.get_validation_templates()
                 == expected_template
             )
             assert (
-                pilot.app.screen.interface.project.get_name_templates()
+                pilot.app.screen.interface.project.get_validation_templates()
                 == expected_template
             )
 
