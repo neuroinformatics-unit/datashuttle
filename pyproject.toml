@@ -67,6 +67,7 @@ dev = [
     "types-setuptools",
     "pytest-asyncio",
     "validators",
+    "filelock"
 ]
 
 [build-system]

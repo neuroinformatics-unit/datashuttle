@@ -4,13 +4,15 @@ from typing import TYPE_CHECKING, Dict, List, Literal, Optional
 
 if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
-    from datashuttle.utils.custom_types import TopLevelFolder
+    from datashuttle.utils.custom_types import TopLevelFolder, TransferErrors
 
+import json
 import os
 import platform
 import shlex
 import subprocess
 import tempfile
+from pathlib import Path
 from subprocess import CompletedProcess
 
 from datashuttle.configs import canonical_configs
@@ -461,17 +463,204 @@ def transfer_data(
         output = call_rclone_through_script(
             f"{rclone_args('copy')} "
             f'"{local_filepath}" "{cfg.get_rclone_config_name()}:'
-            f'{central_filepath}" {extra_arguments}',
+            f'{central_filepath}" {extra_arguments} --use-json-log',
         )
 
     elif upload_or_download == "download":
         output = call_rclone_through_script(
             f"{rclone_args('copy')} "
             f'"{cfg.get_rclone_config_name()}:'
-            f'{central_filepath}" "{local_filepath}"  {extra_arguments}',
+            f'{central_filepath}" "{local_filepath}" {extra_arguments} --use-json-log',
         )
 
     return output
+
+
+def log_stdout_stderr_python_api(stdout: str, stderr: str) -> None:
+    """Log `stdout` and `stderr`."""
+    message = (
+        f"\n\n**************  STDOUT  **************\n"
+        f"{stdout}"
+        f"\n\n**************  STDERR  **************\n"
+        f"{stderr}"
+    )
+
+    utils.log_and_message(message)
+
+
+def log_rclone_copy_errors_api(errors):
+    """Log the `errors` dictionary.
+
+    The `errors` dictionary contains all pertinent information on
+    issues that occurred when running `rclone copy`. Note this logs
+    for the API, the TUI display is handled separately.
+
+    Note this function is very similar
+    to `handle_transfer_and_update_ui_when_complete`
+    but kept separate for flexibility.
+    """
+    message = ""
+
+    if errors["nothing_was_transferred_rawdata"] is True:
+        message += "\n\nNothing was transferred from rawdata.\n"
+
+    if errors["nothing_was_transferred_derivatives"] is True:
+        message += "\n\nNothing was transferred from derivatives.\n"
+
+    if any(errors["messages"]):
+        if any(errors["file_names"]):
+            message += (
+                "\n\nErrors were detected! In files:"
+                "\n-------------------------------\n"
+            )
+            message += "\n".join(errors["file_names"])
+        else:
+            message += "\n\n[red]Errors detected![/red]"
+        message += "\n\nThe error messages are:\n-----------------------\n"
+        message += "\n".join(errors["messages"])
+        message += "\n"
+
+    if message == "":
+        message = "No errors detected"
+
+    utils.log_and_message(message, use_rich=True)
+
+
+def parse_rclone_copy_output(top_level_folder, output):
+    """Format the `rclone copy` output ready for logging.
+
+    Reformat and combine the string streams and `errors`
+    dictionary from stdout and stderr output of `rclone copy`.
+    see `reformat_rclone_copy_output() for details.
+    """
+    stdout, out_errors = reformat_rclone_copy_output(
+        output.stdout, top_level_folder=top_level_folder
+    )
+
+    stderr, err_errors = reformat_rclone_copy_output(
+        output.stderr, top_level_folder=top_level_folder
+    )
+
+    # Combine the two `errors` output
+    all_errors = {
+        "file_names": out_errors["file_names"] + err_errors["file_names"],
+        "messages": out_errors["messages"] + err_errors["messages"],
+        "nothing_was_transferred_rawdata": err_errors[
+            "nothing_was_transferred_rawdata"
+        ],
+        "nothing_was_transferred_derivatives": err_errors[
+            "nothing_was_transferred_derivatives"
+        ],
+    }
+
+    all_errors["file_names"] = list(set(all_errors["file_names"]))
+
+    return stdout, stderr, all_errors
+
+
+def get_empty_errors_dict() -> TransferErrors:
+    """Return the `errors` dictionary with default values.
+
+    The `errors` dictionary holds information
+    about errors which occurred during `rclone copy` transfer.
+    The dict entries are:
+
+    file_names
+        A list of file names associated with errors.
+
+    messages
+        A list of messages associated with errors. For each file name,
+        there will be an associated message, but it is also possible to
+        have messages that are not associated with any file name.
+
+    nothing_was_transferred_rawdata
+        A flag that can take the value `None`, `True` or `False`.
+        If `None`, this top-level folder was not attempted to be transferred.
+        If `True`, it was attempted and nothing was transferred. If `False`,
+        it was attempted and something was transferred.
+
+    nothing_was_transferred_derivatives
+        See `nothing_was_transferred_rawdata`, this is the equivalent for
+        the derivatives' folder.
+
+    The rawdata and derivatives flags must be split as some functions
+    transfer a single, or both, top level folders in one command.
+    """
+    return {
+        "file_names": [],
+        "messages": [],
+        "nothing_was_transferred_rawdata": None,
+        "nothing_was_transferred_derivatives": None,
+    }
+
+
+def reformat_rclone_copy_output(
+    stream: bytes,
+    top_level_folder: TopLevelFolder | None = None,
+) -> tuple[str, TransferErrors]:
+    """Parse the output of `rclone copy` for convenient error checking.
+
+    Rclone's `copy` command (called with `--use-json-log`) outputs a lot of
+    information related to the transfer. We dump this in text form to a log
+    file. However, we also want to grab any key events (errors, or complete
+    lack of transferred files) so these can be displayed separately.
+
+    This function iterates through all lines in the `rclone copy` output.
+    This output is typically a mix of string format and json format.
+    If the line is json-encoded, then we extract important information
+    and format it to string, and re-insert it into the output.
+
+    In this way, we have a string-format output ready to be
+    dumped to the logs, as well as an `errors` dictionary containing
+    details on all key information.
+
+    Returns
+    -------
+    format_stream
+        The input stream, converted to string and with all
+        json-formatted lines reformatted as string. This is ready
+        to be dumped to a log file.
+
+    errors
+        A dictionary (`TransferErrors`) containing key information
+        about issues in the transfer.
+
+    """
+    split_stream = stream.decode("utf-8").split("\n")
+
+    errors = get_empty_errors_dict()
+
+    for idx, line in enumerate(split_stream):
+        try:
+            line_json = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+
+        if line_json["level"] in ["error", "critical"]:
+            if "object" in line_json:
+                full_filepath = Path(
+                    f"{top_level_folder}/{line_json['object']}"
+                ).as_posix()
+                errors["file_names"].append(full_filepath)
+                errors["messages"].append(
+                    f"The file {full_filepath} failed to transfer. Reason: {line_json['msg']}"
+                )
+            else:
+                errors["messages"].append(f"ERROR : {line_json['msg']}")
+
+        elif "stats" in line_json and "totalTransfers" in line_json["stats"]:
+            if line_json["stats"]["totalTransfers"] == 0:
+                errors[f"nothing_was_transferred_{top_level_folder}"] = True  # type:ignore
+            else:
+                errors[f"nothing_was_transferred_{top_level_folder}"] = False  # type:ignore
+
+        split_stream[idx] = (
+            f"{line_json['time'][:19]} {line_json['level'].upper()} : {line_json['msg']}"
+        )
+
+    format_stream = "\n".join(split_stream)
+
+    return format_stream, errors
 
 
 def get_local_and_central_file_differences(
