@@ -19,10 +19,27 @@ class TestGdrivePreliminarySetup:
         """Test the outputs of `preliminary_setup_gdrive_config_for_without_browser` and check
         that they contain the correct credentials in the encoded format.
         """
-        mock_configs = {
-            "gdrive_client_id": client_id,
-            "gdrive_root_folder_id": root_folder_id,
-        }
+        from collections import UserDict
+        from pathlib import Path
+
+        class MockConfigs(UserDict):
+            def __init__(self, client_id_, root_folder_id_):
+                super(MockConfigs, self).__init__()
+                self.data["gdrive_client_id"] = client_id_
+                self.data["gdrive_root_folder_id"] = root_folder_id_
+                self.data["connection_method"] = "drive"
+
+                class RClone:
+                    def delete_existing_rclone_config_file(self):
+                        pass
+
+                    def get_rclone_central_connection_config_filepath(self):
+                        return Path("")
+
+                self.rclone = RClone()
+
+        mock_configs = MockConfigs(client_id, root_folder_id)
+
         output = rclone.preliminary_setup_gdrive_config_for_without_browser(
             mock_configs, client_secret, "test_gdrive_preliminary"
         )
