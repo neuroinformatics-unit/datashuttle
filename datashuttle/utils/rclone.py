@@ -774,15 +774,26 @@ def perform_rclone_check(
         "central", top_level_folder
     ).parent.as_posix()
 
-    output = call_rclone_for_central_connection(
-        cfg,
-        f"{rclone_args('check')} "
-        f'"{local_filepath}" '
-        f'"{cfg.rclone.get_rclone_config_name()}:{central_filepath}"'
-        f"{get_config_arg(cfg)} "
-        f"--combined -",
-        pipe_std=True,
-    )
+    if rclone_encryption.connection_method_requires_encryption(
+        cfg["connection_method"]
+    ):
+        output = call_rclone_for_central_connection(
+            cfg,
+            f"{rclone_args('check')} "
+            f'"{local_filepath}" '
+            f'"{cfg.rclone.get_rclone_config_name()}:{central_filepath}" '
+            f"--combined - "
+            f"{get_config_arg(cfg)}",
+            pipe_std=True,
+        )
+    else:
+        output = call_rclone(
+            f"{rclone_args('check')} "
+            f'"{local_filepath}" '
+            f'"{cfg.rclone.get_rclone_config_name()}:{central_filepath}" '
+            f"--combined - ",
+            pipe_std=True,
+        )
 
     return output.stdout.decode("utf-8")
 
