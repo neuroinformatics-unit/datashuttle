@@ -305,6 +305,7 @@ def remove_credentials_as_password_command():
 
 
 def connection_method_requires_encryption(connection_method: str):
+    """Check whether the connection method stores sensitive information."""
     return connection_method in ["aws", "gdrive", "ssh"]
 
 
