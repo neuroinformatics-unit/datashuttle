@@ -304,13 +304,15 @@ def remove_credentials_as_password_command():
         os.environ.pop("RCLONE_PASSWORD_COMMAND")
 
 
+def connection_method_requires_encryption(connection_method: str):
+    return connection_method in ["aws", "gdrive", "ssh"]
+
+
 def get_windows_password_filepath(
     cfg: Configs,
 ) -> Path:
     """Get the canonical location where datashuttle stores the windows credentials."""
-    assert cfg["connection_method"] in ["aws", "gdrive", "ssh"], (
-        "password should only be set for ssh, aws, gdrive."
-    )
+    assert connection_method_requires_encryption(cfg["connection_method"])
 
     base_path = canonical_folders.get_datashuttle_path() / "credentials"
 

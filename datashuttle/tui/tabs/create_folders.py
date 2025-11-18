@@ -42,6 +42,7 @@ from datashuttle.tui.utils.tui_decorators import (
     require_double_click,
 )
 from datashuttle.tui.utils.tui_validators import NeuroBlueprintValidator
+from datashuttle.utils import rclone_encryption
 
 
 class CreateFoldersTab(TreeAndInputTab):
@@ -338,9 +339,12 @@ class CreateFoldersTab(TreeAndInputTab):
             in canonical_configs.get_connection_methods_list()
         )
 
-        if include_central and self.interface.project.cfg[
-            "connection_method"
-        ] in ["aws", "gdrive", "ssh"]:
+        if (
+            include_central
+            and rclone_encryption.connection_method_requires_encryption(
+                self.interface.project.cfg["connection_method"]
+            )
+        ):
             self.searching_central_popup_widget = (
                 SearchingCentralForNextSubSesPopup(prefix)
             )

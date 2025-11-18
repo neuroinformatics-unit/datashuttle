@@ -32,7 +32,7 @@ class BaseTransfer(BaseTest):
         tmp_path = tmpdir_factory.mktemp("test")
 
         base_path = tmp_path / "test with space"
-        test_project_name = "test_file_conflicts"
+        test_project_name = "ds-unique-test-project-d375gd234vds2f"
 
         project = test_utils.setup_project_fixture(
             base_path, test_project_name

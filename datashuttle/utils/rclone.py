@@ -504,7 +504,9 @@ def get_config_arg(cfg: Configs) -> str:
         cfg.rclone.get_rclone_central_connection_config_filepath()
     )
 
-    if cfg["connection_method"] in ["aws", "gdrive", "ssh"]:
+    if rclone_encryption.connection_method_requires_encryption(
+        cfg["connection_method"]
+    ):
         return f'--config "{rclone_config_path}"'
     else:
         return ""
