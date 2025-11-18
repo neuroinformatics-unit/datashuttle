@@ -5,6 +5,7 @@ import warnings
 import pytest
 
 from datashuttle import validate_project_from_path
+from datashuttle.configs import canonical_folders
 from datashuttle.utils import formatting, validation
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
@@ -787,7 +788,7 @@ class TestValidation(BaseTest):
     # Test Quick Validation Function
     # ----------------------------------------------------------------------------------
 
-    def test_quick_validation(self, mocker, project):
+    def test_validate_project_from_path(self, mocker, project):
         project.create_folders("rawdata", "sub-1")
         os.makedirs(project.cfg["local_path"] / "rawdata" / "sub-02")
         project.create_folders("derivatives", "sub-1")
@@ -802,6 +803,12 @@ class TestValidation(BaseTest):
         assert "VALUE_LENGTH" in str(w[0].message)
         assert "VALUE_LENGTH" in str(w[1].message)
         assert len(w) == 2
+
+        # This is used internally to generate a Configs class,
+        # but should not actually be written to.
+        assert (
+            not canonical_folders.get_internal_datashuttle_from_path().exists()
+        )
 
         # For good measure, monkeypatch and change all defaults,
         # ensuring they are propagated to the validate_project
@@ -824,7 +831,7 @@ class TestValidation(BaseTest):
         assert kwargs["top_level_folder_list"] == ["derivatives"]
         assert kwargs["name_templates"] == {"on": False}
 
-    def test_quick_validation_top_level_folder(self, project):
+    def test_validate_from_path_top_level_folder(self, project):
         """Test that errors are raised as expected on
         bad project path input.
         """

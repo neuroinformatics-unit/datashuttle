@@ -13,9 +13,7 @@ from typing import (
     Optional,
 )
 
-from datashuttle.configs import (
-    canonical_configs,
-)
+from datashuttle.configs import canonical_configs, canonical_folders
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import (
     validation,
@@ -85,6 +83,8 @@ def validate_project_from_path(
 
     # Create some mock configs for the validation call,
     # then for each top-level folder, run the validation
+    # Note `get_internal_datashuttle_from_path` generates a placeholder
+    # folder path but this is not actually created.
     placeholder_configs = {
         key: None for key in canonical_configs.get_canonical_configs().keys()
     }
@@ -92,7 +92,7 @@ def validate_project_from_path(
 
     cfg = Configs(
         project_name=project_path.name,
-        file_path=None,  # type: ignore
+        file_path=canonical_folders.get_internal_datashuttle_from_path(),  # type: ignore
         input_dict=placeholder_configs,
     )
 

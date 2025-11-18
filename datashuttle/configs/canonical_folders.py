@@ -82,6 +82,11 @@ def get_datashuttle_path() -> Path:
     return Path.home() / ".datashuttle"
 
 
+def get_internal_datashuttle_from_path():
+    """Get a placeholder path for `validate_project_from_path()`."""
+    return get_datashuttle_path() / "_datashuttle_from_path"
+
+
 def get_project_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
     """Return the datashuttle config path for the project.
 
