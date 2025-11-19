@@ -790,7 +790,7 @@ class DataShuttle:
             upload_or_download,
             top_level_folder,
             include_list,
-            self.cfg.rclone.make_rclone_transfer_options(
+            rclone.make_rclone_transfer_options(
                 overwrite_existing_files, dry_run
             ),
         )

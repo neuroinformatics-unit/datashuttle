@@ -7,7 +7,10 @@ if TYPE_CHECKING:
     from subprocess import CompletedProcess
 
     from datashuttle.configs.config_class import Configs
-    from datashuttle.utils.custom_types import TopLevelFolder
+    from datashuttle.utils.custom_types import (
+        OverwriteExistingFiles,
+        TopLevelFolder,
+    )
 
 import json
 import os
@@ -635,7 +638,7 @@ def transfer_data(
 
     rclone_options
         A list of options to pass to Rclone's copy function.
-        see `cfg.rclone.make_rclone_transfer_options()`.
+        see `make_rclone_transfer_options()`.
 
     Returns
     -------
@@ -675,6 +678,28 @@ def transfer_data(
     # 2) make a utils function to do the connection method check, this is still kind of weird / error prone
 
     return output
+
+
+def make_rclone_transfer_options(
+    overwrite_existing_files: OverwriteExistingFiles, dry_run: bool
+) -> Dict:
+    """Create a dictionary of rclone transfer options."""
+    allowed_overwrite = ["never", "always", "if_source_newer"]
+
+    if overwrite_existing_files not in allowed_overwrite:
+        utils.log_and_raise_error(
+            f"`overwrite_existing_files` not "
+            f"recognised, must be one of: "
+            f"{allowed_overwrite}",
+            ValueError,
+        )
+
+    return {
+        "overwrite_existing_files": overwrite_existing_files,
+        "show_transfer_progress": True,
+        "transfer_verbosity": "vv",
+        "dry_run": dry_run,
+    }
 
 
 def get_local_and_central_file_differences(

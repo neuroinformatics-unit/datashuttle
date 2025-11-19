@@ -37,8 +37,8 @@ class Configs(UserDict):
     ) -> None:
         """Initialize the Configs class with project name, file path, and config dictionary.
 
-        This class also holds `RCloneConfigs` under the `.rclone` attribute to manage
-        the configs
+        This class also holds `RCloneConfigs` that manage the Rclone config files
+        used for transfer.
 
         Parameters
         ----------

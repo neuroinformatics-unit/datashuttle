@@ -82,7 +82,7 @@ def get_datashuttle_path() -> Path:
     return Path.home() / ".datashuttle"
 
 
-def get_internal_datashuttle_from_path():
+def get_internal_datashuttle_from_path() -> Path:
     """Get a placeholder path for `validate_project_from_path()`."""
     return get_datashuttle_path() / "_datashuttle_from_path"
 
@@ -100,16 +100,19 @@ def get_project_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
     return base_path, temp_logs_path
 
 
-def get_rclone_config_base_path():
+def get_rclone_config_base_path() -> Path:
     """Return the path to the Rclone config file.
 
     This is used for RClone config files for transfer targets (ssh, aws, gdrive).
     This should match where RClone itself stores the config by default,
     as described here: https://rclone.org/docs/#config-string
 
-    Because RClone's resolution is a little complex, in some rare cases the
-    below may not match where RClone stores its configs. This just means that
-    local filesystem configs and transfer configs are stored in a separate place,
+    Because RClone's resolution process for where it stores its config files
+    is a little complex, in some rare cases the below may not match where
+    RClone stores its configs. This just means that local filesystem configs,
+    which are stored in the default `rclone.conf` file for backwards compatibility
+    reasons. and transfer configs which are stored in their own file at the
+    path returned from this function, are stored in a separate places,
     which is not a huge deal.
     """
     if platform.system() == "Windows":
