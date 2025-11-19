@@ -841,7 +841,7 @@ class DataShuttle:
                 f"{self.cfg.rclone.get_rclone_central_connection_config_filepath()}.\n"
             )
 
-            if not self.cfg.rclone.get_rclone_config_encryption_state():
+            if not self.cfg.rclone.rclone_file_is_encrypted():
                 if self._ask_user_rclone_encryption():
                     self._try_encrypt_rclone_config()
 
@@ -910,7 +910,7 @@ class DataShuttle:
             self.cfg, process, log=True
         )
 
-        if not self.cfg.rclone.get_rclone_config_encryption_state():
+        if not self.cfg.rclone.rclone_file_is_encrypted():
             if self._ask_user_rclone_encryption():
                 self._try_encrypt_rclone_config()
 
@@ -950,7 +950,7 @@ class DataShuttle:
 
         self._setup_rclone_aws_config(aws_secret_access_key, log=True)
 
-        if not self.cfg.rclone.get_rclone_config_encryption_state():
+        if not self.cfg.rclone.rclone_file_is_encrypted():
             if self._ask_user_rclone_encryption():
                 self._try_encrypt_rclone_config()
 
@@ -1004,7 +1004,7 @@ class DataShuttle:
 
     def encrypt_rclone_config(self) -> None:
         """Encrypt the rclone config file for the central connection."""
-        if self.cfg.rclone.get_rclone_config_encryption_state():
+        if self.cfg.rclone.rclone_file_is_encrypted():
             raise RuntimeError(
                 "This config file is already encrypted. "
                 "First, use `remove_rclone_encryption` to remove it."
@@ -1016,7 +1016,7 @@ class DataShuttle:
 
     def remove_rclone_encryption(self) -> None:
         """Unencrypt the rclone config file for the central connection."""
-        if not self.cfg.rclone.get_rclone_config_encryption_state():
+        if not self.cfg.rclone.rclone_file_is_encrypted():
             raise RuntimeError(
                 f"The config for the current connection method: "
                 f"{self.cfg['connection_method']} "

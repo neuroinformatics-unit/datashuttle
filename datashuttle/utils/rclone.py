@@ -207,7 +207,7 @@ def run_function_that_requires_encrypted_rclone_config_access(
                 f"Please set up the {cfg['connection_method']} connection again."
             )
 
-    is_encrypted = cfg.rclone.get_rclone_config_encryption_state()
+    is_encrypted = cfg.rclone.rclone_file_is_encrypted()
 
     if is_encrypted:
         rclone_encryption.set_credentials_as_password_command(cfg)

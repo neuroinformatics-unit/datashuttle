@@ -92,7 +92,7 @@ class RCloneConfigs:
         with open(self.rclone_encryption_state_file_path, "w") as file:
             yaml.dump(rclone_config_is_encrypted, file)
 
-    def get_rclone_config_encryption_state(
+    def rclone_file_is_encrypted(
         self,
     ) -> dict:
         """Return whether the config file associated with the current `connection_method`."""
