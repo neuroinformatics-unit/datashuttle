@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 import yaml
 
 from datashuttle.configs import canonical_folders
-from datashuttle.utils import utils
+from datashuttle.utils import rclone_encryption, utils
 
 
 class RCloneConfigs:
@@ -51,11 +51,9 @@ class RCloneConfigs:
         called a lot, we track this explicitly when a rclone config is
         encrypted / unencrypted and store to disk between sessions.
         """
-        assert self.datashuttle_configs["connection_method"] in [
-            "ssh",
-            "aws",
-            "gdrive",
-        ]
+        assert rclone_encryption.connection_method_requires_encryption(
+            self.datashuttle_configs["connection_method"]
+        )
 
         if self.rclone_encryption_state_file_path.is_file():
             with open(self.rclone_encryption_state_file_path, "r") as file:
@@ -78,11 +76,9 @@ class RCloneConfigs:
         Note that this is stored to disk each call (rather than tracked locally) to ensure
         it is updated live if updated through the Python API while the TUI is also running.
         """
-        assert self.datashuttle_configs["connection_method"] in [
-            "ssh",
-            "aws",
-            "gdrive",
-        ]
+        assert rclone_encryption.connection_method_requires_encryption(
+            self.datashuttle_configs["connection_method"]
+        )
 
         rclone_config_is_encrypted = self.load_rclone_config_is_encrypted()
 
@@ -97,11 +93,9 @@ class RCloneConfigs:
         self,
     ) -> dict:
         """Return whether the config file associated with the current `connection_method`."""
-        assert self.datashuttle_configs["connection_method"] in [
-            "ssh",
-            "aws",
-            "gdrive",
-        ]
+        assert rclone_encryption.connection_method_requires_encryption(
+            self.datashuttle_configs["connection_method"]
+        )
 
         rclone_config_is_encrypted = self.load_rclone_config_is_encrypted()
 

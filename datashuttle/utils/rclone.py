@@ -115,7 +115,9 @@ def call_rclone_through_script_for_central_connection(
             shell=False,
         )
 
-        if cfg["connection_method"] in ["ssh", "gdrive", "aws"]:
+        if rclone_encryption.connection_method_requires_encryption(
+            cfg["connection_method"]
+        ):
             output = run_function_that_requires_encrypted_rclone_config_access(
                 cfg, lambda_func
             )
@@ -553,7 +555,9 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
 
 def get_rclone_config_filepath(cfg: Configs) -> Path:
     """Get the path to the central Rclone config for the current `connection_method`."""
-    if cfg["connection_method"] in ["aws", "ssh", "gdrive"]:
+    if rclone_encryption.connection_method_requires_encryption(
+        cfg["connection_method"]
+    ):
         config_filepath = (
             cfg.rclone.get_rclone_central_connection_config_filepath()
         )
@@ -656,7 +660,7 @@ def transfer_data(
             cfg,
             f"{rclone_args('copy')} "
             f'"{local_filepath}" "{cfg.rclone.get_rclone_config_name()}:'
-            f'{central_filepath}" {extra_arguments} {get_config_arg(cfg)} --ask-password=false',  # TODO: handle the error
+            f'{central_filepath}" {extra_arguments} {get_config_arg(cfg)} --ask-password=false',
         )
 
     elif upload_or_download == "download":
@@ -664,14 +668,8 @@ def transfer_data(
             cfg,
             f"{rclone_args('copy')} "
             f'"{cfg.rclone.get_rclone_config_name()}:'
-            f'{central_filepath}" "{local_filepath}"  {extra_arguments} {get_config_arg(cfg)} --ask-password=false',  # TODO: handle the error
+            f'{central_filepath}" "{local_filepath}"  {extra_arguments} {get_config_arg(cfg)} --ask-password=false',
         )
-
-    if (
-        cfg["connection_method"] in ["ssh", "aws", "gdrive"]
-        and cfg.rclone.get_rclone_config_encryption_state()
-    ):  # TODO: this is a quick and dirty fix but this MUST be handled better
-        rclone_encryption.remove_credentials_as_password_command()
 
     # 1) now 'for central connection' terminology is confused, one is for all and the other checks internally if it is aws or not. This is okay but must be consistent
     # 2) make a utils function to do the connection method check, this is still kind of weird / error prone
