@@ -551,25 +551,23 @@ Running [](setup_aws_connection()) will require entering your
 
 
 (password-protection)=
-# Password protecting your connection credentials
+# Encrypting your connection credentials
 
-Datashuttle uses [RClone](https://rclone.org/) for all data transfers by default.
-RClone stores connection credentials (such as SSH keys or API tokens) in a local configuration file that, by default, is not encrypted.
+Datashuttle uses [RClone](https://rclone.org/) for all data transfers.
+RClone stores connection credentials in a
+local configuration file that, by default, is not encrypted.
 
 This file can include:
 
-- SSH connections: your private SSH key
-- Google Drive connections: your OAuth access token and client secret
-- Amazon S3 connections: your AWS Access Key ID and Secret Access Key
+- **SSH:** your private SSH key
+- **Google Drive:** your OAuth access token and client secret
+- **Amazon S3:** your AWS Access Key ID and Secret Access Key
 
-By default, these are stored in your  home directory which should be secure. However, for an
+These are stored in your home directory, which is expected to be secure. However, for an
 additional layer of security, it is possible to encrypt the Rclone config file using the
 system credential manager of your operating system. This file will then be
 unreadable for anyone who does not have access to your machine user account. Note that
 anyone with access to the machine user account will be able to decrypt the Rclone file.
-
-Despite this layer of security, it is not recommended to use datashuttle for remote connectivity on
-a machine to which you do not have secure access, even with user account encryption of the RClone config.
 
 For details on setting up encryption, see the section below. On Windows, you will
 need to be running in PowerShell, and on Linux you will need `pass` package installed.
@@ -578,9 +576,9 @@ need to be running in PowerShell, and on Linux you will need `pass` package inst
 
 :::{tab-item} Windows
 
-On Windows, Datashuttle uses the PowerShell `PSCredential` system to encrypt the RClone config file.
+On Windows, the PowerShell `PSCredential` system to encrypt the RClone config file.
 
-- A random password is generated and stored as a `.clixml` credential file under a `credentials` folder in the project config location.
+- A random password is generated and stored as a `.clixml` credential file.
 - The password can only be decrypted by the same Windows user account that created it.
 - The encryption and decryption process uses PowerShell, so PowerShell must be available (it will not work from `cmd.exe`).
 
@@ -590,7 +588,7 @@ When encryption is enabled, RClone automatically retrieves the password from the
 
 :::{tab-item} macOS
 
-On macOS, Datashuttle uses the built-in Keychain via the `security` command-line tool.
+On macOS, the built-in Keychain via the `security` command-line tool is used.
 
 - A random password is generated using `openssl rand -base64 40`.
 - The password is securely stored in your login Keychain under the service name corresponding to your RClone config.
@@ -603,11 +601,12 @@ Once approved, RClone will automatically retrieve the key when needed.
 
 :::{tab-item} Linux
 
-1. Install `pass`:
+On Linux, the `pass` package is used to manage the encryption. You can install it with:
    ```bash
    sudo apt install pass
    ```
-2. Initialize the password store with your GPG key:
+
+Next, you need to initialize the password store with your GPG key:
    ```bash
    pass init <your-gpg-id>
    ```
@@ -626,7 +625,7 @@ Once initialized, Datashuttle will:
 
 ## Removing encryption
 
-Encryption of the rclone config used for the central connection (either SSH, Google Drive or AWS)
-can be removed with the following command:
+Encryption of the Rclone config file used for the central connection
+(either SSH, Google Drive or AWS) can be removed with the following command:
 
 [](remove_rclone_encryption())
