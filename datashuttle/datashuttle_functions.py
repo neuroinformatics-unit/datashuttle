@@ -92,7 +92,7 @@ def validate_project_from_path(
 
     cfg = Configs(
         project_name=project_path.name,
-        file_path=canonical_folders.get_internal_datashuttle_from_path(),  # type: ignore
+        file_path=canonical_folders.get_internal_datashuttle_from_path(),
         input_dict=placeholder_configs,
     )
 
