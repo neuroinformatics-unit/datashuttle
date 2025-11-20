@@ -89,7 +89,13 @@ def convert_str_and_pathlib_paths(
     for path_key in canonical_configs.keys_str_on_file_but_path_in_class():
         value = config_dict[path_key]
 
-        if value:
+        if value is not None:
+            if value == "":
+                utils.log_and_raise_error(
+                    f"{path_key} cannot be an empty string.",
+                    ValueError,
+                )
+
             if direction == "str_to_path":
                 config_dict[path_key] = Path(value)
 
