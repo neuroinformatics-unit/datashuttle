@@ -17,7 +17,6 @@ import platform
 import shutil
 import subprocess
 
-from datashuttle.configs import canonical_folders
 from datashuttle.utils import utils
 
 
@@ -126,7 +125,7 @@ def set_password_linux(cfg: Configs) -> None:
         utils.log_and_raise_error(
             f"\n--- STDOUT ---\n{output.stdout}"
             f"\n--- STDERR ---\n{output.stderr}"
-            "Could not remove the password from the RClone config. See the error message above.",
+            "Could encrypt the password from the RClone config. See the error message above.",
             RuntimeError,
         )
 
@@ -326,7 +325,8 @@ def get_windows_password_filepath(
     """Get the canonical location where datashuttle stores the windows credentials."""
     assert connection_method_requires_encryption(cfg["connection_method"])
 
-    base_path = canonical_folders.get_datashuttle_path() / "credentials"
+    # Put this folder next to the project (datashuttle) config file
+    base_path = cfg.file_path.parent / "credentials"
 
     base_path.mkdir(exist_ok=True, parents=True)
 
