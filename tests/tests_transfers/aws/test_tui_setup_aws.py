@@ -78,7 +78,7 @@ class TestTuiSetupAws(TuiBase):
                 await self.scroll_to_click_pause(pilot, "#setup_aws_ok_button")
 
                 assert (
-                    "The rclone_encryption was successfully set. Setup complete!"
+                    "The Rclone config file was successfully encrypted. Setup complete!"
                     in pilot.app.screen.query_one(
                         "#setup_aws_messagebox_message"
                     ).renderable

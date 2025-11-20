@@ -97,7 +97,7 @@ class SetupAwsScreen(ModalScreen):
         self.stage = "use_secret_access_key"
 
     def use_secret_access_key_to_setup_aws_connection(self) -> None:
-        """Set up the AWS connection and inform user of success or failure.
+        """Set up the AWS connection and failure.
 
         If success, move onto the rclone_encryption screen.
         """
@@ -134,15 +134,13 @@ class SetupAwsScreen(ModalScreen):
         success, output = self.interface.try_setup_rclone_encryption()
 
         if success:
-            message = (
-                "The rclone_encryption was successfully set. Setup complete!"
-            )
+            message = "The Rclone config file was successfully encrypted. Setup complete!"
             self.query_one("#setup_aws_messagebox_message").update(message)
             self.query_one("#setup_aws_ok_button").label = "Finish"
             self.query_one("#setup_aws_cancel_button").remove()
             self.stage = "finished"
         else:
             message = (
-                f"The rclone encryption set up failed. Exception: {output}"
+                f"The rclone_encryption set up failed. Exception: {output}"
             )
             self.query_one("#setup_aws_messagebox_message").update(message)
