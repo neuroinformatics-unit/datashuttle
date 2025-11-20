@@ -663,7 +663,7 @@ def transfer_data(
             cfg,
             f"{rclone_args('copy')} "
             f'"{local_filepath}" "{cfg.rclone.get_rclone_config_name()}:'
-            f'{central_filepath}" {extra_arguments} {get_config_arg(cfg)} --ask-password=false',
+            f'{central_filepath}" {extra_arguments} {get_config_arg(cfg)}',
         )
 
     elif upload_or_download == "download":
@@ -671,11 +671,8 @@ def transfer_data(
             cfg,
             f"{rclone_args('copy')} "
             f'"{cfg.rclone.get_rclone_config_name()}:'
-            f'{central_filepath}" "{local_filepath}"  {extra_arguments} {get_config_arg(cfg)} --ask-password=false',
+            f'{central_filepath}" "{local_filepath}"  {extra_arguments} {get_config_arg(cfg)}',
         )
-
-    # 1) now 'for central connection' terminology is confused, one is for all and the other checks internally if it is aws or not. This is okay but must be consistent
-    # 2) make a utils function to do the connection method check, this is still kind of weird / error prone
 
     return output
 
