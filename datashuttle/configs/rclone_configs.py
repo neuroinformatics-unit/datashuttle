@@ -21,7 +21,7 @@ class RCloneConfigs:
     the GDrive rclone config holds the access token, etc.
 
     In datashuttle, local filesystem configs uses the Rclone default configuration file,
-    that RClone manages, for backwards comatability reasons. However, SSH, AWS and GDrive
+    that RClone manages, for backwards compatibility reasons. However, SSH, AWS and GDrive
     configs are stored in separate config files (set using RClone's --config argument).
     Then being separate means these files can be separately encrypted.
 
