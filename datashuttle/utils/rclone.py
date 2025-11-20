@@ -145,7 +145,7 @@ def call_rclone_with_popen(
     Killing a process might be required when running rclone setup in a thread worker
     to allow the user to cancel the setup process. In such a case, cancelling the
     thread worker alone will not kill the rclone process, so we need to kill the
-    env process explicitly.
+    process explicitly.
     """
     command = "rclone " + command
     process = subprocess.Popen(
