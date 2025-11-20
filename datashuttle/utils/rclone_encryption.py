@@ -67,7 +67,7 @@ def set_password_windows(cfg: Configs) -> None:
         utils.log_and_raise_error(
             f"\n--- STDOUT ---\n{output.stdout}"
             f"\n--- STDERR ---\n{output.stderr}"
-            "Could not set the PSCredential with System.web. See the error message above.",
+            "\nCould not set the PSCredential with System.web. See the error message above.",
             RuntimeError,
         )
 
@@ -111,7 +111,7 @@ def set_password_linux(cfg: Configs) -> None:
             utils.log_and_raise_error(
                 f"\n--- STDOUT ---\n{output.stdout}"
                 f"\n--- STDERR ---\n{output.stderr}"
-                "Could not set up password with `pass`. See the error message above.",
+                "\nCould not set up password with `pass`. See the error message above.",
                 RuntimeError,
             )
 
@@ -125,7 +125,7 @@ def set_password_linux(cfg: Configs) -> None:
         utils.log_and_raise_error(
             f"\n--- STDOUT ---\n{output.stdout}"
             f"\n--- STDERR ---\n{output.stderr}"
-            "Could encrypt the password from the RClone config. See the error message above.",
+            "\nCould not encrypt the RClone config. See the error message above.",
             RuntimeError,
         )
 
@@ -150,7 +150,7 @@ def set_password_macos(cfg: Configs) -> None:
         utils.log_and_raise_error(
             f"\n--- STDOUT ---\n{output.stdout}"
             f"\n--- STDERR ---\n{output.stderr}"
-            "Could not encrypt the RClone config. See the error message above.",
+            "\nCould not encrypt the RClone config. See the error message above.",
             RuntimeError,
         )
 
@@ -233,21 +233,22 @@ def run_rclone_config_encrypt(cfg: Configs) -> None:
 
     set_credentials_as_password_command(cfg)
 
-    output = subprocess.run(
-        f"rclone config encryption set --config {rclone_config_path.as_posix()}",
-        shell=True,
-        capture_output=True,
-        text=True,
-    )
-    if output.returncode != 0:
-        utils.log_and_raise_error(
-            f"\n--- STDOUT ---\n{output.stdout}\n"
-            f"\n--- STDERR ---\n{output.stderr}\n"
-            "Could not encrypt the RClone config. See the error message above.",
-            RuntimeError,
+    try:
+        output = subprocess.run(
+            f"rclone config encryption set --config {rclone_config_path.as_posix()}",
+            shell=True,
+            capture_output=True,
+            text=True,
         )
-
-    remove_credentials_as_password_command()
+        if output.returncode != 0:
+            utils.log_and_raise_error(
+                f"\n--- STDOUT ---\n{output.stdout}\n"
+                f"\n--- STDERR ---\n{output.stderr}\n"
+                "\nCould not encrypt the RClone config. See the error message above.",
+                RuntimeError,
+            )
+    finally:
+        remove_credentials_as_password_command()
 
 
 def remove_rclone_encryption(cfg: Configs) -> None:
@@ -273,14 +274,16 @@ def remove_rclone_encryption(cfg: Configs) -> None:
         utils.log_and_raise_error(
             f"\n--- STDOUT ---\n{output.stdout}"
             f"\n--- STDERR ---\n{output.stderr}"
-            "Could not remove the password from the RClone config. See the error message above.",
+            "\nCould not remove the password from the RClone config. See the error message above.",
             RuntimeError,
         )
 
     remove_credentials_as_password_command()
 
     if platform.system() == "Windows":
-        get_windows_password_filepath(cfg).unlink()
+        password_filepath = get_windows_password_filepath(cfg)
+        if password_filepath.exists():
+            password_filepath.unlink()
 
     elif platform.system() == "Linux":
         name = cfg.rclone.get_rclone_config_name()
