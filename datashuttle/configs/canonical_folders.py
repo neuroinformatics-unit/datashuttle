@@ -108,12 +108,12 @@ def get_rclone_config_base_path() -> Path:
     as described here: https://rclone.org/docs/#config-string
 
     Because RClone's resolution process for where it stores its config files
-    is a little complex, in some rare cases the below may not match where
-    RClone stores its configs. This just means that local filesystem configs,
+    is a little complex, in some rare cases the path returned below may not match
+    where RClone actually stores its configs. In such cases, local filesystem configs,
     which are stored in the default `rclone.conf` file for backwards compatibility
-    reasons. and transfer configs which are stored in their own file at the
-    path returned from this function, are stored in a separate places,
-    which is not a huge deal.
+    reasons, and transfer configs, which are stored in their own file at the path
+    returned from this function, are stored in separate places. This is generally
+    not a significant issue.
     """
     if platform.system() == "Windows":
         appdata_path = Path().home() / "AppData" / "Roaming"
