@@ -19,8 +19,6 @@ import shlex
 import subprocess
 import tempfile
 
-from packaging import version
-
 from datashuttle.configs import canonical_configs
 from datashuttle.utils import rclone_encryption, utils
 
@@ -188,24 +186,15 @@ def run_function_that_requires_encrypted_rclone_config_access(
     In this case we need to set an environment variable to tell Rclone how
     to decrypt the config file (and remove the variable afterwards).
     """
-    from datashuttle import get_datashuttle_version  # avoid circular import
-
     rclone_config_filepath = (
         cfg.rclone.get_rclone_central_connection_config_filepath()
     )
 
     if check_config_exists and not rclone_config_filepath.is_file():
-        if version.parse(get_datashuttle_version()) <= version.parse("0.7.1"):
-            raise RuntimeError(
-                f"The way RClone configs are managed has changed since version v0.7.1\n"
-                f"Please set up the {cfg['connection_method']} connection again."
-            )
-        else:
-            raise RuntimeError(
-                f"An unexpected error occurred. Could not find the rclone config "
-                f"file at: {rclone_config_filepath}\n"
-                f"Please set up the {cfg['connection_method']} connection again."
-            )
+        raise RuntimeError(
+            f"The way RClone configs are managed has changed since version v0.7.1\n"
+            f"Please set up the {cfg['connection_method']} connection again."
+        )
 
     is_encrypted = cfg.rclone.rclone_file_is_encrypted()
 
