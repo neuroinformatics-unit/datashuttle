@@ -393,7 +393,7 @@ def preliminary_setup_gdrive_config_without_browser(
     The `config_is_local=false` flag tells rclone that the configuration process is being run
     on a headless machine which does not have access to a browser.
 
-    The `--non-interactive` flag is used to control rclone's behaviour while running it through
+    The `--non-interactive` flag is used to control Rclone's behaviour while running it through
     external applications. An `rclone config create` command would assume default values for config
     variables in an interactive mode. If the `--non-interactive` flag is provided and rclone needs
     the user to input some detail, a JSON blob will be returned with the question in it. For this

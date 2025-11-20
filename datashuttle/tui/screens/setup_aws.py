@@ -64,7 +64,7 @@ class SetupAwsScreen(ModalScreen):
         """
         if event.button.id == "setup_aws_cancel_button":
             if self.stage == "ask_rclone_encryption":
-                message = "AWS Connection Successful!"  #
+                message = "AWS Connection Successful!"
                 self.query_one("#setup_aws_messagebox_message").update(message)
                 self.query_one("#setup_aws_ok_button").label = "Finish"
                 self.query_one("#setup_aws_cancel_button").remove()
