@@ -991,7 +991,7 @@ class DataShuttle:
             utils.log_and_raise_error(
                 f"{str(e)}\n"
                 f"Config encryption failed.\n"
-                f"Use encrypt_rclone_config()` to attempt to encrypt the file again "
+                f"Use `encrypt_rclone_config()` to attempt to encrypt the file again "
                 f"(see full error message above).\n"
                 f"IMPORTANT: The config at {config_path} is not currently encrypted.\n",
                 RuntimeError,
