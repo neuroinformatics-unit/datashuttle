@@ -380,7 +380,7 @@ def setup_rclone_config_for_gdrive(
     return process
 
 
-def preliminary_setup_gdrive_config_for_without_browser(
+def preliminary_setup_gdrive_config_without_browser(
     cfg: Configs,
     gdrive_client_secret: str | None,
     rclone_config_name: str,
