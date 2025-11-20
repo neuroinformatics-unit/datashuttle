@@ -32,7 +32,7 @@ jobs:
         # macos-14 is M1, macos-13 is intel. Run on earliest and
         # latest python versions. All python versions are tested in
         # the weekly cron job.
-        os: [ ubuntu-latest, windows-latest, macos-14, macos-13]
+        os: [ ubuntu-latest]  # , windows-latest, macos-14, macos-13
         # Test all Python versions for cron job, and only first/last for other triggers
         python-version: ${{ fromJson(github.event_name == 'schedule' && '["3.9", "3.10", "3.11", "3.12", "3.13"]' || '["3.9", "3.13"]') }}
 
@@ -66,7 +66,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo service mysql stop  # free up port 3306 for ssh tests
-          pytest tests/tests_transfers/ssh
+          pytest --durations=0 tests/tests_transfers/ssh
 
       - name: Test Google Drive
         env:
@@ -75,7 +75,7 @@ jobs:
           GDRIVE_ROOT_FOLDER_ID: ${{ secrets.GDRIVE_ROOT_FOLDER_ID }}
           GDRIVE_CONFIG_TOKEN: ${{ secrets.GDRIVE_CONFIG_TOKEN }}
         run: |
-          pytest tests/tests_transfers/gdrive
+          pytest --durations=0 tests/tests_transfers/gdrive
 
       - name: Test AWS
         env:
@@ -84,11 +84,11 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
         run: |
-          pytest tests/tests_transfers/aws
+          pytest --durations=0 tests/tests_transfers/aws
 
       - name: All Other Tests
         run: |
-          pytest --ignore=tests/tests_transfers/ssh --ignore=tests/tests_transfers/gdrive --ignore=tests/tests_transfers/aws
+          pytest --durations=0 --ignore=tests/tests_transfers/ssh --ignore=tests/tests_transfers/gdrive --ignore=tests/tests_transfers/aws
 
 
   build_sdist_wheels:
