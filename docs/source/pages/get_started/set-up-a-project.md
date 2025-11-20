@@ -565,7 +565,7 @@ This file can include:
 By default, these are stored in your  home directory which should be secure. However, for an
 additional layer of security, it is possible to encrypt the Rclone config file using the
 system credential manager of your operating system. This file will then be
-non-readable for anyone who does not have access to your machine user account. Note that
+unreadable for anyone who does not have access to your machine user account. Note that
 anyone with access to the machine user account will be able to decrypt the Rclone file.
 
 Despite this layer of security, it is not recommended to use datashuttle for remote connectivity on

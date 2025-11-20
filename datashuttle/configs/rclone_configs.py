@@ -95,7 +95,7 @@ class RCloneConfigs:
     def rclone_file_is_encrypted(
         self,
     ) -> bool:
-        """Return whether the config file associated with the current `connection_method`."""
+        """Return whether the config file associated with the current `connection_method` is encrypted."""
         assert rclone_encryption.connection_method_requires_encryption(
             self.datashuttle_configs["connection_method"]
         )

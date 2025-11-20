@@ -97,7 +97,7 @@ class SetupAwsScreen(ModalScreen):
         self.stage = "use_secret_access_key"
 
     def use_secret_access_key_to_setup_aws_connection(self) -> None:
-        """Set up the AWS connection and failure.
+        """Set up the AWS connection and inform user of success or failure.
 
         If success, move onto the rclone_encryption screen.
         """
@@ -143,6 +143,6 @@ class SetupAwsScreen(ModalScreen):
             self.stage = "finished"
         else:
             message = (
-                f"The rclone_encryption set up failed. Exception: {output}"
+                f"The rclone encryption set up failed. Exception: {output}"
             )
             self.query_one("#setup_aws_messagebox_message").update(message)
