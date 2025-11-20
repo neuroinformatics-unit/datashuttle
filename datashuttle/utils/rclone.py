@@ -505,13 +505,13 @@ def setup_rclone_config_for_aws(
 
 def get_config_arg(cfg: Configs) -> str:
     """Get the full argument to run Rclone commands with a specific config."""
-    rclone_config_path = (
-        cfg.rclone.get_rclone_central_connection_config_filepath()
-    )
-
     if rclone_encryption.connection_method_requires_encryption(
         cfg["connection_method"]
     ):
+        rclone_config_path = (
+            cfg.rclone.get_rclone_central_connection_config_filepath()
+        )
+
         return f'--config "{rclone_config_path}"'
     else:
         return ""
