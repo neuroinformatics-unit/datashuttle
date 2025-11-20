@@ -97,7 +97,7 @@ class SetupAwsScreen(ModalScreen):
         self.stage = "use_secret_access_key"
 
     def use_secret_access_key_to_setup_aws_connection(self) -> None:
-        """Set up the AWS connection and failure.
+        """Set up the AWS connection and inform user of success or failure.
 
         If success, move onto the rclone_encryption screen.
         """
