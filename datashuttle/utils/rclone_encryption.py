@@ -337,7 +337,7 @@ def get_explanation_message(
 
     pass_type = {
         "ssh": "your private SSH key",
-        "aws": "your IAM access key ID and seceret access key",
+        "aws": "your IAM access key ID and secret access key",
         "gdrive": "your Google Drive access token and client secret (if set)",
     }
 
