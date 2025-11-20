@@ -143,6 +143,6 @@ class SetupAwsScreen(ModalScreen):
             self.stage = "finished"
         else:
             message = (
-                f"The rclone_encryption set up failed. Exception: {output}"
+                f"The rclone encryption set up failed. Exception: {output}"
             )
             self.query_one("#setup_aws_messagebox_message").update(message)
