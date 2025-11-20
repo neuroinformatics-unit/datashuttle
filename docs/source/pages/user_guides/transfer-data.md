@@ -146,7 +146,7 @@ Click `Transfer` to begin.
 :::{tab-item} Python API
 :sync: python
 
-The [](upload_rawdata()), [](upload_derivatives()) and [](download_rawdata()), [](download_derivatives())
+The `upload_rawdata()`, `upload_derivatives()` and `download_rawdata()`, `download_derivatives()`
 methods target transfer to a particular top-level folder.
 
 The below example will upload `rawdata` then download `derivatives`.
@@ -221,7 +221,7 @@ Finally, click `Transfer` to begin.
 :::{tab-item} Python API
 :sync: python
 
-The [](upload_custom()) and [](download_custom()) methods can be used for custom
+The `upload_custom()` and `download_custom()` methods can be used for custom
 data transfers. For example, to perform a custom upload:
 
 ```python

@@ -269,8 +269,7 @@ class TestConfigs(BaseTest):
     # -------------------------------------------------------------
 
     @pytest.mark.parametrize(
-        "connection_method",
-        ["local_only", "local_filesystem", "ssh", "gdrive", "aws"],
+        "connection_method", [None, "local_filesystem", "ssh", "gdrive", "aws"]
     )
     def test_connection_method_required_args(
         self, tmp_path, no_cfg_project, connection_method
@@ -324,44 +323,6 @@ class TestConfigs(BaseTest):
             assert folder == central_path / project_name / "rawdata"
         else:
             assert folder == Path("rawdata")
-
-    def test_connection_method_compatibility(self, no_cfg_project, tmp_path):
-        """Check `None` for `connection_method` is handled properly.
-
-        In v0.7.2" "local_only" instead of `None` is used internally for
-        `connection_method` is local-only mode. For backward compatibility,
-        `None` is still accepted on public functions as an alias.
-
-        """
-        # Make a project with `None` and check it is set to "local_only"
-        no_cfg_project.make_config_file(
-            local_path=tmp_path / "x", connection_method=None
-        )
-
-        assert no_cfg_project.cfg["connection_method"] == "local_only"
-
-        assert no_cfg_project.is_local_project()
-
-        # Update config to something else
-        no_cfg_project.update_config_file(
-            local_path=tmp_path / "x",
-            connection_method="local_filesystem",
-            central_path=tmp_path / "x",
-        )
-
-        assert no_cfg_project.cfg["connection_method"] == "local_filesystem"
-        assert not no_cfg_project.is_local_project()
-
-        # Update it using `None` to check this interface converts to local only too.
-        no_cfg_project.update_config_file(
-            local_path=tmp_path / "x",
-            connection_method=None,
-            central_path=None,
-        )
-
-        assert no_cfg_project.cfg["connection_method"] == "local_only"
-
-        assert no_cfg_project.is_local_project()
 
     # -------------------------------------------------------------------------
     # Utils

@@ -29,7 +29,7 @@ from datashuttle.tui.tooltips import get_tooltip
 class CreateFoldersSettingsScreen(ModalScreen):
     """Settings for the Create Folders tab.
 
-    Handles setting datashuttle's `validation_template`, as well
+    Handles setting datashuttle's `name_template`, as well
     as the top-level-folder select and option to bypass all validation.
 
     Name Templates
@@ -37,8 +37,8 @@ class CreateFoldersSettingsScreen(ModalScreen):
     These are regexp templates that can be validated against
     during folder creation / project validation.
 
-    An input is provided to input a `validation_template` for validation. When
-    the window is closed, the `validation_template` is stored in datashuttle's
+    An input is provided to input a `name_template` for validation. When
+    the window is closed, the `name_template` is stored in datashuttle's
     persistent settings.
 
     The Create tab validation of input widgets is immediately updated
@@ -46,7 +46,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
 
     Attributes
     ----------
-    Because the Input for `validation_templates` is shared between subject
+    Because the Input for `name_templates` is shared between subject
     and session, the values are held in the `input_values` attribute.
     These are loaded from `persistent_settings` on init.
 
@@ -89,8 +89,8 @@ class CreateFoldersSettingsScreen(ModalScreen):
         ses_on = not sub_on
 
         explanation = r"""
-        You can define a custom “Template” to ensure subject or
-        session names follow a particular pattern or format.
+        A 'Template' can be set check subject or session names are
+        formatted in a specific way.
 
         For example:
             sub-\d\d_id-.?.?.?_.*
@@ -99,9 +99,6 @@ class CreateFoldersSettingsScreen(ModalScreen):
         """
 
         bypass_validation = self.interface.tui_settings["bypass_validation"]
-        allow_letters_in_sub_ses_values = self.interface.tui_settings[
-            "allow_letters_in_sub_ses_values"
-        ]
         suggest_next_sub_ses_central = self.interface.tui_settings[
             "suggest_next_sub_ses_central"
         ]
@@ -119,33 +116,22 @@ class CreateFoldersSettingsScreen(ModalScreen):
                 id="toplevel_folder_select_container",
             ),
             Container(
-                Container(
-                    Checkbox(
-                        "Search central for suggestions",
-                        value=suggest_next_sub_ses_central,
-                        id="suggest_next_sub_ses_central_checkbox",
-                    ),
-                    Horizontal(
-                        Checkbox(
-                            "Bypass validation",
-                            value=bypass_validation,
-                            id="create_folders_settings_bypass_validation_checkbox",
-                        ),
-                        Checkbox(
-                            "Allow letters in sub- and ses- values",
-                            value=allow_letters_in_sub_ses_values,
-                            id="create_folders_settings_allow_letters_in_checkbox",
-                        ),
-                    ),
+                Checkbox(
+                    "Search Central For Suggestions",
+                    value=suggest_next_sub_ses_central,
+                    id="suggest_next_sub_ses_central_checkbox",
+                ),
+                Checkbox(
+                    "Bypass validation",
+                    value=bypass_validation,
+                    id="create_folders_settings_bypass_validation_checkbox",
                 ),
                 Container(
                     Horizontal(
                         Checkbox(
-                            "Validation templates",
+                            "Template validation",
                             id="template_settings_validation_on_checkbox",
-                            value=self.interface.get_validation_templates()[
-                                "on"
-                            ],
+                            value=self.interface.get_name_templates()["on"],
                         ),
                         id="template_inner_horizontal_container",
                     ),
@@ -174,6 +160,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
                 ),
                 id="checkbox_container",
             ),
+            Container(),
             Button("Close", id="create_folders_settings_close_button"),
             id="create_tab_settings_outer_container",
         )
@@ -185,7 +172,6 @@ class CreateFoldersSettingsScreen(ModalScreen):
             "#create_folders_settings_bypass_validation_checkbox",
             "#template_settings_validation_on_checkbox",
             "#suggest_next_sub_ses_central_checkbox",
-            "#create_folders_settings_allow_letters_in_checkbox",
         ]:
             self.query_one(id).tooltip = get_tooltip(id)
 
@@ -195,9 +181,9 @@ class CreateFoldersSettingsScreen(ModalScreen):
 
     def init_input_values_holding_variable(self) -> None:
         """Add the project Name Templates to the relevant Inputs."""
-        validation_templates = self.interface.get_validation_templates()
-        self.input_values["sub"] = validation_templates["sub"]
-        self.input_values["ses"] = validation_templates["ses"]
+        name_templates = self.interface.get_name_templates()
+        self.input_values["sub"] = name_templates["sub"]
+        self.input_values["ses"] = name_templates["ses"]
 
     def switch_template_container_disabled(self) -> None:
         """Switch the name template widgets disabled / enabled."""
@@ -207,7 +193,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
         self.query_one("#template_inner_container").disabled = not is_on
 
     def fill_input_from_template(self) -> None:
-        """Fill the `validation_templates` Input.
+        """Fill the `name_templates` Input.
 
         The Input is shared between subject and session,
         depending on the current RadioSet value.
@@ -224,15 +210,15 @@ class CreateFoldersSettingsScreen(ModalScreen):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle button press on the screen.
 
-        On close, update the `validation_templates` stored in
+        On close, update the `name_templates` stored in
         `persistent_settings` with those set on the TUI.
 
         Setting may error if templates are turned on but
         no template exists for either subject or session.
         """
         if event.button.id == "create_folders_settings_close_button":
-            success, output = self.interface.set_validation_templates(
-                self.make_validation_templates_from_widgets()
+            success, output = self.interface.set_name_templates(
+                self.make_name_templates_from_widgets()
             )
             if success:
                 self.dismiss(True)
@@ -242,8 +228,8 @@ class CreateFoldersSettingsScreen(ModalScreen):
         elif event.button.id == "create_settings_bypass_validation_button":
             self.interface.save_tui_settings(False, "bypass_validation")
 
-    def make_validation_templates_from_widgets(self) -> Dict:
-        """Return a canonical `validation_templates` entry based on the current widget settings."""
+    def make_name_templates_from_widgets(self) -> Dict:
+        """Return a canonical `name_templates` entry based on the current widget settings."""
         return {
             "on": self.query_one(
                 "#template_settings_validation_on_checkbox"
@@ -253,7 +239,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
         }
 
     def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
-        """Turn `validation_templates` on or off and update the TUI accordingly."""
+        """Turn `name_templates` on or off and update the TUI accordingly."""
         is_on = event.value
 
         if event.checkbox.id == "template_settings_validation_on_checkbox":
@@ -282,14 +268,6 @@ class CreateFoldersSettingsScreen(ModalScreen):
         elif event.checkbox.id == "suggest_next_sub_ses_central_checkbox":
             self.interface.save_tui_settings(
                 is_on, "suggest_next_sub_ses_central"
-            )
-
-        elif (
-            event.checkbox.id
-            == "create_folders_settings_allow_letters_in_checkbox"
-        ):
-            self.interface.save_tui_settings(
-                is_on, "allow_letters_in_sub_ses_values"
             )
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:

@@ -26,69 +26,15 @@ class TestLocalOnlyProject(BaseTest):
                 local_path, central_path=tmp_path / "central"
             )
         assert (
-            "Cannot set `central_path` when `connection_method` is 'local_only'."
+            "Either both `central_path` and `connection_method` must be set"
             in str(e.value)
         )
 
         with pytest.raises(ConfigError) as e:
-            project.make_config_file(
-                local_path, connection_method="local_filesystem"
-            )
-
+            project.make_config_file(local_path, connection_method="ssh")
         assert (
-            "`central_path` must be set if `connection_method` is local_filesystem"
+            "Either both `central_path` and `connection_method` must be set"
             in str(e.value)
-        )
-
-        with pytest.raises(ConfigError) as e:
-            project.make_config_file(
-                local_path,
-                connection_method="ssh",
-            )
-
-        assert (
-            "central_host_id' and 'central_host_username' are required if 'connection_method' is 'ssh'."
-            in str(e.value)
-        )
-
-        with pytest.raises(ConfigError) as e:
-            project.make_config_file(
-                local_path,
-                connection_method="ssh",
-                central_host_id="@",
-                central_host_username="@",
-            )
-
-        assert (
-            "`central_path` must be set if `connection_method` is ssh"
-            in str(e.value)
-        )
-
-        with pytest.raises(ConfigError) as e:
-            project.make_config_file(local_path, connection_method="aws")
-        assert (
-            "`central_path` cannot be `None` when `connection_method` is 'aws'. `central_path` must include the s3 bucket name."
-            in str(e.value)
-        )
-
-        with pytest.raises(ConfigError) as e:
-            project.make_config_file(
-                local_path, central_path="@", connection_method="aws"
-            )
-
-        assert (
-            str(e.value)
-            == "Both aws_access_key_id and aws_region must be present for AWS connection."
-        )
-
-        with pytest.raises(ConfigError) as e:
-            project.make_config_file(
-                local_path, central_path="@", connection_method="gdrive"
-            )
-
-        assert (
-            str(e.value)
-            == "'gdrive_root_folder_id' is required if 'connection_method' is 'gdrive'."
         )
 
     @pytest.mark.parametrize("project", ["local"], indirect=True)

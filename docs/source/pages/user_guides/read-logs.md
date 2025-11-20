@@ -44,7 +44,7 @@ Clicking `Open Most Recent` will open the most recently saved logs.
 :sync: python
 
 The path where logs are stored can be accessed by running
-[](get_logging_path()):
+`get_logging_path()`:
 
 ```python
 logs_path = project.get_logging_path()

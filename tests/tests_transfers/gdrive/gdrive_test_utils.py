@@ -67,9 +67,4 @@ def has_gdrive_environment_variables():
     ]:
         if key not in os.environ:
             return False
-
-        # On CI triggered by forked repositories, secrets are empty
-        if os.environ[key].strip() == "":
-            return False
-
     return True

@@ -9,7 +9,6 @@ if TYPE_CHECKING:
     from datashuttle.tui.interface import Interface
     from datashuttle.tui.screens.new_project import NewProjectScreen
     from datashuttle.tui.screens.project_manager import ProjectManagerScreen
-    from datashuttle.utils.custom_types import ConnectionMethods
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -172,9 +171,7 @@ class ConfigsContent(Container):
             RadioSet(
                 RadioButton(
                     "No connection (local only)",
-                    id=self.radiobutton_id_from_connection_method(
-                        "local_only"
-                    ),
+                    id="configs_local_only_radiobutton",
                 ),
                 RadioButton(
                     "Local Filesystem",
@@ -281,7 +278,7 @@ class ConfigsContent(Container):
         else:
             self.query_one("#configs_local_only_radiobutton").value = True
 
-            self.setup_widgets_to_display(connection_method="local_only")
+            self.setup_widgets_to_display(connection_method=None)
 
         # Setup tooltips
         if not self.interface:
@@ -344,23 +341,30 @@ class ConfigsContent(Container):
 
     def connection_method_from_radiobutton_id(
         self, radiobutton_id: str
-    ) -> ConnectionMethods:
+    ) -> str | None:
         """Convert back from radiobutton Textual ID to connection method."""
         assert radiobutton_id.startswith("configs_")
         assert radiobutton_id.endswith("_radiobutton")
 
-        connection_method: ConnectionMethods = radiobutton_id[  # type: ignore
+        connection_string = radiobutton_id[
             len("configs_") : -len("_radiobutton")
         ]
-        return connection_method
+        return (
+            connection_string
+            if connection_string in get_connection_methods_list()
+            else None
+        )
 
     def set_central_path_input_tooltip(
         self, connection_method: str | None
     ) -> None:
         """Set tooltip depending on the connection method."""
-        tooltip = get_tooltip(
-            f"config_central_path_input_mode-{connection_method}"
-        )
+        if connection_method is None:
+            tooltip = get_tooltip("config_central_path_input_mode-local_only")
+        else:
+            tooltip = get_tooltip(
+                f"config_central_path_input_mode-{connection_method}"
+            )
         self.query_one("#configs_central_path_input").tooltip = tooltip
 
     def get_platform_dependent_example_paths(
@@ -655,7 +659,7 @@ class ConfigsContent(Container):
             "configs_aws_radiobutton":
                 cfg_to_load["connection_method"] == "aws",
             "configs_local_only_radiobutton":
-                cfg_to_load["connection_method"] == "local_only",
+                cfg_to_load["connection_method"] is None,
         }
         # fmt: on
 
@@ -737,9 +741,7 @@ class ConfigsContent(Container):
         )
         select.value = value
 
-    def setup_widgets_to_display(
-        self, connection_method: ConnectionMethods
-    ) -> None:
+    def setup_widgets_to_display(self, connection_method: str | None) -> None:
         """Set up widgets to display based on the chosen `connection_method` on the radiobutton.
 
         The widgets pertaining to the chosen connection method will be displayed.
@@ -751,9 +753,10 @@ class ConfigsContent(Container):
 
         Called on mount, on radiobuttons' switch and upon saving project configs.
         """
-        assert connection_method in get_connection_methods_list(), (
-            "Unexpected connection method."
-        )
+        if connection_method:
+            assert connection_method in get_connection_methods_list(), (
+                "Unexpected Connection Method"
+            )
 
         # Connection specific widgets
         connection_widget_display_functions = {
@@ -769,7 +772,7 @@ class ConfigsContent(Container):
             for widget in connection_widgets:
                 widget.display = connection_method == name
 
-        has_connection_method = connection_method != "local_only"
+        has_connection_method = connection_method is not None
 
         # Central Path Input
         self.query_one(
@@ -780,7 +783,7 @@ class ConfigsContent(Container):
         ).disabled = not has_connection_method
 
         # Central Path Input Placeholder
-        if connection_method == "local_only":
+        if connection_method is None:
             self.query_one("#configs_central_path_input").value = ""
             self.query_one("#configs_central_path_input").placeholder = ""
         else:
@@ -816,7 +819,8 @@ class ConfigsContent(Container):
         )
 
         if (
-            connection_method in ["local_only", "local_filesystem"]
+            not connection_method
+            or connection_method == "local_filesystem"
             or not self.interface
             or connection_method != self.interface.get_configs()["connection_method"]
         ):

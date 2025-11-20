@@ -88,7 +88,7 @@ The `Create` tab has a lot of useful shortcuts.
 
 First, **double-clicking subject or session input boxes** will suggest
 the next subject or session to create, based on the local project.
-If a [Validation Template](how-to-use-validation-templates) is set, the
+If a [Name Template](how-to-use-name-templates) is set, the
 suggested name  will also include the template.
 
 Holding `CTRL` while clicking will enter the `sub-`
@@ -124,13 +124,12 @@ the top-level folder, and bypass validation.
 ```{image} /_static/screenshots/how-to-create-folders-settings-dark.png
    :align: center
    :class: only-dark
-   :width: 900px
+   :width: 500px
 ```
 ```{image} /_static/screenshots/how-to-create-folders-settings-light.png
    :align: center
    :class: only-light
-   :width: 900px
-
+   :width: 500px
 ```
 <br>
 
@@ -138,30 +137,20 @@ Top level folder
 : This dropdown box will set whether folders are created in the
 `rawdata` or `derivatives` top-level folder.
 
-Search central for suggestions
-: By default, suggesting the next `sub-` or `ses-` number will
-be based only on the local project. Select this to also search
-the project on central. If a `local only` project, this will have
-no effect.
-
 Bypass validation
 : This setting will allow folder creation even if the names
 are not valid (i.e. they break with
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/)).
 
 This screen is also used to validate and autofill with
-[Validation Templates](how-to-use-validation-templates).
-
-Allow letters in sub- and ses- values
-: This setting allows `sub-` or `ses-` values in created folders to be
-any alphanumeric character, rather than restricted to integers.
+[Name Templates](how-to-use-name-templates).
 
 :::
 
 :::{tab-item} Python API
 :sync: python
 
-The [](create_folders()) method is used for folder creation.
+The `create_folders()` method is used for folder creation.
 
 We simply need to provide the subject, session and datatypes to create:
 
@@ -178,8 +167,9 @@ created_folders = project.create_folders(
 )
 ```
 
-`created_folders` is a list containing  `Path`s to created datatype folders.
-See the below section for details on the `@DATE@` and other convenience tags.
+The method outputs `created_folders`, which contains the
+`Path`s to created datatype folders. See the below section for
+details on the `@DATE@` and other convenience tags.
 
 By default, an error will be raised if the folder names break
 with [Neuroblueprint](https://neuroblueprint.neuroinformatics.dev/)

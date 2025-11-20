@@ -7,11 +7,10 @@ on:
     tags:
       - 'v*'
   pull_request:
-
   schedule:
-    # Cron runs on the 1st and 15th of every month.
+    # Weekly cron job at 12:00 AM UTC on Mondays.
     # This will only run on main by default.
-    - cron: "0 0 1,15 * *"
+    - cron: '0 0 * * 1'
 
 jobs:
   linting:
@@ -20,7 +19,6 @@ jobs:
       - uses: neuroinformatics-unit/actions/lint@v2
 
   test:
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     needs: [linting]
     name: ${{ matrix.os }} py${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
@@ -30,18 +28,13 @@ jobs:
         shell: bash -l {0}
 
     strategy:
-      fail-fast: true
       matrix:
         # macos-14 is M1, macos-13 is intel. Run on earliest and
         # latest python versions. All python versions are tested in
         # the weekly cron job.
-         # Test all Python versions for cron job, and only first/last for other triggers
-        os: ${{ fromJson(github.event_name == 'schedule'
-              && '["ubuntu-latest","windows-latest","macos-14","macos-13"]'
-              || '["ubuntu-latest","windows-latest","macos-latest"]') }}
-        python-version: ${{ fromJson(github.event_name == 'schedule'
-              && '["3.9","3.10","3.11","3.12","3.13"]'
-              || '["3.9","3.13"]') }}
+        os: [ ubuntu-latest, windows-latest, macos-14, macos-13]
+        # Test all Python versions for cron job, and only first/last for other triggers
+        python-version: ${{ fromJson(github.event_name == 'schedule' && '["3.9", "3.10", "3.11", "3.12", "3.13"]' || '["3.9", "3.13"]') }}
 
     steps:
       - uses: actions/checkout@v5
@@ -113,7 +106,7 @@ jobs:
     if: github.event_name == 'push' && github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/download-artifact@v6
+    - uses: actions/download-artifact@v5
       with:
         name: artifact
         path: dist

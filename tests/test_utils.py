@@ -40,7 +40,11 @@ def setup_project_default_configs(
 
     project.make_config_file(**default_configs)
 
-    project._setup_rclone_central_local_filesystem_config()
+    rclone.setup_rclone_config_for_ssh(
+        project.cfg,
+        project.cfg.get_rclone_config_name("ssh"),
+        project.cfg.ssh_key_path,
+    )
 
     if local_path:
         os.makedirs(local_path, exist_ok=True)
@@ -330,13 +334,7 @@ def check_datatype_sub_ses_uploaded_correctly(
 
 
 def make_and_check_local_project_folders(
-    project,
-    top_level_folder,
-    subs,
-    sessions,
-    datatype,
-    datatypes_used=None,
-    allow_letters_in_sub_ses_values=False,
+    project, top_level_folder, subs, sessions, datatype, datatypes_used=None
 ):
     """Make a local project folder tree with the specified datatype,
     subs, sessions and check it is made successfully.
@@ -349,12 +347,7 @@ def make_and_check_local_project_folders(
         datatypes_used = get_all_broad_folders_used()
 
     make_local_folders_with_files_in(
-        project,
-        top_level_folder,
-        subs,
-        sessions,
-        datatype,
-        allow_letters_in_sub_ses_values,
+        project, top_level_folder, subs, sessions, datatype
     )
 
     check_folder_tree_is_correct(
@@ -366,20 +359,9 @@ def make_and_check_local_project_folders(
 
 
 def make_local_folders_with_files_in(
-    project,
-    top_level_folder,
-    subs,
-    sessions=None,
-    datatype="",
-    allow_letters_in_sub_ses_values=False,
+    project, top_level_folder, subs, sessions=None, datatype=""
 ):
-    project.create_folders(
-        top_level_folder,
-        subs,
-        sessions,
-        datatype,
-        allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
-    )
+    project.create_folders(top_level_folder, subs, sessions, datatype)
     for root, dirs, _ in os.walk(project.cfg["local_path"]):
         if not dirs:
             path_ = Path(root) / "placeholder_file.txt"

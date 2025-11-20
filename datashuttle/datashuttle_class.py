@@ -21,13 +21,13 @@ if TYPE_CHECKING:
     import subprocess
 
     from datashuttle.utils.custom_types import (
-        ConnectionMethods,
         DisplayMode,
         OverwriteExistingFiles,
         Prefix,
         TopLevelFolder,
     )
 
+import paramiko
 import yaml
 
 from datashuttle.configs import (
@@ -124,7 +124,6 @@ class DataShuttle:
         ses_names: Optional[Union[str, List[str]]] = None,
         datatype: Union[str, List[str]] = "",
         bypass_validation: bool = False,
-        allow_letters_in_sub_ses_values: bool = False,
         log: bool = True,
     ) -> Dict[str, List[Path]]:
         """Create a folder tree in the project folder.
@@ -159,13 +158,6 @@ class DataShuttle:
         bypass_validation
             If `True`, folders will be created even if they are not
             valid to NeuroBlueprint style.
-
-        allow_letters_in_sub_ses_values
-            If `True`, any alphanumeric character are allowed for the values associated
-            with sub- or ses-  keys. Otherwise, values must be integer
-            and the following additional checks are performed:
-
-            - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
 
         log
             If `True`, details of folder creation will be logged.
@@ -217,15 +209,14 @@ class DataShuttle:
         utils.log("\nFormatting Names...")
         ds_logger.log_names(["sub_names", "ses_names"], [sub_names, ses_names])
 
-        validation_templates = self.get_validation_templates()
+        name_templates = self.get_name_templates()
 
         format_sub, format_ses = self._format_and_validate_names(
             top_level_folder,
             sub_names,
             ses_names,
-            validation_templates,
+            name_templates,
             bypass_validation,
-            allow_letters_in_sub_ses_values,
             log=True,
         )
 
@@ -260,27 +251,18 @@ class DataShuttle:
         top_level_folder: TopLevelFolder,
         sub_names: Union[str, List[str]],
         ses_names: Optional[Union[str, List[str]]],
-        validation_templates: Dict,
+        name_templates: Dict,
         bypass_validation: bool,
-        allow_letters_in_sub_ses_values: bool,
         log: bool = True,
     ) -> Tuple[List[str], List[str]]:
         """Central method to format and validate subject and session names."""
         format_sub = formatting.check_and_format_names(
-            sub_names,
-            "sub",
-            validation_templates,
-            bypass_validation,
-            allow_letters_in_sub_ses_values,
+            sub_names, "sub", name_templates, bypass_validation
         )
 
         if ses_names is not None:
             format_ses = formatting.check_and_format_names(
-                ses_names,
-                "ses",
-                validation_templates,
-                bypass_validation,
-                allow_letters_in_sub_ses_values,
+                ses_names, "ses", name_templates, bypass_validation
             )
         else:
             format_ses = []
@@ -294,8 +276,7 @@ class DataShuttle:
                 include_central=False,
                 display_mode="error",
                 log=log,
-                validation_templates=validation_templates,
-                allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
+                name_templates=name_templates,
             )
 
         return format_sub, format_ses
@@ -819,26 +800,46 @@ class DataShuttle:
             "setup-ssh-connection-to-central-server", local_vars=locals()
         )
 
-        verified = ssh.verify_ssh_central_host_api(
+        verified = ssh.verify_ssh_central_host(
             self.cfg["central_host_id"],
             self.cfg.hostkeys_path,
             log=True,
         )
 
         if verified:
-            private_key_str = ssh.setup_ssh_key_api(self.cfg, log=True)
-
-            self._setup_rclone_central_ssh_config(private_key_str, log=True)
+            ssh.setup_ssh_key(self.cfg, log=True)
+            self._setup_rclone_central_ssh_config(log=True)
 
             rclone.check_successful_connection_and_raise_error_on_fail(
                 self.cfg
             )
 
-            utils.log_and_message(
-                "SSH key pair setup successfully. SSH key saved to the RClone config file."
-            )
-
         ds_logger.close_log_filehandler()
+
+    @requires_ssh_configs
+    @check_is_not_local_project
+    def write_public_key(self, filepath: str) -> None:
+        """Save the public SSH key to a specified filepath.
+
+        By default, only the SSH private key is stored in the
+        datashuttle configs folder. Use this function to save
+        the public key.
+
+        Parameters
+        ----------
+        filepath
+            Full filepath (including filename) to write the
+            public key to.
+
+        """
+        key: paramiko.RSAKey
+        key = paramiko.RSAKey.from_private_key_file(
+            self.cfg.ssh_key_path.as_posix()
+        )
+
+        with open(filepath, "w") as public:
+            public.write(key.get_base64())
+        public.close()
 
     # -------------------------------------------------------------------------
     # Google Drive
@@ -932,8 +933,8 @@ class DataShuttle:
     def make_config_file(
         self,
         local_path: str,
-        central_path: Optional[str] = None,
-        connection_method: Optional[ConnectionMethods] = "local_only",
+        central_path: str | None = None,
+        connection_method: str | None = None,
         central_host_id: Optional[str] = None,
         central_host_username: Optional[str] = None,
         gdrive_client_id: Optional[str] = None,
@@ -970,7 +971,6 @@ class DataShuttle:
 
         connection_method
             The method used to connect to the central project filesystem,
-            ``None`` is an alias for ``"local_only"``.
             e.g. ``"local_filesystem"`` (e.g. mounted drive) or ``"ssh"``
 
         central_host_id
@@ -1007,10 +1007,6 @@ class DataShuttle:
             local_vars=locals(),
             store_in_temp_folder=True,
         )
-
-        if connection_method is None:
-            # For backward compatibility
-            connection_method = "local_only"
 
         if self._config_path.is_file():
             utils.log_and_raise_error(
@@ -1056,17 +1052,7 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     def update_config_file(self, **kwargs) -> None:
-        """Update the configuration file.
-
-        Parameters
-        ----------
-        **kwargs
-            A dictionary of key-value pairs containing the config
-            settings to update. For example,
-            ``{"connection_method": "local_filesystem", "central_path": "/my/local/path"}``
-            will update the ``connection_method`` and ``central_path`` settings.
-
-        """
+        """Update the configuration file."""
         if not self.cfg:
             utils.log_and_raise_error(
                 "Must have a config loaded before updating configs.",
@@ -1077,11 +1063,6 @@ class DataShuttle:
             "update-config-file",
             local_vars=locals(),
         )
-
-        if "connection_method" in kwargs:
-            if kwargs["connection_method"] is None:
-                # For backward compatibility
-                kwargs["connection_method"] = "local_only"
 
         new_cfg = copy.deepcopy(self.cfg)
         new_cfg.update(**kwargs)
@@ -1166,9 +1147,9 @@ class DataShuttle:
         The next subject ID.
 
         """
-        validation_template = self.get_validation_templates()
-        validation_template_regexp = (
-            validation_template["sub"] if validation_template["on"] else None
+        name_template = self.get_name_templates()
+        name_template_regexp = (
+            name_template["sub"] if name_template["on"] else None
         )
 
         if self.is_local_project():
@@ -1181,7 +1162,7 @@ class DataShuttle:
             include_central=include_central,
             return_with_prefix=return_with_prefix,
             search_str="sub-*",
-            validation_template_regexp=validation_template_regexp,
+            name_template_regexp=name_template_regexp,
         )
 
     @check_configs_set
@@ -1215,9 +1196,9 @@ class DataShuttle:
         The next session ID.
 
         """
-        validation_template = self.get_validation_templates()
-        validation_template_regexp = (
-            validation_template["ses"] if validation_template["on"] else None
+        name_template = self.get_name_templates()
+        name_template_regexp = (
+            name_template["ses"] if name_template["on"] else None
         )
 
         if self.is_local_project():
@@ -1230,7 +1211,7 @@ class DataShuttle:
             include_central=include_central,
             return_with_prefix=return_with_prefix,
             search_str="ses-*",
-            validation_template_regexp=validation_template_regexp,
+            name_template_regexp=name_template_regexp,
         )
 
     @check_configs_set
@@ -1245,38 +1226,36 @@ class DataShuttle:
     # Name Templates
     # -------------------------------------------------------------------------
 
-    def get_validation_templates(self) -> Dict:
+    def get_name_templates(self) -> Dict:
         """Return the regexp templates used for validation.
 
         If the "on" key is set to `False`, template validation is not performed.
 
         Returns
         -------
-        validation_templates
-            e.g. {"validation_templates": {"on": False, "sub": None, "ses": None}}
+        name_templates
+            e.g. {"name_templates": {"on": False, "sub": None, "ses": None}}
 
         """
         settings = self._load_persistent_settings()
-        return settings["validation_templates"]
+        return settings["name_templates"]
 
-    def set_validation_templates(self, new_validation_templates: Dict) -> None:
+    def set_name_templates(self, new_name_templates: Dict) -> None:
         """Update the persistent settings with new name templates.
 
-        Name templates are regexp for that, when ``validation_templates["on"]`` is
+        Name templates are regexp for that, when ``name_templates["on"]`` is
         set to ``True``, ``"sub"`` and ``"ses"`` names are validated against
         the regexp contained in the dict.
 
         Parameters
         ----------
-        new_validation_templates
-            e.g. ``{"validation_templates": {"on": False, "sub": None, "ses": None}}``
+        new_name_templates
+            e.g. ``{"name_templates": {"on": False, "sub": None, "ses": None}}``
             where ``"sub"`` or ``"ses"`` can be a regexp that subject and session
             names respectively are validated against.
 
         """
-        self._update_persistent_setting(
-            "validation_templates", new_validation_templates
-        )
+        self._update_persistent_setting("name_templates", new_name_templates)
 
     # -------------------------------------------------------------------------
     # Showers
@@ -1298,7 +1277,6 @@ class DataShuttle:
         display_mode: DisplayMode,
         include_central: bool = False,
         strict_mode: bool = False,
-        allow_letters_in_sub_ses_values: bool = False,
     ) -> List[str]:
         """Perform validation on the project.
 
@@ -1328,13 +1306,6 @@ class DataShuttle:
             any folder not prefixed with sub-, ses- or a valid datatype will
             raise a validation issue.
 
-        allow_letters_in_sub_ses_values
-            If `True`, any alphanumeric character are allowed for the values associated
-            with sub- or ses-  keys. Otherwise, values must be integer
-            and the following additional checks are performed:
-
-            - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
-
         Returns
         -------
         error_messages
@@ -1357,7 +1328,7 @@ class DataShuttle:
             local_vars=locals(),
         )
 
-        validation_templates = self.get_validation_templates()
+        name_templates = self.get_name_templates()
 
         if self.is_local_project():
             include_central = False
@@ -1371,9 +1342,8 @@ class DataShuttle:
             top_level_folder_to_validate,
             include_central=include_central,
             display_mode=display_mode,
-            validation_templates=validation_templates,
+            name_templates=name_templates,
             strict_mode=strict_mode,
-            allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
         )
 
         ds_logger.close_log_filehandler()
@@ -1381,11 +1351,7 @@ class DataShuttle:
         return error_messages
 
     @staticmethod
-    def check_name_formatting(
-        names: Union[str, list],
-        prefix: Prefix,
-        allow_letters_in_sub_ses_values: bool = False,
-    ) -> None:
+    def check_name_formatting(names: Union[str, list], prefix: Prefix) -> None:
         """Format a list of subject or session names.
 
         Pass list of names to check how these will be auto-formatted,
@@ -1403,13 +1369,6 @@ class DataShuttle:
             The relevant subject or session prefix,
             e.g. ``"sub-"`` or ``"ses-"``
 
-        allow_letters_in_sub_ses_values
-            If `True`, any alphanumeric character are allowed for the values associated
-            with sub- or ses-  keys. Otherwise, values must be integer
-            and the following additional checks are performed:
-
-            - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
-
         """
         if prefix not in ["sub", "ses"]:
             utils.log_and_raise_error(
@@ -1420,11 +1379,7 @@ class DataShuttle:
         if isinstance(names, str):
             names = [names]
 
-        formatted_names = formatting.check_and_format_names(
-            names,
-            prefix,
-            allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
-        )
+        formatted_names = formatting.check_and_format_names(names, prefix)
         utils.print_message_to_user(formatted_names)
 
     # -------------------------------------------------------------------------
@@ -1569,13 +1524,11 @@ class DataShuttle:
         """
         folders.create_folders(self.cfg.project_metadata_path, log=False)
 
-    def _setup_rclone_central_ssh_config(
-        self, private_key_str: str, log: bool
-    ) -> None:
+    def _setup_rclone_central_ssh_config(self, log: bool) -> None:
         rclone.setup_rclone_config_for_ssh(
             self.cfg,
             self.cfg.get_rclone_config_name("ssh"),
-            private_key_str,
+            self.cfg.ssh_key_path,
             log=log,
         )
 
@@ -1671,15 +1624,8 @@ class DataShuttle:
         Added keys:
             v0.4.0: tui "overwrite_existing_files" and "dry_run"
         """
-        if "validation_templates" not in settings:
-            if "name_templates" in settings:
-                settings["validation_templates"] = settings.pop(
-                    "name_templates"
-                )
-            else:
-                settings.update(
-                    canonical_configs.get_validation_templates_defaults()
-                )
+        if "name_templates" not in settings:
+            settings.update(canonical_configs.get_name_templates_defaults())
 
         canonical_tui_configs = canonical_configs.get_tui_config_defaults()
 
@@ -1690,7 +1636,6 @@ class DataShuttle:
             "overwrite_existing_files",
             "dry_run",
             "suggest_next_sub_ses_central",
-            "allow_letters_in_sub_ses_values",
         ]:
             if key not in settings["tui"]:
                 settings["tui"][key] = canonical_tui_configs["tui"][key]

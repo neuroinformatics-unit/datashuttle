@@ -397,8 +397,8 @@ class TransferData:
             [name in ["all", "all_datatype"] for name in self.datatype]
         ):
             utils.log_and_raise_error(
-                "If either `all` or `all_datatype` is selected for datatype, "
-                "it must be the only selected option.",
+                "'datatype' must only include 'all' "
+                "or 'all_datatype' if these options are used.",
                 ValueError,
             )
 
@@ -461,12 +461,8 @@ class TransferData:
                 processed_names += [f"all_non_{prefix}"]
 
         else:
-            # Format the sub and ses names to search for. This expands @TO@
-            # flag and adds sub- or ses- prefixes if not found. Do not perform
-            # validation here as we want to be less restrictive during transfer
-            # searchers vs. folder creation.
             processed_names = formatting.check_and_format_names(
-                names_checked, prefix, bypass_validation=True
+                names_checked, prefix
             )
             processed_names = folders.search_for_wildcards(
                 self.__cfg,

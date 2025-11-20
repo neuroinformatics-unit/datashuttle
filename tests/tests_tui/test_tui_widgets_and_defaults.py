@@ -397,7 +397,7 @@ class TestTuiWidgets(TuiBase):
                 pilot.app.screen.query_one(
                     "#suggest_next_sub_ses_central_checkbox"
                 ).label._text
-                == "Search central for suggestions"
+                == "Search Central For Suggestions"
             )
             assert (
                 pilot.app.screen.query_one(
@@ -420,25 +420,12 @@ class TestTuiWidgets(TuiBase):
                 is False
             )
 
-            assert (
-                pilot.app.screen.query_one(
-                    "#create_folders_settings_allow_letters_in_checkbox"
-                ).label._text
-                == "Allow letters in sub- and ses- values"
-            )
-            assert (
-                pilot.app.screen.query_one(
-                    "#create_folders_settings_allow_letters_in_checkbox"
-                ).value
-                is False
-            )
-
-            # Validation templates
+            # Template validation
             assert (
                 pilot.app.screen.query_one(
                     "#template_settings_validation_on_checkbox"
                 ).label._text
-                == "Validation templates"
+                == "Template validation"
             )
             assert (
                 pilot.app.screen.query_one(
@@ -464,7 +451,7 @@ class TestTuiWidgets(TuiBase):
             )
 
             assert (
-                "You can define a custom “Template” to ensure"
+                " A 'Template' can be set check subject or session names"
                 in pilot.app.screen.query_one(
                     "#template_message_label"
                 ).renderable
@@ -504,7 +491,7 @@ class TestTuiWidgets(TuiBase):
             await pilot.pause()
 
     @pytest.mark.asyncio
-    async def test_validation_templates_widgets_and_settings(
+    async def test_name_templates_widgets_and_settings(
         self, setup_project_paths
     ):
         """Check the 'Name Templates' section of the 'Create' tab 'Settings
@@ -526,11 +513,11 @@ class TestTuiWidgets(TuiBase):
             # Check the default template settings are as expected
             expected_template = {"on": False, "sub": None, "ses": None}
             assert (
-                pilot.app.screen.interface.get_validation_templates()
+                pilot.app.screen.interface.get_name_templates()
                 == expected_template
             )
             assert (
-                pilot.app.screen.interface.project.get_validation_templates()
+                pilot.app.screen.interface.project.get_name_templates()
                 == expected_template
             )
 
@@ -554,11 +541,11 @@ class TestTuiWidgets(TuiBase):
 
             expected_template = {"on": True, "sub": sub_regexp, "ses": None}
             assert (
-                pilot.app.screen.interface.get_validation_templates()
+                pilot.app.screen.interface.get_name_templates()
                 == expected_template
             )
             assert (
-                pilot.app.screen.interface.project.get_validation_templates()
+                pilot.app.screen.interface.project.get_name_templates()
                 == expected_template
             )
 
@@ -568,11 +555,11 @@ class TestTuiWidgets(TuiBase):
             )
 
             assert (
-                pilot.app.screen.interface.get_validation_templates()
+                pilot.app.screen.interface.get_name_templates()
                 == expected_template
             )
             assert (
-                pilot.app.screen.interface.project.get_validation_templates()
+                pilot.app.screen.interface.project.get_name_templates()
                 == expected_template
             )
 
@@ -617,11 +604,11 @@ class TestTuiWidgets(TuiBase):
                 "ses": ses_regexp,
             }
             assert (
-                pilot.app.screen.interface.get_validation_templates()
+                pilot.app.screen.interface.get_name_templates()
                 == expected_template
             )
             assert (
-                pilot.app.screen.interface.project.get_validation_templates()
+                pilot.app.screen.interface.project.get_name_templates()
                 == expected_template
             )
 
@@ -631,11 +618,11 @@ class TestTuiWidgets(TuiBase):
                 pilot, project_name
             )
             assert (
-                pilot.app.screen.interface.get_validation_templates()
+                pilot.app.screen.interface.get_name_templates()
                 == expected_template
             )
             assert (
-                pilot.app.screen.interface.project.get_validation_templates()
+                pilot.app.screen.interface.project.get_name_templates()
                 == expected_template
             )
 
@@ -667,26 +654,11 @@ class TestTuiWidgets(TuiBase):
             await pilot.pause()
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize(
-        "parameter_name",
-        ["bypass_validation", "allow_letters_in_sub_ses_values"],
-    )
-    async def test_create_folders_validation_settings(
-        self, setup_project_paths, parameter_name
-    ):
-        """Test all configs that underly the 'bypass validation' and `allow_letters_in_sub_ses_values`
+    async def test_bypass_validation_settings(self, setup_project_paths):
+        """Test all configs that underly the 'bypass validation'
         setting are updated correctly by the widget.
-
-        These two options are similar and are both default off, we so we can test
-        them using the same process (turning them on and checking the underlying
-        parameters in the stored dictionaries are also changed as expected).
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
-
-        if parameter_name == "bypass_validation":
-            checkbox_id = "#create_folders_settings_bypass_validation_checkbox"
-        else:
-            checkbox_id = "#create_folders_settings_allow_letters_in_checkbox"
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
@@ -697,17 +669,30 @@ class TestTuiWidgets(TuiBase):
                 pilot, "#create_folders_settings_button"
             )
 
-            assert pilot.app.screen.query_one(checkbox_id).value is False
             assert (
-                pilot.app.screen.interface.tui_settings[parameter_name]
+                pilot.app.screen.query_one(
+                    "#create_folders_settings_bypass_validation_checkbox"
+                ).value
+                is False
+            )
+            assert (
+                pilot.app.screen.interface.tui_settings["bypass_validation"]
                 is False
             )
 
-            await self.scroll_to_click_pause(pilot, checkbox_id)
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_bypass_validation_checkbox"
+            )
 
-            assert pilot.app.screen.query_one(checkbox_id).value is True
             assert (
-                pilot.app.screen.interface.tui_settings[parameter_name] is True
+                pilot.app.screen.query_one(
+                    "#create_folders_settings_bypass_validation_checkbox"
+                ).value
+                is True
+            )
+            assert (
+                pilot.app.screen.interface.tui_settings["bypass_validation"]
+                is True
             )
 
             await self.scroll_to_click_pause(
@@ -720,9 +705,15 @@ class TestTuiWidgets(TuiBase):
                 pilot, "#create_folders_settings_button"
             )
 
-            assert pilot.app.screen.query_one(checkbox_id).value is True
             assert (
-                pilot.app.screen.interface.tui_settings[parameter_name] is True
+                pilot.app.screen.query_one(
+                    "#create_folders_settings_bypass_validation_checkbox"
+                ).value
+                is True
+            )
+            assert (
+                pilot.app.screen.interface.tui_settings["bypass_validation"]
+                is True
             )
 
             await pilot.pause()

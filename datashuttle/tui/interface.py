@@ -35,7 +35,7 @@ class Interface:
     def __init__(self) -> None:
         """Initialise the Interface class."""
         self.project: DataShuttle
-        self.validation_templates: Dict = {}
+        self.name_templates: Dict = {}
         self.tui_settings: Dict = {}
 
         self.gdrive_rclone_setup_process: subprocess.Popen | None = None
@@ -130,10 +130,6 @@ class Interface:
         ]
         bypass_validation = self.tui_settings["bypass_validation"]
 
-        allow_letters_in_sub_ses_values = self.tui_settings[
-            "allow_letters_in_sub_ses_values"
-        ]
-
         try:
             self.project.create_folders(
                 top_level_folder,
@@ -141,7 +137,6 @@ class Interface:
                 ses_names=ses_names,
                 datatype=datatype,
                 bypass_validation=bypass_validation,
-                allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
             )
             return True, None
 
@@ -149,9 +144,7 @@ class Interface:
             return False, str(e)
 
     def validate_names(
-        self,
-        sub_names: List[str],
-        ses_names: Optional[List[str]],
+        self, sub_names: List[str], ses_names: Optional[List[str]]
     ) -> InterfaceOutput:
         """Validate a list of subject / session names.
 
@@ -173,18 +166,13 @@ class Interface:
             "create_tab"
         ]
 
-        allow_letters_in_sub_ses_values = self.tui_settings[
-            "allow_letters_in_sub_ses_values"
-        ]
-
         try:
             format_sub, format_ses = self.project._format_and_validate_names(
                 top_level_folder,
                 sub_names,
                 ses_names,
-                self.get_validation_templates(),
+                self.get_name_templates(),
                 bypass_validation=False,
-                allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
             )
 
             return True, {
@@ -200,7 +188,6 @@ class Interface:
         top_level_folder: list[str] | None,
         include_central: bool,
         strict_mode: bool,
-        allow_letters_in_sub_ses_values: bool,
     ) -> tuple[bool, list[str] | str]:
         """Wrap the validate project function.
 
@@ -215,8 +202,6 @@ class Interface:
             If `True`, the central project is also validated.
         strict_mode
             If `True`, validation will be run in strict mode.
-        allow_letters_in_sub_ses_values
-            If `True`, alphanumeric values will not raise an error.
 
         Returns
         -------
@@ -233,7 +218,6 @@ class Interface:
                 display_mode="print",  # unused
                 include_central=include_central,
                 strict_mode=strict_mode,
-                allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
             )
             return True, results
 
@@ -368,8 +352,8 @@ class Interface:
     # Name templates
     # ----------------------------------------------------------------------------------
 
-    def get_validation_templates(self) -> Dict:
-        """Return the `validation_templates` defining templates to validate against.
+    def get_name_templates(self) -> Dict:
+        """Return the `name_templates` defining templates to validate against.
 
         These are stored in a variable to avoid constantly
         reading these values from disk where they are stored in
@@ -377,21 +361,19 @@ class Interface:
         and the file contents are in sync, so when changed
         on the TUI side they are updated also, in `get_tui_settings`.
         """
-        if not self.validation_templates:
-            self.validation_templates = self.project.get_validation_templates()
+        if not self.name_templates:
+            self.name_templates = self.project.get_name_templates()
 
-        return self.validation_templates
+        return self.name_templates
 
-    def set_validation_templates(
-        self, validation_templates: Dict
-    ) -> InterfaceOutput:
-        """Set the `validation_templates` here and on disk.
+    def set_name_templates(self, name_templates: Dict) -> InterfaceOutput:
+        """Set the `name_templates` here and on disk.
 
-        See `get_validation_templates` for more information.
+        See `get_name_templates` for more information.
         """
         try:
-            self.project.set_validation_templates(validation_templates)
-            self.validation_templates = validation_templates
+            self.project.set_name_templates(name_templates)
+            self.name_templates = name_templates
             return True, None
 
         except BaseException as e:
@@ -400,7 +382,7 @@ class Interface:
     def get_tui_settings(self) -> Dict:
         """Return the "tui" field of `persistent_settings`.
 
-        Similar to `get_validation_templates`, there are held on the
+        Similar to `get_name_templates`, there are held on the
         class to avoid constantly reading from disk.
         """
         if not self.tui_settings:
@@ -513,14 +495,10 @@ class Interface:
     ) -> InterfaceOutput:
         """Set up SSH key pair and associated rclone configuration."""
         try:
-            rsa_key, private_key_str = ssh.generate_ssh_key_strings()
-
             ssh.add_public_key_to_central_authorized_keys(
-                self.project.cfg, rsa_key, password, log=False
+                self.project.cfg, password, log=False
             )
-            self.project._setup_rclone_central_ssh_config(
-                private_key_str, log=False
-            )
+            self.project._setup_rclone_central_ssh_config(log=False)
 
             rclone.check_successful_connection_and_raise_error_on_fail(
                 self.project.cfg

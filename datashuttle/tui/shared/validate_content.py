@@ -20,7 +20,7 @@ from textual.widgets import (
     Select,
 )
 
-from datashuttle.datashuttle_functions import validate_project_from_path
+from datashuttle.datashuttle_functions import quick_validate_project
 from datashuttle.tui.custom_widgets import ClickableInput
 from datashuttle.tui.screens import modal_dialogs, validate_at_path
 from datashuttle.tui.tooltips import get_tooltip
@@ -29,7 +29,7 @@ from datashuttle.tui.tooltips import get_tooltip
 class ValidateContent(Container):
     """A container containing widgets for project validation.
 
-    This is shared between the Validate Project From Path
+    This is shared between the Validate Project from Path
     and validation tab on the project manager. It takes a similar
     approach to ConfigsContent.
 
@@ -83,13 +83,16 @@ class ValidateContent(Container):
                 Button("Select", id="validate_select_button"),
                 id="validate_path_container",
             ),
-            Select(
-                ((name, name) for name in ["rawdata", "derivatives", "both"]),
-                value="rawdata",
-                allow_blank=False,
-                id="validate_top_level_folder_select",
-            ),
             Horizontal(
+                Select(
+                    (
+                        (name, name)
+                        for name in ["rawdata", "derivatives", "both"]
+                    ),
+                    value="rawdata",
+                    allow_blank=False,
+                    id="validate_top_level_folder_select",
+                ),
                 Checkbox(
                     "Include Central",
                     value=False,
@@ -99,11 +102,6 @@ class ValidateContent(Container):
                     "Strict Mode",
                     value=False,
                     id="validate_strict_mode_checkbox",
-                ),
-                Checkbox(
-                    "Allow letters in sub- and ses- values",
-                    value=False,
-                    id="validate_allow_letters_in_sub_ses_values_checkbox",
                 ),
                 id="validate_arguments_horizontal",
             ),
@@ -121,7 +119,6 @@ class ValidateContent(Container):
             "validate_top_level_folder_select",
             "validate_include_central_checkbox",
             "validate_strict_mode_checkbox",
-            "validate_allow_letters_in_sub_ses_values_checkbox",
         ]:
             self.query_one(f"#{id}").tooltip = get_tooltip(id)
 
@@ -153,15 +150,9 @@ class ValidateContent(Container):
             select_value = self.query_one(
                 "#validate_top_level_folder_select"
             ).value
-
             top_level_folder = None if select_value == "both" else select_value
-
             strict_mode = self.query_one(
                 "#validate_strict_mode_checkbox"
-            ).value
-
-            allow_letters_in_sub_ses_values = self.query_one(
-                "#validate_allow_letters_in_sub_ses_values_checkbox"
             ).value
 
             if self.interface:
@@ -176,7 +167,6 @@ class ValidateContent(Container):
                     top_level_folder=top_level_folder,
                     include_central=include_central,
                     strict_mode=strict_mode,
-                    allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
                 )
                 if not success:
                     self.parent_class.mainwindow.show_modal_error_dialog(
@@ -202,11 +192,10 @@ class ValidateContent(Container):
                     )
                     return
 
-                output = validate_project_from_path(
+                output = quick_validate_project(
                     path_,
                     top_level_folder=top_level_folder,
                     strict_mode=strict_mode,
-                    allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
                 )
                 self.write_results_to_richlog(output)
 

@@ -259,7 +259,7 @@ class TestTuiCreateFolders(TuiBase):
         checking an error displays. Next, turn on 'bypass validation'
         and check the folders are created despite being invalid.
         """
-        _, _, project_name = setup_project_paths.values()
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
@@ -323,58 +323,12 @@ class TestTuiCreateFolders(TuiBase):
 
             await pilot.pause()
 
-    @pytest.mark.asyncio
-    async def test_allow_letters_in_sub_ses_values(self, setup_project_paths):
-        """Turn on allow alphanumeric labels and check sub and ses folders with such labels are created."""
-        _, _, project_name = setup_project_paths.values()
-
-        app = TuiApp()
-        async with app.run_test(size=self.tui_size()) as pilot:
-            await self.check_and_click_onto_existing_project(
-                pilot, project_name
-            )
-
-            await self.fill_input(
-                pilot, "#create_folders_subject_input", "sub-abc"
-            )
-            await self.fill_input(
-                pilot, "#create_folders_session_input", "ses-abc"
-            )
-
-            await self.scroll_to_click_pause(
-                pilot, "#create_folders_settings_button"
-            )
-            await self.scroll_to_click_pause(
-                pilot, "#create_folders_settings_allow_letters_in_checkbox"
-            )
-            await self.scroll_to_click_pause(
-                pilot, "#create_folders_settings_close_button"
-            )
-
-            await self.scroll_to_click_pause(
-                pilot, "#create_folders_create_folders_button"
-            )
-
-            assert (
-                pilot.app.screen.interface.project.cfg["local_path"]
-                / "rawdata"
-                / "sub-abc"
-            ).is_dir()
-            assert (
-                pilot.app.screen.interface.project.cfg["local_path"]
-                / "rawdata"
-                / "sub-abc"
-                / "ses-abc"
-            ).is_dir()
-
-            await pilot.pause()
-
     # -------------------------------------------------------------------------
     # Test Name Templates
     # -------------------------------------------------------------------------
 
     @pytest.mark.asyncio
-    async def test_validation_template_next_sub_or_ses_and_validation(
+    async def test_name_template_next_sub_or_ses_and_validation(
         self, setup_project_paths
     ):
         """Test validation and double-click for next sub / ses
@@ -390,7 +344,7 @@ class TestTuiCreateFolders(TuiBase):
 
             # Set some name template and check the tooltips
             # indicate mismatches correctly
-            pilot.app.screen.interface.project.set_validation_templates(
+            pilot.app.screen.interface.project.set_name_templates(
                 {"on": True, "sub": r"sub-\d\d\d", "ses": "ses-...."}
             )
 
@@ -762,3 +716,20 @@ class TestTuiCreateFolders(TuiBase):
             sessions=sessions,
             folder_used=folder_used,
         )
+
+    async def double_click_input(self, pilot, sub_or_ses, control=False):
+        """Helper function to double click input to suggest next sub or ses.
+
+        Because this function is performed in separate asyncio task, this was a little
+        brittle in the CI tests leading to random errors. The below
+        combination of awaiting the test, then pausing, stopped the errors.
+        """
+        expand_name = "session" if sub_or_ses == "ses" else "subject"
+
+        await self.double_click(
+            pilot, f"#create_folders_{expand_name}_input", control=control
+        )
+        await test_utils.await_task_by_name_if_present(
+            f"suggest_next_{sub_or_ses}_async_task"
+        )
+        await pilot.pause(0.5)

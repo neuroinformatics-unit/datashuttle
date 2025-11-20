@@ -56,8 +56,8 @@ Access logs of all ``datashuttle``'s actions
 :::
 
 
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Use Validation Templates
-:link: use-validation-templates
+:::{grid-item-card} {fas}`desktop;sd-text-primary` Use name templates
+:link: use-name-templates
 :link-type: doc
 
 Use templates for subject and session names
@@ -77,6 +77,6 @@ create-folders
 transfer-data
 update-configs
 read-logs
-use-validation-templates
+use-name-templates
 
 ```

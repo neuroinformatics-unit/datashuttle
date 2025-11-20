@@ -47,23 +47,23 @@ def setup_ssh_connection(project, setup_ssh_key_pair=True):
     sys.stdin.isatty = lambda: True
 
     # Run setup
-    verified = ssh.verify_ssh_central_host_api(
+    verified = ssh.verify_ssh_central_host(
         project.cfg["central_host_id"], project.cfg.hostkeys_path, log=True
     )
 
     if setup_ssh_key_pair:
-        private_key_str = ssh.setup_ssh_key_api(project.cfg, log=False)
-
-        rclone.setup_rclone_config_for_ssh(
-            project.cfg,
-            project.cfg.get_rclone_config_name("ssh"),
-            private_key_str,
-        )
+        ssh.setup_ssh_key(project.cfg, log=False)
 
     # Restore functions
     builtins.input = orig_builtin
     utils.get_connection_secret_from_user = orig_get_secret
     sys.stdin.isatty = orig_isatty
+
+    rclone.setup_rclone_config_for_ssh(
+        project.cfg,
+        project.cfg.get_rclone_config_name("ssh"),
+        project.cfg.ssh_key_path,
+    )
 
     return verified
 

@@ -314,42 +314,25 @@ config label and button align center */
 #validate_top_container {
     align: center top;
     content-align: center top;
-    margin: 2 0 1 0;
+    margin: 2 0 0 0;
     layout: vertical;
     overflow: hidden auto;
 }
 
+
 #validate_arguments_horizontal{
    height: auto;
-   margin: 0 1 1 0;
+   margin: 0 1 1 1;
 }
 
 #validate_top_level_folder_select {
     width: 30%;
-    margin: 0 0 0 1;
-}
-
-#validate_path_label {
-    margin: 0 0 0 2;
 }
 
 #validate_path_input {
     width: 80%;
     margin: 1 1 1 1;
 }
-
-#validate_allow_letters_in_sub_ses_values_checkbox {
-    margin: 0 0 0 6;
-}
-
-#validate_strict_mode_checkbox {
-    margin: 0 0 0 1;
-}
-
-#validate_include_central_checkbox {
-    margin: 0 6 0 1
-}
-
 
 #validate_select_button {
     margin: 1 1 1 1;
@@ -404,8 +387,12 @@ DisplayedDatatypesScreen {
 CreateFoldersSettingsScreen {
     align: center middle;
 }
-#create_folders_settings_toplevel_label {
-    margin: 1 0 0 2;
+
+#labelTESTEST {
+    padding: 1 0 1 2;
+}
+#tabscreen_toplevel_select {
+    padding: 0 0 0 1;
 }
 #create_tab_settings_outer_container {
     height: 80%;
@@ -414,30 +401,26 @@ CreateFoldersSettingsScreen {
     border: tall $panel-lighten-3;
 }
 #checkbox_container {
-    height: 80%;
+    height: 65%;
     overflow: hidden auto;
 }
-#create_folders_settings_allow_letters_in_checkbox {
-    padding: 0 6;
-}
-#create_folders_settings_checkbox_outer_container {
-    margin: 0 0 0 0;
+#toplevel_folder_select_container {
+    height: 15%;
 }
 #template_top_container {
-    height: 75%;
+    height: 70%;
     background: $primary-background;
     border: tall $panel-lighten-3;
     overflow: hidden auto;
-}
-
+ }
 #template_inner_horizontal_container{
     height: 3;
 }
 
-#template_inner_container {
+ #template_inner_container {
     height: 15;
     overflow: auto;
-}
+ }
 
 #template_message_label {
     width: auto;
@@ -487,7 +470,7 @@ CreateFoldersSettingsScreen {
     background: $boost;
  }
 
-#template_settings_radioset:light:disabled {
+ #template_settings_radioset:light:disabled {
     color: $panel-darken-2;
 }
 
@@ -498,10 +481,6 @@ CreateFoldersSettingsScreen {
 
 #template_settings_input:light:disabled {
     color: $panel-darken-2;
-}
-
-#create_folders_settings_close_button {
-    margin: 1 0 0 0;
 }
 
 /* Confirmation Screen --------------------------------------------------------------------- */

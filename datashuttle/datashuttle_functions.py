@@ -22,13 +22,12 @@ from datashuttle.utils import (
 )
 
 
-def validate_project_from_path(
+def quick_validate_project(
     project_path: str | Path,
     top_level_folder: Optional[TopLevelFolder] = "rawdata",
     display_mode: DisplayMode = "warn",
     strict_mode: bool = False,
-    validation_templates: Optional[Dict] = None,
-    allow_letters_in_sub_ses_values: bool = False,
+    name_templates: Optional[Dict] = None,
 ) -> List[str]:
     """Perform validation on a NeuroBlueprint-formatted project.
 
@@ -54,17 +53,10 @@ def validate_project_from_path(
         any folder not prefixed with sub-, ses- or a valid datatype will
         raise a validation issue.
 
-    validation_templates
+    name_templates
         A dictionary of templates for subject and session name
-        to validate against. See ``DataShuttle.set_validation_templates()``
+        to validate against. See ``DataShuttle.set_name_templates()``
         for details.
-
-    allow_letters_in_sub_ses_values
-        If `True`, any alphanumeric character are allowed for the values associated
-        with sub- or ses-  keys. Otherwise, values must be integer
-        and the following additional checks are performed:
-
-        - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
 
     Returns
     -------
@@ -101,9 +93,8 @@ def validate_project_from_path(
         top_level_folder_list=top_level_folders_to_validate,
         include_central=False,
         display_mode=display_mode,
-        validation_templates=validation_templates,
+        name_templates=name_templates,
         strict_mode=strict_mode,
-        allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
     )
 
     return error_messages

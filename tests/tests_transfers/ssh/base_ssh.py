@@ -25,7 +25,7 @@ class BaseSSHTransfer(BaseTransfer):
     @pytest.fixture(
         scope="class",
     )
-    def setup_ssh_container_fixture(self):
+    def setup_ssh_container(self):
         """
         Set up the Dockerfile container for SSH tests and
         delete it on teardown.
