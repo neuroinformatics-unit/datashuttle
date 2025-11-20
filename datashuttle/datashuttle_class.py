@@ -979,7 +979,7 @@ class DataShuttle:
     ) -> None:
         """Try to encrypt the rclone config file.
 
-        If it fails, error and let the user the config file is unencrypted.
+        If it fails, error and let the user know the config file is unencrypted.
         """
         try:
             self.encrypt_rclone_config()
