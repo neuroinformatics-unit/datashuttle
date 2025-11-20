@@ -89,9 +89,6 @@ include-package-data = true
 include = ["datashuttle*"]
 exclude = ["tests*", "docs*"]
 
-[tool.pytest.ini_options]
-addopts = "--cov=datashuttle"
-
 [tool.ruff]
 line-length = 79
 exclude = ["__init__.py","build",".eggs"]
