@@ -432,12 +432,9 @@ def preliminary_setup_gdrive_config_without_browser(
         pipe_std=True,
     )
 
-    try:
-        # Extracting rclone's message from the json
-        output_json = json.loads(output.stdout)
-        message = output_json["Option"]["Help"]
-    except:
-        assert False, f"{output.stderr}"
+    # Extracting rclone's message from the json
+    output_json = json.loads(output.stdout)
+    message = output_json["Option"]["Help"]
 
     if log:
         utils.log(message)
