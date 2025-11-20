@@ -92,23 +92,22 @@ def set_password_linux(cfg: Configs) -> None:
             "`pass` is required to set password. Install e.g. sudo apt install pass."
         )
 
-    try:
-        output = subprocess.run(
-            ["pass", "ls"],
-            shell=True,
-            capture_output=True,
-            text=True,
-        )
-    except subprocess.CalledProcessError as e:
-        if "pass init" in e.stderr:
+    output = subprocess.run(
+        "pass ls",
+        shell=True,
+        capture_output=True,
+        text=True,
+    )
+    if output.returncode != 0:
+        if "pass init" in output.stderr:
             raise RuntimeError(
                 "Password store is not initialized. "
                 "Run `pass init <gpg-id>` before using `pass`."
             )
         else:
             raise RuntimeError(
-                f"\n--- STDOUT ---\n{output.stdout}",
-                f"\n--- STDERR ---\n{output.stderr}",
+                f"\n--- STDOUT ---\n{output.stdout}"
+                f"\n--- STDERR ---\n{output.stderr}"
                 "Could not set up password with `pass`. See the error message above.",
             )
 
