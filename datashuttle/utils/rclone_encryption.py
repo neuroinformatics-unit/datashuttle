@@ -46,9 +46,10 @@ def set_password_windows(cfg: Configs) -> None:
         password_filepath.unlink()
 
     shell = shutil.which("powershell")
-    if not shell:
-        raise RuntimeError(
-            "powershell.exe not found in PATH (need Windows PowerShell 5.1)."
+    if shell is None:
+        utils.log_and_raise_error(
+            "powershell.exe not found in PATH (need Windows PowerShell 5.1).",
+            RuntimeError,
         )
 
     ps_cmd = (
@@ -59,15 +60,16 @@ def set_password_windows(cfg: Configs) -> None:
     )
 
     output = subprocess.run(
-        [shell, "-NoProfile", "-Command", ps_cmd],
+        [shell, "-NoProfile", "-Command", ps_cmd],  # type: ignore
         capture_output=True,
         text=True,
     )
     if output.returncode != 0:
-        raise RuntimeError(
-            f"\n--- STDOUT ---\n{output.stdout}",
-            f"\n--- STDERR ---\n{output.stderr}",
+        utils.log_and_raise_error(
+            f"\n--- STDOUT ---\n{output.stdout}"
+            f"\n--- STDERR ---\n{output.stderr}"
             "Could not set the PSCredential with System.web. See the error message above.",
+            RuntimeError,
         )
 
 
@@ -88,8 +90,9 @@ def set_password_linux(cfg: Configs) -> None:
         text=True,
     )
     if output.returncode != 0:
-        raise RuntimeError(
-            "`pass` is required to set password. Install e.g. sudo apt install pass."
+        utils.log_and_raise_error(
+            "`pass` is required to set password. Install e.g. sudo apt install pass.",
+            RuntimeError,
         )
 
     output = subprocess.run(
@@ -100,15 +103,17 @@ def set_password_linux(cfg: Configs) -> None:
     )
     if output.returncode != 0:
         if "pass init" in output.stderr:
-            raise RuntimeError(
+            utils.log_and_raise_error(
                 "Password store is not initialized. "
-                "Run `pass init <gpg-id>` before using `pass`."
+                "Run `pass init <gpg-id>` before using `pass`.",
+                RuntimeError,
             )
         else:
-            raise RuntimeError(
+            utils.log_and_raise_error(
                 f"\n--- STDOUT ---\n{output.stdout}"
                 f"\n--- STDERR ---\n{output.stderr}"
                 "Could not set up password with `pass`. See the error message above.",
+                RuntimeError,
             )
 
     output = subprocess.run(
@@ -118,10 +123,11 @@ def set_password_linux(cfg: Configs) -> None:
         text=True,
     )
     if output.returncode != 0:
-        raise RuntimeError(
-            f"\n--- STDOUT ---\n{output.stdout}",
-            f"\n--- STDERR ---\n{output.stderr}",
+        utils.log_and_raise_error(
+            f"\n--- STDOUT ---\n{output.stdout}"
+            f"\n--- STDERR ---\n{output.stderr}"
             "Could not remove the password from the RClone config. See the error message above.",
+            RuntimeError,
         )
 
 
@@ -142,10 +148,11 @@ def set_password_macos(cfg: Configs) -> None:
     )
 
     if output.returncode != 0:
-        raise RuntimeError(
-            f"\n--- STDOUT ---\n{output.stdout}",
-            f"\n--- STDERR ---\n{output.stderr}",
-            "Could not remove the password from the RClone config. See the error message above.",
+        utils.log_and_raise_error(
+            f"\n--- STDOUT ---\n{output.stdout}"
+            f"\n--- STDERR ---\n{output.stderr}"
+            "Could not encrypt the RClone config. See the error message above.",
+            RuntimeError,
         )
 
 
@@ -172,7 +179,9 @@ def set_credentials_as_password_command(cfg: Configs) -> None:
 
         shell = shutil.which("powershell")
         if not shell:
-            raise RuntimeError("powershell.exe not found in PATH")
+            utils.log_and_raise_error(
+                "powershell.exe not found in PATH", RuntimeError
+            )
 
         # Escape single quotes inside PowerShell string by doubling them
         cmd = (
@@ -215,9 +224,10 @@ def run_rclone_config_encrypt(cfg: Configs) -> None:
     if not rclone_config_path.exists():
         connection_method = cfg["connection_method"]
 
-        raise RuntimeError(
+        utils.log_and_raise_error(
             f"Rclone config file for: {connection_method} was not found. "
-            f"Make sure you set up the connection first with `setup_{connection_method}_connection()`"
+            f"Make sure you set up the connection first with `setup_{connection_method}_connection()`",
+            RuntimeError,
         )
 
     save_credentials_password(cfg)
@@ -231,10 +241,11 @@ def run_rclone_config_encrypt(cfg: Configs) -> None:
         text=True,
     )
     if output.returncode != 0:
-        raise RuntimeError(
+        utils.log_and_raise_error(
             f"\n--- STDOUT ---\n{output.stdout}\n"
             f"\n--- STDERR ---\n{output.stderr}\n"
-            "Could not encrypt the RClone config. See the error message above."
+            "Could not encrypt the RClone config. See the error message above.",
+            RuntimeError,
         )
 
     remove_credentials_as_password_command()
@@ -260,10 +271,11 @@ def remove_rclone_encryption(cfg: Configs) -> None:
         text=True,
     )
     if output.returncode != 0:
-        raise RuntimeError(
-            f"\n--- STDOUT ---\n{output.stdout}",
-            f"\n--- STDERR ---\n{output.stderr}",
+        utils.log_and_raise_error(
+            f"\n--- STDOUT ---\n{output.stdout}"
+            f"\n--- STDERR ---\n{output.stderr}"
             "Could not remove the password from the RClone config. See the error message above.",
+            RuntimeError,
         )
 
     remove_credentials_as_password_command()
