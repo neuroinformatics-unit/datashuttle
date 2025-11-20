@@ -234,7 +234,7 @@ def run_rclone_config_encrypt(cfg: Configs) -> None:
         raise RuntimeError(
             f"\n--- STDOUT ---\n{output.stdout}\n"
             f"\n--- STDERR ---\n{output.stderr}\n"
-            "Could not remove the password from the RClone config. See the error message above."
+            "Could not encrypt the RClone config. See the error message above."
         )
 
     remove_credentials_as_password_command()
@@ -336,7 +336,7 @@ def get_explanation_message(
 
     pass_type = {
         "ssh": "your private SSH key",
-        "aws": "your IAM access key ID and seceret access key",
+        "aws": "your IAM access key ID and secret access key",
         "gdrive": "your Google Drive access token and client secret (if set)",
     }
 

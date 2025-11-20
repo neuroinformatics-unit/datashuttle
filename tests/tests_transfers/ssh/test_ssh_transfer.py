@@ -160,7 +160,7 @@ class TestSSHTransfer(BaseSSHTransfer):
         )
 
     def test_rclone_config_file_encrypted(self, ssh_setup):
-        """Quick confidence check the set up rclone config is indeed ecrypted."""
+        """Quick confidence check the set up rclone config is indeed encrypted."""
         pathtable, project = ssh_setup
 
         test_utils.check_rclone_file_is_encrypted(
