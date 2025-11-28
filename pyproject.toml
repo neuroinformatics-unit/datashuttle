@@ -23,7 +23,11 @@ dependencies = [
     "show-in-file-manager",
     "gitpython",
     "typeguard",
-    "psutil"
+    "psutil",
+    # Skip the fancylog version which logs env packages
+    # by default, which is slow due to subproecss calls.
+    "fancylog >= 0.7.0; python_version >= '3.11'",
+    "fancylog < 5; python_version < '3.11'",
 ]
 
 classifiers = [
