@@ -26,7 +26,8 @@ dependencies = [
     "psutil",
     # Skip the fancylog version which logs env packages
     # by default, which is slow due to subprocess calls.
-    "fancylog >= 0.7.0"
+    "fancylog >= 0.7.0; python_version >= '3.11'",
+    "fancylog < 0.5.0; python_version < '3.11'",
 ]
 
 classifiers = [
