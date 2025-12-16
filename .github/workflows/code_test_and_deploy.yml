@@ -42,7 +42,7 @@ jobs:
         # the weekly cron job.
          # Test all Python versions for cron job, and only first/last for other triggers
         os: ${{ fromJson(github.event_name == 'schedule'
-              && '["ubuntu-latest","windows-latest","macos-14","macos-13"]'
+              && '["ubuntu-latest","windows-latest","macos-14","macos-14-intel"]'
               || '["ubuntu-latest","windows-latest","macos-latest"]') }}
         python-version: ${{ fromJson(github.event_name == 'schedule'
               && '["3.9","3.10","3.11","3.12","3.13"]'
