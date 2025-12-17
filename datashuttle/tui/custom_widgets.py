@@ -155,7 +155,6 @@ class CustomDirectoryTree(DirectoryTree):
         """
         if not self.has_focus:  # type: ignore
             self.focus()
-            self.has_focus = True
 
     def filter_paths(self, paths: Iterable[Path]) -> Iterable[Path]:
         """Filter out all hidden folders and files from CustomDirectoryTree display.
