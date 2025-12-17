@@ -1210,7 +1210,7 @@ def strip_uncheckable_names(
                 prefix,
                 return_as_int=return_as_int,  # type: ignore
             )[0]
-        except BaseException:
+        except Exception:
             continue
 
         if path_:

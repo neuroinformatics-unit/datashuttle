@@ -193,7 +193,7 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
 
         try:
             showinfm.show_in_file_manager(path_.as_posix())
-        except BaseException:
+        except Exception:
             if path_.is_file():
                 # I don't see why this is not working as according to docs it
                 # should open the containing folder and select.
@@ -256,7 +256,7 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
             )
             self.screen.update_active_tab_tree()
 
-        except BaseException as e:
+        except Exception as e:
             self.show_modal_error_dialog(
                 f"Could not rename the file or folder."
                 f"Check the new name is valid, and correct "

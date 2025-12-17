@@ -168,7 +168,7 @@ class TestUnit:
             f"{prefix}-003",
         ]
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(Exception) as e:
             getters.get_max_sub_or_ses_num_and_value_length(
                 bad_num_values_names, prefix
             )

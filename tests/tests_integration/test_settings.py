@@ -153,7 +153,7 @@ class TestPersistentSettings(BaseTest):
 
         project = test_utils.make_project(project.project_name)
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(Exception) as e:
             project.create_folders("rawdata", "sub-@@@")
 
         assert (
