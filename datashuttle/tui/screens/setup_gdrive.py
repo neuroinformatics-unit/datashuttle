@@ -16,7 +16,7 @@ from textual.screen import ModalScreen
 from textual.widgets import (
     Button,
     Input,
-    Static,
+    Label,
 )
 
 
@@ -50,7 +50,7 @@ class SetupGdriveScreen(ModalScreen):
         """Add widgets to the SetupGdriveScreen."""
         yield Container(
             Vertical(
-                Static(
+                Label(
                     "Ready to setup Google Drive. Press OK to proceed",
                     id="gdrive_setup_messagebox_message",
                 ),
