@@ -200,15 +200,13 @@ def get_max_sub_or_ses_num_and_value_length(
         # Then get the latest existing sub or ses number in the project.
         all_value_nums = []
         for value in all_values_str:
-            try:
-                int_value = utils.sub_or_ses_value_to_int(value)
-                all_value_nums.append(int_value)
-            except NeuroBlueprintError:
-                # Re-raise with a more descriptive error for this case.
+            if not value.isdigit():
                 utils.log_and_raise_error(
                     f"Cannot suggest next {prefix} because not all {prefix} labels in the project are integer. e.g. {prefix}-{value}",
                     NeuroBlueprintError,
                 )
+            int_value = utils.sub_or_ses_value_to_int(value)
+            all_value_nums.append(int_value)
 
         all_value_nums = sorted(all_value_nums)
 
