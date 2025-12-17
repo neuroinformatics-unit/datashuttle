@@ -279,9 +279,9 @@ class TestTuiCreateFolders(TuiBase):
             )
 
             assert (
-                pilot.app.screen.query_one(
-                    "#messagebox_message_label"
-                ).renderable
+                pilot.app.screen.query_one("#messagebox_message_label")
+                .render()
+                .plain
                 == "BAD_VALUE: The value for prefix sub in name sub-abc is not an integer."
             )
 
@@ -424,7 +424,7 @@ class TestTuiCreateFolders(TuiBase):
             )
             assert pilot.app.screen.query_one(
                 "#messagebox_message_label"
-            ).renderable == (
+            ).render().plain == (
                 "TEMPLATE: The name: sub-0001 does not match the template: sub-\\d\\d\\d"
             )
 
@@ -640,9 +640,9 @@ class TestTuiCreateFolders(TuiBase):
 
             assert (
                 "Must input a subject number before suggesting next session number."
-                in pilot.app.screen.query_one(
-                    "#messagebox_message_label"
-                ).renderable
+                in pilot.app.screen.query_one("#messagebox_message_label")
+                .render()
+                .plain
             )
 
     # -------------------------------------------------------------------------

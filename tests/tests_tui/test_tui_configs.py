@@ -239,9 +239,9 @@ class TestTuiConfigs(TuiConfigsBase):
             )
 
             assert (
-                pilot.app.screen.query_one(
-                    "#messagebox_message_label"
-                ).renderable
+                pilot.app.screen.query_one("#messagebox_message_label")
+                .render()
+                .plain
                 == "The project name must contain alphanumeric characters only."
             )
             await pilot.pause()

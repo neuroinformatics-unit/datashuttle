@@ -69,7 +69,9 @@ class TestTuiSetupGdrive(TuiBase):
                 "Press shift+click to copy."
                 in pilot.app.screen.query_one(
                     "#gdrive_setup_messagebox_message"
-                ).renderable
+                )
+                .render()
+                .plain
             )
 
             # Fill the config token
@@ -90,7 +92,9 @@ class TestTuiSetupGdrive(TuiBase):
                 "Setup Complete!"
                 in pilot.app.screen.query_one(
                     "#gdrive_setup_messagebox_message"
-                ).renderable
+                )
+                .render()
+                .plain
             )
 
     @pytest.mark.asyncio
@@ -120,7 +124,9 @@ class TestTuiSetupGdrive(TuiBase):
                 "Press shift+click to copy."
                 in pilot.app.screen.query_one(
                     "#gdrive_setup_messagebox_message"
-                ).renderable
+                )
+                .render()
+                .plain
             )
 
             # Fill the config token
@@ -141,7 +147,9 @@ class TestTuiSetupGdrive(TuiBase):
                 "Google Drive setup failed. Please check your credentials"
                 in pilot.app.screen.query_one(
                     "#gdrive_setup_messagebox_message"
-                ).renderable
+                )
+                .render()
+                .plain
             )
 
     @pytest.mark.asyncio
@@ -171,7 +179,9 @@ class TestTuiSetupGdrive(TuiBase):
                 "Press shift+click to copy."
                 in pilot.app.screen.query_one(
                     "#gdrive_setup_messagebox_message"
-                ).renderable
+                )
+                .render()
+                .plain
             )
 
             # Fill the config token
@@ -192,13 +202,17 @@ class TestTuiSetupGdrive(TuiBase):
                 "Google Drive setup failed. Please check your credentials"
                 in pilot.app.screen.query_one(
                     "#gdrive_setup_messagebox_message"
-                ).renderable
+                )
+                .render()
+                .plain
             )
             assert (
                 "Error 404: File not found"
                 in pilot.app.screen.query_one(
                     "#gdrive_setup_messagebox_message"
-                ).renderable
+                )
+                .render()
+                .plain
             )
 
     @pytest.mark.asyncio
@@ -229,7 +243,9 @@ class TestTuiSetupGdrive(TuiBase):
                 "Please authenticate through browser"
                 in pilot.app.screen.query_one(
                     "#gdrive_setup_messagebox_message"
-                ).renderable
+                )
+                .render()
+                .plain
             )
             await self.scroll_to_click_pause(
                 pilot, "#setup_gdrive_cancel_button"
@@ -241,7 +257,9 @@ class TestTuiSetupGdrive(TuiBase):
                 "Please authenticate through browser"
                 in pilot.app.screen.query_one(
                     "#gdrive_setup_messagebox_message"
-                ).renderable
+                )
+                .render()
+                .plain
             )
             await self.scroll_to_click_pause(
                 pilot, "#setup_gdrive_cancel_button"
@@ -292,18 +310,18 @@ class TestTuiSetupGdrive(TuiBase):
 
         assert (
             "Ready to setup Google Drive. Press OK to proceed"
-            in pilot.app.screen.query_one(
-                "#gdrive_setup_messagebox_message"
-            ).renderable
+            in pilot.app.screen.query_one("#gdrive_setup_messagebox_message")
+            .render()
+            .plain
         )
         await self.scroll_to_click_pause(pilot, "#setup_gdrive_ok_button")
 
         assert (
             "Please provide the client secret for Google Drive. "
             "You can find it in your Google Cloud Console."
-            in pilot.app.screen.query_one(
-                "#gdrive_setup_messagebox_message"
-            ).renderable
+            in pilot.app.screen.query_one("#gdrive_setup_messagebox_message")
+            .render()
+            .plain
         )
         await self.fill_input(
             pilot,
@@ -315,9 +333,9 @@ class TestTuiSetupGdrive(TuiBase):
         assert (
             "Are you running datashuttle on a machine "
             "that can open a web browser?"
-            in pilot.app.screen.query_one(
-                "#gdrive_setup_messagebox_message"
-            ).renderable
+            in pilot.app.screen.query_one("#gdrive_setup_messagebox_message")
+            .render()
+            .plain
         )
 
         if with_browser:

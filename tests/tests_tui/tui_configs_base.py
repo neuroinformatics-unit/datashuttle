@@ -55,9 +55,9 @@ class TuiConfigsBase(TuiBase):
 
         if config_kwargs["connection_method"] == "local_filesystem":
             assert (
-                pilot.app.screen.query_one(
-                    "#messagebox_message_label"
-                ).renderable
+                pilot.app.screen.query_one("#messagebox_message_label")
+                .render()
+                .plain
                 == "A datashuttle project has now been created.\n\n "
                 "Next proceed to the project page, where you will "
                 "be able to create and transfer project folders."
@@ -65,9 +65,9 @@ class TuiConfigsBase(TuiBase):
             await self.close_messagebox(pilot)
         else:
             assert (
-                pilot.app.screen.query_one(
-                    "#messagebox_message_label"
-                ).renderable
+                pilot.app.screen.query_one("#messagebox_message_label")
+                .render()
+                .plain
                 == tui_utils.get_project_created_message_template().format(
                     method_name=connection_method_name
                 )
@@ -164,7 +164,9 @@ class TuiConfigsBase(TuiBase):
             "#configs_save_configs_button",
         )
         assert (
-            pilot.app.screen.query_one("#messagebox_message_label").renderable
+            pilot.app.screen.query_one("#messagebox_message_label")
+            .render()
+            .plain
             == "Configs saved."
         )
         await self.close_messagebox(pilot)
