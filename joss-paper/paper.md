@@ -22,7 +22,7 @@ authors:
     affiliation: 2
   - name: Adam L. Tyson
     orcid: 0000-0003-3225-1130
-    affiliation: "1, 4"
+    affiliation: 1
     corresponding: true
 affiliations:
   - name: Neuroinformatics Unit, Sainsbury Wellcome Centre & Gatsby Computational Neuroscience Unit, University College London, London, U.K
@@ -31,8 +31,6 @@ affiliations:
     index: 2
   - name: Netaji Subhas University of Technology, New Delhi, India
     index: 3
-  - name: Gatsby Computational Neuroscience Unit, University College London, London, United Kingdom
-    index: 4
 date: 18 July 2025
 bibliography: paper.bib
 ---
