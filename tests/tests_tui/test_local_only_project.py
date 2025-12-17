@@ -95,9 +95,9 @@ class TestTuiLocalOnlyProject(TuiBase):
 
             assert (
                 "The project type was changed from local to full."
-                in pilot.app.screen.query_one(
-                    "#messagebox_message_label"
-                ).renderable
+                in pilot.app.screen.query_one("#messagebox_message_label")
+                .render()
+                .plain
             )
             await self.close_messagebox(pilot)
 
@@ -160,9 +160,9 @@ class TestTuiLocalOnlyProject(TuiBase):
 
             assert (
                 "The project type was changed from full to local"
-                in pilot.app.screen.query_one(
-                    "#messagebox_message_label"
-                ).renderable
+                in pilot.app.screen.query_one("#messagebox_message_label")
+                .render()
+                .plain
             )
 
             await self.close_messagebox(pilot)
