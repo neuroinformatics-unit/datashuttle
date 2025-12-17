@@ -25,7 +25,7 @@ authors:
     affiliation: "1, 4"
     corresponding: true
 affiliations:
-  - name: Sainsbury Wellcome Centre, University College London, London, United Kingdom
+  - name: Neuroinformatics Unit, Sainsbury Wellcome Centre & Gatsby Computational Neuroscience Unit, University College London, London, U.K
     index: 1
   - name: Department of Physiology, Development and Neuroscience, University of Cambridge, Cambridge, United Kingdom
     index: 2
