@@ -6,7 +6,7 @@ import pytest
 
 from .. import test_utils
 
-TEST_PROJECT_NAME = "test_project"
+TEST_PROJECT_NAME = "ds-unique-test-project-d375gd234vds2f"
 
 
 class TestBackwardsCompatibility:
