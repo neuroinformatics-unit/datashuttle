@@ -55,7 +55,7 @@ def attempt_load_configs(
     try:
         new_cfg.load_from_file()
 
-    except BaseException:
+    except Exception:
         new_cfg = None
 
         utils.log_and_raise_error(

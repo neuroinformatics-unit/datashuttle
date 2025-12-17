@@ -267,7 +267,7 @@ class TestTuiWidgets(TuiBase):
                 "#configs_name_label",
                 "#configs_name_input",
             ]:
-                with pytest.raises(BaseException) as e:
+                with pytest.raises(Exception) as e:
                     configs_content.query_one(id)
                 assert "No nodes match" in str(e)
 
