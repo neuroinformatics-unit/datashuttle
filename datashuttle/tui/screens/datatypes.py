@@ -300,7 +300,7 @@ class TransferDatatypeCheckboxes(DatatypeCheckboxes):
     def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
         """BE PLACEHOLDER."""
         checkbox = event.control
-        checkbox_name = get_datatype_from_checkbox_name(str(checkbox.label))
+        checkbox_name = get_datatype_from_checkbox_name(str(checkbox.id))
 
         if checkbox.value:
             all_datatypes = [
