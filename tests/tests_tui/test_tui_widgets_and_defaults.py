@@ -1108,6 +1108,12 @@ class TestTuiWidgets(TuiBase):
     async def test_transfer_checkboxes_dynamic_on_off(
         self, setup_project_paths, mocker
     ):
+        """
+        This tests that mutually exclusive checkbox options turn
+        each other off / on when set. This is necessary for transfer
+        tab custom datatypes in which some checkboxes (e.g. "all")
+        should not be selected  with other (e.g. "behav").
+        """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()

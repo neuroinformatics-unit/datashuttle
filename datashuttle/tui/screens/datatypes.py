@@ -185,13 +185,6 @@ class DisplayedDatatypesScreen(ModalScreen):
 class DatatypeCheckboxes(Static):
     """Dynamically-populated checkbox widget for convenient datatype selection.
 
-    Parameters
-    ----------
-    settings_key
-        'create' if datatype checkboxes for the create tab,
-        'transfer' for the transfer tab. Transfer tab includes
-        additional datatype options (e.g. "all").
-
     Attributes
     ----------
     datatype_config
@@ -290,15 +283,36 @@ class DatatypeCheckboxes(Static):
 
 
 class TransferDatatypeCheckboxes(DatatypeCheckboxes):
-    """BE PLACEHOLDER."""
+    """Subclass of the data type checkboxes class for the transfer tab.
+
+    This subclass extends `on_checkbox_changed` by
+
+    """
 
     def __init__(self, interface, id):
-        """BE PLACEHOLDER."""
+        """Initialise TransferDatatypeCheckboxes.
+
+        Parameters
+        ----------
+        interface
+            Datashuttle Interface object.
+
+        id
+            Textual ID for the DatatypeCheckboxes widget.
+
+        """
         super().__init__(interface, "transfer", id)
 
     @on(Checkbox.Changed)
     def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
-        """BE PLACEHOLDER."""
+        """Dynamically turn off checkboxes depending on the activated checkbox then save.
+
+        In the transfer tab, we have a few different checkboxes that
+        are mutually exclusive. For example, `all` and `all_datatypes`
+        are redundant. This function turns off checkboxes redundant
+        with the selected checkbox, before calling the super class
+        which saves the state of the currently selected checkboxes.
+        """
         checkbox = event.control
         checkbox_name = get_datatype_from_checkbox_name(str(checkbox.id))
 
