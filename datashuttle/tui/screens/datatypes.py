@@ -185,13 +185,6 @@ class DisplayedDatatypesScreen(ModalScreen):
 class DatatypeCheckboxes(Static):
     """Dynamically-populated checkbox widget for convenient datatype selection.
 
-    Parameters
-    ----------
-    settings_key
-        'create' if datatype checkboxes for the create tab,
-        'transfer' for the transfer tab. Transfer tab includes
-        additional datatype options (e.g. "all").
-
     Attributes
     ----------
     datatype_config
@@ -213,7 +206,7 @@ class DatatypeCheckboxes(Static):
     def __init__(
         self,
         interface: Interface,
-        create_or_transfer: Literal["create", "transfer"] = "create",
+        tab_name: Literal["create", "transfer"] = "create",
         id: Optional[str] = None,
     ) -> None:
         """Initialise the DatatypeCheckboxes.
@@ -223,7 +216,7 @@ class DatatypeCheckboxes(Static):
         interface
             Datashuttle Interface object.
 
-        create_or_transfer
+        tab_name
             Whether we are on the "create" or "transfer" tab.
 
         id
@@ -233,9 +226,9 @@ class DatatypeCheckboxes(Static):
         super(DatatypeCheckboxes, self).__init__(id=id)
 
         self.interface = interface
-        self.create_or_transfer = create_or_transfer
+        self.tab_name = tab_name
 
-        self.settings_key = get_tui_settings_key_name(self.create_or_transfer)
+        self.settings_key = get_tui_settings_key_name(self.tab_name)
 
         # `datatype_config` is basically just a convenience wrapper
         # around interface.get_tui_settings
@@ -249,7 +242,7 @@ class DatatypeCheckboxes(Static):
             if setting["displayed"]:
                 yield Checkbox(
                     datatype.replace("_", " "),
-                    id=get_checkbox_name(self.create_or_transfer, datatype),
+                    id=get_checkbox_name(self.tab_name, datatype),
                     value=setting["on"],
                 )
 
@@ -264,7 +257,7 @@ class DatatypeCheckboxes(Static):
         for datatype in self.datatype_config.keys():
             if self.datatype_config[datatype]["displayed"]:
                 self.datatype_config[datatype]["on"] = self.query_one(
-                    f"#{get_checkbox_name(self.create_or_transfer, datatype)}"
+                    f"#{get_checkbox_name(self.tab_name, datatype)}"
                 ).value
 
         self.interface.save_tui_settings(
@@ -276,7 +269,7 @@ class DatatypeCheckboxes(Static):
         for datatype in self.datatype_config.keys():
             if self.datatype_config[datatype]["displayed"]:
                 self.query_one(
-                    f"#{get_checkbox_name(self.create_or_transfer, datatype)}"
+                    f"#{get_checkbox_name(self.tab_name, datatype)}"
                 ).tooltip = tooltips[datatype]
 
     def selected_datatypes(self) -> List[str]:
@@ -289,22 +282,90 @@ class DatatypeCheckboxes(Static):
         return selected_datatypes
 
 
+class TransferDatatypeCheckboxes(DatatypeCheckboxes):
+    """Subclass of the data type checkboxes class for the transfer tab.
+
+    This subclass extends `on_checkbox_changed` by
+
+    """
+
+    def __init__(self, interface, id):
+        """Initialise TransferDatatypeCheckboxes.
+
+        Parameters
+        ----------
+        interface
+            Datashuttle Interface object.
+
+        id
+            Textual ID for the DatatypeCheckboxes widget.
+
+        """
+        super().__init__(interface, "transfer", id)
+
+    @on(Checkbox.Changed)
+    def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
+        """Dynamically turn off checkboxes depending on the activated checkbox then save.
+
+        In the transfer tab, we have a few different checkboxes that
+        are mutually exclusive. For example, `all` and `all_datatypes`
+        are redundant. This function turns off checkboxes redundant
+        with the selected checkbox, before calling the super class
+        which saves the state of the currently selected checkboxes.
+        """
+        checkbox = event.control
+        checkbox_name = get_datatype_from_checkbox_name(str(checkbox.id))
+
+        if checkbox.value:
+            all_datatypes = [
+                dtype
+                for dtype in self.datatype_config.keys()
+                if dtype not in ["all", "all_datatype", "all_non_datatype"]
+            ]
+
+            if checkbox_name == "all":
+                to_turn_off = [
+                    "all_datatype",
+                    "all_non_datatype",
+                ] + all_datatypes
+            elif checkbox_name == "all_datatype":
+                to_turn_off = ["all"] + all_datatypes
+            elif checkbox_name == "all_non_datatype":
+                to_turn_off = ["all"]
+            else:
+                to_turn_off = ["all", "all_datatype"]
+
+            for datatype in to_turn_off:
+                if self.datatype_config[datatype]["displayed"]:
+                    self.query_one(
+                        f"#{get_checkbox_name(self.tab_name, datatype)}"
+                    ).value = False
+
+        super().on_checkbox_changed()
+
+
 # Helpers
 # --------------------------------------------------------------------------------------
 
 
 def get_checkbox_name(
-    create_or_transfer: Literal["create", "transfer"], datatype
+    tab_name: Literal["create", "transfer"], datatype
 ) -> str:
     """Return a canonical formatted checkbox name."""
-    return f"{create_or_transfer}_{datatype}_checkbox"
+    return f"{tab_name}_{datatype}_checkbox"
+
+
+def get_datatype_from_checkbox_name(checkbox_name: str) -> str:
+    """Get the datatype from the output of `get_checkbox_name()`."""
+    split_datatype = checkbox_name.split("_")[1:-1]
+    return "_".join(split_datatype)
 
 
 def get_tui_settings_key_name(
-    create_or_transfer: Literal["create", "transfer"],
+    tab_name: Literal["create", "transfer"],
 ) -> str:
     """Return the canonical tui settings key."""
-    if create_or_transfer == "create":
+    if tab_name == "create":
         settings_key = "create_checkboxes_on"
     else:
         settings_key = "transfer_checkboxes_on"

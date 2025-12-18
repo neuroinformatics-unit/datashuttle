@@ -32,8 +32,8 @@ from datashuttle.tui.custom_widgets import (
     TreeAndInputTab,
 )
 from datashuttle.tui.screens.datatypes import (
-    DatatypeCheckboxes,
     DisplayedDatatypesScreen,
+    TransferDatatypeCheckboxes,
 )
 from datashuttle.tui.screens.modal_dialogs import (
     ConfirmAndAwaitTransferPopup,
@@ -424,9 +424,9 @@ class TransferTab(TreeAndInputTab):
 
     def get_datatypes_checkboxes_widget(self):
         """Create the datatype checkboxes, centralised as used in multiple places."""
-        return DatatypeCheckboxes(
+        return TransferDatatypeCheckboxes(
             self.interface,
-            create_or_transfer="transfer",
+            # tab_name="transfer",
             id="transfer_custom_datatype_checkboxes",
         )
 
