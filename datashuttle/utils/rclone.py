@@ -1,6 +1,16 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional
+from typing import (
+    TYPE_CHECKING,
+    Callable,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    TypeVar,
+)
+
+T = TypeVar("T")
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -174,8 +184,10 @@ def await_call_rclone_with_popen_for_central_connection_raise_on_fail(
 
 
 def run_function_that_requires_encrypted_rclone_config_access(
-    cfg, lambda_func, check_config_exists: bool = True
-) -> Any:
+    cfg: Configs,
+    lambda_func: Callable[..., T],
+    check_config_exists: bool = True,
+) -> T:
     """Run command that requires possibly encrypted Rclone config file.
 
     The Rclone config file may be encrypted for aws, gdrive or ssh connections.
