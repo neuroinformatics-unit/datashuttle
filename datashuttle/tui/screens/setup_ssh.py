@@ -86,7 +86,7 @@ class SetupSshScreen(ModalScreen):
             elif self.stage == "save_hostkeys":
                 self.save_hostkeys_and_prompt_password_input()
 
-            elif self.stage == "ask_for_encryption":
+            elif self.stage == "setup_and_ask_for_encryption":
                 self.use_password_to_setup_ssh_key_pairs()
 
             elif self.stage == "set_up_encryption":
@@ -153,7 +153,7 @@ class SetupSshScreen(ModalScreen):
             self.query_one("#setup_ssh_ok_button").disabled = True
 
         self.query_one("#messagebox_message_label").update(message)
-        self.stage = "ask_for_encryption"
+        self.stage = "setup_and_ask_for_encryption"
 
     def use_password_to_setup_ssh_key_pairs(self) -> None:
         """Set up the SSH key pair using the user-supplied password to the central server.
