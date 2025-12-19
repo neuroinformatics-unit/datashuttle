@@ -67,7 +67,7 @@ class SetupSshScreen(ModalScreen):
         input, multiple attempts are allowed.
         """
         if event.button.id == "setup_ssh_cancel_button":
-            self.dismiss()
+            self.dismiss(False)
 
         if event.button.id == "setup_ssh_ok_button":
             if self.stage == 0:
@@ -80,7 +80,7 @@ class SetupSshScreen(ModalScreen):
                 self.use_password_to_setup_ssh_key_pairs()
 
             elif self.stage == 3:
-                self.dismiss()
+                self.dismiss(True)
 
     def ask_user_to_accept_hostkeys(self) -> None:
         """Ask the user to accept the hostkey that identifies the central server.
