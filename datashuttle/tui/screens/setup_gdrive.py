@@ -340,7 +340,10 @@ class SetupGdriveScreen(ModalScreen):
 
     def show_encryption_screen(self):
         """Show the screen asking the user whether to encrypt the Rclone password."""
-        message = f"{rclone_encryption.get_explanation_message(self.interface.project.cfg)}"
+        message = (
+            f"Connection set up successfully. Next, decide whether to encrypt the RClone config file.\n\n"
+            f"{rclone_encryption.get_explanation_message(self.interface.project.cfg)}"
+        )
         self.update_message_box_message(message)
 
         yes_button = Button("Yes", id="setup_gdrive_set_encryption_yes_button")
