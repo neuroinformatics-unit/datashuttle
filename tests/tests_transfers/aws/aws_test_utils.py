@@ -1,6 +1,8 @@
 import copy
 import os
 
+from dotenv import load_dotenv
+
 from datashuttle import DataShuttle
 from datashuttle.utils import aws, utils
 
@@ -10,7 +12,7 @@ def setup_project_for_aws(project: DataShuttle):
 
     The connection credentials are fetched from the environment which
     the developer shall set themselves to test locally. In the CI, these
-    are set using the github secrets. A random string is added to the
+    are set using the GitHub secrets. A random string is added to the
     central path so that the test project paths do not interfere while
     running multiple test instances simultaneously in CI.
     """
@@ -35,6 +37,7 @@ def setup_aws_connection(project: DataShuttle):
     testing. For testing locally, the developer must set it themselves.
     """
     original_get_secret = copy.deepcopy(aws.get_aws_secret_access_key)
+
     aws.get_aws_secret_access_key = lambda *args, **kwargs: os.environ[
         "AWS_SECRET_ACCESS_KEY"
     ]
@@ -45,6 +48,10 @@ def setup_aws_connection(project: DataShuttle):
 
 
 def has_aws_environment_variables():
+    if not os.getenv("GITHUB_ACTIONS"):
+        if not load_dotenv():
+            return False
+
     for key in [
         "AWS_BUCKET_NAME",
         "AWS_ACCESS_KEY_ID",

@@ -12,7 +12,8 @@ from . import aws_test_utils
 
 @pytest.mark.skipif(
     not aws_test_utils.has_aws_environment_variables(),
-    reason="AWS set up environment variables must be set.",
+    reason="AWS set up environment variables must be set."
+    "See developer documentation for how to set up `dotenv`",
 )
 class TestTuiSetupAws(TuiBase):
     """

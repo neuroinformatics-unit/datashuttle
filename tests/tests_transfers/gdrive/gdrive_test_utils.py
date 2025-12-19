@@ -2,6 +2,8 @@ import builtins
 import copy
 import os
 
+from dotenv import load_dotenv
+
 from datashuttle import DataShuttle
 from datashuttle.utils import gdrive, utils
 
@@ -51,7 +53,6 @@ def setup_gdrive_connection(project: DataShuttle):
     gdrive.get_client_secret = lambda *args, **kwargs: os.environ[
         "GDRIVE_CLIENT_SECRET"
     ]
-
     project.setup_gdrive_connection()
 
     builtins.input = original_input
@@ -59,6 +60,10 @@ def setup_gdrive_connection(project: DataShuttle):
 
 
 def has_gdrive_environment_variables():
+    if not os.getenv("GITHUB_ACTIONS"):
+        if not load_dotenv():
+            return False
+
     for key in [
         "GDRIVE_CLIENT_ID",
         "GDRIVE_ROOT_FOLDER_ID",
