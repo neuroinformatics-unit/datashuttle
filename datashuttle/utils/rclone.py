@@ -162,11 +162,7 @@ def await_call_rclone_with_popen_for_central_connection_raise_on_fail(
     Calling `process.communicate()` waits for the process to complete and returns
     the stdout and stderr.
     """
-    lambda_func = lambda: process.communicate()
-
-    stdout, stderr = run_function_that_requires_encrypted_rclone_config_access(
-        cfg, lambda_func, check_config_exists=False
-    )
+    stdout, stderr = process.communicate()
 
     if process.returncode != 0:
         utils.log_and_raise_error(stderr.decode("utf-8"), ConnectionError)
