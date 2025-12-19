@@ -19,7 +19,7 @@ from ..base import BaseTest
 class TestSubSesSearches(BaseTest):
     @pytest.mark.parametrize("return_full_path", [True, False])
     def test_local_vs_central_search_methods(
-        self, project, monkeypatch, return_full_path, tmp_path
+        self, project, monkeypatch, return_full_path
     ):
         """
         Test the `search_local_filesystem` and `search_central_via_connection`
