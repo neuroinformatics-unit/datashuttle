@@ -8,6 +8,7 @@ if TYPE_CHECKING:
     from datashuttle.tui.interface import Interface
 
 from textual.containers import Container, Horizontal, Vertical
+from textual.css.query import NoMatches
 from textual.screen import ModalScreen
 from textual.widgets import Button, Input, Static
 
@@ -57,20 +58,21 @@ class SetupAwsScreen(ModalScreen):
         """Handle button press on the screen.
 
         The `setup_aws_ok_button` is used for all 'positive' events ('Yes, Ok')
-        and 'setup_aws_cancel_button' is used for 'negative' events ('No', 'Cancel').
+        and 'setup_aws_cancel_button' is used to cancel the set-up.
+        "setup_aws_encryption_no_button" is used to select no encryption.
         The appropriate action to take on the button press is determined by the
         current stage.
 
         """
         if event.button.id == "setup_aws_cancel_button":
-            if self.stage == "ask_rclone_encryption":
-                message = "AWS Connection Successful!"
-                self.query_one("#setup_aws_messagebox_message").update(message)
-                self.query_one("#setup_aws_ok_button").label = "Finish"
-                self.query_one("#setup_aws_cancel_button").remove()
-                self.stage = "finished"
-            else:
-                self.dismiss()
+            self.dismiss()
+
+        elif event.button.id == "setup_aws_encryption_no_button":
+            message = "AWS Connection Successful!"
+            self.query_one("#setup_aws_messagebox_message").update(message)
+            self.query_one("#setup_aws_ok_button").label = "Finish"
+            self.query_one("#setup_aws_encryption_no_button").remove()
+            self.stage = "finished"
 
         elif event.button.id == "setup_aws_ok_button":
             if self.stage == "init":
@@ -113,16 +115,23 @@ class SetupAwsScreen(ModalScreen):
 
             self.query_one("#setup_aws_secret_access_key_input").remove()
             self.query_one("#setup_aws_ok_button").label = "Yes"
-            self.query_one("#setup_aws_cancel_button").label = "No"
+            self.query_one("#setup_aws_cancel_button").remove()
+
+            no_button = Button("No", id="setup_aws_encryption_no_button")
+
+            self.query_one("#setup_aws_buttons_horizontal").mount(
+                no_button, after="#setup_aws_ok_button"
+            )
+
             self.stage = "ask_rclone_encryption"
         else:
             message = (
-                f"AWS setup failed. Please check your configs and secret access key"
+                f"AWS setup failed. Please check your configs and secret access key."
                 f"\n\n Traceback: {output}"
             )
-            self.query_one(
-                "#setup_aws_secret_access_key_input"
-            ).disabled = True
+            #     self.query_one(
+            #         "#setup_aws_secret_access_key_input"
+            #     ).disabled = True
 
             self.query_one("#setup_aws_ok_button").label = "Retry"
             self.query_one("#setup_aws_messagebox_message").update(message)
@@ -135,10 +144,25 @@ class SetupAwsScreen(ModalScreen):
             message = "The Rclone config file was successfully encrypted. Setup complete!"
             self.query_one("#setup_aws_messagebox_message").update(message)
             self.query_one("#setup_aws_ok_button").label = "Finish"
-            self.query_one("#setup_aws_cancel_button").remove()
+
+            # query removal, as may have already been removed during a retry below.
+            self.query("#setup_aws_encryption_no_button").remove()
             self.stage = "finished"
         else:
-            message = (
-                f"The rclone_encryption set up failed. Exception: {output}"
-            )
+            message = f"Encrypting the RClone config failed. Please try again.\n\nTraceback:\n {output}"
             self.query_one("#setup_aws_messagebox_message").update(message)
+            self.query_one("#setup_aws_ok_button").label = "Retry"
+
+            try:
+                # For the first fail, remove the 'No' key and add back the
+                # 'Cancel' key. This may fail repeatedly, but we only want
+                # to remove / add the widgets once.
+                self.query_one("#setup_aws_encryption_no_button").remove()
+
+                cancel_button = Button("Cancel", id="setup_aws_cancel_button")
+
+                self.query_one("#setup_aws_buttons_horizontal").mount(
+                    cancel_button, after="#setup_aws_ok_button"
+                )
+            except NoMatches:
+                pass
