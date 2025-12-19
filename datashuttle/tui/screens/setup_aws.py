@@ -92,8 +92,6 @@ class SetupAwsScreen(ModalScreen):
         self.query_one("#setup_aws_messagebox_message").update(message)
         self.query_one("#setup_aws_secret_access_key_input").visible = True
 
-        self.query_one("#setup_aws_ok_button")
-
         self.stage = "use_secret_access_key"
 
     def use_secret_access_key_to_setup_aws_connection(self) -> None:
