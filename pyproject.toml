@@ -71,6 +71,7 @@ dev = [
     "types-setuptools",
     "pytest-asyncio",
     "validators",
+    "python-dotenv",
 ]
 
 [build-system]
