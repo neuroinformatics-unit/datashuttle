@@ -16,6 +16,8 @@ from datashuttle.utils.custom_exceptions import (
 
 from .. import test_utils
 
+TEST_PROJECT_NAME = test_utils.get_test_project_name()
+
 
 class TestLogging:
     @pytest.fixture(scope="function")
@@ -86,7 +88,7 @@ class TestLogging:
         Switch on datashuttle logging as required for
         these tests, then turn back off during tear-down.
         """
-        project_name = "ds-unique-test-project-d375gd234vds2f"
+        project_name = TEST_PROJECT_NAME
         test_utils.delete_project_if_it_exists(project_name)
         test_utils.set_datashuttle_loggers(disable=False)
 
@@ -290,7 +292,7 @@ class TestLogging:
         assert "Using config file from" in log
         assert "--include" in log
         assert "sub-11/ses-123/anat/**" in log
-        assert "/central/ds-unique-test-project-d375gd234vds2f/rawdata" in log
+        assert f"/central/{TEST_PROJECT_NAME}/rawdata" in log
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_logs_upload_and_download_folder_or_file(

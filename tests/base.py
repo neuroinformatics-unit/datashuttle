@@ -4,7 +4,7 @@ import pytest
 
 from . import test_utils
 
-TEST_PROJECT_NAME = "ds-unique-test-project-d375gd234vds2f"
+TEST_PROJECT_NAME = test_utils.get_test_project_name()
 
 
 class BaseTest:

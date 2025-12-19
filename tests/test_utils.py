@@ -702,3 +702,12 @@ def monkeypatch_get_datashuttle_path(tmp_config_path, _monkeypatch):
         "datashuttle.configs.canonical_folders.get_datashuttle_path",
         mock_get_datashuttle_path,
     )
+
+
+def get_test_project_name():
+    """Get a name for the test project.
+
+    A project folder will get created in the config directory
+    of the users who run the test suite. Therefore, it has
+    an obscure name to reduce the change of a clash with a real project name."""
+    return "ds-unique-test-project-d375gd234vds2f"

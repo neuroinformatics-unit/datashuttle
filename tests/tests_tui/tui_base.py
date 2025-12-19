@@ -43,7 +43,7 @@ class TuiBase:
         2) It fails for testing CLI, because CLI spawns a new process in
            which `get_datashuttle_path()` is not monkeypatched.
         """
-        project_name = "ds-unique-test-project-d375gd234vds2f"
+        project_name = test_utils.get_test_project_name()
         tmp_path = tmp_path_factory.mktemp("test")
         tmp_config_path = tmp_path / "config"
 
