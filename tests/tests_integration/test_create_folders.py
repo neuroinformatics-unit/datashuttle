@@ -309,9 +309,7 @@ class TestCreateFolders(BaseTest):
 
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("return_with_prefix", [True, False])
-    def test_get_next_sub__(
-        self, project, return_with_prefix, top_level_folder
-    ):
+    def test_get_next_sub(self, project, return_with_prefix, top_level_folder):
         """Test that the next subject number is suggested correctly.
         This takes the union of subjects available in the local and
         central repository. As such test the case where either are
