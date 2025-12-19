@@ -213,7 +213,7 @@ def run_function_that_requires_encrypted_rclone_config_access(
         results = lambda_func()
     finally:
         if is_encrypted:
-            rclone_encryption.remove_credentials_as_password_command()
+            rclone_encryption.remove_rclone_password_env_var()
 
     return results
 

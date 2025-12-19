@@ -214,7 +214,7 @@ def run_rclone_config_encrypt(cfg: Configs) -> None:
          via `set_credentials_as_password_command(cfg)`.
       3) Runs `rclone config encryption set --config <path>` to encrypt the config.
       4) Cleans up by removing the password command environment variable with
-         `remove_credentials_as_password_command()`.
+         `remove_rclone_password_env_var()`.
     """
     rclone_config_path = (
         cfg.rclone.get_rclone_central_connection_config_filepath()
@@ -233,22 +233,22 @@ def run_rclone_config_encrypt(cfg: Configs) -> None:
 
     set_credentials_as_password_command(cfg)
 
-    try:
-        output = subprocess.run(
-            f"rclone config encryption set --config {rclone_config_path.as_posix()}",
-            shell=True,
-            capture_output=True,
-            text=True,
+    output = subprocess.run(
+        f"rclone config encryption set --config {rclone_config_path.as_posix()}",
+        shell=True,
+        capture_output=True,
+        text=True,
+    )
+
+    remove_rclone_password_env_var()
+
+    if output.returncode != 0:
+        utils.log_and_raise_error(
+            f"\n--- STDOUT ---\n{output.stdout}\n"
+            f"\n--- STDERR ---\n{output.stderr}\n"
+            "\nCould not encrypt the RClone config. See the error message above.",
+            RuntimeError,
         )
-        if output.returncode != 0:
-            utils.log_and_raise_error(
-                f"\n--- STDOUT ---\n{output.stdout}\n"
-                f"\n--- STDERR ---\n{output.stderr}\n"
-                "\nCould not encrypt the RClone config. See the error message above.",
-                RuntimeError,
-            )
-    finally:
-        remove_credentials_as_password_command()
 
 
 def remove_rclone_encryption(cfg: Configs) -> None:
@@ -270,6 +270,9 @@ def remove_rclone_encryption(cfg: Configs) -> None:
         capture_output=True,
         text=True,
     )
+
+    remove_rclone_password_env_var()
+
     if output.returncode != 0:
         utils.log_and_raise_error(
             f"\n--- STDOUT ---\n{output.stdout}"
@@ -277,8 +280,6 @@ def remove_rclone_encryption(cfg: Configs) -> None:
             "\nCould not remove the password from the RClone config. See the error message above.",
             RuntimeError,
         )
-
-    remove_credentials_as_password_command()
 
     if platform.system() == "Windows":
         password_filepath = get_windows_password_filepath(cfg)
@@ -311,7 +312,7 @@ def remove_rclone_encryption(cfg: Configs) -> None:
     )
 
 
-def remove_credentials_as_password_command():
+def remove_rclone_password_env_var():
     """Tidy up the rclone password environment variable."""
     if "RCLONE_PASSWORD_COMMAND" in os.environ:
         os.environ.pop("RCLONE_PASSWORD_COMMAND")
