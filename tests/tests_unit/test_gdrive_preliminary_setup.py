@@ -20,7 +20,6 @@ class TestGdrivePreliminarySetup:
         that they contain the correct credentials in the encoded format.
         """
         from collections import UserDict
-        from pathlib import Path
 
         class MockConfigs(UserDict):
             def __init__(self, client_id_, root_folder_id_):
@@ -32,9 +31,6 @@ class TestGdrivePreliminarySetup:
                 class RClone:
                     def delete_existing_rclone_config_file(self):
                         pass
-
-                    def get_rclone_central_connection_config_filepath(self):
-                        return Path("")
 
                 self.rclone = RClone()
 
