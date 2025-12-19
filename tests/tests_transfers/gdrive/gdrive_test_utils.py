@@ -20,7 +20,7 @@ def setup_project_for_gdrive(project: DataShuttle):
     # Check if required environment variables are set
     if not has_gdrive_environment_variables():
         pytest.skip("Google Drive environment variables not set")
-    
+
     random_string = utils.get_random_string()
 
     project.update_config_file(
