@@ -59,7 +59,7 @@ def call_rclone_for_central_connection(
     """Call RClone when the config file may need to be decrypted.
 
     This is a convenience function to call RClone in places where
-    the config file may need to be unencrypted. This is for connecting
+    the config file may need to be decrypted. This is for connecting
     to the central storage through aws, ssh or gdrive. It wraps the
     function call in a set-up / teardown of the config password.
     """
