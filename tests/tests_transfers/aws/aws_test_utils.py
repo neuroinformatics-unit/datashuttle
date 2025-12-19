@@ -48,6 +48,12 @@ def setup_aws_connection(project: DataShuttle):
 
 
 def has_aws_environment_variables():
+    """Check for environment variables needed to run AWS tests.
+
+    Environment variables can be stored in a `.env` file in the
+    project root, for use with `python-dotenv`. Otherwise,
+    they are set up in GitHub actions.
+    """
     if not os.getenv("GITHUB_ACTIONS"):
         if not load_dotenv():
             return False
