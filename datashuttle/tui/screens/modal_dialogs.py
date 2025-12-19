@@ -49,7 +49,13 @@ class MessageBox(ModalScreen):
 
     """
 
-    def __init__(self, message: str, border_color: str) -> None:
+    def __init__(
+        self,
+        message: str,
+        border_color: str,
+        width: str = "65",
+        height: str = "15",
+    ) -> None:
         """Initialise the MessageBox.
 
         Parameters
@@ -60,15 +66,23 @@ class MessageBox(ModalScreen):
         border_color
             Color of the MessageBox border (e.g. green if the message is positive).
 
+        height
+            The height of the messagebox.
+
+        width
+            The width of the messagebox.
+
         """
         super(MessageBox, self).__init__()
 
         self.message = message
         self.border_color = border_color
+        self.top_container_width = width
+        self.top_container_height = height
 
     def compose(self) -> ComposeResult:
         """Add widgets to the MessageBox."""
-        yield Container(
+        self.top_container = Container(
             Container(
                 Static(self.message, id="messagebox_message_label"),
                 id="messagebox_message_container",
@@ -76,6 +90,8 @@ class MessageBox(ModalScreen):
             Container(Button("OK"), id="messagebox_ok_button"),
             id="messagebox_top_container",
         )
+
+        yield self.top_container
 
     def on_mount(self) -> None:
         """Update widgets immediately after mounting."""
@@ -92,6 +108,9 @@ class MessageBox(ModalScreen):
             "thick",
             color,
         )
+
+        self.top_container.styles.width = self.top_container_width
+        self.top_container.styles.height = self.top_container_height
 
     def on_button_pressed(self) -> None:
         """Handle button press."""
@@ -218,24 +237,70 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
             self.dismiss()
 
     async def handle_transfer_and_update_ui_when_complete(self) -> None:
-        """Run the data transfer worker and updates the UI on completion."""
-        data_transfer_worker = self.transfer_func()
-        await data_transfer_worker.wait()
-        success, output = data_transfer_worker.result
-        self.dismiss()
+        """Run the data transfer worker and updates the UI on completion.
 
-        if success:
-            self.app.push_screen(
-                MessageBox(
-                    "Transfer finished."
-                    "\n\n"
-                    "Check the most recent logs to "
-                    "ensure transfer completed successfully.",
-                    border_color="grey",
+        Note this function is very similar to `log_rclone_copy_errors_api`
+        but kept separate for flexibility.
+        """
+        try:
+            data_transfer_worker = self.transfer_func()
+            await data_transfer_worker.wait()
+            success, output = data_transfer_worker.result
+
+            self.dismiss()
+
+            if success:
+                errors = output
+
+                errors_message = ""
+
+                messagebox_kwargs = {}
+
+                no_transfer_col = (
+                    "blue"
+                    if self.app.theme == "textual-light"
+                    else "lightblue"
                 )
-            )
-        else:
-            self.app.show_modal_error_dialog(output)
+
+                if errors["nothing_was_transferred_rawdata"] is True:
+                    errors_message += f"[{no_transfer_col}]\nNothing was transferred from rawdata.[/{no_transfer_col}]\n"
+
+                if errors["nothing_was_transferred_derivatives"] is True:
+                    errors_message += f"[{no_transfer_col}]\nNothing was transferred from derivatives.[/{no_transfer_col}]\n"
+
+                if any(errors["messages"]):
+                    if errors["file_names"]:
+                        errors_message += (
+                            "\n[red]Errors detected! in files:[/red]\n"
+                        )
+                        errors_message += "\n".join(errors["file_names"])
+                    else:
+                        errors_message += "\n[red]Errors detected![/red]"
+                    errors_message += (
+                        "[red]\n\nThe error messages are:[/red]\n"
+                    )
+                    errors_message += "\n\n".join(errors["messages"])
+                    messagebox_kwargs = {"width": "75%", "height": "75%"}
+
+                if errors_message == "":
+                    errors_message += "No errors detected"
+
+                message = (
+                    f"Transfer finished.\n"
+                    f"{errors_message}\n\n"
+                    f"Check the most recent logs for full details."
+                )
+
+                self.app.push_screen(
+                    MessageBox(
+                        message, border_color="grey", **messagebox_kwargs
+                    )
+                )
+            else:
+                self.app.show_modal_error_dialog(output)
+
+        except BaseException as e:
+            self.app.show_modal_error_dialog(str(e))
 
 
 class SearchingCentralForNextSubSesPopup(ModalScreen):
