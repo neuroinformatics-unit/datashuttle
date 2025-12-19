@@ -125,7 +125,7 @@ def set_password_linux(cfg: Configs) -> None:
         utils.log_and_raise_error(
             f"\n--- STDOUT ---\n{output.stdout}"
             f"\n--- STDERR ---\n{output.stderr}"
-            "\nCould not encrypt the RClone config file. See the error message above.",
+            "\nCould not store password with 'pass' password manager. See the error message above.",
             RuntimeError,
         )
 
