@@ -150,7 +150,7 @@ def set_password_macos(cfg: Configs) -> None:
         utils.log_and_raise_error(
             f"\n--- STDOUT ---\n{output.stdout}"
             f"\n--- STDERR ---\n{output.stderr}"
-            "\nCould not encrypt the RClone config. See the error message above.",
+            "\nCould not store the password in the macOS Keychain. See the error message above.",
             RuntimeError,
         )
 
