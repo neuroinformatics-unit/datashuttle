@@ -90,14 +90,16 @@ class TuiConfigsBase(TuiBase):
                 is True
             )
 
-        await self.scroll_to_click_pause(
-            pilot, "#configs_go_to_project_screen_button"
-        )
-        assert isinstance(pilot.app.screen, ProjectManagerScreen)
+            await self.scroll_to_click_pause(
+                pilot, "#configs_go_to_project_screen_button"
+            )
+            assert isinstance(pilot.app.screen, ProjectManagerScreen)
 
-        project = pilot.app.screen.interface.project
+            project = pilot.app.screen.interface.project
 
-        assert pilot.app.screen.interface.project.project_name == project_name
+            assert (
+                pilot.app.screen.interface.project.project_name == project_name
+            )
 
         # After saving, check all configs are correct on the DataShuttle
         # instance as well as the stored configs.
