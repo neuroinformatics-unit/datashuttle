@@ -29,7 +29,10 @@ class SetupGdriveScreen(ModalScreen):
     and input a config token.
     """
 
-    def __init__(self, interface: Interface) -> None:
+    def __init__(
+        self,
+        interface: Interface,
+    ) -> None:
         """Initialise the SetupGdriveScreen."""
         super(SetupGdriveScreen, self).__init__()
 
@@ -84,15 +87,17 @@ class SetupGdriveScreen(ModalScreen):
 
         6) "cancel" button : To cancel the setup at any step before completion.
         """
-        if (
-            event.button.id == "setup_gdrive_cancel_button"
-            or event.button.id == "setup_gdrive_finish_button"
-        ):
+        if event.button.id in [
+            "setup_gdrive_cancel_button",
+            "setup_gdrive_finish_button",
+        ]:
             # see setup_gdrive_connection_and_update_ui()
             if self.setup_worker and self.setup_worker.is_running:
                 self.setup_worker.cancel()  # fix
                 self.interface.terminate_gdrive_setup()
-            self.dismiss()
+
+            was_successful = event.button.id == "setup_gdrive_finish_button"
+            self.dismiss(was_successful)
 
         elif event.button.id == "setup_gdrive_ok_button":
             self.query_one("#setup_gdrive_ok_button").remove()
