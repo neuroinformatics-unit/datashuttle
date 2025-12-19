@@ -110,7 +110,10 @@ class SetupAwsScreen(ModalScreen):
         )
 
         if success:
-            message = f"{rclone_encryption.get_explanation_message(self.interface.project.cfg)}"
+            message = (
+                f"Connection set up successfully. Next, decide whether to encrypt the RClone config file.\n\n"
+                f"{rclone_encryption.get_explanation_message(self.interface.project.cfg)}"
+            )
             self.query_one("#setup_aws_messagebox_message").update(message)
 
             self.query_one("#setup_aws_secret_access_key_input").remove()
