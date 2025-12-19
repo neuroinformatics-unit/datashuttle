@@ -49,7 +49,7 @@ def setup_gdrive_connection(project: DataShuttle):
             return_value = os.environ["GDRIVE_CONFIG_TOKEN"]
             state["count"] += 1
         elif state["count"] == 2:
-            # Would you like to encrypt the RClone config file using PSCredential?
+            # Would you like to encrypt the RClone config file using...?
             return_value = "y"
         else:
             raise ValueError(f"return count is {state['count']}")
