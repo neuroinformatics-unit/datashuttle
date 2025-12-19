@@ -81,12 +81,15 @@ class TuiConfigsBase(TuiBase):
                 == f"Setup {connection_method_name} Connection"
             )
 
-        assert (
-            pilot.app.screen.query_one(
-                "#configs_go_to_project_screen_button"
-            ).visible
-            is True
-        )
+        if connection_method_name == "Local Filesystem":
+            # This is only shown after connection set up for ssh.
+            assert (
+                pilot.app.screen.query_one(
+                    "#configs_go_to_project_screen_button"
+                ).visible
+                is True
+            )
+
         await self.scroll_to_click_pause(
             pilot, "#configs_go_to_project_screen_button"
         )
