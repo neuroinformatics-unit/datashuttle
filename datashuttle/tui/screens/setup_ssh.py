@@ -25,7 +25,7 @@ class SetupSshScreen(ModalScreen):
     This asks to confirm the central hostkey, and takes password to set up
     SSH key pair as well as encrypting the RClone config.
 
-    Due to how textual works, it is simples for each button press to
+    Due to how textual works, it is simpler for each button press to
     trigger an action (e.g. set up host key) and then set up the widgets
     for the next screen. Then, when the next button is pressed, we can
     continue in this way of managing the screens.
