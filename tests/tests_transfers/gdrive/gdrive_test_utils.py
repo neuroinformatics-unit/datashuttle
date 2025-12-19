@@ -38,16 +38,18 @@ def setup_gdrive_connection(project: DataShuttle):
     state = {"count": 0}
 
     def mock_input(_: str) -> str:
+        # Before this function runs, the client secret will already
+        # be entered as we monkeypatch the function below.
         if state["count"] == 0:
+            # Are you running datashuttle on a machine with access to a web browser? (y/n)
             return_value = "n"
             state["count"] += 1
         elif state["count"] == 1:
+            # Execute the following on the machine with the web browser... Then paste the result.
             return_value = os.environ["GDRIVE_CONFIG_TOKEN"]
             state["count"] += 1
         elif state["count"] == 2:
-            return_value = "y"
-            state["count"] += 1
-        elif state["count"] == 3:
+            # Would you like to encrypt the RClone config file using PSCredential?
             return_value = "y"
         else:
             raise ValueError(f"return count is {state['count']}")
