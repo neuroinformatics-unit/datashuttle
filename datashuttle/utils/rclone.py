@@ -56,7 +56,7 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
 def call_rclone_for_central_connection(
     cfg, command: str, pipe_std: bool = False
 ) -> CompletedProcess:
-    """Call RClone when the config file may need to be unencrypted.
+    """Call RClone when the config file may need to be decrypted.
 
     This is a convenience function to call RClone in places where
     the config file may need to be unencrypted. This is for connecting
