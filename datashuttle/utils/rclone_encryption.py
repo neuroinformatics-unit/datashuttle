@@ -351,13 +351,13 @@ def get_explanation_message(
     }
 
     pass_type = {
-        "ssh": "your private SSH key",
-        "aws": "your IAM access key ID and secret access key",
-        "gdrive": "your Google Drive access token and client secret (if set)",
+        "ssh": "private SSH key",
+        "aws": "IAM access key ID and secret access key",
+        "gdrive": "Google Drive access token and client secret (if set)",
     }
 
     message = (
-        f"By default, RClone stores {pass_type[cfg['connection_method']]} in plain text at the below location:\n\n"
+        f"By default, RClone stores your {pass_type[cfg['connection_method']]} in plain text at the below location:\n\n"
         f"{cfg.rclone.get_rclone_central_connection_config_filepath()}\n\n"
         f"Would you like to encrypt the RClone config file using {system_pass_manager[platform.system()]}?"
     )
