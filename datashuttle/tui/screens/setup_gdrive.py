@@ -38,7 +38,7 @@ class SetupGdriveScreen(ModalScreen):
         super(SetupGdriveScreen, self).__init__()
 
         self.interface = interface
-        self.no_browser_stage: None | str = "show_command_to_generate_code"
+        self.no_browser_stage: None | str = "pending"
         self.setup_worker: Worker | None = None
         self.is_browser_available: bool = True
         self.gdrive_client_secret: Optional[str] = None
@@ -48,9 +48,7 @@ class SetupGdriveScreen(ModalScreen):
             id="setup_gdrive_generic_input_box",
             placeholder="Enter value here",
         )
-        self.enter_button = Button(
-            "Enter", id="setup_gdrive_no_browser_enter_button"
-        )
+        self.enter_button = Button("Enter", id="setup_gdrive_enter_button")
 
     def compose(self) -> ComposeResult:
         """Add widgets to the SetupGdriveScreen."""
@@ -84,7 +82,7 @@ class SetupGdriveScreen(ModalScreen):
         3) `setup_gdrive_no_button`  : A "no" answer to the availability of browser question. On click,
             prompts the user to enter a config token by running an rclone command.
 
-        4) `setup_gdrive_no_browser_enter_button` : To enter the client secret or config token.
+        4) `setup_gdrive_enter_button` : To enter the client secret or config token.
 
         5) `setup_gdrive_set_encryption_yes_button` : To set a password on the RClone config file
 
@@ -125,17 +123,17 @@ class SetupGdriveScreen(ModalScreen):
             self.query_one("#setup_gdrive_no_button").remove()
             self.prompt_user_for_config_token()
 
-        elif event.button.id == "setup_gdrive_no_browser_enter_button":
+        elif event.button.id == "setup_gdrive_enter_button":
             if (
                 self.interface.project.cfg["gdrive_client_id"]
-                and self.no_browser_stage == "show_command_to_generate_code"
+                and self.no_browser_stage == "pending"
             ):
                 self.gdrive_client_secret = (
                     self.input_box.value.strip()
                     if self.input_box.value.strip()
                     else None
                 )
-                self.no_browser_stage = "setup_with_code"
+                self.no_browser_stage = "retrieved"
                 self.ask_user_for_browser()
             else:
                 config_token = (
@@ -236,9 +234,7 @@ class SetupGdriveScreen(ModalScreen):
             message + "\nPress shift+click to copy."
         )
 
-        self.enter_button = Button(
-            "Enter", id="setup_gdrive_no_browser_enter_button"
-        )
+        self.enter_button = Button("Enter", id="setup_gdrive_enter_button")
         self.query_one("#setup_gdrive_buttons_horizontal").mount(
             self.enter_button, before="#setup_gdrive_cancel_button"
         )
@@ -299,7 +295,7 @@ class SetupGdriveScreen(ModalScreen):
                 for id in [
                     "#setup_gdrive_cancel_button",
                     "#setup_gdrive_generic_input_box",
-                    "#setup_gdrive_no_browser_enter_button",
+                    "#setup_gdrive_enter_button",
                 ]:
                     try:
                         widget = self.query_one(id)

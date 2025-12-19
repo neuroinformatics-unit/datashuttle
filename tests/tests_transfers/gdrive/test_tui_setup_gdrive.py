@@ -97,7 +97,7 @@ class TestTuiSetupGdrive(TuiBase):
             )
 
             await self.scroll_to_click_pause(
-                pilot, "#setup_gdrive_no_browser_enter_button"
+                pilot, "#setup_gdrive_enter_button"
             )
 
             await test_utils.await_task_by_name_if_present(
@@ -179,7 +179,7 @@ class TestTuiSetupGdrive(TuiBase):
             )
 
             await self.scroll_to_click_pause(
-                pilot, "#setup_gdrive_no_browser_enter_button"
+                pilot, "#setup_gdrive_enter_button"
             )
 
             await test_utils.await_task_by_name_if_present(
@@ -231,7 +231,7 @@ class TestTuiSetupGdrive(TuiBase):
             )
 
             await self.scroll_to_click_pause(
-                pilot, "#setup_gdrive_no_browser_enter_button"
+                pilot, "#setup_gdrive_enter_button"
             )
 
             await test_utils.await_task_by_name_if_present(
@@ -366,9 +366,7 @@ class TestTuiSetupGdrive(TuiBase):
             "#setup_gdrive_generic_input_box",
             os.environ["GDRIVE_CLIENT_SECRET"],
         )
-        await self.scroll_to_click_pause(
-            pilot, "#setup_gdrive_no_browser_enter_button"
-        )
+        await self.scroll_to_click_pause(pilot, "#setup_gdrive_enter_button")
 
         assert (
             "Are you running datashuttle on a machine "
