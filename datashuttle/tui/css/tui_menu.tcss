@@ -246,11 +246,13 @@ MessageBox:light > #messagebox_top_container {
     margin: 2 1 0 0;
     dock: left;
 }
-
-
-#configs_go_to_project_screen_button {
+#configs_setup_connection_button {
     margin: 2 1 0 0;
 }
+#configs_go_to_project_screen_button {
+    margin: 2 1 0 8;
+}
+
 #configs_container > DatatypeCheckboxes {
     layout: grid;
     grid-size: 2 2;
