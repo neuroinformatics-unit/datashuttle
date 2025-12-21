@@ -645,6 +645,11 @@ AcceptOrDeclineMessageBox {
     background: $primary-background;
  }
 
+#accept_or_decline_horizontal {
+    align: center middle;
+    width: 100%;
+}
+
  AcceptOrDeclineMessageBox:light > #accept_or_decline_messagebox_container {
     border: tall $panel-darken-3;
     background: $boost;
@@ -654,7 +659,7 @@ AcceptOrDeclineMessageBox {
     align: center middle;
     text-align: center;
     width: 100%;
-    margin: 0 0 1 2;
+    margin: 2 0 1 1;
  }
 
 #accept_or_decline_messagebox_accept_button {
