@@ -16,6 +16,11 @@ Therefore, add the title and hide it, then add a custom centered title.
 <p style="text-align: center; font-size: 48px;"><b>datashuttle</b></p>
 <p style="text-align: center; font-size: 22px;">Automate the creation, validation and transfer of neuroscience project folders.</p>
 
+```{image} /_static/datashuttle-demo.gif
+:alt: Datashuttle graphical interface walkthrough
+:align: center
+:width: 800px
+```
 ```{image} _static/datashuttle-overview-light.png
 :alt: My Logo
 :class: logo, mainlogo, only-light
