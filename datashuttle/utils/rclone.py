@@ -33,13 +33,38 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
     subprocess.CompletedProcess with `stdout` and `stderr` attributes.
 
     """
-    command = "rclone " + command
-    if pipe_std:
-        output = subprocess.run(
-            command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
-        )
-    else:
-        output = subprocess.run(command, shell=True)
+    cmd=["rclone "]+shlex.split(command)
+    
+    try:
+        if pipe_std:
+            output=subprocess.run(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                shell=False,
+            )
+        else:
+            output=subprocess.run(
+                cmd,
+                shell=False,
+            )
+    except FileNotFoundError:
+        if platform.system() == "Windows":
+            full_cmd="rclone "+ command
+            if pipe_std:
+                output=subprocess.run(
+                    full_cmd,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    shell=True,
+                )
+            else:
+                output=subprocess.run(
+                    full_cmd,
+                    shell=True,
+                )
+        else:
+            raise
 
     if output.returncode != 0:
         prompt_rclone_download_if_does_not_exist()
@@ -396,13 +421,25 @@ def check_rclone_with_default_call() -> bool:
     """
     try:
         output = subprocess.run(
-            "rclone -h",
+            ["rclone", "-h"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            shell=True,
+            shell=False,
         )
     except FileNotFoundError:
-        return False
+        if platform.system() == "Windows":
+            try:
+                output = subprocess.run(
+                    "rclone -h",
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    shell=True,
+                )
+            except FileNotFoundError:
+                return False
+        else:
+            return False
+
     return True if output.returncode == 0 else False
 
 
