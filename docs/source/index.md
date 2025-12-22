@@ -19,7 +19,7 @@ Therefore, add the title and hide it, then add a custom centered title.
 ```{image} /_static/datashuttle-demo.gif
 :alt: Datashuttle graphical interface walkthrough
 :align: center
-:width: 800px
+:width: 600px
 ```
 ```{image} _static/datashuttle-overview-light.png
 :alt: My Logo
