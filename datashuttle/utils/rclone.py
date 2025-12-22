@@ -33,33 +33,33 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
     subprocess.CompletedProcess with `stdout` and `stderr` attributes.
 
     """
-    cmd=["rclone "]+shlex.split(command)
-    
+    cmd = ["rclone "] + shlex.split(command)
+
     try:
         if pipe_std:
-            output=subprocess.run(
+            output = subprocess.run(
                 cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 shell=False,
             )
         else:
-            output=subprocess.run(
+            output = subprocess.run(
                 cmd,
                 shell=False,
             )
     except FileNotFoundError:
         if platform.system() == "Windows":
-            full_cmd="rclone "+ command
+            full_cmd = "rclone " + command
             if pipe_std:
-                output=subprocess.run(
+                output = subprocess.run(
                     full_cmd,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
                     shell=True,
                 )
             else:
-                output=subprocess.run(
+                output = subprocess.run(
                     full_cmd,
                     shell=True,
                 )
