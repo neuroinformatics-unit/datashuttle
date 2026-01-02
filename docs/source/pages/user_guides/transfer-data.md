@@ -306,21 +306,21 @@ Transfer a range
 overwrite existing files
 : Controls how existing files are handled during transfer.
 
-: **never**  
-  Never overwrite existing files.  
+: **never**
+  Never overwrite existing files.
   Internally maps to rclone’s `--ignore-existing`.
 
-: **if_different**  
+: **if_different**
   Only overwrite files if the source and destination differ in
-  modification time or checksum.  
+  modification time or checksum.
   This uses rclone’s default behavior.
 
-: **if_source_newer**  
-  Only overwrite files if the source file is newer than the destination.  
+: **if_source_newer**
+  Only overwrite files if the source file is newer than the destination.
   Internally maps to rclone’s `--update`.
 
-: **always**  
-  Always overwrite files, even if timestamps are identical.  
+: **always**
+  Always overwrite files, even if timestamps are identical.
   Internally maps to rclone’s `--ignore-times`.
 
 : Under the hood, datashuttle uses
