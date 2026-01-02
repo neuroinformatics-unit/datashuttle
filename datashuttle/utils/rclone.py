@@ -610,8 +610,8 @@ def handle_rclone_arguments(
 
     elif overwrite == "if_different":
         # default rclone behavior (no flags)
-         pass
-    
+        pass
+
     elif overwrite == "always":
         extra_arguments_list += [rclone_args("always_overwrite")]
 
@@ -638,7 +638,7 @@ def rclone_args(name: str) -> str:
         "copy",
         "never_overwrite",
         "if_source_newer_overwrite",
-         "always_overwrite",
+        "always_overwrite",
         "progress",
         "check",
     ]
