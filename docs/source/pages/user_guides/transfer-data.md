@@ -304,28 +304,29 @@ Transfer a range
 (transfer-options)=
 
 overwrite existing files
-: By default this option is set to **never**—a transfer will never overwrite a
-file that already exists, even if the source and destination modification datetimes
-or sizes are different.
+: Controls how existing files are handled during transfer.
 
-: If *always**, when there are differences in datetime or size
-between the source and destination file the destination file will be overwritten.
-This includes when the source file is older or smaller than the destination.
+: **never**  
+  Never overwrite existing files.  
+  Internally maps to rclone’s `--ignore-existing`.
 
-: Finally, **if source newer** ensures data is only overwritten
-when the
-[source file has a more recent modification time](https://rclone.org/docs/#u-update)
-than the destination.
-If modification datetimes are equal, the destination will be overwritten if the
-sizes or checksums are different.
+: **if_different**  
+  Only overwrite files if the source and destination differ in
+  modification time or checksum.  
+  This uses rclone’s default behavior.
 
-: Under the hood, transfers are made with calls to
-[Rclone](https://rclone.org/). Using **never**
-calls
-[Rclone's copy](https://rclone.org/commands/rclone_copy/)
-function with the flag `--ignore_existing`. Using
-**always** copies without this flag and (using Rclone's default overwrite behaviour.)
-Using **if source newer** calls copy with the `--update` flag.
+: **if_source_newer**  
+  Only overwrite files if the source file is newer than the destination.  
+  Internally maps to rclone’s `--update`.
+
+: **always**  
+  Always overwrite files, even if timestamps are identical.  
+  Internally maps to rclone’s `--ignore-times`.
+
+: Under the hood, datashuttle uses
+  [rclone](https://rclone.org/) for all file transfers, and these options
+  directly map to rclone’s copy semantics.
+
 
 (dry-run-argument)=
 dry run
