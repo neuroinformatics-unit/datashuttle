@@ -3,10 +3,19 @@
 (user-guides)=
 # User guides
 
-These guides assume a managed project has already been set up. If not, see the [Set up a project](set-up-a-project_) guide.
+These guides cover setting up and managing a ``datashuttle`` project.
 
 ::::{grid} 1 1 2 2
 :gutter: 4
+
+:::{grid-item-card} {fas}`desktop;sd-text-primary` Set up a project
+:link: set-up-a-project
+:link-type: doc
+:class-img-top: tutorial-link-image
+
+Start a new project or manage an existing project
+:::
+
 
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Choose a terminal
 :link: choose-a-terminal
@@ -71,6 +80,7 @@ Use templates for subject and session names
 :caption: User Guides
 :hidden:
 
+set-up-a-project
 choose-a-terminal
 validate
 create-folders
