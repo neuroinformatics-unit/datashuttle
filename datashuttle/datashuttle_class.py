@@ -59,6 +59,7 @@ from datashuttle.utils.decorators import (  # noqa
     check_is_not_local_project,
     requires_aws_configs,
     requires_ssh_configs,
+    with_logging,
 )
 
 # -----------------------------------------------------------------------------
@@ -117,6 +118,7 @@ class DataShuttle:
     # -------------------------------------------------------------------------
 
     @check_configs_set
+    @with_logging(conditional_param="log")
     def create_folders(
         self,
         top_level_folder: TopLevelFolder,
@@ -255,6 +257,7 @@ class DataShuttle:
 
         return created_paths
 
+    @with_logging(conditional_param="log")
     def _format_and_validate_names(
         self,
         top_level_folder: TopLevelFolder,
@@ -306,6 +309,7 @@ class DataShuttle:
 
     @check_configs_set
     @check_is_not_local_project
+    @with_logging(conditional_param="init_log")
     def upload_custom(
         self,
         top_level_folder: TopLevelFolder,
@@ -377,6 +381,7 @@ class DataShuttle:
 
     @check_configs_set
     @check_is_not_local_project
+    @with_logging(conditional_param="init_log")
     def download_custom(
         self,
         top_level_folder: TopLevelFolder,
@@ -453,6 +458,7 @@ class DataShuttle:
 
     @check_configs_set
     @check_is_not_local_project
+    @with_logging()
     def upload_rawdata(
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
@@ -483,6 +489,7 @@ class DataShuttle:
 
     @check_configs_set
     @check_is_not_local_project
+    @with_logging()
     def upload_derivatives(
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
@@ -513,6 +520,7 @@ class DataShuttle:
 
     @check_configs_set
     @check_is_not_local_project
+    @with_logging()
     def download_rawdata(
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
@@ -543,6 +551,7 @@ class DataShuttle:
 
     @check_configs_set
     @check_is_not_local_project
+    @with_logging()
     def download_derivatives(
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
@@ -573,6 +582,7 @@ class DataShuttle:
 
     @check_configs_set
     @check_is_not_local_project
+    @with_logging()
     def upload_entire_project(
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
@@ -604,6 +614,7 @@ class DataShuttle:
 
     @check_configs_set
     @check_is_not_local_project
+    @with_logging()
     def download_entire_project(
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
@@ -635,6 +646,7 @@ class DataShuttle:
 
     @check_configs_set
     @check_is_not_local_project
+    @with_logging()
     def upload_specific_folder_or_file(
         self,
         filepath: Union[str, Path],
@@ -674,6 +686,7 @@ class DataShuttle:
 
     @check_configs_set
     @check_is_not_local_project
+    @with_logging()
     def download_specific_folder_or_file(
         self,
         filepath: Union[str, Path],
