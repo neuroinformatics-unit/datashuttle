@@ -36,7 +36,7 @@ faster.
 
 ## Installing test dependencies
 Install the project in editable mode with test dependencies:
-```bash 
+```bash
 pip install -e .[test]
 ```
 Ensure pytest is available:
