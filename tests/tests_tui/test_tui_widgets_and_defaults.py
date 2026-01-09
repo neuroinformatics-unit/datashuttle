@@ -1106,13 +1106,13 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_transfer_checkboxes_dynamic_on_off(
-        self, setup_project_paths, mocker
+        self, setup_project_paths
     ):
         """
         This tests that mutually exclusive checkbox options turn
         each other off / on when set. This is necessary for transfer
         tab custom datatypes in which some checkboxes (e.g. "all")
-        should not be selected  with other (e.g. "behav").
+        should not be selected with other (e.g. "behav").
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
@@ -1129,32 +1129,38 @@ class TestTuiWidgets(TuiBase):
                 pilot, "#transfer_custom_radiobutton"
             )
 
+            # Create a function to reload the settings dict, refreshing the contents
             def load_dict():
                 return pilot.app.screen.interface.project._load_persistent_settings()[
                     "tui"
                 ]["transfer_checkboxes_on"]
 
+            # turn on "behav" checkbox, check "all" is turned off
             assert load_dict()["all"]["on"]
             await self.change_checkbox(pilot, "#transfer_behav_checkbox")
             assert not load_dict()["all"]["on"]
 
+            # Turn on "all_non_datatype" checkbox, check "behav" is kept on
             await self.change_checkbox(
                 pilot, "#transfer_all_non_datatype_checkbox"
             )
             assert load_dict()["all_non_datatype"]["on"]
             assert load_dict()["behav"]["on"]
 
+            # Turn on "all_datatype" checkbox, check "behav" is turned off
             await self.change_checkbox(
                 pilot, "#transfer_all_datatype_checkbox"
             )
             assert load_dict()["all_datatype"]["on"]
             assert not load_dict()["behav"]["on"]
 
+            # Turn on "all" checkbox and check all_non_datatype and all_datatype are switched off
             await self.change_checkbox(pilot, "#transfer_all_checkbox")
             assert load_dict()["all"]["on"]
             assert not load_dict()["all_datatype"]["on"]
             assert not load_dict()["all_non_datatype"]["on"]
 
+            # Turn on "all_non_datatype" and check "all" is now off
             await self.change_checkbox(
                 pilot, "#transfer_all_non_datatype_checkbox"
             )

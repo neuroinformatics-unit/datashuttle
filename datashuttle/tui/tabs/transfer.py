@@ -426,7 +426,6 @@ class TransferTab(TreeAndInputTab):
         """Create the datatype checkboxes, centralised as used in multiple places."""
         return TransferDatatypeCheckboxes(
             self.interface,
-            # tab_name="transfer",
             id="transfer_custom_datatype_checkboxes",
         )
 

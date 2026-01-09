@@ -247,7 +247,7 @@ class DatatypeCheckboxes(Static):
                 )
 
     @on(Checkbox.Changed)
-    def on_checkbox_changed(self) -> None:
+    def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
         """Handle a datatype checkbox change.
 
         When a checkbox is changed, update the `self.datatype_config`
@@ -285,7 +285,9 @@ class DatatypeCheckboxes(Static):
 class TransferDatatypeCheckboxes(DatatypeCheckboxes):
     """Subclass of the data type checkboxes class for the transfer tab.
 
-    This subclass extends `on_checkbox_changed` by
+    This subclass extends `on_checkbox_changed` by adding logic to
+    dynamically turn off mutually exclusive checkboxes when one is
+    selected, before delegating to the base implementation.
 
     """
 
