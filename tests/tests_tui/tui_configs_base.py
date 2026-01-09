@@ -95,11 +95,11 @@ class TuiConfigsBase(TuiBase):
             )
             assert isinstance(pilot.app.screen, ProjectManagerScreen)
 
-            project = pilot.app.screen.interface.project
-
             assert (
                 pilot.app.screen.interface.project.project_name == project_name
             )
+
+        project = pilot.app.screen.interface.project
 
         # After saving, check all configs are correct on the DataShuttle
         # instance as well as the stored configs.
