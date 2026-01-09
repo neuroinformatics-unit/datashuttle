@@ -10,9 +10,9 @@ def check_if_env_vars_are_loaded(required_variables):
     workflow `.yaml` files. Otherwise, these can be set manually
     or (more conveniently) added to a `.env` file in the project root.
 
-     Parameters
-     ----------
-     required_variables :
+    Parameters
+    ----------
+    required_variables :
         A list of required variables to check for.
 
     Returns
