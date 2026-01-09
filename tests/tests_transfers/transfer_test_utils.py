@@ -8,7 +8,7 @@ def check_if_env_vars_are_loaded(required_variables):
 
     If we are on GitHub, these should be loaded in the
     workflow `.yaml` files. Otherwise, these can be set manually
-     or (more conveniently) added to a `.env` file in the project root.
+    or (more conveniently) added to a `.env` file in the project root.
 
      Parameters
      ----------
