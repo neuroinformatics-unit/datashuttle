@@ -1,10 +1,10 @@
 import copy
 import os
 
-from dotenv import load_dotenv
-
 from datashuttle import DataShuttle
 from datashuttle.utils import aws, utils
+
+from .. import transfer_test_utils
 
 
 def setup_project_for_aws(project: DataShuttle):
@@ -54,21 +54,11 @@ def has_aws_environment_variables():
     project root, for use with `python-dotenv`. Otherwise,
     they are set up in GitHub actions.
     """
-    if not os.getenv("GITHUB_ACTIONS"):
-        if not load_dotenv():
-            return False
-
-    for key in [
+    required_variables = [
         "AWS_BUCKET_NAME",
         "AWS_ACCESS_KEY_ID",
         "AWS_REGION",
         "AWS_SECRET_ACCESS_KEY",
-    ]:
-        if key not in os.environ:
-            return False
+    ]
 
-        # On CI triggered by forked repositories, secrets are empty
-        if os.environ[key].strip() == "":
-            return False
-
-    return True
+    return transfer_test_utils.check_if_env_vars_are_loaded(required_variables)
