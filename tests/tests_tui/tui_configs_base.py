@@ -95,19 +95,17 @@ class TuiConfigsBase(TuiBase):
             )
             assert isinstance(pilot.app.screen, ProjectManagerScreen)
 
-            assert (
-                pilot.app.screen.interface.project.project_name == project_name
+            project = pilot.app.screen.interface.project
+
+            assert project.project_name == project_name
+
+            # After saving, check all configs are correct on the DataShuttle
+            # instance as well as the stored configs.
+            test_utils.check_configs(
+                project,
+                config_kwargs,
+                tmp_config_path / project_name / "config.yaml",
             )
-
-        project = pilot.app.screen.interface.project
-
-        # After saving, check all configs are correct on the DataShuttle
-        # instance as well as the stored configs.
-        test_utils.check_configs(
-            project,
-            config_kwargs,
-            tmp_config_path / project_name / "config.yaml",
-        )
 
         await pilot.pause()
 
