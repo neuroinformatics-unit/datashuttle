@@ -60,7 +60,7 @@ def setup_gdrive_connection(project: DataShuttle):
 
 
 def has_gdrive_environment_variables():
-    """Check for environment variables needed to run Gdrive tests.
+    """Check for environment variables needed to run GDrive tests.
 
     Environment variables can be stored in a `.env` file in the
     project root, for use with `python-dotenv`. Otherwise,
