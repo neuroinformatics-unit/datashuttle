@@ -343,7 +343,7 @@ class TransferDatatypeCheckboxes(DatatypeCheckboxes):
                         f"#{get_checkbox_name(self.tab_name, datatype)}"
                     ).value = False
 
-        super().on_checkbox_changed()
+        super().on_checkbox_changed(event)
 
 
 # Helpers
