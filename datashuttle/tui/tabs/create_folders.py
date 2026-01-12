@@ -546,5 +546,7 @@ class CreateFoldersTab(TreeAndInputTab):
     def get_datatype_checkboxes_widget(self):
         """Create the datatype checkboxes, centralised as used in multiple places."""
         return DatatypeCheckboxes(
-            self.interface, id="create_folders_datatype_checkboxes"
+            self.interface,
+            tab_name="create",
+            id="create_folders_datatype_checkboxes",
         )
