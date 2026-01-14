@@ -22,10 +22,12 @@ def check_if_env_vars_are_loaded(required_variables):
     """
     # Outside of GitHub actions, if env vars are not
     # loaded try and load using dotenv.
-    if not os.getenv("GITHUB_ACTIONS"):
-        if not all([var in os.environ for var in required_variables]):
-            if not load_dotenv():
-                return False
+    if (
+        not os.getenv("GITHUB_ACTIONS")
+        and not all(var in os.environ for var in required_variables)
+        and not load_dotenv()
+    ):
+        return False
 
     for var in required_variables:
         if var not in os.environ:
