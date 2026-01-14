@@ -153,7 +153,7 @@ def handle_path(message: str, path_: Path | None) -> str:
 def validate_list_of_names(
     path_or_name_list: List[Path] | List[str],
     prefix: Prefix,
-    name_templates: Optional[Dict] = None,
+    validation_templates: Optional[Dict] = None,
     check_value_lengths: bool = True,
     allow_letters_in_sub_ses_values: bool = False,
 ) -> List[str]:
@@ -167,8 +167,8 @@ def validate_list_of_names(
     prefix
         Whether these are subject (sub) or session (ses) level names
 
-    name_templates
-        A `name_template` dictionary to validate against. See `set_name_templates()`.
+    validation_templates
+        A `validation_template` dictionary to validate against. See `set_validation_templates()`.
 
     check_value_lengths
         If `True`, check that the prefix-<value> value lengths
@@ -206,7 +206,7 @@ def validate_list_of_names(
         )
         error_messages += datetime_are_iso_format(name, path_)
         error_messages += names_dont_match_templates(
-            name, path_, prefix, name_templates
+            name, path_, prefix, validation_templates
         )
 
     # Next, check interactions between names (e.g. duplicates,
@@ -364,9 +364,9 @@ def names_dont_match_templates(
     name: str,
     path_: Path | None,
     prefix: Prefix,
-    name_templates: Optional[Dict] = None,
+    validation_templates: Optional[Dict] = None,
 ) -> List[str]:
-    """Validate a list of sub/ses names against the respective regexp `name_templates`.
+    """Validate a list of sub/ses names against the respective regexp `validation_templates`.
 
     Parameters
     ----------
@@ -379,7 +379,7 @@ def names_dont_match_templates(
     prefix
         "sub" or "ses"
 
-    name_templates
+    validation_templates
         Datashuttle's Name Templates dictionary defining the templates used.
 
     Returns
@@ -387,13 +387,13 @@ def names_dont_match_templates(
     A list of validation errors.
 
     """
-    if name_templates is None:
+    if validation_templates is None:
         return []
 
-    if name_templates["on"] is False:
+    if validation_templates["on"] is False:
         return []
 
-    regexp = name_templates[prefix]
+    regexp = validation_templates[prefix]
 
     if regexp is None:
         return []
@@ -688,7 +688,7 @@ def validate_project(
     include_central: bool = False,
     display_mode: DisplayMode = "error",
     log: bool = True,
-    name_templates: Optional[Dict] = None,
+    validation_templates: Optional[Dict] = None,
     strict_mode: bool = False,
     allow_letters_in_sub_ses_values: bool = False,
 ) -> List[str]:
@@ -713,8 +713,8 @@ def validate_project(
     log
         If `True`, errors or warnings are logged to "datashuttle" logger.
 
-    name_templates
-        A `name_template` dictionary to validate against. See `set_name_templates()`.
+    validation_templates
+        A `validation_template` dictionary to validate against. See `set_validation_templates()`.
 
     strict_mode
         If `True`, only allow NeuroBlueprint-formatted folders to exist in
@@ -759,7 +759,7 @@ def validate_project(
         error_messages += validate_list_of_names(
             folder_paths["sub"],
             prefix="sub",
-            name_templates=name_templates,
+            validation_templates=validation_templates,
             allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
         )
 
@@ -774,7 +774,7 @@ def validate_project(
                 ses_paths,
                 "ses",
                 check_value_lengths=False,
-                name_templates=name_templates,
+                validation_templates=validation_templates,
                 allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
             )
 
@@ -808,7 +808,7 @@ def validate_names_against_project(
     include_central: bool = False,
     display_mode: DisplayMode = "error",
     log: bool = True,
-    name_templates: Optional[Dict] = None,
+    validation_templates: Optional[Dict] = None,
     allow_letters_in_sub_ses_values: bool = False,
 ) -> None:
     """Check that sub / ses names are formatted consistently with the rest of the project.
@@ -848,8 +848,8 @@ def validate_names_against_project(
     log
         If `True`, errors or warnings are logged to "datashuttle" logger.
 
-    name_templates
-        A `name_template` dictionary to validate against. See `set_name_templates()`.
+    validation_templates
+        A `validation_template` dictionary to validate against. See `set_validation_templates()`.
 
     allow_letters_in_sub_ses_values
         If `True`, any alphanumeric character are allowed for the values associated
@@ -865,7 +865,7 @@ def validate_names_against_project(
     error_messages += validate_list_of_names(
         sub_names,
         prefix="sub",
-        name_templates=name_templates,
+        validation_templates=validation_templates,
         allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
     )
 
@@ -915,7 +915,7 @@ def validate_names_against_project(
         error_messages += validate_list_of_names(
             ses_names,
             "ses",
-            name_templates=name_templates,
+            validation_templates=validation_templates,
             allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
         )
 
@@ -1210,7 +1210,7 @@ def strip_uncheckable_names(
                 prefix,
                 return_as_int=return_as_int,  # type: ignore
             )[0]
-        except BaseException:
+        except Exception:
             continue
 
         if path_:

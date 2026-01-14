@@ -19,11 +19,15 @@ dependencies = [
     "fancylog>=0.4.2",
     "simplejson",
     "pyperclip",
-    "textual==3.4.0",
+    "textual>=3.4.0",
     "show-in-file-manager",
     "gitpython",
     "typeguard",
-    "psutil"
+    "psutil",
+    # Skip the fancylog version which logs env packages
+    # by default, which is slow due to subprocess calls.
+    "fancylog >= 0.7.0; python_version >= '3.11'",
+    "fancylog < 0.5.0; python_version < '3.11'",
 ]
 
 classifiers = [

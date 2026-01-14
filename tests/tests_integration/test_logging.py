@@ -381,7 +381,7 @@ class TestLogging:
 
         configs["local_path"] = "~"
 
-        with pytest.raises(BaseException):
+        with pytest.raises(Exception):
             project.make_config_file(**configs)
 
         # Because an error was raised, the log will stay in the
@@ -448,7 +448,7 @@ class TestLogging:
         test_utils.delete_log_files(project.cfg.logging_path)
 
         # Check a validation error is logged.
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(Exception) as e:
             project.validate_project("rawdata", display_mode="error")
 
         log = test_utils.read_log_file(project.cfg.logging_path)
@@ -477,7 +477,7 @@ class TestLogging:
         project.create_folders("rawdata", "sub-001")
         test_utils.delete_log_files(project.cfg.logging_path)  #
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(Exception) as e:
             project.create_folders("rawdata", "sub-001_id-a")
 
         log = test_utils.read_log_file(project.cfg.logging_path)

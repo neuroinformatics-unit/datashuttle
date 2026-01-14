@@ -184,9 +184,9 @@ class TestTuiCreateDirectoryTree(TuiBase):
             # Check that the error message is displayed.
             assert (
                 "Clipboard copy failed, likely due to operating in headless mode"
-                in pilot.app.screen.query_one(
-                    "#messagebox_message_label"
-                ).renderable
+                in pilot.app.screen.query_one("#messagebox_message_label")
+                .render()
+                .plain
             )
 
     @pytest.mark.asyncio

@@ -46,11 +46,13 @@ class TestTuiWidgets(TuiBase):
             # New Project Labels --------------------------------------------------
 
             assert (
-                configs_content.query_one("#configs_banner_label").renderable
+                configs_content.query_one("#configs_banner_label")
+                .render()
+                .plain
                 == "Make A New Project"
             )
             assert (
-                configs_content.query_one("#configs_info_label").renderable
+                configs_content.query_one("#configs_info_label").render().plain
                 == "Set your configurations for a new project. For more details on "
                 "each section,\nsee the datashuttle documentation. Once configs "
                 "are set, you will be able\nto use the 'Create' and 'Transfer' tabs."
@@ -59,7 +61,7 @@ class TestTuiWidgets(TuiBase):
             # Project Name --------------------------------------------------------
 
             assert (
-                configs_content.query_one("#configs_name_label").renderable
+                configs_content.query_one("#configs_name_label").render().plain
                 == "Project Name"
             )
             assert configs_content.query_one("#configs_name_input").value == ""
@@ -71,9 +73,9 @@ class TestTuiWidgets(TuiBase):
             # Local Path ----------------------------------------------------------
 
             assert (
-                configs_content.query_one(
-                    "#configs_local_path_label"
-                ).renderable
+                configs_content.query_one("#configs_local_path_label")
+                .render()
+                .plain
                 == "Local Path"
             )
             assert (
@@ -99,9 +101,9 @@ class TestTuiWidgets(TuiBase):
             # Connection Method ---------------------------------------------------
 
             assert (
-                configs_content.query_one(
-                    "#configs_connect_method_label"
-                ).renderable
+                configs_content.query_one("#configs_connect_method_label")
+                .render()
+                .plain
                 == "Connection Method"
             )
             assert (
@@ -118,9 +120,9 @@ class TestTuiWidgets(TuiBase):
             # Central Path (Local Filesystem) ------------------------------------------
 
             assert (
-                configs_content.query_one(
-                    "#configs_central_path_label"
-                ).renderable
+                configs_content.query_one("#configs_central_path_label")
+                .render()
+                .plain
                 == "Central Path"
             )
             assert (
@@ -169,9 +171,9 @@ class TestTuiWidgets(TuiBase):
             # Central Host ID -------------------------------------------------
 
             assert (
-                configs_content.query_one(
-                    "#configs_central_host_id_label"
-                ).renderable
+                configs_content.query_one("#configs_central_host_id_label")
+                .render()
+                .plain
                 == "Central Host ID"
             )
             assert (
@@ -192,7 +194,9 @@ class TestTuiWidgets(TuiBase):
             assert (
                 configs_content.query_one(
                     "#configs_central_host_username_label"
-                ).renderable
+                )
+                .render()
+                .plain
                 == "Central Host Username"
             )
             assert (
@@ -263,7 +267,7 @@ class TestTuiWidgets(TuiBase):
                 "#configs_name_label",
                 "#configs_name_input",
             ]:
-                with pytest.raises(BaseException) as e:
+                with pytest.raises(Exception) as e:
                     configs_content.query_one(id)
                 assert "No nodes match" in str(e)
 
@@ -287,9 +291,9 @@ class TestTuiWidgets(TuiBase):
             )
 
             assert (
-                pilot.app.screen.query_one(
-                    "#create_folders_subject_label"
-                ).renderable
+                pilot.app.screen.query_one("#create_folders_subject_label")
+                .render()
+                .plain
                 == "Subject(s)"
             )
             assert (
@@ -300,9 +304,9 @@ class TestTuiWidgets(TuiBase):
             )
 
             assert (
-                pilot.app.screen.query_one(
-                    "#create_folders_session_label"
-                ).renderable
+                pilot.app.screen.query_one("#create_folders_session_label")
+                .render()
+                .plain
                 == "Session(s)"
             )
             assert (
@@ -313,9 +317,9 @@ class TestTuiWidgets(TuiBase):
             )
 
             assert (
-                pilot.app.screen.query_one(
-                    "#create_folders_datatype_label"
-                ).renderable
+                pilot.app.screen.query_one("#create_folders_datatype_label")
+                .render()
+                .plain
                 == "Datatype(s)"
             )
 
@@ -382,7 +386,9 @@ class TestTuiWidgets(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_settings_toplevel_label"
-                ).renderable
+                )
+                .render()
+                .plain
                 == "Top level folder:"
             )
             assert (
@@ -433,12 +439,12 @@ class TestTuiWidgets(TuiBase):
                 is False
             )
 
-            # Template validation
+            # Validation templates
             assert (
                 pilot.app.screen.query_one(
                     "#template_settings_validation_on_checkbox"
                 ).label._text
-                == "Template validation"
+                == "Validation templates"
             )
             assert (
                 pilot.app.screen.query_one(
@@ -464,10 +470,10 @@ class TestTuiWidgets(TuiBase):
             )
 
             assert (
-                " A 'Template' can be set check subject or session names"
-                in pilot.app.screen.query_one(
-                    "#template_message_label"
-                ).renderable
+                "You can define a custom “Template” to ensure"
+                in pilot.app.screen.query_one("#template_message_label")
+                .render()
+                .plain
             )
 
             assert (
@@ -504,7 +510,7 @@ class TestTuiWidgets(TuiBase):
             await pilot.pause()
 
     @pytest.mark.asyncio
-    async def test_name_templates_widgets_and_settings(
+    async def test_validation_templates_widgets_and_settings(
         self, setup_project_paths
     ):
         """Check the 'Name Templates' section of the 'Create' tab 'Settings
@@ -526,11 +532,11 @@ class TestTuiWidgets(TuiBase):
             # Check the default template settings are as expected
             expected_template = {"on": False, "sub": None, "ses": None}
             assert (
-                pilot.app.screen.interface.get_name_templates()
+                pilot.app.screen.interface.get_validation_templates()
                 == expected_template
             )
             assert (
-                pilot.app.screen.interface.project.get_name_templates()
+                pilot.app.screen.interface.project.get_validation_templates()
                 == expected_template
             )
 
@@ -554,11 +560,11 @@ class TestTuiWidgets(TuiBase):
 
             expected_template = {"on": True, "sub": sub_regexp, "ses": None}
             assert (
-                pilot.app.screen.interface.get_name_templates()
+                pilot.app.screen.interface.get_validation_templates()
                 == expected_template
             )
             assert (
-                pilot.app.screen.interface.project.get_name_templates()
+                pilot.app.screen.interface.project.get_validation_templates()
                 == expected_template
             )
 
@@ -568,11 +574,11 @@ class TestTuiWidgets(TuiBase):
             )
 
             assert (
-                pilot.app.screen.interface.get_name_templates()
+                pilot.app.screen.interface.get_validation_templates()
                 == expected_template
             )
             assert (
-                pilot.app.screen.interface.project.get_name_templates()
+                pilot.app.screen.interface.project.get_validation_templates()
                 == expected_template
             )
 
@@ -617,11 +623,11 @@ class TestTuiWidgets(TuiBase):
                 "ses": ses_regexp,
             }
             assert (
-                pilot.app.screen.interface.get_name_templates()
+                pilot.app.screen.interface.get_validation_templates()
                 == expected_template
             )
             assert (
-                pilot.app.screen.interface.project.get_name_templates()
+                pilot.app.screen.interface.project.get_validation_templates()
                 == expected_template
             )
 
@@ -631,11 +637,11 @@ class TestTuiWidgets(TuiBase):
                 pilot, project_name
             )
             assert (
-                pilot.app.screen.interface.get_name_templates()
+                pilot.app.screen.interface.get_validation_templates()
                 == expected_template
             )
             assert (
-                pilot.app.screen.interface.project.get_name_templates()
+                pilot.app.screen.interface.project.get_validation_templates()
                 == expected_template
             )
 
@@ -1154,25 +1160,27 @@ class TestTuiWidgets(TuiBase):
 
             # All data label
             assert (
-                pilot.app.screen.query_one("#transfer_all_label").renderable
+                pilot.app.screen.query_one("#transfer_all_label")
+                .render()
+                .plain
                 == "All data from: \n\n - Rawdata \n - "
                 "Derivatives \n\nwill be transferred."
             )
 
             # upload / download widget
             assert (
-                pilot.app.screen.query_one(
-                    "#transfer_switch_upload_label"
-                ).renderable
+                pilot.app.screen.query_one("#transfer_switch_upload_label")
+                .render()
+                .plain
                 == "Upload"
             )
             assert (
                 pilot.app.screen.query_one("#transfer_switch").value is False
             )
             assert (
-                pilot.app.screen.query_one(
-                    "#transfer_switch_download_label"
-                ).renderable
+                pilot.app.screen.query_one("#transfer_switch_download_label")
+                .render()
+                .plain
                 == "Download"
             )
             assert (
@@ -1186,9 +1194,9 @@ class TestTuiWidgets(TuiBase):
                 pilot, "#transfer_toplevel_radiobutton"
             )
             assert (
-                pilot.app.screen.query_one(
-                    "#transfer_toplevel_label_top"
-                ).renderable
+                pilot.app.screen.query_one("#transfer_toplevel_label_top")
+                .render()
+                .plain
                 == "Select top-level folder to transfer."
             )
             assert (
@@ -1200,9 +1208,9 @@ class TestTuiWidgets(TuiBase):
                 pilot, "#transfer_custom_radiobutton"
             )
             assert (
-                pilot.app.screen.query_one(
-                    "#transfer_custom_label_top"
-                ).renderable
+                pilot.app.screen.query_one("#transfer_custom_label_top")
+                .render()
+                .plain
                 == "Select top-level folder to transfer."
             )
             assert (
@@ -1211,9 +1219,9 @@ class TestTuiWidgets(TuiBase):
             )
 
             assert (
-                pilot.app.screen.query_one(
-                    "#transfer_subject_label"
-                ).renderable
+                pilot.app.screen.query_one("#transfer_subject_label")
+                .render()
+                .plain
                 == "Subject(s)"
             )
             assert (
@@ -1224,9 +1232,9 @@ class TestTuiWidgets(TuiBase):
             )
 
             assert (
-                pilot.app.screen.query_one(
-                    "#transfer_session_label"
-                ).renderable
+                pilot.app.screen.query_one("#transfer_session_label")
+                .render()
+                .plain
                 == "Session(s)"
             )
             assert (
@@ -1237,9 +1245,9 @@ class TestTuiWidgets(TuiBase):
             )
 
             assert (
-                pilot.app.screen.query_one(
-                    "#transfer_datatype_label"
-                ).renderable
+                pilot.app.screen.query_one("#transfer_datatype_label")
+                .render()
+                .plain
                 == "Datatype(s)"
             )
 

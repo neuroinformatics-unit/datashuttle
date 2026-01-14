@@ -69,9 +69,9 @@ class TestTuiSetupAws(TuiBase):
 
             assert (
                 "Would you like to encrypt the RClone config file"
-                in pilot.app.screen.query_one(
-                    "#setup_aws_messagebox_message"
-                ).renderable
+                in pilot.app.screen.query_one("#setup_aws_messagebox_message")
+                .render()
+                .plain
             )
 
             if set_encryption:
@@ -124,9 +124,9 @@ class TestTuiSetupAws(TuiBase):
 
             assert (
                 "AWS setup failed. Please check your configs and secret access key"
-                in pilot.app.screen.query_one(
-                    "#setup_aws_messagebox_message"
-                ).renderable
+                in pilot.app.screen.query_one("#setup_aws_messagebox_message")
+                .render()
+                .plain
             )
 
     async def setup_aws_project_and_run_connection_setup(
@@ -142,18 +142,18 @@ class TestTuiSetupAws(TuiBase):
         # Start connection setup
         assert (
             "Ready to setup AWS connection. Press OK to proceed"
-            in pilot.app.screen.query_one(
-                "#setup_aws_messagebox_message"
-            ).renderable
+            in pilot.app.screen.query_one("#setup_aws_messagebox_message")
+            .render()
+            .plain
         )
         await self.scroll_to_click_pause(pilot, "#setup_aws_ok_button")
 
         # Fill secret access key
         assert (
             "Please Enter your AWS Secret Access Key"
-            in pilot.app.screen.query_one(
-                "#setup_aws_messagebox_message"
-            ).renderable
+            in pilot.app.screen.query_one("#setup_aws_messagebox_message")
+            .render()
+            .plain
         )
         await self.fill_input(
             pilot,

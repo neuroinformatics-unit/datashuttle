@@ -88,7 +88,7 @@ The `Create` tab has a lot of useful shortcuts.
 
 First, **double-clicking subject or session input boxes** will suggest
 the next subject or session to create, based on the local project.
-If a [Name Template](how-to-use-name-templates) is set, the
+If a [Validation Template](how-to-use-validation-templates) is set, the
 suggested name  will also include the template.
 
 Holding `CTRL` while clicking will enter the `sub-`
@@ -150,7 +150,7 @@ are not valid (i.e. they break with
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/)).
 
 This screen is also used to validate and autofill with
-[Name Templates](how-to-use-name-templates).
+[Validation Templates](how-to-use-validation-templates).
 
 Allow letters in sub- and ses- values
 : This setting allows `sub-` or `ses-` values in created folders to be

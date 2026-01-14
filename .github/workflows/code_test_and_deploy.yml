@@ -13,6 +13,11 @@ on:
     # This will only run on main by default.
     - cron: "0 0 1,15 * *"
 
+# Cancel in-progress runs if a new run is triggered, except for main branch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   linting:
     runs-on: ubuntu-latest
@@ -37,14 +42,14 @@ jobs:
         # the weekly cron job.
          # Test all Python versions for cron job, and only first/last for other triggers
         os: ${{ fromJson(github.event_name == 'schedule'
-              && '["ubuntu-latest","windows-latest","macos-14","macos-13"]'
+              && '["ubuntu-latest","windows-latest","macos-14","macos-15-intel"]'
               || '["ubuntu-latest","windows-latest","macos-latest"]') }}
         python-version: ${{ fromJson(github.event_name == 'schedule'
               && '["3.9","3.10","3.11","3.12","3.13"]'
               || '["3.9","3.13"]') }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v3
         with:
@@ -86,6 +91,10 @@ jobs:
           FPR="$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr:/ {print $10; exit}')"
           pass init "$FPR"
 
+      - name: Test all except central connections
+        run: |
+          pytest --ignore=tests/tests_transfers/ssh --ignore=tests/tests_transfers/gdrive --ignore=tests/tests_transfers/aws
+
         # run SSH tests only on Linux because Windows and macOS
         # are already run within a virtual container and so cannot
         # run Linux containers because nested containerisation is disabled.
@@ -113,10 +122,6 @@ jobs:
         run: |
           pytest tests/tests_transfers/aws
 
-      - name: All Other Tests
-        run: |
-          pytest --ignore=tests/tests_transfers/ssh --ignore=tests/tests_transfers/gdrive --ignore=tests/tests_transfers/aws
-
   build_sdist_wheels:
     name: Build source distribution
     needs: [test]
@@ -132,7 +137,7 @@ jobs:
     if: github.event_name == 'push' && github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/download-artifact@v5
+    - uses: actions/download-artifact@v7
       with:
         name: artifact
         path: dist
