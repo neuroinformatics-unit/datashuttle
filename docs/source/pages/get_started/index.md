@@ -10,6 +10,13 @@ project, see our [Validate project from a filepath](quick-validate-project) guid
 ::::{grid} 1 1 2 2
 :gutter: 4
 
+:::{grid-item-card} {fas}`desktop;sd-text-primary` Install
+:link: install
+:link-type: doc
+
+How to install ``datashuttle``
+:::
+
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Walkthrough ``datashuttle``
 :link: getting-started
 :link-type: doc
@@ -19,12 +26,6 @@ A step-by-step guide through ``datashuttle``'s features
 
 :::
 
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Install
-:link: install
-:link-type: doc
-
-How to install ``datashuttle``
-:::
 
 ::::
 
@@ -32,6 +33,6 @@ How to install ``datashuttle``
 :maxdepth: 2
 :caption: Get Started
 :hidden:
-getting-started
 install
+getting-started
 ```
