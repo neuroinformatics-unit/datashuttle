@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING, List, Tuple
 if TYPE_CHECKING:
     from datashuttle.utils.custom_types import TopLevelFolder
 
+import platform
+
 from datashuttle.configs import canonical_configs
 from datashuttle.utils.folder_class import Folder
 
@@ -80,6 +82,11 @@ def get_datashuttle_path() -> Path:
     return Path.home() / ".datashuttle"
 
 
+def get_internal_datashuttle_from_path() -> Path:
+    """Get a placeholder path for `validate_project_from_path()`."""
+    return get_datashuttle_path() / "_datashuttle_from_path"
+
+
 def get_project_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
     """Return the datashuttle config path for the project.
 
@@ -91,3 +98,26 @@ def get_project_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
     temp_logs_path = base_path / "temp_logs"
 
     return base_path, temp_logs_path
+
+
+def get_rclone_config_base_path() -> Path:
+    """Return the path to the Rclone config file.
+
+    This is used for RClone config files for transfer targets (ssh, aws, gdrive).
+    This should match where RClone itself stores the config by default,
+    as described here: https://rclone.org/docs/#config-string
+
+    Because RClone's resolution process for where it stores its config files
+    is a little complex, in some rare cases the path returned below may not match
+    where RClone actually stores its configs. In such cases, local filesystem configs,
+    which are stored in the default `rclone.conf` file for backwards compatibility
+    reasons, and transfer configs, which are stored in their own file at the path
+    returned from this function, are stored in separate places. This is generally
+    not a significant issue.
+    """
+    if platform.system() == "Windows":
+        appdata_path = Path().home() / "AppData" / "Roaming"
+        if appdata_path.is_dir():
+            return appdata_path / "rclone"
+
+    return Path().home() / ".config" / "rclone"
