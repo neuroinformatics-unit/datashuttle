@@ -5,13 +5,15 @@ import os
 from datashuttle import DataShuttle
 from datashuttle.utils import gdrive, utils
 
+from .. import transfer_test_utils
+
 
 def setup_project_for_gdrive(project: DataShuttle):
     """Set up a project with configs for Google Drive transfers.
 
     The connection credentials are fetched from the environment which
     the developer shall set themselves to test locally. In the CI, these
-    are set using the github secrets. A random string is added to the
+    are set using the GitHub secrets. A random string is added to the
     central path so that the test project paths do not interfere while
     running multiple test instances simultaneously in CI.
     """
@@ -51,7 +53,6 @@ def setup_gdrive_connection(project: DataShuttle):
     gdrive.get_client_secret = lambda *args, **kwargs: os.environ[
         "GDRIVE_CLIENT_SECRET"
     ]
-
     project.setup_gdrive_connection()
 
     builtins.input = original_input
@@ -59,17 +60,17 @@ def setup_gdrive_connection(project: DataShuttle):
 
 
 def has_gdrive_environment_variables():
-    for key in [
+    """Check for environment variables needed to run GDrive tests.
+
+    Environment variables can be stored in a `.env` file in the
+    project root, for use with `python-dotenv`. Otherwise,
+    they are set up in GitHub actions.
+    """
+    required_variables = [
         "GDRIVE_CLIENT_ID",
         "GDRIVE_ROOT_FOLDER_ID",
         "GDRIVE_CONFIG_TOKEN",
         "GDRIVE_CLIENT_SECRET",
-    ]:
-        if key not in os.environ:
-            return False
+    ]
 
-        # On CI triggered by forked repositories, secrets are empty
-        if os.environ[key].strip() == "":
-            return False
-
-    return True
+    return transfer_test_utils.check_if_env_vars_are_loaded(required_variables)
