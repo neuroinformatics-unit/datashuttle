@@ -118,10 +118,10 @@ Make sure to provide docstrings for all public functions, classes, and methods.
 ## Running tests locally
 
 Unit and integration tests are important tools to ensure code is working as expected,
-and to protect against future changes breaking existing functionality. 
+and to protect against future changes breaking existing functionality.
 
 All tests are automatically run on GitHub actions for open PRs. However, it can be useful
-to run tests locally to ensure everything is working on your system. We use `pytest` to 
+to run tests locally to ensure everything is working on your system. We use `pytest` to
 manage running `datashuttle` tests.
 
 ## Installing test dependencies
@@ -161,13 +161,13 @@ pytest -k validate
 
 ## Tests requiring additional infrastructure
 
-Some tests depend on external infrastructure and will be skipped automatically 
+Some tests depend on external infrastructure and will be skipped automatically
 when run locally:
 
-- To run tests of SSH transfer, Docker must be installed and running. 
+- To run tests of SSH transfer, Docker must be installed and running.
 - Cloud storage tests (Google Drive, AWS) require private credentials to run
 and are generally not expected to be run outside the GitHub actions environment. Please
-contact the development team if you require local testing of Google Drive or AWS for your contribution. 
+contact the development team if you require local testing of Google Drive or AWS for your contribution.
 
 ## Contributing documentation
 
