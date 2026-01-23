@@ -115,6 +115,60 @@ skip pre-commit checks, and ask for help in your PR.
 For docstrings, we adhere to the [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html) style.
 Make sure to provide docstrings for all public functions, classes, and methods.
 
+## Running tests locally
+
+Unit and integration tests are important tools to ensure code is working as expected,
+and to protect against future changes breaking existing functionality. 
+
+All tests are automatically run on GitHub actions for open PRs. However, it can be useful
+to run tests locally to ensure everything is working on your system. We use `pytest` to 
+manage running `datashuttle` tests.
+
+## Installing test dependencies
+
+All dependencies required for testing are included in the `[dev]` section of
+the `pyproject.toml`. To install these dependencies, install the package with
+the following command, run in the project root directory:
+```bash
+pip install -e .[dev]
+```
+
+Note that on `zsh` shell, you may need to format this as:
+
+```bash
+pip install -e ".[dev]"
+```
+
+## Running the full test suite
+
+From the root of the repository, run:
+```bash
+pytest
+```
+This runs all tests that can be executed in a local development environment.
+
+To run a specific test file, you can run:
+
+```bash
+pytest tests/test_validation.py
+```
+
+or to run any tests matching a keyword:
+
+```bash
+pytest -k validate
+```
+
+## Tests requiring additional infrastructure
+
+Some tests depend on external infrastructure and will be skipped automatically 
+when run locally:
+
+- To run tests of SSH transfer, Docker must be installed and running. 
+- Cloud storage tests (Google Drive, AWS) require private credentials to run
+and are generally not expected to be run outside the GitHub actions environment. Please
+contact the development team if you require local testing of Google Drive or AWS for your contribution. 
+
 ## Contributing documentation
 
 It is very important that the documentation for ``datashuttle`` is clear,
