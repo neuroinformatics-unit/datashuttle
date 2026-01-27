@@ -111,7 +111,9 @@ def setup_ssh_key_api(
     )
 
     try:
-        add_public_key_to_central_authorized_keys(cfg, rsa_key, server_password)
+        add_public_key_to_central_authorized_keys(
+            cfg, rsa_key, server_password
+        )
     finally:
         # Clear password from memory immediately after use
         if server_password:
