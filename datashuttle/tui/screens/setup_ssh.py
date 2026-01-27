@@ -147,22 +147,30 @@ class SetupSshScreen(ModalScreen):
         """
         password = self.query_one("#setup_ssh_password_input").value
 
-        success, output = self.interface.setup_key_pair_and_rclone_config(
-            password
-        )
-
-        if success:
-            message = "Connection successful! SSH key saved to the RClone config file."
-            self.query_one("#setup_ssh_ok_button").label = "Finish"
-            self.query_one("#setup_ssh_cancel_button").disabled = True
-            self.stage += 1
-
-        else:
-            message = (
-                f"Password setup failed. Check password is correct and try again."
-                f"\n\n{self.failed_password_attempts} failed password attempts."
-                f"\n\n Traceback: {output}"
+        try:
+            success, output = self.interface.setup_key_pair_and_rclone_config(
+                password
             )
-            self.failed_password_attempts += 1
 
-        self.query_one("#messagebox_message_label").update(message)
+            if success:
+                message = "Connection successful! SSH key saved to the RClone config file."
+                self.query_one("#setup_ssh_ok_button").label = "Finish"
+                self.query_one("#setup_ssh_cancel_button").disabled = True
+                self.stage += 1
+
+            else:
+                message = (
+                    f"Password setup failed. Check password is correct and try again."
+                    f"\n\n{self.failed_password_attempts} failed password attempts."
+                    f"\n\n Traceback: {output}"
+                )
+                self.failed_password_attempts += 1
+
+            self.query_one("#messagebox_message_label").update(message)
+        finally:
+            # Clear password from memory and input widget
+            if password:
+                password = None
+                del password
+            # Clear the input widget value as well
+            self.query_one("#setup_ssh_password_input").value = ""

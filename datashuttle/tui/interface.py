@@ -530,6 +530,11 @@ class Interface:
 
         except Exception as e:
             return False, str(e)
+        finally:
+            # Clear password parameter from memory
+            if password:
+                password = None
+                del password
 
     # Setup Google Drive
     # ----------------------------------------------------------------------------------

@@ -123,6 +123,8 @@ class SetupGdriveScreen(ModalScreen):
                     if self.input_box.value.strip()
                     else None
                 )
+                # Clear input immediately after reading
+                self.input_box.value = ""
                 self.stage += 1
                 self.ask_user_for_browser()
             else:
@@ -131,6 +133,8 @@ class SetupGdriveScreen(ModalScreen):
                     if self.input_box.value.strip()
                     else None
                 )
+                # Clear input immediately after reading
+                self.input_box.value = ""
                 self.setup_gdrive_connection_using_config_token(
                     self.gdrive_client_secret, config_token
                 )
@@ -263,12 +267,24 @@ class SetupGdriveScreen(ModalScreen):
             await worker.wait()
 
         success, output = worker.result
-        if success:
-            self.show_finish_screen()
-        else:
-            self.input_box.disabled = False
-            self.enter_button.disabled = False
-            self.display_failed(output)
+        try:
+            if success:
+                self.show_finish_screen()
+            else:
+                self.input_box.disabled = False
+                self.enter_button.disabled = False
+                self.display_failed(output)
+        finally:
+            # Clear sensitive credentials from memory
+            if gdrive_client_secret:
+                gdrive_client_secret = None
+                del gdrive_client_secret
+            if config_token:
+                config_token = None
+                del config_token
+            # Clear class attribute
+            if self.gdrive_client_secret:
+                self.gdrive_client_secret = None
 
     @work(exclusive=True, thread=True)
     def setup_gdrive_connection(

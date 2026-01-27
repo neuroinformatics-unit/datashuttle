@@ -81,26 +81,34 @@ class SetupAwsScreen(ModalScreen):
             "#setup_aws_secret_access_key_input"
         ).value
 
-        success, output = self.interface.setup_aws_connection(
-            secret_access_key
-        )
-
-        if success:
-            message = "AWS Connection Successful!"
-            self.query_one(
-                "#setup_aws_secret_access_key_input"
-            ).visible = False
-
-        else:
-            message = (
-                f"AWS setup failed. Please check your configs and secret access key"
-                f"\n\n Traceback: {output}"
+        try:
+            success, output = self.interface.setup_aws_connection(
+                secret_access_key
             )
-            self.query_one(
-                "#setup_aws_secret_access_key_input"
-            ).disabled = True
 
-        self.query_one("#setup_aws_ok_button").label = "Finish"
-        self.query_one("#setup_aws_messagebox_message").update(message)
-        self.query_one("#setup_aws_cancel_button").disabled = True
-        self.stage += 1
+            if success:
+                message = "AWS Connection Successful!"
+                self.query_one(
+                    "#setup_aws_secret_access_key_input"
+                ).visible = False
+
+            else:
+                message = (
+                    f"AWS setup failed. Please check your configs and secret access key"
+                    f"\n\n Traceback: {output}"
+                )
+                self.query_one(
+                    "#setup_aws_secret_access_key_input"
+                ).disabled = True
+
+            self.query_one("#setup_aws_ok_button").label = "Finish"
+            self.query_one("#setup_aws_messagebox_message").update(message)
+            self.query_one("#setup_aws_cancel_button").disabled = True
+            self.stage += 1
+        finally:
+            # Clear secret key from memory and input widget
+            if secret_access_key:
+                secret_access_key = None
+                del secret_access_key
+            # Clear the input widget value
+            self.query_one("#setup_aws_secret_access_key_input").value = ""
