@@ -129,9 +129,7 @@ class TestFileTransfer(BaseTransfer):
             .apply(lambda x: fnmatch.fnmatch(x, "ses-003*"))
         ]
 
-        pathtable = pathtable[
-            pathtable["parent_datatype"].apply(lambda x: x is None)
-        ]
+        pathtable = pathtable[pathtable["parent_datatype"].isna()]
 
         expected_transferred_paths = pathtable["path"]
 
