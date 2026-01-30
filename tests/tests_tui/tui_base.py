@@ -1,6 +1,7 @@
 import shutil
 
 import pytest_asyncio
+from textual.events import Click
 from textual.widgets._tabbed_content import ContentTab
 
 from datashuttle.configs import canonical_configs
@@ -253,12 +254,11 @@ class TuiBase:
     async def double_click_input(self, pilot, sub_or_ses, control=False):
         """Helper function to double click input to suggest next sub or ses.
 
-        Because this function is performed in separate asyncio task, this was a little
-        brittle in the CI tests leading to random errors. The below
-        combination of awaiting the test, then pausing, stopped the errors.
+        Initially this function used `double_click` on the input, but it was brittle
+        in the CI tests leading to random errors. The below mocks the double click
+        in a different way, directly interacting with the custom object that
+        manages the double click, so is hopefully more robust.
         """
-        from textual.events import Click
-
         expand_name = "session" if sub_or_ses == "ses" else "subject"
 
         id = f"#create_folders_{expand_name}_input"
