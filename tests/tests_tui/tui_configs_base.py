@@ -82,7 +82,10 @@ class TuiConfigsBase(TuiBase):
             )
 
         if connection_method_name == "Local Filesystem":
-            # This is only shown after connection set up for ssh.
+            # `configs_go_to_project_screen_button` is only shown
+            # immediately after 'Local Filesystem' (or local_only, which
+            # is not tested here). For ssh, aws, google drive, the button
+            # is shown after connection set up.
             assert (
                 pilot.app.screen.query_one(
                     "#configs_go_to_project_screen_button"
