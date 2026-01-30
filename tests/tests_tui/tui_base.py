@@ -257,15 +257,37 @@ class TuiBase:
         brittle in the CI tests leading to random errors. The below
         combination of awaiting the test, then pausing, stopped the errors.
         """
+        from textual.events import Click
+
         expand_name = "session" if sub_or_ses == "ses" else "subject"
 
-        await self.double_click(
-            pilot, f"#create_folders_{expand_name}_input", control=control
+        id = f"#create_folders_{expand_name}_input"
+
+        input_widget = pilot.app.screen.query_one(id)
+        input_widget.parent.click_info.prev_click_time = 10**100
+        input_widget.parent.click_info.prev_click_widget_id = id.removeprefix(
+            "#"
         )
+
+        click_event = Click(
+            x=0,
+            y=0,
+            delta_x=0,
+            delta_y=0,
+            button=1,  # Left mouse button
+            shift=False,
+            meta=False,
+            ctrl=control,
+            widget=input_widget,
+        )
+
+        input_widget._on_click(click_event)
+
+        await pilot.pause(10)  # long pause required for testing on CI
+
         await test_utils.await_task_by_name_if_present(
             f"suggest_next_{sub_or_ses}_async_task"
         )
-        await pilot.pause(0.5)
 
     # Shared checks
     # ---------------------------------------------------------------------------------
