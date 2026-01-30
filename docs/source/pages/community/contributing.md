@@ -124,7 +124,7 @@ All tests are automatically run on GitHub actions for open PRs. However, it can 
 to run tests locally to ensure everything is working on your system. We use `pytest` to 
 manage running `datashuttle` tests.
 
-## Installing test dependencies
+### Installing test dependencies
 
 All dependencies required for testing are included in the `[dev]` section of
 the `pyproject.toml`. To install these dependencies, install the package with
@@ -139,7 +139,7 @@ Note that on `zsh` shell, you may need to format this as:
 pip install -e ".[dev]"
 ```
 
-## Running the full test suite
+### Running the full test suite
 
 From the root of the repository, run:
 ```bash
@@ -159,7 +159,7 @@ or to run any tests matching a keyword:
 pytest -k validate
 ```
 
-## Tests requiring additional infrastructure
+### Tests requiring additional infrastructure
 
 Some tests depend on external infrastructure and will be skipped automatically 
 when run locally:
