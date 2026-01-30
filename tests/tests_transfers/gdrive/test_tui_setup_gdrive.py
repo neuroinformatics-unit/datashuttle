@@ -97,6 +97,17 @@ class TestTuiSetupGdrive(TuiBase):
                 .plain
             )
 
+            await self.scroll_to_click_pause(
+                pilot, "#setup_gdrive_finish_button"
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#configs_go_to_project_screen_button"
+                ).visible
+                is True
+            )
+
     @pytest.mark.asyncio
     async def test_gdrive_connection_setup_incorrect_config_token(
         self, setup_project_paths

@@ -20,7 +20,7 @@ class TestTuiConfigs(TuiConfigsBase):
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("kwargs_set", [1, 2])
-    async def test_make_new_project_configs__(
+    async def test_make_new_project_configs(
         self,
         empty_project_paths,
         kwargs_set,

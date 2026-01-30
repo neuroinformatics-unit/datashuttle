@@ -54,7 +54,7 @@ class SetupAwsScreen(ModalScreen):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle button press on the screen."""
         if event.button.id == "setup_aws_cancel_button":
-            self.dismiss()
+            self.dismiss(False)
 
         if event.button.id == "setup_aws_ok_button":
             if self.stage == 0:
@@ -64,7 +64,7 @@ class SetupAwsScreen(ModalScreen):
                 self.use_secret_access_key_to_setup_aws_connection()
 
             elif self.stage == 2:
-                self.dismiss()
+                self.dismiss(True)
 
     def prompt_user_for_aws_secret_access_key(self) -> None:
         """Set widgets for user to input AWS key."""
