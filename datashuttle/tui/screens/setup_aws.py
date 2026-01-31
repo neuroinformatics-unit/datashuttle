@@ -65,7 +65,7 @@ class SetupAwsScreen(ModalScreen):
 
         """
         if event.button.id == "setup_aws_cancel_button":
-            self.dismiss()
+            self.dismiss(False)
 
         elif event.button.id == "setup_aws_encryption_no_button":
             message = "AWS Connection Successful!"
@@ -85,7 +85,7 @@ class SetupAwsScreen(ModalScreen):
                 self.set_rclone_encryption()
 
             elif self.stage == "finished":
-                self.dismiss()
+                self.dismiss(True)
 
     def prompt_user_for_aws_secret_access_key(self) -> None:
         """Set widgets for user to input AWS key."""

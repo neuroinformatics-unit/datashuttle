@@ -77,7 +77,7 @@ class SetupSshScreen(ModalScreen):
             if self.stage == "set_up_encryption":
                 self.show_connection_successful_message()
             else:
-                self.dismiss()
+                self.dismiss(False)
 
         if event.button.id == "setup_ssh_ok_button":
             if self.stage == "init":
@@ -96,7 +96,7 @@ class SetupSshScreen(ModalScreen):
                 self.show_connection_successful_message()
 
             elif self.stage == "finished":
-                self.dismiss()
+                self.dismiss(True)
 
     def ask_user_to_accept_hostkeys(self) -> None:
         """Ask the user to accept the hostkey that identifies the central server.

@@ -81,28 +81,34 @@ class TuiConfigsBase(TuiBase):
                 == f"Setup {connection_method_name} Connection"
             )
 
-        assert (
-            pilot.app.screen.query_one(
-                "#configs_go_to_project_screen_button"
-            ).visible
-            is True
-        )
-        await self.scroll_to_click_pause(
-            pilot, "#configs_go_to_project_screen_button"
-        )
-        assert isinstance(pilot.app.screen, ProjectManagerScreen)
+        if connection_method_name == "Local Filesystem":
+            # `configs_go_to_project_screen_button` is only shown
+            # immediately after 'Local Filesystem' (or local_only, which
+            # is not tested here). For ssh, aws, google drive, the button
+            # is shown after connection set up.
+            assert (
+                pilot.app.screen.query_one(
+                    "#configs_go_to_project_screen_button"
+                ).visible
+                is True
+            )
 
-        project = pilot.app.screen.interface.project
+            await self.scroll_to_click_pause(
+                pilot, "#configs_go_to_project_screen_button"
+            )
+            assert isinstance(pilot.app.screen, ProjectManagerScreen)
 
-        assert pilot.app.screen.interface.project.project_name == project_name
+            project = pilot.app.screen.interface.project
 
-        # After saving, check all configs are correct on the DataShuttle
-        # instance as well as the stored configs.
-        test_utils.check_configs(
-            project,
-            config_kwargs,
-            tmp_config_path / project_name / "config.yaml",
-        )
+            assert project.project_name == project_name
+
+            # After saving, check all configs are correct on the DataShuttle
+            # instance as well as the stored configs.
+            test_utils.check_configs(
+                project,
+                config_kwargs,
+                tmp_config_path / project_name / "config.yaml",
+            )
 
         await pilot.pause()
 
