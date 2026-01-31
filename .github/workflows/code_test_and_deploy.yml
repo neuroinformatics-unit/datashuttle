@@ -98,8 +98,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo service mysql stop  # free up port 3306 for ssh tests
-          pytest tests/tests_transfers/ssh/test_ssh_transfer.py
-          pytest tests/tests_transfers/ssh/test_ssh_suggest_next.py
+          pytest tests/tests_transfers/ssh
 
       - name: Test Google Drive
         env:
