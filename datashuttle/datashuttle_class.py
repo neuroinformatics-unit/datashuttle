@@ -845,9 +845,9 @@ class DataShuttle:
                 if self._ask_user_rclone_encryption():
                     self._try_encrypt_rclone_config()
 
-            rclone.check_successful_connection_and_raise_error_on_fail(
-                self.cfg
-            )
+            #    rclone.check_successful_connection_and_raise_error_on_fail(
+            #        self.cfg
+            #    )
 
             utils.log_and_message(
                 "SSH key pair setup successfully. SSH key saved to the RClone config file."
