@@ -1228,7 +1228,7 @@ class TestTuiWidgets(TuiBase):
                 pilot.app.screen.query_one(
                     "#transfer_subject_input"
                 ).placeholder
-                == "e.g. sub-001"
+                == 'e.g. sub-001 (default: "all")'
             )
 
             assert (
@@ -1241,7 +1241,7 @@ class TestTuiWidgets(TuiBase):
                 pilot.app.screen.query_one(
                     "#transfer_session_input"
                 ).placeholder
-                == "e.g. ses-001"
+                == 'e.g. ses-001 (default: "all")'
             )
 
             assert (
