@@ -99,7 +99,7 @@ class TransferData:
                 self.__upload_or_download,
                 self.__top_level_folder,
                 include_list,
-                cfg.make_rclone_transfer_options(
+                rclone.make_rclone_transfer_options(
                     overwrite_existing_files, dry_run
                 ),
             )
