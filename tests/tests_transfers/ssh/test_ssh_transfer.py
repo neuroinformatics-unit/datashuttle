@@ -20,7 +20,7 @@ TEST_SSH = ssh_test_utils.docker_is_running()
 )
 class TestSSHTransfer(BaseSSHTransfer):
     @pytest.fixture(
-        scope="class",
+        scope="function",
     )
     def ssh_setup(self, pathtable_and_project, setup_ssh_container_fixture):
         """
