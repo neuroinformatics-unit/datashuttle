@@ -41,7 +41,7 @@ class SetupGdriveScreen(ModalScreen):
         super(SetupGdriveScreen, self).__init__()
 
         self.interface = interface
-        self.no_browser_stage: None | str = "pending"
+        self.client_secret_stage: None | str = "pending"
         self.setup_worker: Worker | None = None
         self.is_browser_available: bool = True
         self.gdrive_client_secret: Optional[str] = None
@@ -131,14 +131,14 @@ class SetupGdriveScreen(ModalScreen):
         elif event.button.id == "setup_gdrive_enter_button":
             if (
                 self.interface.project.cfg["gdrive_client_id"]
-                and self.no_browser_stage == "pending"
+                and self.client_secret_stage == "pending"
             ):
                 self.gdrive_client_secret = (
                     self.input_box.value.strip()
                     if self.input_box.value.strip()
                     else None
                 )
-                self.no_browser_stage = "retrieved"
+                self.client_secret_stage = "retrieved"
                 self.ask_user_for_browser()
             else:
                 config_token = (
