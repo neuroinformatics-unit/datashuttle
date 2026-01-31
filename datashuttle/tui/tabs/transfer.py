@@ -132,7 +132,7 @@ class TransferTab(TreeAndInputTab):
             ClickableInput(
                 self.mainwindow,
                 id="transfer_subject_input",
-                placeholder='e.g. sub-001 (default: "all")'
+                placeholder='e.g. sub-001 (default: "all")',
             ),
             Label("Session(s)", id="transfer_session_label"),
             ClickableInput(
