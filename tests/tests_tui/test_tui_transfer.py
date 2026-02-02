@@ -220,7 +220,7 @@ class TestTuiTransfer(TuiBase):
 
     @pytest.mark.asyncio()
     async def test_custom_transfer_default_sub_ses_all(
-            self, mocker, setup_project_paths
+        self, mocker, setup_project_paths
     ):
         """
         This PR tests that for subject and session inputs on the custom
