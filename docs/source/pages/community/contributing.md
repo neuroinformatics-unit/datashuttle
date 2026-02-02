@@ -141,7 +141,7 @@ To run a specific test file, you can include the path to the file, for example:
 pytest tests/test_validation.py
 ```
 
-or to run any tests whose name matches a keyword:
+or to run any tests with names that match a keyword:
 
 ```bash
 pytest -k validate
