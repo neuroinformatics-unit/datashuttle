@@ -25,7 +25,12 @@ jobs:
       - uses: neuroinformatics-unit/actions/lint@v2
 
   test:
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+  if: |
+    github.event_name != 'pull_request' ||
+    (
+      github.event.pull_request.draft == false &&
+      !contains(github.event.pull_request.labels.*.name, 'skip-tests')
+    )
     needs: [linting]
     name: ${{ matrix.os }} py${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
