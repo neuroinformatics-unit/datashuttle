@@ -118,11 +118,11 @@ Make sure to provide docstrings for all public functions, classes, and methods.
 
 ## Running tests locally
 
-Unit and integration tests are important tools to ensure the code is working 
+Unit and integration tests are important tools to ensure the code is working
 as expected, and protect against regressions introduced by future changes.
 
-All tests are automatically run on GitHub actions for open PRs. However, running tests locally can 
-be useful to verify that everything works correctly on your system. We use [pytest](https://docs.pytest.org/en/stable/) 
+All tests are automatically run on GitHub actions for open PRs. However, running tests locally can
+be useful to verify that everything works correctly on your system. We use [pytest](https://docs.pytest.org/en/stable/)
 to manage running `datashuttle` tests.
 
 Before running the tests, make sure `datashuttle` is [installed in development mode](#developer-install)
