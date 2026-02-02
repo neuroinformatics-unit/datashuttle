@@ -171,7 +171,7 @@ class SetupSshScreen(ModalScreen):
         if success:
             message = (
                 f"Connection set up successfully.\n"
-                f"{rclone_encryption.get_explanation_message(self.cfg)}"
+                f"{rclone_encryption.get_explanation_message(self.interface.project.cfg)}"
             )
             self.query_one("#setup_ssh_ok_button").label = "Yes"
             self.query_one("#setup_ssh_cancel_button").label = "No"
