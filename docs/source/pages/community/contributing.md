@@ -125,7 +125,7 @@ All tests are automatically run on GitHub actions for open PRs. However, running
 be useful to verify that everything works correctly on your system. We use [pytest](https://docs.pytest.org/en/stable/)
 to manage running `datashuttle` tests.
 
-Before running the tests, make sure `datashuttle` is [installed in development mode](#developer-install)
+Before running the tests, make sure `datashuttle` is [installed in development mode](developer-install)
 
 ### Running the full test suite
 
