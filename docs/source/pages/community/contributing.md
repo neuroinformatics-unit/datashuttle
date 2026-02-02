@@ -159,7 +159,7 @@ contact the development team if you require local testing of Google Drive or AWS
 
 ## Contributing documentation
 
-To ensure ease of use, every part of all software must be documented as
+To ensure ease of use, all parts of `datashuttle` must be documented as
 thoroughly as possible, and all new features should be fully documented. If you
 notice any areas where the documentation can be improved, please don't hesitate
 to make a contribution.
