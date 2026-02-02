@@ -91,6 +91,10 @@ jobs:
           FPR="$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr:/ {print $10; exit}')"
           pass init "$FPR"
 
+      - name: Test all except central connections
+        run: |
+          pytest --ignore=tests/tests_transfers/ssh --ignore=tests/tests_transfers/gdrive --ignore=tests/tests_transfers/aws
+
         # run SSH tests only on Linux because Windows and macOS
         # are already run within a virtual container and so cannot
         # run Linux containers because nested containerisation is disabled.
@@ -108,10 +112,6 @@ jobs:
           GDRIVE_CONFIG_TOKEN: ${{ secrets.GDRIVE_CONFIG_TOKEN }}
         run: |
           pytest tests/tests_transfers/gdrive
-
-      - name: Test all except central connections
-        run: |
-          pytest --ignore=tests/tests_transfers/ssh --ignore=tests/tests_transfers/gdrive --ignore=tests/tests_transfers/aws
 
       - name: Test AWS
         env:
