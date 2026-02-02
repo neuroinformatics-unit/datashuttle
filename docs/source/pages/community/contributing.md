@@ -10,6 +10,7 @@ and [opening a pull request](#pull-requests).
 
 The core development team will support you in contributing code, regardless of your experience!
 
+(developer-install)=
 ## Creating a development environment
 
 For detailed instructions on installing ``datashuttle`` along with
@@ -117,27 +118,14 @@ Make sure to provide docstrings for all public functions, classes, and methods.
 
 ## Running tests locally
 
-Unit and integration tests are important tools to ensure code is working as expected,
-and to protect against future changes breaking existing functionality.
+Unit and integration tests are important tools to ensure the code is working 
+as expected, and protect against regressions introduced by future changes.
 
-All tests are automatically run on GitHub actions for open PRs. However, it can be useful
-to run tests locally to ensure everything is working on your system. We use `pytest` to
-manage running `datashuttle` tests.
+All tests are automatically run on GitHub actions for open PRs. However, running tests locally can 
+be useful to verify that everything works correctly on your system. We use [pytest](https://docs.pytest.org/en/stable/) 
+to manage running `datashuttle` tests.
 
-### Installing test dependencies
-
-All dependencies required for testing are included in the `[dev]` section of
-the `pyproject.toml`. To install these dependencies, install the package with
-the following command, run in the project root directory:
-```bash
-pip install -e .[dev]
-```
-
-Note that on `zsh` shell, you may need to format this as:
-
-```bash
-pip install -e ".[dev]"
-```
+Before running the tests, make sure `datashuttle` is [installed in development mode](#developer-install)
 
 ### Running the full test suite
 
@@ -145,15 +133,15 @@ From the root of the repository, run:
 ```bash
 pytest
 ```
-This runs all tests that can be executed in a local development environment.
+This runs all tests that can be executed in the local development environment.
 
-To run a specific test file, you can run:
+To run a specific test file, you can include the path to the file, for example:
 
 ```bash
 pytest tests/test_validation.py
 ```
 
-or to run any tests matching a keyword:
+or to run any tests whose name matches a keyword:
 
 ```bash
 pytest -k validate
@@ -161,26 +149,20 @@ pytest -k validate
 
 ### Tests requiring additional infrastructure
 
-Some tests depend on external infrastructure and will be skipped automatically
+Some tests depend on external infrastructure and are skipped automatically
 when run locally:
 
-- To run tests of SSH transfer, Docker must be installed and running.
+- SSH transfer tests require Docker is installed and running.
 - Cloud storage tests (Google Drive, AWS) require private credentials to run
 and are generally not expected to be run outside the GitHub actions environment. Please
 contact the development team if you require local testing of Google Drive or AWS for your contribution.
 
 ## Contributing documentation
 
-It is very important that the documentation for ``datashuttle`` is clear,
-accurate and concise. A key principle of ``datashuttle`` is it should
-make data acquisition simple and easy—therefore it should be
-well-documented.
-
-For these reasons every part of all software must be documented as
-thoroughly as possible, and all new features must be fully documented. If you
+To ensure ease of use, every part of all software must be documented as
+thoroughly as possible, and all new features should be fully documented. If you
 notice any areas where the documentation can be improved, please don't hesitate
 to make a contribution.
-
 
 
 ### Working with the documentation
