@@ -152,7 +152,7 @@ pytest -k validate
 Some tests depend on external infrastructure and are skipped automatically
 when run locally:
 
-- SSH transfer tests require Docker is installed and running.
+- SSH transfer tests require that Docker is installed and running.
 - Cloud storage tests (Google Drive, AWS) require private credentials to run
 and are generally not expected to be run outside the GitHub actions environment. Please
 contact the development team if you require local testing of Google Drive or AWS for your contribution.
