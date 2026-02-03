@@ -185,8 +185,16 @@ class DisplayedDatatypesScreen(ModalScreen):
 class BaseDatatypeCheckboxes(Static):
     """Dynamically-populated checkbox widget for convenient datatype selection.
 
+    Bass class for a widget that allows the user to select datatypes.
+    The checkbox names are generated in the persistent_settings
+    configuration file, which stores all checkbox visible and
+    checked status across datashuttle sessions.
+
     Attributes
     ----------
+    tab_name
+        Set by the subclass, indicates if the settings and checkbox names
+        should include "create" or "tranfser"
     datatype_config
         A Dictionary containing datatype as key (e.g. "ephys", "behav")
         and values are `bool` indicating whether the checkbox is on / off.
@@ -280,7 +288,7 @@ class BaseDatatypeCheckboxes(Static):
 
 
 class CreateDatatypeCheckboxes(BaseDatatypeCheckboxes):
-    """Subclass of the data-type checkboxes for the `create` tab."""
+    """Subclass of the data-type checkboxes for the "create" tab."""
 
     tab_name: Literal["create", "transfer"] = "create"
 
@@ -335,10 +343,13 @@ class TransferDatatypeCheckboxes(BaseDatatypeCheckboxes):
                     "all_datatype",
                     "all_non_datatype",
                 ] + all_datatypes
+
             elif checkbox_name == "all_datatype":
                 to_turn_off = ["all"] + all_datatypes
+
             elif checkbox_name == "all_non_datatype":
                 to_turn_off = ["all"]
+
             else:
                 to_turn_off = ["all", "all_datatype"]
 
