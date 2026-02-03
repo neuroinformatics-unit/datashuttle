@@ -178,14 +178,14 @@ class DisplayedDatatypesScreen(ModalScreen):
 
 
 # --------------------------------------------------------------------------------------
-# BaseBaseDatatypeCheckboxes
+# BaseDatatypeCheckboxes
 # --------------------------------------------------------------------------------------
 
 
 class BaseDatatypeCheckboxes(Static):
     """Dynamically-populated checkbox widget for convenient datatype selection.
 
-    Bass class for a widget that allows the user to select datatypes.
+    Base class for a widget that allows the user to select datatypes.
     The checkbox names are generated in the persistent_settings
     configuration file, which stores all checkbox visible and
     checked status across datashuttle sessions.
@@ -194,7 +194,7 @@ class BaseDatatypeCheckboxes(Static):
     ----------
     tab_name
         Set by the subclass, indicates if the settings and checkbox names
-        should include "create" or "tranfser"
+        should include "create" or "transfer"
     datatype_config
         A Dictionary containing datatype as key (e.g. "ephys", "behav")
         and values are `bool` indicating whether the checkbox is on / off.
@@ -304,7 +304,7 @@ class TransferDatatypeCheckboxes(BaseDatatypeCheckboxes):
 
     tab_name: Literal["create", "transfer"] = "transfer"
 
-    def __init__(self, interface, id):
+    def __init__(self, interface: Interface, id: Optional[str]):
         """Initialise TransferDatatypeCheckboxes.
 
         Parameters
@@ -323,7 +323,7 @@ class TransferDatatypeCheckboxes(BaseDatatypeCheckboxes):
         """Dynamically turn off checkboxes depending on the activated checkbox then save.
 
         In the transfer tab, we have a few different checkboxes that
-        are mutually exclusive. For example, `all` and `all_datatypes`
+        are mutually exclusive. For example, `all` and `all_datatype`
         are redundant. This function turns off checkboxes redundant
         with the selected checkbox, before calling the super class
         which saves the state of the currently selected checkboxes.
@@ -332,7 +332,7 @@ class TransferDatatypeCheckboxes(BaseDatatypeCheckboxes):
         checkbox_name = get_datatype_from_checkbox_name(str(checkbox.id))
 
         if checkbox.value:
-            all_datatypes = [
+            all_datatypes_list = [
                 dtype
                 for dtype in self.datatype_config.keys()
                 if dtype not in ["all", "all_datatype", "all_non_datatype"]
@@ -342,10 +342,10 @@ class TransferDatatypeCheckboxes(BaseDatatypeCheckboxes):
                 to_turn_off = [
                     "all_datatype",
                     "all_non_datatype",
-                ] + all_datatypes
+                ] + all_datatypes_list
 
             elif checkbox_name == "all_datatype":
-                to_turn_off = ["all"] + all_datatypes
+                to_turn_off = ["all"] + all_datatypes_list
 
             elif checkbox_name == "all_non_datatype":
                 to_turn_off = ["all"]

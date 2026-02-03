@@ -95,7 +95,7 @@ class CreateFoldersTab(TreeAndInputTab):
         )
         yield Label("Datatype(s)", id="create_folders_datatype_label")
         yield Container(
-            self.get_datatype_checkboxes_widget(),
+            self.create_datatype_checkboxes_widget(),
             id="create_folders_datatype_container",  #
         )
         yield Horizontal(
@@ -167,7 +167,7 @@ class CreateFoldersTab(TreeAndInputTab):
             "#create_folders_datatype_checkboxes"
         ).remove()
 
-        await container.mount(self.get_datatype_checkboxes_widget())
+        await container.mount(self.create_datatype_checkboxes_widget())
 
     @require_double_click
     def on_clickable_input_clicked(
@@ -543,8 +543,12 @@ class CreateFoldersTab(TreeAndInputTab):
         """Refresh the tree through the reactive attribute `path`."""
         self.query_one("#create_folders_directorytree").path = new_root_path
 
-    def get_datatype_checkboxes_widget(self):
+    def create_datatype_checkboxes_widget(self):
         """Create the datatype checkboxes, centralised as used in multiple places."""
         return CreateDatatypeCheckboxes(
             self.interface, id="create_folders_datatype_checkboxes"
         )
+
+    def get_datatype_checkbox_widget(self) -> CreateDatatypeCheckboxes:
+        """Get the datatype checkboxes widget for the `create` tab."""
+        return self.query_one("CreateDatatypeCheckboxes")

@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 
     from datashuttle.tui.app import TuiApp
     from datashuttle.tui.interface import Interface
+    from datashuttle.tui.screens.datatypes import BaseDatatypeCheckboxes
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -446,9 +447,13 @@ class TreeAndInputTab(TabPane):
         """See `handle_fill_input_from_directorytree` for parameters."""
         sub_names = self.query_one(sub_input_key).as_names_list()
         ses_names = self.query_one(ses_input_key).as_names_list()
-        datatype = self.query_one("DatatypeCheckboxes").selected_datatypes()
+        datatype = self.get_datatype_checkbox_widget().selected_datatypes()
 
         return sub_names, ses_names, datatype
+
+    def get_datatype_checkbox_widget(self) -> BaseDatatypeCheckboxes:
+        """Get the Transfer or Create DatatypeCheckboxes widget."""
+        raise NotImplementedError
 
 
 class TopLevelFolderSelect(Select):
