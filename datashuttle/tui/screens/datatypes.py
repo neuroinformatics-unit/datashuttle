@@ -178,11 +178,11 @@ class DisplayedDatatypesScreen(ModalScreen):
 
 
 # --------------------------------------------------------------------------------------
-# DatatypeCheckboxes
+# BaseBaseDatatypeCheckboxes
 # --------------------------------------------------------------------------------------
 
 
-class DatatypeCheckboxes(Static):
+class BaseDatatypeCheckboxes(Static):
     """Dynamically-populated checkbox widget for convenient datatype selection.
 
     Attributes
@@ -203,30 +203,27 @@ class DatatypeCheckboxes(Static):
 
     """
 
+    tab_name: Literal["create", "transfer"]  # must be set by subclass
+
     def __init__(
         self,
         interface: Interface,
-        tab_name: Literal["create", "transfer"] = "create",
         id: Optional[str] = None,
     ) -> None:
-        """Initialise the DatatypeCheckboxes.
+        """Initialise the BaseDatatypeCheckboxes.
 
         Parameters
         ----------
         interface
             Datashuttle Interface object.
 
-        tab_name
-            Whether we are on the "create" or "transfer" tab.
-
         id
-            Textual ID for the DatatypeCheckboxes widget.
+            Textual ID for the BaseDatatypeCheckboxes widget.
 
         """
-        super(DatatypeCheckboxes, self).__init__(id=id)
+        super(BaseDatatypeCheckboxes, self).__init__(id=id)
 
         self.interface = interface
-        self.tab_name = tab_name
 
         self.settings_key = get_tui_settings_key_name(self.tab_name)
 
@@ -237,7 +234,7 @@ class DatatypeCheckboxes(Static):
         ]
 
     def compose(self) -> ComposeResult:
-        """Add widgets to the DatatypeCheckboxes."""
+        """Add widgets to the BaseDatatypeCheckboxes."""
         for datatype, setting in self.datatype_config.items():
             if setting["displayed"]:
                 yield Checkbox(
@@ -265,7 +262,7 @@ class DatatypeCheckboxes(Static):
         )
 
     def on_mount(self) -> None:
-        """Add widgets to the DatatypeCheckboxes."""
+        """Add widgets to the BaseDatatypeCheckboxes."""
         for datatype in self.datatype_config.keys():
             if self.datatype_config[datatype]["displayed"]:
                 self.query_one(
@@ -282,7 +279,13 @@ class DatatypeCheckboxes(Static):
         return selected_datatypes
 
 
-class TransferDatatypeCheckboxes(DatatypeCheckboxes):
+class CreateDatatypeCheckboxes(BaseDatatypeCheckboxes):
+    """Subclass of the data-type checkboxes for the `create` tab."""
+
+    tab_name: Literal["create", "transfer"] = "create"
+
+
+class TransferDatatypeCheckboxes(BaseDatatypeCheckboxes):
     """Subclass of the data type checkboxes class for the transfer tab.
 
     This subclass extends `on_checkbox_changed` by adding logic to
@@ -290,6 +293,8 @@ class TransferDatatypeCheckboxes(DatatypeCheckboxes):
     selected, before delegating to the base implementation.
 
     """
+
+    tab_name: Literal["create", "transfer"] = "transfer"
 
     def __init__(self, interface, id):
         """Initialise TransferDatatypeCheckboxes.
@@ -303,7 +308,7 @@ class TransferDatatypeCheckboxes(DatatypeCheckboxes):
             Textual ID for the DatatypeCheckboxes widget.
 
         """
-        super().__init__(interface, "transfer", id)
+        super().__init__(interface, id)
 
     @on(Checkbox.Changed)
     def on_checkbox_changed(self, event: Checkbox.Changed) -> None:

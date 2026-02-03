@@ -30,7 +30,7 @@ from datashuttle.tui.screens.create_folder_settings import (
     CreateFoldersSettingsScreen,
 )
 from datashuttle.tui.screens.datatypes import (
-    DatatypeCheckboxes,
+    CreateDatatypeCheckboxes,
     DisplayedDatatypesScreen,
 )
 from datashuttle.tui.screens.modal_dialogs import (
@@ -545,8 +545,6 @@ class CreateFoldersTab(TreeAndInputTab):
 
     def get_datatype_checkboxes_widget(self):
         """Create the datatype checkboxes, centralised as used in multiple places."""
-        return DatatypeCheckboxes(
-            self.interface,
-            tab_name="create",
-            id="create_folders_datatype_checkboxes",
+        return CreateDatatypeCheckboxes(
+            self.interface, id="create_folders_datatype_checkboxes"
         )
