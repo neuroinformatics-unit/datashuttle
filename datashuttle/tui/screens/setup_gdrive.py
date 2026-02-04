@@ -381,6 +381,9 @@ class SetupGdriveScreen(ModalScreen):
 
     def display_failed(self, output) -> None:
         """Update the message box indicating the set-up failed."""
+        if self.gdrive_client_secret is not None:
+            output = output.replace(self.gdrive_client_secret, "[REDACTED]")
+
         message = (
             f"Google Drive setup failed. Please check your credentials"
             f"\n\n Traceback: {output}"

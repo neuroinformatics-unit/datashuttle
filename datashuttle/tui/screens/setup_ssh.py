@@ -64,7 +64,7 @@ class SetupSshScreen(ModalScreen):
         """Update widgets immediately after they are mounted."""
         self.query_one("#setup_ssh_password_input").visible = False
 
-    def on_button_pressed(self, event: Button.pressed) -> None:
+    def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle button press on the SetupSshScreen.
 
         When each stage is successfully progressed by clicking the "ok" button,
@@ -181,6 +181,8 @@ class SetupSshScreen(ModalScreen):
             )
 
         else:
+            if password != "":
+                output = output.replace(password, "[REDACTED]")
             message = (
                 f"Password setup failed. Check password is correct and try again."
                 f"\n\n{self.failed_password_attempts} failed password attempts."

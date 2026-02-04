@@ -128,14 +128,13 @@ class SetupAwsScreen(ModalScreen):
 
             self.stage = "ask_rclone_encryption"
         else:
+            if secret_access_key != "":
+                output = output.replace(secret_access_key, "[REDACTED]")
+
             message = (
                 f"AWS setup failed. Please check your configs and secret access key."
                 f"\n\n Traceback: {output}"
             )
-            #     self.query_one(
-            #         "#setup_aws_secret_access_key_input"
-            #     ).disabled = True
-
             self.query_one("#setup_aws_ok_button").label = "Retry"
             self.query_one("#setup_aws_messagebox_message").update(message)
 
