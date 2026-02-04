@@ -71,10 +71,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install .[dev]
 
-      - name: Test all except central connections
-        run: |
-          pytest --ignore=tests/tests_transfers/ssh --ignore=tests/tests_transfers/gdrive --ignore=tests/tests_transfers/aws
-
         # run SSH tests only on Linux because Windows and macOS
         # are already run within a virtual container and so cannot
         # run Linux containers because nested containerisation is disabled.
@@ -85,6 +81,10 @@ jobs:
           sudo apt-get install -y xvfb
           sudo service mysql stop  # free up port 3306 for ssh tests
           xvfb-run --auto-servernum pytest tests/tests_transfers/ssh
+
+      - name: Test all except central connections
+        run: |
+          pytest --ignore=tests/tests_transfers/ssh --ignore=tests/tests_transfers/gdrive --ignore=tests/tests_transfers/aws
 
       - name: Test Google Drive
         env:
