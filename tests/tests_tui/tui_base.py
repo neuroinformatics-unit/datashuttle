@@ -283,7 +283,7 @@ class TuiBase:
 
         input_widget._on_click(click_event)
 
-        await pilot.pause(10)  # long pause required for testing on CI
+        await pilot.pause(30)  # long pause required for testing on CI
 
         await test_utils.await_task_by_name_if_present(
             f"suggest_next_{sub_or_ses}_async_task"
