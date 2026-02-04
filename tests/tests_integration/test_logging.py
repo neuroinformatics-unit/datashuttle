@@ -153,8 +153,9 @@ class TestLogging:
         log = test_utils.read_log_file(project.cfg.logging_path)
 
         assert "Starting logging for command make-config-file" in log
-        assert "\nVariablesState:\nlocals: {'local_path':" in log
         assert "Successfully created rclone config." in log
+        assert 'New config file: \n {\n    "local_path": ' in log
+        assert '"connection_method": "local_filesystem"' in log
         assert (
             "Configuration file has been saved and options loaded into datashuttle."
             in log
@@ -167,11 +168,8 @@ class TestLogging:
         log = test_utils.read_log_file(project.cfg.logging_path)
 
         assert "Starting logging for command update-config-file" in log
-        assert (
-            "\n\nVariablesState:\nlocals: {'kwargs': {'central_host_id':"
-            in log
-        )
         assert "Update successful. New config file:" in log
+        assert 'New config file: \n {\n    "local_path":' in log
         assert """ "central_host_id": "test_id",\n """ in log
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
@@ -412,10 +410,6 @@ class TestLogging:
 
         assert (
             "'central_host_username' are required if 'connection_method' is 'ssh'"
-            in log
-        )
-        assert (
-            "VariablesState:\nlocals: {'kwargs': {'connection_method': 'ssh'"
             in log
         )
 

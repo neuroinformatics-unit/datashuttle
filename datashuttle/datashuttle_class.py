@@ -204,7 +204,16 @@ class DataShuttle:
 
         """
         if log:
-            self._start_log("create-folders", local_vars=locals())
+            self._start_log(
+                "create-folders",
+                local_vars={
+                    "top_level_folder": top_level_folder,
+                    "sub_names": sub_names,
+                    "ses_names": ses_names,
+                    "datatype": datatype,
+                    "bypass_validation": bypass_validation,
+                },
+            )
 
         self._check_top_level_folder(top_level_folder)
 
@@ -357,7 +366,17 @@ class DataShuttle:
 
         """
         if init_log:
-            self._start_log("upload-custom", local_vars=locals())
+            self._start_log(
+                "upload-custom",
+                local_vars={
+                    "top_level_folder": top_level_folder,
+                    "sub_names": sub_names,
+                    "ses_names": ses_names,
+                    "datatype": datatype,
+                    "overwrite_existing_files": overwrite_existing_files,
+                    "dry_run": dry_run,
+                },
+            )
 
         self._check_top_level_folder(top_level_folder)
 
@@ -428,7 +447,17 @@ class DataShuttle:
 
         """
         if init_log:
-            self._start_log("download-custom", local_vars=locals())
+            self._start_log(
+                "download-custom",
+                local_vars={
+                    "top_level_folder": top_level_folder,
+                    "sub_names": sub_names,
+                    "ses_names": ses_names,
+                    "datatype": datatype,
+                    "overwrite_existing_files": overwrite_existing_files,
+                    "dry_run": dry_run,
+                },
+            )
 
         self._check_top_level_folder(top_level_folder)
 
@@ -597,7 +626,13 @@ class DataShuttle:
             transfer was taking place, but no files will be moved.
 
         """
-        self._start_log("upload-entire-project", local_vars=locals())
+        self._start_log(
+            "upload-entire-project",
+            local_vars={
+                "overwrite_existing_files": overwrite_existing_files,
+                "dry_run": dry_run,
+            },
+        )
         self._transfer_entire_project(
             "upload", overwrite_existing_files, dry_run
         )
@@ -628,7 +663,13 @@ class DataShuttle:
             transfer was taking place, but no files will be moved.
 
         """
-        self._start_log("download-entire-project", local_vars=locals())
+        self._start_log(
+            "download-entire-project",
+            local_vars={
+                "overwrite_existing_files": overwrite_existing_files,
+                "dry_run": dry_run,
+            },
+        )
         self._transfer_entire_project(
             "download", overwrite_existing_files, dry_run
         )
@@ -665,7 +706,14 @@ class DataShuttle:
             transfer was taking place, but no files will be moved.
 
         """
-        self._start_log("upload-specific-folder-or-file", local_vars=locals())
+        self._start_log(
+            "upload-specific-folder-or-file",
+            local_vars={
+                "filepath": filepath,
+                "overwrite_existing_files": overwrite_existing_files,
+                "dry_run": dry_run,
+            },
+        )
 
         self._transfer_specific_file_or_folder(
             "upload", filepath, overwrite_existing_files, dry_run
@@ -706,7 +754,12 @@ class DataShuttle:
 
         """
         self._start_log(
-            "download-specific-folder-or-file", local_vars=locals()
+            "download-specific-folder-or-file",
+            local_vars={
+                "filepath": filepath,
+                "overwrite_existing_files": overwrite_existing_files,
+                "dry_run": dry_run,
+            },
         )
 
         self._transfer_specific_file_or_folder(
@@ -730,7 +783,13 @@ class DataShuttle:
         """
         if init_log:
             self._start_log(
-                f"{upload_or_download}-{top_level_folder}", local_vars=locals()
+                f"{upload_or_download}-{top_level_folder}",
+                local_vars={
+                    "upload_or_download": upload_or_download,
+                    "top_level_folder": top_level_folder,
+                    "overwrite_existing_files": overwrite_existing_files,
+                    "dry_run": dry_run,
+                },
             )
 
         transfer_func = (
@@ -815,15 +874,13 @@ class DataShuttle:
         Next, prompt to input their password for the central
         cluster. Once input, SSH private / public key pair
         will be setup.
+
+        Do not log this method, too high a risk of logging secrets.
         """
         if self.cfg["connection_method"] != "ssh":
             raise RuntimeError(
                 "configs `connection_method` must be 'ssh' to set up SSH connection."
             )
-
-        self._start_log(
-            "setup-ssh-connection-to-central-server", local_vars=locals()
-        )
 
         verified = ssh.verify_ssh_central_host_api(
             self.cfg["central_host_id"],
@@ -853,8 +910,6 @@ class DataShuttle:
                 "SSH key pair setup successfully. SSH key saved to the RClone config file."
             )
 
-        ds_logger.close_log_filehandler()
-
     # -------------------------------------------------------------------------
     # Google Drive
     # -------------------------------------------------------------------------
@@ -874,16 +929,13 @@ class DataShuttle:
 
         Next, with the provided credentials, the final setup will be done. This
         opens up a browser if the user confirmed access to a browser.
+
+        Do not log this method, too high a risk of logging secrets.
         """
         if self.cfg["connection_method"] != "gdrive":
             raise RuntimeError(
                 "configs `connection_method` must be 'gdrive' to set up Google Drive connection."
             )
-
-        self._start_log(
-            "setup-google-drive-connection-to-central-server",
-            local_vars=locals(),
-        )
 
         if self.cfg["gdrive_client_id"]:
             gdrive_client_secret = gdrive.get_client_secret()
@@ -918,8 +970,6 @@ class DataShuttle:
 
         utils.log_and_message("Google Drive Connection Successful.")
 
-        ds_logger.close_log_filehandler()
-
     # -------------------------------------------------------------------------
     # AWS S3
     # -------------------------------------------------------------------------
@@ -934,17 +984,14 @@ class DataShuttle:
         First, the user will be prompted to input their AWS secret access key.
 
         Next, with the provided credentials, the final connection setup will be done.
+
+        Do not log this method, too high a risk of logging secrets.
         """
         if self.cfg["connection_method"] != "aws":
             raise RuntimeError(
                 "configs `connection_method` must be 'aws' to "
                 "set up Amazon Web Services S3 Bucket connection."
             )
-
-        self._start_log(
-            "setup-aws-connection-to-central-server",
-            local_vars=locals(),
-        )
 
         aws_secret_access_key = aws.get_aws_secret_access_key()
 
@@ -958,8 +1005,6 @@ class DataShuttle:
         aws.raise_if_bucket_absent(self.cfg)
 
         utils.log_and_message("AWS Connection Successful.")
-
-        ds_logger.close_log_filehandler()
 
     # -------------------------------------------------------------------------
     # Rclone config encryption
@@ -1106,7 +1151,6 @@ class DataShuttle:
         """
         self._start_log(
             "make-config-file",
-            local_vars=locals(),
             store_in_temp_folder=True,
         )
 
@@ -1177,7 +1221,6 @@ class DataShuttle:
 
         self._start_log(
             "update-config-file",
-            local_vars=locals(),
         )
 
         if "connection_method" in kwargs:
@@ -1461,7 +1504,6 @@ class DataShuttle:
 
         self._start_log(
             "validate-project",
-            local_vars=locals(),
         )
 
         validation_templates = self.get_validation_templates()
