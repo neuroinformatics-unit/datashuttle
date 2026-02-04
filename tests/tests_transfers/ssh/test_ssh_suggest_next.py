@@ -21,7 +21,7 @@ TEST_SSH = ssh_test_utils.docker_is_running()
 )
 @pytest.mark.skipif(
     os.getenv("CI") == "true",
-    reason="Skipped on CI as sproadically failing there.",
+    reason="Skipped on CI as sporadically failing there.",
 )
 class TestSSHDriveSuggestNext(BaseSSHTransfer, TuiBase):
     @pytest.fixture(
