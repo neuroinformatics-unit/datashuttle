@@ -88,9 +88,12 @@ def set_password_linux(cfg: Configs) -> None:
         capture_output=True,
         text=True,
     )
+
     if output.returncode != 0:
         utils.log_and_raise_error(
-            "`pass` is required to set password, with a gpg key set up. Install with:\n sudo apt install pass.",
+            pass_error_message(
+                output, include_stacktrace=False, include_install_section=True
+            ),
             RuntimeError,
         )
 
@@ -104,8 +107,8 @@ def set_password_linux(cfg: Configs) -> None:
     if output.returncode != 0:
         if "pass init" in output.stderr:
             utils.log_and_raise_error(
-                "Password store is not initialized. "
-                "Run `pass init <gpg-id>` before using `pass`.",
+                f"Password store is not initialized. See below for full instructions.\n\n"
+                f"{pass_error_message(output, include_stacktrace=False)}",
                 RuntimeError,
             )
         else:
@@ -127,20 +130,37 @@ def set_password_linux(cfg: Configs) -> None:
         )
 
 
-def pass_error_message(output):
+def pass_error_message(
+    output, include_stacktrace=False, include_install_section=False
+):
     """Create a detailed message on how to set up `pass`."""
-    return (
+    if include_install_section:
+        install_section = (
+            "If `pass` is not installed, install with:\nsudo apt install pass.\n\n"
+            "To set up a gpg key:\n"
+        )
+    else:
+        install_section = ""
+
+    error_message = (
         "Could not set up a password using the `pass` password manager.\n\n"
         "This usually means `pass` has not been initialized with a GPG key.\n\n"
-        "To fix this:\n"
-        "  1) Ensure you have a GPG key:\n"
-        "     gpg --list-secret-keys --keyid-format=long\n\n"
-        "  2) Initialize pass with your key:\n"
-        "     pass init <gpg-key-id>\n\n"
-        "Full error output:\n"
-        f"--- STDOUT ---\n{output.stdout}\n"
-        f"--- STDERR ---\n{output.stderr}"
+        f"{install_section}"
+        " 1) Check whether you have an existing GPG key:\n"
+        "gpg --list-secret-keys --keyid-format=long\n"
+        " 2) If not, set a key with:\n"
+        "gpg --full-generate-key\n"
+        " 3) Initialize your key:\n"
+        "pass init <gpg-key-id>\n"
     )
+    if include_stacktrace:
+        error_message += (
+            f"Full error output:\n"
+            f"--- STDOUT ---\n{output.stdout}\n"
+            f"--- STDERR ---\n{output.stderr}"
+        )
+
+    return error_message
 
 
 def set_password_macos(cfg: Configs) -> None:
