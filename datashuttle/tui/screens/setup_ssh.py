@@ -205,7 +205,7 @@ class SetupSshScreen(ModalScreen):
             self.query_one("#setup_ssh_ok_button").label = "Ok"
             self.query_one("#setup_ssh_cancel_button").remove()
         else:
-            message = f"Encryption failed. Exception: {output}"
+            message = f"Encryption failed. {output}\nWould you like to continue without encrypting?"
             self.query_one("#messagebox_message_label").update(message)
 
         self.stage = "show_success_message"
