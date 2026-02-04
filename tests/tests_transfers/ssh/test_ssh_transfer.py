@@ -20,7 +20,7 @@ TEST_SSH = ssh_test_utils.docker_is_running()
 )
 class TestSSHTransfer(BaseSSHTransfer):
     @pytest.fixture(
-        scope="class",
+        scope="function",
     )
     def ssh_setup(self, pathtable_and_project, setup_ssh_container_fixture):
         """
@@ -120,9 +120,7 @@ class TestSSHTransfer(BaseSSHTransfer):
             .apply(lambda x: fnmatch.fnmatch(x, "ses-003*"))
         ]
 
-        pathtable = pathtable[
-            pathtable["parent_datatype"].apply(lambda x: x is None)
-        ]
+        pathtable = pathtable[pathtable["parent_datatype"].isna()]
 
         expected_transferred_paths = pathtable["path"]
 

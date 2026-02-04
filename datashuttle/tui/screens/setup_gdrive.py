@@ -33,12 +33,15 @@ class SetupGdriveScreen(ModalScreen):
     and input a config token.
     """
 
-    def __init__(self, interface: Interface) -> None:
+    def __init__(
+        self,
+        interface: Interface,
+    ) -> None:
         """Initialise the SetupGdriveScreen."""
         super(SetupGdriveScreen, self).__init__()
 
         self.interface = interface
-        self.no_browser_stage: None | str = "pending"
+        self.client_secret_stage: None | str = "pending"
         self.setup_worker: Worker | None = None
         self.is_browser_available: bool = True
         self.gdrive_client_secret: Optional[str] = None
@@ -92,15 +95,17 @@ class SetupGdriveScreen(ModalScreen):
 
         8) "`setup_gdrive_cancel_button` : To cancel the setup at any step before completion.
         """
-        if (
-            event.button.id == "setup_gdrive_cancel_button"
-            or event.button.id == "setup_gdrive_finish_button"
-        ):
+        if event.button.id in [
+            "setup_gdrive_cancel_button",
+            "setup_gdrive_finish_button",
+        ]:
             # see setup_gdrive_connection_and_update_ui()
             if self.setup_worker and self.setup_worker.is_running:
                 self.setup_worker.cancel()
                 self.interface.terminate_gdrive_setup()
-            self.dismiss()
+
+            was_successful = event.button.id == "setup_gdrive_finish_button"
+            self.dismiss(was_successful)
 
         elif event.button.id == "setup_gdrive_ok_button":
             self.query_one("#setup_gdrive_ok_button").remove()
@@ -126,14 +131,14 @@ class SetupGdriveScreen(ModalScreen):
         elif event.button.id == "setup_gdrive_enter_button":
             if (
                 self.interface.project.cfg["gdrive_client_id"]
-                and self.no_browser_stage == "pending"
+                and self.client_secret_stage == "pending"
             ):
                 self.gdrive_client_secret = (
                     self.input_box.value.strip()
                     if self.input_box.value.strip()
                     else None
                 )
-                self.no_browser_stage = "retrieved"
+                self.client_secret_stage = "retrieved"
                 self.ask_user_for_browser()
             else:
                 config_token = (

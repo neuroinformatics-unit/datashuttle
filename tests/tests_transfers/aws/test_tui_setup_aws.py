@@ -81,7 +81,9 @@ class TestTuiSetupAws(TuiBase):
                     "The Rclone config file was successfully encrypted. Setup complete!"
                     in pilot.app.screen.query_one(
                         "#setup_aws_messagebox_message"
-                    ).renderable
+                    )
+                    .render()
+                    .plain
                 )
 
                 project = pilot.app.screen.interface.project
@@ -92,15 +94,26 @@ class TestTuiSetupAws(TuiBase):
 
             else:
                 await self.scroll_to_click_pause(
-                    pilot, "#setup_aws_cancel_button"
+                    pilot, "#setup_aws_encryption_no_button"
                 )
 
                 assert (
                     "AWS Connection Successful!"
                     in pilot.app.screen.query_one(
                         "#setup_aws_messagebox_message"
-                    ).renderable
+                    )
+                    .render()
+                    .plain
                 )
+
+            await self.scroll_to_click_pause(pilot, "#setup_aws_ok_button")
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#configs_go_to_project_screen_button"
+                ).visible
+                is True
+            )
 
     @pytest.mark.asyncio
     async def test_aws_connection_setup_failed(self, central_path_and_project):

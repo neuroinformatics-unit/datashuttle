@@ -37,7 +37,7 @@ def setup_ssh_connection(project):
     container thing.
     """
     # Monkeypatch
-    orig_builtin = copy.deepcopy(builtins.input)
+    orig_input = copy.deepcopy(builtins.input)
     builtins.input = lambda _: "y"  # type: ignore
 
     orig_get_secret = copy.deepcopy(utils.get_connection_secret_from_user)
@@ -46,12 +46,13 @@ def setup_ssh_connection(project):
     orig_isatty = copy.deepcopy(sys.stdin.isatty)
     sys.stdin.isatty = lambda: True
 
-    project.setup_ssh_connection()
-
-    # Restore functions
-    builtins.input = orig_builtin
-    utils.get_connection_secret_from_user = orig_get_secret
-    sys.stdin.isatty = orig_isatty
+    try:
+        project.setup_ssh_connection()
+    finally:
+        # Restore functions
+        builtins.input = orig_input
+        utils.get_connection_secret_from_user = orig_get_secret
+        sys.stdin.isatty = orig_isatty
 
 
 def docker_is_running():

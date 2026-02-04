@@ -61,7 +61,6 @@ class TestTuiSetupGdrive(TuiBase):
         We test the case when central path is None or not, and encryption
         is set or not. We don't need to test every combination (these settings
         are unrelated) so we test across parameter sets.
-
         """
         central_path_none = parameter_sets["central_path_none"]
         set_encryption = parameter_sets["set_encryption"]
@@ -124,7 +123,9 @@ class TestTuiSetupGdrive(TuiBase):
                     "The encryption was successful. Setup complete!"
                     in pilot.app.screen.query_one(
                         "#gdrive_setup_messagebox_message"
-                    ).renderable
+                    )
+                    .render()
+                    .plain
                 )
 
                 project = pilot.app.screen.interface.project
@@ -142,7 +143,20 @@ class TestTuiSetupGdrive(TuiBase):
                     "Setup complete!"
                     in pilot.app.screen.query_one(
                         "#gdrive_setup_messagebox_message"
-                    ).renderable
+                    )
+                    .render()
+                    .plain
+                )
+
+                await self.scroll_to_click_pause(
+                    pilot, "#setup_gdrive_finish_button"
+                )
+
+                assert (
+                    pilot.app.screen.query_one(
+                        "#configs_go_to_project_screen_button"
+                    ).visible
+                    is True
                 )
 
     @pytest.mark.asyncio
