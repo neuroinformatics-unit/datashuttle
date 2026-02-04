@@ -90,7 +90,7 @@ def set_password_linux(cfg: Configs) -> None:
     )
     if output.returncode != 0:
         utils.log_and_raise_error(
-            "`pass` is required to set password. Install e.g. sudo apt install pass.",
+            "`pass` is required to set password, with a gpg key set up. Install with:\n sudo apt install pass.",
             RuntimeError,
         )
 
@@ -100,6 +100,7 @@ def set_password_linux(cfg: Configs) -> None:
         capture_output=True,
         text=True,
     )
+
     if output.returncode != 0:
         if "pass init" in output.stderr:
             utils.log_and_raise_error(
@@ -109,9 +110,7 @@ def set_password_linux(cfg: Configs) -> None:
             )
         else:
             utils.log_and_raise_error(
-                f"\n--- STDOUT ---\n{output.stdout}"
-                f"\n--- STDERR ---\n{output.stderr}"
-                "\nCould not set up password with `pass`. See the error message above.",
+                pass_error_message(output),
                 RuntimeError,
             )
 
@@ -123,11 +122,25 @@ def set_password_linux(cfg: Configs) -> None:
     )
     if output.returncode != 0:
         utils.log_and_raise_error(
-            f"\n--- STDOUT ---\n{output.stdout}"
-            f"\n--- STDERR ---\n{output.stderr}"
-            "\nCould not store password with 'pass' password manager. See the error message above.",
+            pass_error_message(output),
             RuntimeError,
         )
+
+
+def pass_error_message(output):
+    """Create a detailed message on how to set up `pass`."""
+    return (
+        "Could not set up a password using the `pass` password manager.\n\n"
+        "This usually means `pass` has not been initialized with a GPG key.\n\n"
+        "To fix this:\n"
+        "  1) Ensure you have a GPG key:\n"
+        "     gpg --list-secret-keys --keyid-format=long\n\n"
+        "  2) Initialize pass with your key:\n"
+        "     pass init <gpg-key-id>\n\n"
+        "Full error output:\n"
+        f"--- STDOUT ---\n{output.stdout}\n"
+        f"--- STDERR ---\n{output.stderr}"
+    )
 
 
 def set_password_macos(cfg: Configs) -> None:
