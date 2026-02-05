@@ -1050,10 +1050,7 @@ class DataShuttle:
     def encrypt_rclone_config(self) -> None:
         """Encrypt the rclone config file for the central connection."""
         if self.cfg.rclone.rclone_file_is_encrypted():
-            raise RuntimeError(
-                "This config file is already encrypted. "
-                "First, use `remove_rclone_encryption` to remove it."
-            )
+            self.remove_rclone_encryption()
 
         rclone_encryption.run_rclone_config_encrypt(self.cfg)
 

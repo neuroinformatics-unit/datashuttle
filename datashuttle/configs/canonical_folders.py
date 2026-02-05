@@ -116,7 +116,10 @@ def get_rclone_config_base_path() -> Path:
     not a significant issue.
     """
     if platform.system() == "Windows":
-        appdata_path = Path().home() / "AppData" / "Roaming"
+        # Path().home()
+        appdata_path = (
+            Path(r"C:\Users\Jzimi\joe test account") / "AppData" / "Roaming"
+        )
         if appdata_path.is_dir():
             return appdata_path / "rclone"
 

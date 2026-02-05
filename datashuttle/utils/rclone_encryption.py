@@ -267,7 +267,7 @@ def run_rclone_config_encrypt(cfg: Configs) -> None:
     set_credentials_as_password_command(cfg)
 
     output = subprocess.run(
-        f"rclone config encryption set --config {rclone_config_path.as_posix()}",
+        f'rclone config encryption set --config "{str(rclone_config_path)}"',
         shell=True,
         capture_output=True,
         text=True,
