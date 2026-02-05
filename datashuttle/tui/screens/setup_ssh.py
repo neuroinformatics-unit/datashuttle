@@ -205,8 +205,10 @@ class SetupSshScreen(ModalScreen):
             self.query_one("#setup_ssh_ok_button").label = "Ok"
             self.query_one("#setup_ssh_cancel_button").remove()
         else:
-            message = f"Encryption failed. {output}\nWould you like to continue without encrypting?"
+            message = f"{output}\n\nTo try and encrypt the config file again, re-run the connection set up."
             self.query_one("#messagebox_message_label").update(message)
+            self.query_one("#setup_ssh_ok_button").label = "Ok"
+            self.query_one("#setup_ssh_cancel_button").remove()
 
         self.stage = "show_success_message"
 
@@ -221,6 +223,6 @@ class SetupSshScreen(ModalScreen):
         except BaseException:
             pass
 
-        message = "Connection was set up successfully. SSH key saved to the RClone config file."
+        message = "Connection was set up successfully."
         self.query_one("#messagebox_message_label").update(message)
         self.stage = "finished"

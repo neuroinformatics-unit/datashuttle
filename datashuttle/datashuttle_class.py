@@ -1019,9 +1019,7 @@ class DataShuttle:
 
         return input_ == "y"
 
-    def _try_encrypt_rclone_config(
-        self,
-    ) -> None:
+    def _try_encrypt_rclone_config(self, is_using_api=True) -> None:
         """Try to encrypt the rclone config file.
 
         If it fails, error and let the user know the config file is unencrypted.
@@ -1033,16 +1031,22 @@ class DataShuttle:
                 self.cfg.rclone.get_rclone_central_connection_config_filepath()
             )
 
-            utils.log_and_raise_error(
+            api_prompt = (
+                "Use `encrypt_rclone_config()` to attempt to encrypt the file again "
+                if is_using_api
+                else ""
+            )
+
+            # don't log during encryption
+            utils.raise_error(
+                f"Config encryption failed:\n"
                 f"{str(e)}\n"
-                f"Config encryption failed.\n"
-                f"Use `encrypt_rclone_config()` to attempt to encrypt the file again "
-                f"(see full error message above).\n"
+                f"{api_prompt}\n\n"
                 f"IMPORTANT: The config at {config_path} is not currently encrypted.\n",
                 RuntimeError,
             )
 
-        utils.log_and_message(
+        utils.print_message_to_user(
             f"Rclone config file for the central connection "
             f"{self.cfg['connection_method']} was successfully encrypted."
         )

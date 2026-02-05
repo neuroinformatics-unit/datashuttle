@@ -638,7 +638,7 @@ class Interface:
     def try_setup_rclone_encryption(self):
         """Try and encrypt the RClone config file for the current `connection_method`."""
         try:
-            self.project._try_encrypt_rclone_config()
+            self.project._try_encrypt_rclone_config(is_using_api=False)
             return True, None
         except BaseException as e:
             return False, str(e)

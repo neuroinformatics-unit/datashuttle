@@ -363,8 +363,12 @@ class SetupGdriveScreen(ModalScreen):
                 "The encryption was successful. Setup complete!"
             )
         else:
-            message = f"The password set up failed. Exception: {output}"
-            self.update_message_box_message(message)
+            if self.gdrive_client_secret is not None:
+                output = self.clean_secret(output)
+
+            self.set_finish_page(
+                message=f"{output}\n\nTo try and encrypt the config file again, re-run the connection set up.\n\nSet up complete."
+            )
 
     def set_finish_page(self, message) -> None:
         """Show the final screen after successful set up."""
@@ -382,13 +386,21 @@ class SetupGdriveScreen(ModalScreen):
     def display_failed(self, output) -> None:
         """Update the message box indicating the set-up failed."""
         if self.gdrive_client_secret is not None:
-            output = output.replace(self.gdrive_client_secret, "[REDACTED]")
+            output = self.clean_secret(output)
 
         message = (
             f"Google Drive setup failed. Please check your credentials"
             f"\n\n Traceback: {output}"
         )
         self.update_message_box_message(message)
+
+    def clean_secret(self, output) -> str:
+        """Redact the client secret (just in case it is somehow in the error message).
+
+        It should of course not be in the error message,
+        so this is just in case.
+        """
+        return output.replace(self.gdrive_client_secret, "[REDACTED]")
 
     def update_message_box_message(self, message: str) -> None:
         """Update the text message displayed to the user."""

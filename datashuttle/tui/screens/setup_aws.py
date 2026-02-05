@@ -8,7 +8,6 @@ if TYPE_CHECKING:
     from datashuttle.tui.interface import Interface
 
 from textual.containers import Container, Horizontal, Vertical
-from textual.css.query import NoMatches
 from textual.screen import ModalScreen
 from textual.widgets import Button, Input, Static
 
@@ -142,29 +141,13 @@ class SetupAwsScreen(ModalScreen):
         """Try and encrypt the Rclone config file and inform the user of success / failure."""
         success, output = self.interface.try_setup_rclone_encryption()
 
+        self.query_one("#setup_aws_encryption_no_button").remove()
+        self.stage = "finished"
+        self.query_one("#setup_aws_ok_button").label = "Finish"
+
         if success:
             message = "The Rclone config file was successfully encrypted. Setup complete!"
             self.query_one("#setup_aws_messagebox_message").update(message)
-            self.query_one("#setup_aws_ok_button").label = "Finish"
-
-            # query removal, as may have already been removed during a retry below.
-            self.query("#setup_aws_encryption_no_button").remove()
-            self.stage = "finished"
         else:
-            message = f"Encrypting the RClone config failed. Please try again.\n\nTraceback:\n {output}"
+            message = f"{output}\n\nTo try and encrypt the config file again, re-run the connection set up.\n\nSet up complete."
             self.query_one("#setup_aws_messagebox_message").update(message)
-            self.query_one("#setup_aws_ok_button").label = "Retry"
-
-            try:
-                # For the first fail, remove the 'No' key and add back the
-                # 'Cancel' key. This may fail repeatedly, but we only want
-                # to remove / add the widgets once.
-                self.query_one("#setup_aws_encryption_no_button").remove()
-
-                cancel_button = Button("Cancel", id="setup_aws_cancel_button")
-
-                self.query_one("#setup_aws_buttons_horizontal").mount(
-                    cancel_button, after="#setup_aws_ok_button"
-                )
-            except NoMatches:
-                pass
