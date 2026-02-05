@@ -137,7 +137,7 @@ def pass_error_message(
     if include_install_section:
         install_section = (
             "If `pass` is not installed, install with:\nsudo apt install pass.\n\n"
-            "To set up a gpg key:\n"
+            "To set up a GPG key:\n"
         )
     else:
         install_section = ""
