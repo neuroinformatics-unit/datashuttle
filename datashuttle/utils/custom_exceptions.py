@@ -1,3 +1,9 @@
+"""Custom exception classes for datashuttle.
+
+This module defines custom exceptions used throughout the datashuttle package
+for specific error conditions.
+"""
+
 class ConfigError(Exception):
     """Raise an error relating to a configuration problem."""
 
