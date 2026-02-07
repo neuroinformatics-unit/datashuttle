@@ -59,6 +59,7 @@ from datashuttle.utils.decorators import (  # noqa
     check_is_not_local_project,
     requires_aws_configs,
     requires_ssh_configs,
+    with_logging,
 )
 
 # -----------------------------------------------------------------------------
@@ -117,6 +118,7 @@ class DataShuttle:
     # -------------------------------------------------------------------------
 
     @check_configs_set
+    @with_logging(conditional_param="log")
     def create_folders(
         self,
         top_level_folder: TopLevelFolder,
@@ -202,9 +204,6 @@ class DataShuttle:
         project.create_folders("rawdata", "sub-002@TO@005", ["ses-001", "ses-002"], ["ephys", "behav"])
 
         """
-        if log:
-            self._start_log("create-folders", local_vars=locals())
-
         self._check_top_level_folder(top_level_folder)
 
         if ses_names is None and datatype != "":
@@ -251,7 +250,6 @@ class DataShuttle:
                 f"For log of all created folders, "
                 f"please see {self.cfg.logging_path}"
             )
-            ds_logger.close_log_filehandler()
 
         return created_paths
 
@@ -306,6 +304,7 @@ class DataShuttle:
 
     @check_configs_set
     @check_is_not_local_project
+    @with_logging(conditional_param="init_log")
     def upload_custom(
         self,
         top_level_folder: TopLevelFolder,
@@ -355,9 +354,6 @@ class DataShuttle:
             (e.g. in a calling function).
 
         """
-        if init_log:
-            self._start_log("upload-custom", local_vars=locals())
-
         self._check_top_level_folder(top_level_folder)
 
         TransferData(
@@ -372,11 +368,9 @@ class DataShuttle:
             log=True,
         )
 
-        if init_log:
-            ds_logger.close_log_filehandler()
-
     @check_configs_set
     @check_is_not_local_project
+    @with_logging(conditional_param="init_log")
     def download_custom(
         self,
         top_level_folder: TopLevelFolder,
@@ -426,9 +420,6 @@ class DataShuttle:
             (e.g. in a calling function).
 
         """
-        if init_log:
-            self._start_log("download-custom", local_vars=locals())
-
         self._check_top_level_folder(top_level_folder)
 
         TransferData(
@@ -443,9 +434,6 @@ class DataShuttle:
             log=True,
         )
 
-        if init_log:
-            ds_logger.close_log_filehandler()
-
     # Specific top-level folder
     # ----------------------------------------------------------------------------------
     # A set of convenience functions are provided to abstract
@@ -453,6 +441,7 @@ class DataShuttle:
 
     @check_configs_set
     @check_is_not_local_project
+    @with_logging()
     def upload_rawdata(
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
@@ -479,10 +468,12 @@ class DataShuttle:
             "rawdata",
             overwrite_existing_files=overwrite_existing_files,
             dry_run=dry_run,
+            init_log=False,
         )
 
     @check_configs_set
     @check_is_not_local_project
+    @with_logging()
     def upload_derivatives(
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
@@ -509,10 +500,12 @@ class DataShuttle:
             "derivatives",
             overwrite_existing_files=overwrite_existing_files,
             dry_run=dry_run,
+            init_log=False,
         )
 
     @check_configs_set
     @check_is_not_local_project
+    @with_logging()
     def download_rawdata(
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
@@ -539,10 +532,12 @@ class DataShuttle:
             "rawdata",
             overwrite_existing_files=overwrite_existing_files,
             dry_run=dry_run,
+            init_log=False,
         )
 
     @check_configs_set
     @check_is_not_local_project
+    @with_logging()
     def download_derivatives(
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
@@ -569,10 +564,12 @@ class DataShuttle:
             "derivatives",
             overwrite_existing_files=overwrite_existing_files,
             dry_run=dry_run,
+            init_log=False,
         )
 
     @check_configs_set
     @check_is_not_local_project
+    @with_logging()
     def upload_entire_project(
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
@@ -596,14 +593,13 @@ class DataShuttle:
             transfer was taking place, but no files will be moved.
 
         """
-        self._start_log("upload-entire-project", local_vars=locals())
         self._transfer_entire_project(
             "upload", overwrite_existing_files, dry_run
         )
-        ds_logger.close_log_filehandler()
 
     @check_configs_set
     @check_is_not_local_project
+    @with_logging()
     def download_entire_project(
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
@@ -627,14 +623,13 @@ class DataShuttle:
             transfer was taking place, but no files will be moved.
 
         """
-        self._start_log("download-entire-project", local_vars=locals())
         self._transfer_entire_project(
             "download", overwrite_existing_files, dry_run
         )
-        ds_logger.close_log_filehandler()
 
     @check_configs_set
     @check_is_not_local_project
+    @with_logging()
     def upload_specific_folder_or_file(
         self,
         filepath: Union[str, Path],
@@ -664,16 +659,13 @@ class DataShuttle:
             transfer was taking place, but no files will be moved.
 
         """
-        self._start_log("upload-specific-folder-or-file", local_vars=locals())
-
         self._transfer_specific_file_or_folder(
             "upload", filepath, overwrite_existing_files, dry_run
         )
 
-        ds_logger.close_log_filehandler()
-
     @check_configs_set
     @check_is_not_local_project
+    @with_logging()
     def download_specific_folder_or_file(
         self,
         filepath: Union[str, Path],
@@ -704,15 +696,9 @@ class DataShuttle:
             transfer was taking place, but no files will be moved.
 
         """
-        self._start_log(
-            "download-specific-folder-or-file", local_vars=locals()
-        )
-
         self._transfer_specific_file_or_folder(
             "download", filepath, overwrite_existing_files, dry_run
         )
-
-        ds_logger.close_log_filehandler()
 
     def _transfer_top_level_folder(
         self,
