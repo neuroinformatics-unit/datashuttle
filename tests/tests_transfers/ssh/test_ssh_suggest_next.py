@@ -1,6 +1,6 @@
 import os
 import platform
-from typing import Iterator,Any
+from typing import Any, Iterator
 
 import pytest
 
@@ -28,7 +28,9 @@ class TestSSHDriveSuggestNext(BaseSSHTransfer, TuiBase):
     @pytest.fixture(
         scope="function",
     )
-    def ssh_setup(self, setup_project_paths, setup_ssh_container_fixture)-> Iterator[Any]:
+    def ssh_setup(
+        self, setup_project_paths, setup_ssh_container_fixture
+    ) -> Iterator[Any]:
         """
         Setup pathtable and project for SSH transfer tests.
         """
@@ -44,7 +46,7 @@ class TestSSHDriveSuggestNext(BaseSSHTransfer, TuiBase):
     async def test_ssh_suggest_next_sub_ses(
         self,
         ssh_setup,
-    )-> None:
+    ) -> None:
         """ """
         project = ssh_setup
 

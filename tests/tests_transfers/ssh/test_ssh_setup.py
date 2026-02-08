@@ -1,7 +1,7 @@
 import builtins
 import copy
 import platform
-from typing import Iterator,Any
+from typing import Any, Iterator
 
 import pytest
 
@@ -22,7 +22,7 @@ TEST_SSH: bool = ssh_test_utils.docker_is_running()
 )
 class TestSSH(BaseSSHTransfer):
     @pytest.fixture(scope="function")
-    def project(test, tmp_path, setup_ssh_container_fixture)-> Iterator[Any]:
+    def project(test, tmp_path, setup_ssh_container_fixture) -> Iterator[Any]:
         """Set up a project with configs for SSH into
         the test Dockerfile image.
         """
@@ -46,7 +46,7 @@ class TestSSH(BaseSSHTransfer):
     @pytest.mark.parametrize("input_", ["n", "o", "@"])
     def test_verify_ssh_central_host_do_not_accept(
         self, capsys, project, input_: str
-    )-> None:
+    ) -> None:
         """Test that host not accepted if input is not "y"."""
         orig_builtin = copy.deepcopy(builtins.input)
         builtins.input = lambda _: input_  # type: ignore
