@@ -1,5 +1,6 @@
 import os
 import platform
+from typing import Iterator,Any
 
 import pytest
 
@@ -8,7 +9,7 @@ from ...tests_tui.tui_base import TuiBase
 from . import ssh_test_utils
 from .base_ssh import BaseSSHTransfer
 
-TEST_SSH = ssh_test_utils.docker_is_running()
+TEST_SSH: bool = ssh_test_utils.docker_is_running()
 
 
 @pytest.mark.skipif(
@@ -27,7 +28,7 @@ class TestSSHDriveSuggestNext(BaseSSHTransfer, TuiBase):
     @pytest.fixture(
         scope="function",
     )
-    def ssh_setup(self, setup_project_paths, setup_ssh_container_fixture):
+    def ssh_setup(self, setup_project_paths, setup_ssh_container_fixture)-> Iterator[Any]:
         """
         Setup pathtable and project for SSH transfer tests.
         """
@@ -43,7 +44,7 @@ class TestSSHDriveSuggestNext(BaseSSHTransfer, TuiBase):
     async def test_ssh_suggest_next_sub_ses(
         self,
         ssh_setup,
-    ):
+    )-> None:
         """ """
         project = ssh_setup
 

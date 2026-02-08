@@ -1,6 +1,7 @@
 import builtins
 import copy
 import platform
+from typing import Iterator,Any
 
 import pytest
 
@@ -8,7 +9,7 @@ from ... import test_utils
 from . import ssh_test_utils
 from .base_ssh import BaseSSHTransfer
 
-TEST_SSH = ssh_test_utils.docker_is_running()
+TEST_SSH: bool = ssh_test_utils.docker_is_running()
 
 
 @pytest.mark.skipif(
@@ -21,7 +22,7 @@ TEST_SSH = ssh_test_utils.docker_is_running()
 )
 class TestSSH(BaseSSHTransfer):
     @pytest.fixture(scope="function")
-    def project(test, tmp_path, setup_ssh_container_fixture):
+    def project(test, tmp_path, setup_ssh_container_fixture)-> Iterator[Any]:
         """Set up a project with configs for SSH into
         the test Dockerfile image.
         """
@@ -44,8 +45,8 @@ class TestSSH(BaseSSHTransfer):
 
     @pytest.mark.parametrize("input_", ["n", "o", "@"])
     def test_verify_ssh_central_host_do_not_accept(
-        self, capsys, project, input_
-    ):
+        self, capsys, project, input_: str
+    )-> None:
         """Test that host not accepted if input is not "y"."""
         orig_builtin = copy.deepcopy(builtins.input)
         builtins.input = lambda _: input_  # type: ignore
@@ -58,7 +59,7 @@ class TestSSH(BaseSSHTransfer):
 
         assert "Host not accepted. No connection made.\n" in captured.out
 
-    def test_verify_ssh_central_host_accept(self, capsys, project):
+    def test_verify_ssh_central_host_accept(self, capsys, project) -> None:
         """User is asked to accept the server hostkey. Mock this here
         and check hostkey is successfully accepted and written to configs.
         """
