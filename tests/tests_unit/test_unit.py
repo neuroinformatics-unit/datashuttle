@@ -16,7 +16,7 @@ class TestUnit:
     @pytest.mark.parametrize(
         "key", [tags("date"), tags("time"), tags("datetime")]
     )
-    def test_datetime_string_replacement(self, key, underscore_position): -> None:
+    def test_datetime_string_replacement(self, key, underscore_position) -> None:
         r"""Test the function that replaces @DATE, @TIME@ or @DATETIME@
         keywords with the date / time / datetime.
 
@@ -45,7 +45,7 @@ class TestUnit:
         )
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
-    def test_process_to_keyword_in_sub_input(self, prefix): -> None:
+    def test_process_to_keyword_in_sub_input(self, prefix) -> None:
         results = formatting.update_names_with_range_to_flag(
             [f"{prefix}-001", f"{prefix}-01{tags('to')}123"], prefix
         )
