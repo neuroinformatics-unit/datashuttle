@@ -16,7 +16,9 @@ class TestUnit:
     @pytest.mark.parametrize(
         "key", [tags("date"), tags("time"), tags("datetime")]
     )
-    def test_datetime_string_replacement(self, key, underscore_position) -> None:
+    def test_datetime_string_replacement(
+        self, key, underscore_position
+    ) -> None:
         r"""Test the function that replaces @DATE, @TIME@ or @DATETIME@
         keywords with the date / time / datetime.
 
