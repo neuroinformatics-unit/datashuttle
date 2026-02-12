@@ -26,6 +26,11 @@ a 'mock' experiment, standardised to the
    :class: only-light
    :width: 550px
 ```
+
+```{image} /_static/datashuttle-demo.gif
+:align: center
+:width: 700px
+```
 <br>
 
 We will upload data to a central data storage machine,
