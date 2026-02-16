@@ -112,7 +112,7 @@ Open folder in system filebrowser
 : `CTRL+O` will open a folder in the system filebrowser.
 
 Copy the full filepath.
-: `CTRL+W)` will copy the entire filepath of the file or
+: `CTRL+W` will copy the entire filepath of the file or
 folder.
 
 \
