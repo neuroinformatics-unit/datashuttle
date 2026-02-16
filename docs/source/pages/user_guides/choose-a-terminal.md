@@ -82,4 +82,4 @@ with rendering errors.
 Once you've chosen a terminal, get started with
 ``datashuttle`` with our [Getting Started Tutorial](getting-started-walkthrough).
 
-To quit ``datashuttle`` in the terminal, press `CTRL+C (with SHIFT)`.
+To quit ``datashuttle`` in the terminal, press `CTRL+Q`.
