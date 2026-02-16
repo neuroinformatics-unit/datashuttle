@@ -11,7 +11,6 @@ from io import StringIO
 from typing import Optional
 
 import paramiko
-from paramiko.ed25519key import Ed25519Key
 
 from datashuttle.configs import canonical_configs
 from datashuttle.utils import utils
@@ -172,9 +171,34 @@ def generate_ssh_key_strings():
     return rsa_key, private_key_str
 
 
-def generate_ssh_key() -> paramiko.RSAKey:
+def generate_ssh_key():  # -> paramiko.RSAKey:  # cryptography
     """Generate an RSA SSH key."""
-    return Ed25519Key.generate()  # type: ignore
+    import io
+
+    import paramiko
+    from cryptography.hazmat.primitives import (
+        serialization as crypto_serialization,
+    )
+    from cryptography.hazmat.primitives.asymmetric import (
+        ed25519 as crypto_ed25519,
+    )
+
+    # 1. Generate the raw Ed25519 private key using the cryptography library
+    private_key = crypto_ed25519.Ed25519PrivateKey.generate()
+
+    # 2. Export it to OpenSSH format (PEM)
+    private_key_bytes = private_key.private_bytes(
+        encoding=crypto_serialization.Encoding.PEM,
+        format=crypto_serialization.PrivateFormat.OpenSSH,
+        encryption_algorithm=crypto_serialization.NoEncryption(),
+    )
+
+    # 3. Load that into a Paramiko Ed25519Key object
+    # We use io.StringIO because Paramiko expects a file-like object
+    return paramiko.Ed25519Key.from_private_key(
+        io.StringIO(private_key_bytes.decode())
+    )
+    # return Ed25519Key.generate()
     # paramiko.RSAKey.generate(4096)
 
 
