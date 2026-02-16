@@ -11,6 +11,8 @@ from io import StringIO
 from typing import Optional
 
 import paramiko
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import ed25519
 
 from datashuttle.configs import canonical_configs
 from datashuttle.utils import utils
@@ -157,23 +159,36 @@ def add_public_key_to_central_authorized_keys(
         client.exec_command("chmod 700 ~/.ssh/")
 
 
+def generate_ssh_key_and_private_str() -> tuple[paramiko.PKey, str]:
+    """Generate an Ed25519 SSH keypair.
+
+    Returns
+    -------
+    Tuple[paramiko.PKey, str]
+        A tuple containing:
+
+        1. A Paramiko PKey object representing the Ed25519 private key.
+        2. The private key serialized as an OpenSSH-format PEM string.
+
+    """
+    c_priv = ed25519.Ed25519PrivateKey.generate()
+
+    private_key_str = c_priv.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.OpenSSH,
+        encryption_algorithm=serialization.NoEncryption(),
+    ).decode("utf-8")
+
+    pkey = paramiko.ed25519key.Ed25519Key.from_private_key(
+        StringIO(private_key_str)
+    )
+    return pkey, private_key_str
+
+
 def generate_ssh_key_strings():
-    """Generate a private and public SSH key pair."""
-    rsa_key = generate_ssh_key()
-
-    private_key_io = StringIO()
-    rsa_key.write_private_key(private_key_io)
-
-    private_key_io.seek(0)
-
-    private_key_str = private_key_io.read()
-
-    return rsa_key, private_key_str
-
-
-def generate_ssh_key() -> paramiko.RSAKey:
-    """Generate an RSA SSH key."""
-    return paramiko.RSAKey.generate(4096)
+    """Generate a private and public SSH key pair (as Paramiko key + private string)."""
+    pkey, private_key_str = generate_ssh_key_and_private_str()
+    return pkey, private_key_str
 
 
 def connect_client(

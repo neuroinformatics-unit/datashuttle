@@ -1,5 +1,5 @@
 # Use a base image with the desired OS (e.g., Ubuntu, Debian, etc.)
-FROM ubuntu:24.04
+FROM ubuntu:latest
 
 # Install SSH server
 RUN apt-get update && \
