@@ -11,6 +11,7 @@ from io import StringIO
 from typing import Optional
 
 import paramiko
+from paramiko.ed25519key import Ed25519Key
 
 from datashuttle.configs import canonical_configs
 from datashuttle.utils import utils
@@ -173,7 +174,8 @@ def generate_ssh_key_strings():
 
 def generate_ssh_key() -> paramiko.RSAKey:
     """Generate an RSA SSH key."""
-    return paramiko.RSAKey.generate(4096)
+    return Ed25519Key.generate()  # type: ignore
+    # paramiko.RSAKey.generate(4096)
 
 
 def connect_client(
