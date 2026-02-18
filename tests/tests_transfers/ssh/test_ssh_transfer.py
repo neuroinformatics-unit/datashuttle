@@ -1,12 +1,16 @@
 import fnmatch
 import platform
+from typing import List, Tuple
 
+import pandas as pd
 import pytest
+
+from datashuttle.datashuttle_class import DataShuttle
 
 from . import ssh_test_utils
 from .base_ssh import BaseSSHTransfer
 
-TEST_SSH = ssh_test_utils.docker_is_running()
+TEST_SSH: bool = ssh_test_utils.docker_is_running()
 
 
 @pytest.mark.skipif(
@@ -21,7 +25,11 @@ class TestSSHTransfer(BaseSSHTransfer):
     @pytest.fixture(
         scope="class",
     )
-    def ssh_setup(self, pathtable_and_project, setup_ssh_container_fixture):
+    def ssh_setup(
+        self,
+        pathtable_and_project: Tuple[pd.DataFrame, DataShuttle],
+        setup_ssh_container_fixture: None,
+    ) -> Tuple[pd.DataFrame, DataShuttle]:
         """
         After initial project setup (in `pathtable_and_project`)
         setup a container and the project's SSH connection to the container.
@@ -36,7 +44,7 @@ class TestSSHTransfer(BaseSSHTransfer):
 
         project.upload_rawdata()
 
-        return [pathtable, project]
+        return pathtable, project
 
     # -----------------------------------------------------------------
     # Test Setup SSH Connection
@@ -53,11 +61,11 @@ class TestSSHTransfer(BaseSSHTransfer):
     )
     def test_combinations_ssh_transfer(
         self,
-        ssh_setup,
-        sub_names,
-        ses_names,
-        datatype,
-    ):
+        ssh_setup: Tuple[pd.DataFrame, DataShuttle],
+        sub_names: List[str],
+        ses_names: List[str],
+        datatype: List[str],
+    ) -> None:
         """
         Test a subset of argument combinations while testing over SSH connection
         to a container. This is very slow, due to the rclone ssh transfer (which
@@ -81,7 +89,9 @@ class TestSSHTransfer(BaseSSHTransfer):
     # Therefore, test a few specific cases here by manually chopping down the pathtable based
     # on the sub / ses /datatype names to test the expected paths.
 
-    def test_ssh_wildcards_1(self, ssh_setup):
+    def test_ssh_wildcards_1(
+        self, ssh_setup: Tuple[pd.DataFrame, DataShuttle]
+    ) -> None:
         """Test a single custom transfer that combines different special keywords."""
         pathtable, project = ssh_setup
 
@@ -105,7 +115,9 @@ class TestSSHTransfer(BaseSSHTransfer):
             project, sub_names, ses_names, datatype, expected_transferred_paths
         )
 
-    def test_ssh_wildcards_2(self, ssh_setup):
+    def test_ssh_wildcards_2(
+        self, ssh_setup: Tuple[pd.DataFrame, DataShuttle]
+    ) -> None:
         """Test a single custom transfer that combines different special keywords."""
         pathtable, project = ssh_setup
 
@@ -127,7 +139,9 @@ class TestSSHTransfer(BaseSSHTransfer):
             project, sub_names, ses_names, datatype, expected_transferred_paths
         )
 
-    def test_ssh_wildcards_3(self, ssh_setup):
+    def test_ssh_wildcards_3(
+        self, ssh_setup: Tuple[pd.DataFrame, DataShuttle]
+    ) -> None:
         """Test a single custom transfer that combines different special keywords."""
         pathtable, project = ssh_setup
 

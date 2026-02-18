@@ -4,6 +4,7 @@ import os
 import platform
 import subprocess
 from pathlib import Path
+from typing import Iterator
 
 import pytest
 
@@ -25,7 +26,7 @@ class BaseSSHTransfer(BaseTransfer):
     @pytest.fixture(
         scope="class",
     )
-    def setup_ssh_container_fixture(self):
+    def setup_ssh_container_fixture(self) -> Iterator[None]:
         """
         Set up the Dockerfile container for SSH tests and
         delete it on teardown.
@@ -56,8 +57,8 @@ class BaseSSHTransfer(BaseTransfer):
             capture_output=True,
         )
         assert build_output.returncode == 0, (
-            f"docker build failed with: STDOUT-{build_output.stdout} "
-            f"STDERR-{build_output.stderr}"
+            f"docker build failed with: STDOUT-{build_output.stdout!r} "
+            f"STDERR-{build_output.stderr!r}"
         )
 
         run_output = subprocess.run(
@@ -67,8 +68,8 @@ class BaseSSHTransfer(BaseTransfer):
         )
 
         assert run_output.returncode == 0, (
-            f"docker run failed with: STDOUT-{run_output.stdout} "
-            f"STDERR-{run_output.stderr}"
+            f"docker run failed with: STDOUT-{run_output.stdout!r} "
+            f"STDERR-{run_output.stderr!r}"
         )
 
         yield
