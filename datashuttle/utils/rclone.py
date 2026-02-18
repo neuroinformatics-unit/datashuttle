@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 import json
 import os
 import platform
+import shlex
 import subprocess
 import tempfile
 
@@ -156,8 +157,12 @@ def call_rclone_with_popen(
     """
     command = "rclone " + command
 
+    # this command must use shell=False (and thus shlex.split) otherwise
+    # the process cannot be properly cancelled.
     process = subprocess.Popen(
-        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+        shlex.split(command),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
     return process
 
