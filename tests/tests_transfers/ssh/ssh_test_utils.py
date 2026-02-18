@@ -2,13 +2,13 @@ import builtins
 import copy
 import subprocess
 import sys
-from typing import Any
+from datashuttle.datashuttle_class import DataShuttle
 
 from datashuttle.utils import rclone, ssh, utils
 
 
 def setup_project_for_ssh(
-    project: Any,
+    project: DataShuttle,
 ) -> None:
     """
     Set up the project configs to use
@@ -69,7 +69,7 @@ def setup_ssh_connection(project, setup_ssh_key_pair=True):
     return verified
 
 
-def docker_is_running() -> bool:
+def docker_is_running()-> bool:
     if not is_docker_installed():
         return False
 
@@ -77,11 +77,11 @@ def docker_is_running() -> bool:
     return is_running
 
 
-def is_docker_installed() -> bool:
+def is_docker_installed()-> bool:
     return check_sys_command_returns_0("docker -v")
 
 
-def check_sys_command_returns_0(command: str) -> bool:
+def check_sys_command_returns_0(command: str)-> bool:
     return (
         subprocess.run(
             command,
