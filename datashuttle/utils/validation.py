@@ -24,7 +24,11 @@ from datetime import datetime
 from itertools import chain
 from pathlib import Path
 
-from datashuttle.configs import canonical_configs, canonical_folders
+from datashuttle.configs import (
+    canonical_configs,
+    canonical_folders,
+    canonical_tags,
+)
 from datashuttle.utils import formatting, getters, utils
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
@@ -435,13 +439,18 @@ def replace_tags_in_regexp(regexp: str) -> str:
 
     """
     regexp_list = [regexp]
-    date_regexp = r"\d\d\d\d\d\d\d\d"
-    time_regexp = r"\d\d\d\d\d\d"
+    date_regexp = r"\d{8}"
+    time_regexp = r"\d{6}"
+
+    datetime_regexp = formatting.format_datetime(date_regexp, time_regexp)
 
     formatting.replace_date_time_tags_in_name(
         regexp_list,
-        datetime_with_key=formatting.format_datetime(date_regexp, time_regexp),
-        date_with_key=formatting.format_date(date_regexp),
+        datetime_=datetime_regexp,
+        datetime_with_key=formatting.format_datetime_with_key(datetime_regexp),
+        date=date_regexp,
+        date_with_key=formatting.format_date_with_key(date_regexp),
+        time_=time_regexp,
         time_with_key=formatting.format_time(time_regexp),
     )
     return regexp_list[0]
@@ -610,18 +619,12 @@ def datetime_are_iso_format(
         A list of validation errors.
 
     """
-    formats = {
-        "datetime": "%Y%m%dT%H%M%S",
-        "time": "%H%M%S",
-        "date": "%Y%m%d",
-    }
-
-    key = next((key for key in formats if key in name), None)
+    datetime_keys = list(canonical_tags.get_datetime_formats().keys())
+    key = next((key for key in datetime_keys if f"_{key}-" in name), None)
 
     error_message: List[str]
     if not key:
         error_message = []
-
     else:
         try:
             format_to_check = utils.get_values_from_bids_formatted_name(
@@ -630,15 +633,46 @@ def datetime_are_iso_format(
         except:
             return []
 
-        strfmt = formats[key]
-
-        try:
-            datetime.strptime(format_to_check, strfmt)
+        if datetime_value_str_is_iso_format(format_to_check, key):
             error_message = []
-        except ValueError:
-            error_message = [get_datetime_error(key, name, strfmt, path_)]
+        else:
+            error_message = [
+                get_datetime_error(
+                    key,
+                    name,
+                    canonical_tags.get_datetime_formats()[key],
+                    path_,
+                )
+            ]
 
     return error_message
+
+
+def datetime_value_str_is_iso_format(
+    datetime_str: str, format_type: str
+) -> bool:
+    """Validate that a datetime string matches the expected ISO format.
+
+    Parameters
+    ----------
+    datetime_str : str
+        The datetime string to validate
+    format_type : str
+        One of "datetime", "time", or "date"
+
+    Returns
+    -------
+    bool
+        True if the string matches the ISO format, False otherwise
+
+    """
+    try:
+        datetime.strptime(
+            datetime_str, canonical_tags.get_datetime_formats()[format_type]
+        )
+        return True
+    except ValueError:
+        return False
 
 
 def raise_display_mode(

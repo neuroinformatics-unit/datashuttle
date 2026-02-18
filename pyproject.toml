@@ -82,10 +82,9 @@ requires = [
 ]
 build-backend = "setuptools.build_meta"
 
-[tool.mypy]
-exclude = [
-    "tests/"
-]
+[[tool.mypy.overrides]]
+module = "tests.*"
+ignore_errors = true
 
 [tool.setuptools]
 include-package-data = true
