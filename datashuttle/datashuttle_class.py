@@ -45,6 +45,7 @@ from datashuttle.utils import (
     gdrive,
     getters,
     rclone,
+    rclone_encryption,
     ssh,
     utils,
     validation,
@@ -203,7 +204,16 @@ class DataShuttle:
 
         """
         if log:
-            self._start_log("create-folders", local_vars=locals())
+            self._start_log(
+                "create-folders",
+                local_vars={
+                    "top_level_folder": top_level_folder,
+                    "sub_names": sub_names,
+                    "ses_names": ses_names,
+                    "datatype": datatype,
+                    "bypass_validation": bypass_validation,
+                },
+            )
 
         self._check_top_level_folder(top_level_folder)
 
@@ -356,7 +366,17 @@ class DataShuttle:
 
         """
         if init_log:
-            self._start_log("upload-custom", local_vars=locals())
+            self._start_log(
+                "upload-custom",
+                local_vars={
+                    "top_level_folder": top_level_folder,
+                    "sub_names": sub_names,
+                    "ses_names": ses_names,
+                    "datatype": datatype,
+                    "overwrite_existing_files": overwrite_existing_files,
+                    "dry_run": dry_run,
+                },
+            )
 
         self._check_top_level_folder(top_level_folder)
 
@@ -427,7 +447,17 @@ class DataShuttle:
 
         """
         if init_log:
-            self._start_log("download-custom", local_vars=locals())
+            self._start_log(
+                "download-custom",
+                local_vars={
+                    "top_level_folder": top_level_folder,
+                    "sub_names": sub_names,
+                    "ses_names": ses_names,
+                    "datatype": datatype,
+                    "overwrite_existing_files": overwrite_existing_files,
+                    "dry_run": dry_run,
+                },
+            )
 
         self._check_top_level_folder(top_level_folder)
 
@@ -596,7 +626,13 @@ class DataShuttle:
             transfer was taking place, but no files will be moved.
 
         """
-        self._start_log("upload-entire-project", local_vars=locals())
+        self._start_log(
+            "upload-entire-project",
+            local_vars={
+                "overwrite_existing_files": overwrite_existing_files,
+                "dry_run": dry_run,
+            },
+        )
         self._transfer_entire_project(
             "upload", overwrite_existing_files, dry_run
         )
@@ -627,7 +663,13 @@ class DataShuttle:
             transfer was taking place, but no files will be moved.
 
         """
-        self._start_log("download-entire-project", local_vars=locals())
+        self._start_log(
+            "download-entire-project",
+            local_vars={
+                "overwrite_existing_files": overwrite_existing_files,
+                "dry_run": dry_run,
+            },
+        )
         self._transfer_entire_project(
             "download", overwrite_existing_files, dry_run
         )
@@ -664,7 +706,14 @@ class DataShuttle:
             transfer was taking place, but no files will be moved.
 
         """
-        self._start_log("upload-specific-folder-or-file", local_vars=locals())
+        self._start_log(
+            "upload-specific-folder-or-file",
+            local_vars={
+                "filepath": filepath,
+                "overwrite_existing_files": overwrite_existing_files,
+                "dry_run": dry_run,
+            },
+        )
 
         self._transfer_specific_file_or_folder(
             "upload", filepath, overwrite_existing_files, dry_run
@@ -705,7 +754,12 @@ class DataShuttle:
 
         """
         self._start_log(
-            "download-specific-folder-or-file", local_vars=locals()
+            "download-specific-folder-or-file",
+            local_vars={
+                "filepath": filepath,
+                "overwrite_existing_files": overwrite_existing_files,
+                "dry_run": dry_run,
+            },
         )
 
         self._transfer_specific_file_or_folder(
@@ -729,7 +783,13 @@ class DataShuttle:
         """
         if init_log:
             self._start_log(
-                f"{upload_or_download}-{top_level_folder}", local_vars=locals()
+                f"{upload_or_download}-{top_level_folder}",
+                local_vars={
+                    "upload_or_download": upload_or_download,
+                    "top_level_folder": top_level_folder,
+                    "overwrite_existing_files": overwrite_existing_files,
+                    "dry_run": dry_run,
+                },
             )
 
         transfer_func = (
@@ -789,7 +849,7 @@ class DataShuttle:
             upload_or_download,
             top_level_folder,
             include_list,
-            self.cfg.make_rclone_transfer_options(
+            rclone.make_rclone_transfer_options(
                 overwrite_existing_files, dry_run
             ),
         )
@@ -814,10 +874,13 @@ class DataShuttle:
         Next, prompt to input their password for the central
         cluster. Once input, SSH private / public key pair
         will be setup.
+
+        Do not log this method, too high a risk of logging secrets.
         """
-        self._start_log(
-            "setup-ssh-connection-to-central-server", local_vars=locals()
-        )
+        if self.cfg["connection_method"] != "ssh":
+            raise RuntimeError(
+                "configs `connection_method` must be 'ssh' to set up SSH connection."
+            )
 
         verified = ssh.verify_ssh_central_host_api(
             self.cfg["central_host_id"],
@@ -830,6 +893,15 @@ class DataShuttle:
 
             self._setup_rclone_central_ssh_config(private_key_str, log=True)
 
+            utils.log_and_message(
+                f"Your SSH key will be stored in the rclone config at:\n "
+                f"{self.cfg.rclone.get_rclone_central_connection_config_filepath()}.\n"
+            )
+
+            if not self.cfg.rclone.rclone_file_is_encrypted():
+                if self._ask_user_rclone_encryption():
+                    self._try_encrypt_rclone_config()
+
             rclone.check_successful_connection_and_raise_error_on_fail(
                 self.cfg
             )
@@ -837,8 +909,6 @@ class DataShuttle:
             utils.log_and_message(
                 "SSH key pair setup successfully. SSH key saved to the RClone config file."
             )
-
-        ds_logger.close_log_filehandler()
 
     # -------------------------------------------------------------------------
     # Google Drive
@@ -859,11 +929,13 @@ class DataShuttle:
 
         Next, with the provided credentials, the final setup will be done. This
         opens up a browser if the user confirmed access to a browser.
+
+        Do not log this method, too high a risk of logging secrets.
         """
-        self._start_log(
-            "setup-google-drive-connection-to-central-server",
-            local_vars=locals(),
-        )
+        if self.cfg["connection_method"] != "gdrive":
+            raise RuntimeError(
+                "configs `connection_method` must be 'gdrive' to set up Google Drive connection."
+            )
 
         if self.cfg["gdrive_client_id"]:
             gdrive_client_secret = gdrive.get_client_secret()
@@ -876,7 +948,7 @@ class DataShuttle:
             config_token = gdrive.prompt_and_get_config_token(
                 self.cfg,
                 gdrive_client_secret,
-                self.cfg.get_rclone_config_name("gdrive"),
+                self.cfg.rclone.get_rclone_config_name("gdrive"),
                 log=True,
             )
         else:
@@ -886,13 +958,17 @@ class DataShuttle:
             gdrive_client_secret, config_token
         )
 
-        rclone.await_call_rclone_with_popen_raise_on_fail(process, log=True)
+        rclone.await_call_rclone_with_popen_for_central_connection_raise_on_fail(
+            self.cfg, process, log=True
+        )
+
+        if not self.cfg.rclone.rclone_file_is_encrypted():
+            if self._ask_user_rclone_encryption():
+                self._try_encrypt_rclone_config()
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
 
         utils.log_and_message("Google Drive Connection Successful.")
-
-        ds_logger.close_log_filehandler()
 
     # -------------------------------------------------------------------------
     # AWS S3
@@ -908,22 +984,94 @@ class DataShuttle:
         First, the user will be prompted to input their AWS secret access key.
 
         Next, with the provided credentials, the final connection setup will be done.
+
+        Do not log this method, too high a risk of logging secrets.
         """
-        self._start_log(
-            "setup-aws-connection-to-central-server",
-            local_vars=locals(),
-        )
+        if self.cfg["connection_method"] != "aws":
+            raise RuntimeError(
+                "configs `connection_method` must be 'aws' to "
+                "set up Amazon Web Services S3 Bucket connection."
+            )
 
         aws_secret_access_key = aws.get_aws_secret_access_key()
 
         self._setup_rclone_aws_config(aws_secret_access_key, log=True)
+
+        if not self.cfg.rclone.rclone_file_is_encrypted():
+            if self._ask_user_rclone_encryption():
+                self._try_encrypt_rclone_config()
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
         aws.raise_if_bucket_absent(self.cfg)
 
         utils.log_and_message("AWS Connection Successful.")
 
-        ds_logger.close_log_filehandler()
+    # -------------------------------------------------------------------------
+    # Rclone config encryption
+    # -------------------------------------------------------------------------
+
+    def _ask_user_rclone_encryption(self) -> bool:
+        """Get user input to determine if they want to encrypt the rclone config."""
+        input_ = utils.get_user_input(
+            f"{rclone_encryption.get_explanation_message(self.cfg)}\n"
+            f"Press 'y' to encrypt the Rclone config or leave blank to skip."
+        )
+
+        return input_ == "y"
+
+    def _try_encrypt_rclone_config(self, is_using_api=True) -> None:
+        """Try to encrypt the rclone config file.
+
+        If it fails, error and let the user know the config file is unencrypted.
+        """
+        try:
+            self.encrypt_rclone_config()
+        except Exception as e:
+            config_path = (
+                self.cfg.rclone.get_rclone_central_connection_config_filepath()
+            )
+
+            api_prompt = (
+                "Use `encrypt_rclone_config()` to attempt to encrypt the file again "
+                if is_using_api
+                else ""
+            )
+
+            # don't log during encryption
+            utils.raise_error(
+                f"Config encryption failed:\n"
+                f"{str(e)}\n"
+                f"{api_prompt}\n\n"
+                f"IMPORTANT: The config at {config_path} is not currently encrypted.\n",
+                RuntimeError,
+            )
+
+        utils.print_message_to_user(
+            f"Rclone config file for the central connection "
+            f"{self.cfg['connection_method']} was successfully encrypted."
+        )
+
+    def encrypt_rclone_config(self) -> None:
+        """Encrypt the rclone config file for the central connection."""
+        if self.cfg.rclone.rclone_file_is_encrypted():
+            self.remove_rclone_encryption()
+
+        rclone_encryption.run_rclone_config_encrypt(self.cfg)
+
+        self.cfg.rclone.set_rclone_config_encryption_state(True)
+
+    def remove_rclone_encryption(self) -> None:
+        """Unencrypt the rclone config file for the central connection."""
+        if not self.cfg.rclone.rclone_file_is_encrypted():
+            raise RuntimeError(
+                f"The config for the current connection method: "
+                f"{self.cfg['connection_method']} "
+                f"is not encrypted. Cannot unencrypt."
+            )
+
+        rclone_encryption.remove_rclone_encryption(self.cfg)
+
+        self.cfg.rclone.set_rclone_config_encryption_state(False)
 
     # -------------------------------------------------------------------------
     # Configs
@@ -943,7 +1091,7 @@ class DataShuttle:
     ) -> None:
         """Initialize the configurations for datashuttle on the local machine.
 
-        Once initialised, these settings will be used each
+        Once initialized, these settings will be used each
         time the datashuttle is opened.
 
         These settings are stored in a config file on the
@@ -1004,7 +1152,6 @@ class DataShuttle:
         """
         self._start_log(
             "make-config-file",
-            local_vars=locals(),
             store_in_temp_folder=True,
         )
 
@@ -1075,7 +1222,6 @@ class DataShuttle:
 
         self._start_log(
             "update-config-file",
-            local_vars=locals(),
         )
 
         if "connection_method" in kwargs:
@@ -1119,6 +1265,11 @@ class DataShuttle:
     def get_config_path(self) -> Path:
         """Return the full path to the DataShuttle config file."""
         return self._config_path
+
+    @check_configs_set
+    def get_rclone_central_config_path(self) -> Path:
+        """Get the path to the Rclone config for the current `connection_method`."""
+        return rclone.get_rclone_config_filepath(self.cfg)
 
     @check_configs_set
     def get_configs(self) -> Configs:
@@ -1354,7 +1505,6 @@ class DataShuttle:
 
         self._start_log(
             "validate-project",
-            local_vars=locals(),
         )
 
         validation_templates = self.get_validation_templates()
@@ -1574,14 +1724,15 @@ class DataShuttle:
     ) -> None:
         rclone.setup_rclone_config_for_ssh(
             self.cfg,
-            self.cfg.get_rclone_config_name("ssh"),
+            self.cfg.rclone.get_rclone_config_name("ssh"),
             private_key_str,
             log=log,
         )
 
     def _setup_rclone_central_local_filesystem_config(self) -> None:
         rclone.setup_rclone_config_for_local_filesystem(
-            self.cfg.get_rclone_config_name("local_filesystem"),
+            self.cfg,
+            self.cfg.rclone.get_rclone_config_name("local_filesystem"),
         )
 
     def _setup_rclone_gdrive_config(
@@ -1591,7 +1742,7 @@ class DataShuttle:
     ) -> subprocess.Popen:
         return rclone.setup_rclone_config_for_gdrive(
             self.cfg,
-            self.cfg.get_rclone_config_name("gdrive"),
+            self.cfg.rclone.get_rclone_config_name("gdrive"),
             gdrive_client_secret,
             config_token,
         )
@@ -1601,7 +1752,7 @@ class DataShuttle:
     ) -> None:
         rclone.setup_rclone_config_for_aws(
             self.cfg,
-            self.cfg.get_rclone_config_name("aws"),
+            self.cfg.rclone.get_rclone_config_name("aws"),
             aws_secret_access_key,
             log=log,
         )
