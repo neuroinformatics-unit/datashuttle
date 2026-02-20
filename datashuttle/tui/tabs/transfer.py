@@ -132,13 +132,13 @@ class TransferTab(TreeAndInputTab):
             ClickableInput(
                 self.mainwindow,
                 id="transfer_subject_input",
-                placeholder="e.g. sub-001",
+                placeholder="e.g. sub-001 (default: all)",
             ),
             Label("Session(s)", id="transfer_session_label"),
             ClickableInput(
                 self.mainwindow,
                 id="transfer_session_input",
-                placeholder="e.g. ses-001",
+                placeholder="e.g. ses-001 (default: all)",
             ),
             # These are almost identical to create tab
             Label("Datatype(s)", id="transfer_datatype_label"),
@@ -409,6 +409,12 @@ class TransferTab(TreeAndInputTab):
                     "#transfer_subject_input", "#transfer_session_input"
                 )
             )
+
+            if sub_names == [""]:
+                sub_names = ["all"]
+            if ses_names == [""]:
+                ses_names = ["all"]
+
             success, output = self.interface.transfer_custom_selection(
                 selected_top_level_folder,
                 sub_names,
