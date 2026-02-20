@@ -1105,7 +1105,7 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_transfer_checkboxes_dynamic_on_off(
-            self, setup_project_paths
+        self, setup_project_paths
     ):
         """
         This tests that mutually exclusive checkbox options turn
