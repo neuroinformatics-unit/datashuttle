@@ -36,6 +36,15 @@ def setup_aws_connection(project: DataShuttle):
     The `AWS_SECRET_ACCESS_KEY` is set in the environment by the CI while
     testing. For testing locally, the developer must set it themselves.
     """
+
+    def mock_input(_: str) -> str:
+        return "y"
+
+    import builtins
+
+    original_input = copy.deepcopy(builtins.input)
+    builtins.input = mock_input  # type: ignore
+
     original_get_secret = copy.deepcopy(aws.get_aws_secret_access_key)
 
     aws.get_aws_secret_access_key = lambda *args, **kwargs: os.environ[
@@ -44,6 +53,7 @@ def setup_aws_connection(project: DataShuttle):
 
     project.setup_aws_connection()
 
+    builtins.input = original_input
     aws.get_aws_secret_access_key = original_get_secret
 
 

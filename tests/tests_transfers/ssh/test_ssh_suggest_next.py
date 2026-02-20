@@ -32,6 +32,7 @@ class TestSSHDriveSuggestNext(BaseSSHTransfer, TuiBase):
         Setup pathtable and project for SSH transfer tests.
         """
         project = test_utils.make_project(setup_project_paths["project_name"])
+
         ssh_test_utils.setup_project_for_ssh(
             project,
         )
