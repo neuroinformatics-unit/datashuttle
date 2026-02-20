@@ -163,7 +163,7 @@ if connecting via SSH.
 
 In this tutorial, we will set this next to the local path for convenience.
 
-1) Copy the contents of the _local path_ input by clicking it, hovering over it and pressing `CTRL+Q` to copy.
+1) Copy the contents of the _local path_ input by clicking it, hovering over it and pressing `CTRL+W` to copy.
 2) Paste it into the _central path_ input with `CTRL+V` and change "local" to "central".
 
 ```{image} /_static/screenshots/tutorial-1-make-central-path-dark.png
