@@ -231,13 +231,11 @@ class TestTuiCreateDirectoryTree(TuiBase):
                 hover_line=3,
                 press_string="ctrl+o",
             )
-            assert (
-                signal[0]
-                == pilot.app.screen.query_one("#create_folders_directorytree")
+            assert signal[0] == str(
+                pilot.app.screen.query_one("#create_folders_directorytree")
                 .get_node_at_line(3)
-                .data.path.as_posix()
+                .data.path
             )
-
             await pilot.pause()
 
     @pytest.mark.asyncio
