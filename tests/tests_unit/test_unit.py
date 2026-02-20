@@ -4,6 +4,7 @@ import pytest
 
 from datashuttle.configs.canonical_configs import get_connection_methods_list
 from datashuttle.configs.canonical_tags import tags
+from datashuttle.custom_types import Prefix
 from datashuttle.utils import formatting, getters, utils
 
 
@@ -47,7 +48,7 @@ class TestUnit:
         )
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
-    def test_process_to_keyword_in_sub_input(self, prefix: str) -> None:
+    def test_process_to_keyword_in_sub_input(self, prefix: Prefix) -> None:
         results = formatting.update_names_with_range_to_flag(
             [f"{prefix}-001", f"{prefix}-01{tags('to')}123"], prefix
         )
@@ -94,7 +95,7 @@ class TestUnit:
         ],
     )
     def test_process_to_keyword_bad_input_raises_error(
-        self, prefix: str, bad_input: str
+        self, prefix: Prefix, bad_input: str
     ) -> None:
         bad_input = bad_input.replace("prefix", prefix)
 
@@ -140,7 +141,7 @@ class TestUnit:
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     @pytest.mark.parametrize("default_num_value_digits", [0, 1, 11, 99, 101])
     def test_get_max_sub_or_ses_num_and_value_length_empty(
-        self, prefix: str, default_num_value_digits: int
+        self, prefix: Prefix, default_num_value_digits: int
     ) -> None:
         """When the list of sub or ses names is empty, the returned max number
         should be zero and the `default_num_value_digits`
@@ -158,7 +159,7 @@ class TestUnit:
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_get_max_sub_or_ses_num_and_value_length_error(
-        self, prefix: str
+        self, prefix: Prefix
     ) -> None:
         """An error will be shown if the sub or ses value digits are inconsistent,
         because it is not possible to return the number of values required.
@@ -208,7 +209,7 @@ class TestUnit:
     @pytest.mark.parametrize("test_num_digits", [1, 4, 11])
     @pytest.mark.parametrize("test_max_num", [1, 9, 99, 101])
     def test_get_max_sub_or_ses_num_and_value_length(
-        self, prefix: str, test_max_num: int, test_num_digits: int
+        self, prefix: Prefix, test_max_num: int, test_num_digits: int
     ) -> None:
         """Test many combinations of subject names
         and number of digits for a project,
@@ -231,7 +232,7 @@ class TestUnit:
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_get_max_sub_or_ses_num_and_value_length_edge_case(
-        self, prefix: str
+        self, prefix: Prefix
     ) -> None:
         """Test the edge case where the subject number does not start at 1."""
         names = [f"{prefix}-09", f"{prefix}-10", f"{prefix}-11"]
