@@ -11,6 +11,8 @@ from textual.containers import Container, Horizontal, Vertical
 from textual.screen import ModalScreen
 from textual.widgets import Button, Input, Static
 
+from datashuttle.utils import rclone_encryption
+
 
 class SetupAwsScreen(ModalScreen):
     """Dialog window that sets up connection to an Amazon Web Service S3 bucket.
@@ -26,7 +28,7 @@ class SetupAwsScreen(ModalScreen):
         super(SetupAwsScreen, self).__init__()
 
         self.interface = interface
-        self.stage = 0
+        self.stage = "init"
 
     def compose(self) -> ComposeResult:
         """Set widgets on the SetupAwsScreen."""
@@ -52,18 +54,36 @@ class SetupAwsScreen(ModalScreen):
         self.query_one("#setup_aws_secret_access_key_input").visible = False
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """Handle button press on the screen."""
+        """Handle button press on the screen.
+
+        The `setup_aws_ok_button` is used for all 'positive' events ('Yes, Ok')
+        and 'setup_aws_cancel_button' is used to cancel the set-up.
+        "setup_aws_encryption_no_button" is used to select no encryption.
+        The appropriate action to take on the button press is determined by the
+        current stage.
+
+        """
         if event.button.id == "setup_aws_cancel_button":
             self.dismiss(False)
 
-        if event.button.id == "setup_aws_ok_button":
-            if self.stage == 0:
+        elif event.button.id == "setup_aws_encryption_no_button":
+            message = "AWS Connection Successful!"
+            self.query_one("#setup_aws_messagebox_message").update(message)
+            self.query_one("#setup_aws_ok_button").label = "Finish"
+            self.query_one("#setup_aws_encryption_no_button").remove()
+            self.stage = "finished"
+
+        elif event.button.id == "setup_aws_ok_button":
+            if self.stage == "init":
                 self.prompt_user_for_aws_secret_access_key()
 
-            elif self.stage == 1:
+            elif self.stage == "use_secret_access_key":
                 self.use_secret_access_key_to_setup_aws_connection()
 
-            elif self.stage == 2:
+            elif self.stage == "ask_rclone_encryption":
+                self.set_rclone_encryption()
+
+            elif self.stage == "finished":
                 self.dismiss(True)
 
     def prompt_user_for_aws_secret_access_key(self) -> None:
@@ -73,10 +93,13 @@ class SetupAwsScreen(ModalScreen):
         self.query_one("#setup_aws_messagebox_message").update(message)
         self.query_one("#setup_aws_secret_access_key_input").visible = True
 
-        self.stage += 1
+        self.stage = "use_secret_access_key"
 
     def use_secret_access_key_to_setup_aws_connection(self) -> None:
-        """Set up the AWS connection and inform user of success or failure."""
+        """Set up the AWS connection and failure.
+
+        If success, move onto the rclone_encryption screen.
+        """
         secret_access_key = self.query_one(
             "#setup_aws_secret_access_key_input"
         ).value
@@ -86,21 +109,45 @@ class SetupAwsScreen(ModalScreen):
         )
 
         if success:
-            message = "AWS Connection Successful!"
-            self.query_one(
-                "#setup_aws_secret_access_key_input"
-            ).visible = False
-
-        else:
             message = (
-                f"AWS setup failed. Please check your configs and secret access key"
+                f"Connection set up successfully. Next, decide whether to encrypt the RClone config file.\n\n"
+                f"{rclone_encryption.get_explanation_message(self.interface.project.cfg)}"
+            )
+            self.query_one("#setup_aws_messagebox_message").update(message)
+
+            self.query_one("#setup_aws_secret_access_key_input").remove()
+            self.query_one("#setup_aws_ok_button").label = "Yes"
+            self.query_one("#setup_aws_cancel_button").remove()
+
+            no_button = Button("No", id="setup_aws_encryption_no_button")
+
+            self.query_one("#setup_aws_buttons_horizontal").mount(
+                no_button, after="#setup_aws_ok_button"
+            )
+
+            self.stage = "ask_rclone_encryption"
+        else:
+            if secret_access_key != "":
+                output = output.replace(secret_access_key, "[REDACTED]")
+
+            message = (
+                f"AWS setup failed. Please check your configs and secret access key."
                 f"\n\n Traceback: {output}"
             )
-            self.query_one(
-                "#setup_aws_secret_access_key_input"
-            ).disabled = True
+            self.query_one("#setup_aws_ok_button").label = "Retry"
+            self.query_one("#setup_aws_messagebox_message").update(message)
 
+    def set_rclone_encryption(self):
+        """Try and encrypt the Rclone config file and inform the user of success / failure."""
+        success, output = self.interface.try_setup_rclone_encryption()
+
+        self.query_one("#setup_aws_encryption_no_button").remove()
+        self.stage = "finished"
         self.query_one("#setup_aws_ok_button").label = "Finish"
-        self.query_one("#setup_aws_messagebox_message").update(message)
-        self.query_one("#setup_aws_cancel_button").disabled = True
-        self.stage += 1
+
+        if success:
+            message = "The Rclone config file was successfully encrypted. Setup complete!"
+            self.query_one("#setup_aws_messagebox_message").update(message)
+        else:
+            message = f"{output}\n\nTo try and encrypt the config file again, re-run the connection set up.\n\nSet up complete."
+            self.query_one("#setup_aws_messagebox_message").update(message)

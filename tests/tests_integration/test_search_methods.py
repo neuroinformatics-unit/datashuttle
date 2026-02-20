@@ -55,17 +55,22 @@ class TestSubSesSearches(BaseTest):
             test_utils.write_file(central_path / path_.parent.parent.parent / f"{path_.parent.parent.name}.md", contents="hello_world",)
         # fmt: on
 
-        # Monkeycatch `get_rclone_config_name` to return `local` and set `local`
-        # as a rclone config entry associated with the local filesystem. By this
-        # method we can hijack `search_central_via_connection` to run locally
-        # (though it is set up in practice to run via ssh, gdrive or aws).
-        monkeypatch.setattr(
-            project.cfg,
-            "get_rclone_config_name",
-            lambda connection_method: "local",
-        )
+        # search_central_via_connection will run the transfer
+        # function but with additional checks for rclone password
+        # through `run_function_that_requires_encrypted_rclone_config_access`.
+        # Here we monkeypatch that to skip all of those checks.
+        call_rclone(r"config create local local nounc true")
 
-        call_rclone("config create local local nounc true")
+        from datashuttle.utils import rclone
+
+        def mock_rclone_caller(_, func, optional=None):
+            return func()
+
+        monkeypatch.setattr(
+            rclone,
+            "run_function_that_requires_encrypted_rclone_config_access",
+            mock_rclone_caller,
+        )
 
         # Perform a range of checks across folders and files
         # and check the outputs of both approaches match.

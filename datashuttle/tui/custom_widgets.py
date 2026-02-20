@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
     from textual import events
+    from textual.events import MouseMove
     from textual.validation import Validator
 
     from datashuttle.tui.app import TuiApp
@@ -146,6 +147,15 @@ class CustomDirectoryTree(DirectoryTree):
         super(CustomDirectoryTree, self).__init__(path=path, id=id)
 
         self.mainwindow = mainwindow
+
+    def on_mouse_move(self, event: MouseMove) -> None:
+        """Handle focus for this widget.
+
+        Explicitly grab focus when mouse moves into widget so that
+        keyboard shortcuts work without having to click the folder.
+        """
+        if not self.has_focus:  # type: ignore
+            self.focus()
 
     def filter_paths(self, paths: Iterable[Path]) -> Iterable[Path]:
         """Filter out all hidden folders and files from CustomDirectoryTree display.
