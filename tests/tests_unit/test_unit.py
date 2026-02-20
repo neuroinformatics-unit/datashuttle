@@ -17,7 +17,7 @@ class TestUnit:
         "key", [tags("date"), tags("time"), tags("datetime")]
     )
     def test_datetime_string_replacement(
-        self, key, underscore_position
+        self, key: str, underscore_position: str
     ) -> None:
         r"""Test the function that replaces @DATE, @TIME@ or @DATETIME@
         keywords with the date / time / datetime.
@@ -47,7 +47,7 @@ class TestUnit:
         )
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
-    def test_process_to_keyword_in_sub_input(self, prefix) -> None:
+    def test_process_to_keyword_in_sub_input(self, prefix: str) -> None:
         results = formatting.update_names_with_range_to_flag(
             [f"{prefix}-001", f"{prefix}-01{tags('to')}123"], prefix
         )
@@ -94,8 +94,8 @@ class TestUnit:
         ],
     )
     def test_process_to_keyword_bad_input_raises_error(
-        self, prefix, bad_input
-    ):
+        self, prefix: str, bad_input: str
+    ) -> None:
         bad_input = bad_input.replace("prefix", prefix)
 
         with pytest.raises(ValueError) as e:
@@ -107,7 +107,7 @@ class TestUnit:
             f"The start must be  be {prefix}-<NUMBER>{tags('to')}<NUMBER>)."
         )
 
-    def test_get_value_from_bids_name_regexp(self):
+    def test_get_value_from_bids_name_regexp(self) -> None:
         """Test the regexp that finds the value from a BIDS-name
         key-value pair.
         """
@@ -125,7 +125,7 @@ class TestUnit:
         id = utils.get_value_from_key_regexp(bids_name, "id")[0]
         assert id == "3asd@523"
 
-    def test_num_leading_zeros(self):
+    def test_num_leading_zeros(self) -> None:
         """Check num_leading_zeros handles prefixed and non-prefixed
         case from -1 to -(101x 0)1.
         """
@@ -140,8 +140,8 @@ class TestUnit:
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     @pytest.mark.parametrize("default_num_value_digits", [0, 1, 11, 99, 101])
     def test_get_max_sub_or_ses_num_and_value_length_empty(
-        self, prefix, default_num_value_digits
-    ):
+        self, prefix: str, default_num_value_digits: int
+    ) -> None:
         """When the list of sub or ses names is empty, the returned max number
         should be zero and the `default_num_value_digits`
         be set to the passed default.
@@ -157,7 +157,9 @@ class TestUnit:
         assert num_digits == default_num_value_digits
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
-    def test_get_max_sub_or_ses_num_and_value_length_error(self, prefix):
+    def test_get_max_sub_or_ses_num_and_value_length_error(
+        self, prefix: str
+    ) -> None:
         """An error will be shown if the sub or ses value digits are inconsistent,
         because it is not possible to return the number of values required.
 
@@ -206,8 +208,8 @@ class TestUnit:
     @pytest.mark.parametrize("test_num_digits", [1, 4, 11])
     @pytest.mark.parametrize("test_max_num", [1, 9, 99, 101])
     def test_get_max_sub_or_ses_num_and_value_length(
-        self, prefix, test_max_num, test_num_digits
-    ):
+        self, prefix: str, test_max_num: int, test_num_digits: int
+    ) -> None:
         """Test many combinations of subject names
         and number of digits for a project,
         e.g. `names = ["sub-001", ... "sub-101"]`.
@@ -228,7 +230,9 @@ class TestUnit:
         assert num_digits == test_num_digits
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
-    def test_get_max_sub_or_ses_num_and_value_length_edge_case(self, prefix):
+    def test_get_max_sub_or_ses_num_and_value_length_edge_case(
+        self, prefix: str
+    ) -> None:
         """Test the edge case where the subject number does not start at 1."""
         names = [f"{prefix}-09", f"{prefix}-10", f"{prefix}-11"]
 
@@ -239,7 +243,7 @@ class TestUnit:
         assert max_num == 11
         assert num_digits == 2
 
-    def test_get_connection_methods_list(self):
+    def test_get_connection_methods_list(self) -> None:
         """"""
         assert get_connection_methods_list() == [
             "ssh",
@@ -253,7 +257,9 @@ class TestUnit:
     # Utils
     # -------------------------------------------------------------------------
 
-    def make_name(self, key, underscore_position, start, end):
+    def make_name(
+        self, key: str, underscore_position: str, start: str, end: str
+    ) -> str:
         """Make name with / without underscore to test every
         possibility.
         """
@@ -266,7 +272,7 @@ class TestUnit:
         elif underscore_position == "both":
             name = f"{start}_{key}_{end}"
 
-        elif underscore_position == "none":
+        else:
             name = f"{start}{key}{end}"
 
         return name
