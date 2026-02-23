@@ -192,7 +192,7 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
             return
 
         try:
-            showinfm.show_in_file_manager(path_.as_posix())
+            showinfm.show_in_file_manager(str(path_))
         except Exception:
             if path_.is_file():
                 # I don't see why this is not working as according to docs it
