@@ -11,11 +11,16 @@ def get_wezterm_version():
 
 def download_wezterm(vendored_dir, wezterm_foldername):
     """ """
-    wezterm_url = f"https://github.com/wezterm/wezterm/releases/download/{get_wezterm_version()}/{wezterm_foldername}"  # .zip TODO
+    # TODO: fix platform
+    if platform == "win32":
+        wezterm_url = f"https://github.com/wezterm/wezterm/releases/download/{get_wezterm_version()}/{wezterm_foldername}.zip"
+        wezterm_zip_path = vendored_dir / f"{wezterm_foldername}.zip"
+    else:
+        wezterm_url = f"https://github.com/wezterm/wezterm/releases/download/{get_wezterm_version()}/{wezterm_foldername}"
+        wezterm_zip_path = vendored_dir / f"{wezterm_foldername}"
     print(wezterm_url)
 
     wezterm_extracted_dir = vendored_dir / wezterm_foldername
-    wezterm_zip_path = vendored_dir / f"{wezterm_foldername}"  # .zip"
 
     # Step 1: Download and extract WezTerm if missing
     if not wezterm_extracted_dir.exists():
@@ -28,7 +33,6 @@ def download_wezterm(vendored_dir, wezterm_foldername):
             f.write(response.content)
 
         print(wezterm_zip_path)
-        breakpoint()
 
         print("📦 Extracting WezTerm with system unzip...")
 

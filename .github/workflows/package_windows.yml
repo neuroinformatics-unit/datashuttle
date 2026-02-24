@@ -1,0 +1,58 @@
+name: windows-build
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ "v*" ]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: powershell
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install rclone
+        run: |
+          conda activate datashuttle-test
+          conda install -c conda-forge rclone
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .[dev]
+          pip install pyinstaller
+
+      # Install Inno Setup silently
+      - name: Install Inno Setup
+        run: |
+          choco install innosetup --yes
+
+      - name: Verify Inno Setup installation
+        run: |
+          Get-Command "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+
+      - name: Run Windows packaging script
+        run: |
+          python package_windows.py
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: dist/*.exe
