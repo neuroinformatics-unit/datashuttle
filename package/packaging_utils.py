@@ -34,7 +34,7 @@ def download_wezterm(vendored_dir, wezterm_foldername):
 
         print(wezterm_zip_path)
 
-        print("📦 Extracting WezTerm with system unzip...")
+        print("Extracting WezTerm with system unzip...")
 
         if platform == "darwin":  ## TODO always use same way
             subprocess.run(
@@ -60,6 +60,6 @@ def download_wezterm(vendored_dir, wezterm_foldername):
                 zip_ref.extractall(vendored_dir)
 
         wezterm_zip_path.unlink()  # Optional: clean up ZIP
-        print("✅ WezTerm ready.")
+        print("WezTerm ready.")
     else:
-        print("✅ WezTerm already present. Skipping download.")
+        print("WezTerm already present. Skipping download.")
