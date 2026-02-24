@@ -49,18 +49,6 @@ def main():
 
         exe = base_path / "datashuttle"
 
-    elif platform.system() == "Linux":
-        base_path = Path(__file__).resolve().parent.parent
-        print(base_path)
-
-        wezterm_exe_path = base_path / "_vendored/squashfs-root/AppRun"
-
-        wezterm_config_path = wezterm_path / "wezterm_config.lua"
-
-        exe = base_path / "datashuttle"
-
-    # https://github.com/wezterm/wezterm/releases/download/20240203-110809-5046fc22/WezTerm-macos-20240203-110809-5046fc22.zip
-
     print("BaSE PATH", base_path)
     print("CWD", os.getcwd())
     print("HELLO WORLD")
@@ -82,8 +70,6 @@ def main():
         cmd = f"""{wezterm_exe_path} start -- sh -c 'echo "Starting datashuttle..."; "{exe}"'"""
 
         subprocess.Popen(cmd, shell=True, env=env)
-    else:
-        subprocess.run(exe)
 
 
 if __name__ == "__main__":
