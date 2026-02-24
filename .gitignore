@@ -5,6 +5,9 @@ package/_vendored
 package/Output
 package/inno_complie_script.iss
 
+# python-dotenv environment file for test account credentials.
+.env
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

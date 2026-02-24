@@ -146,7 +146,7 @@ class TestValidationUnit:
             [f"{prefix}-999", f"{prefix}-1000", f"{prefix}-1001"],
             [f"{prefix}-0099", f"{prefix}-100", f"{prefix}-0098"],
         ]:
-            with pytest.raises(BaseException) as e:
+            with pytest.raises(Exception) as e:
                 formatting.check_and_format_names(names, prefix)
 
             assert (
@@ -165,7 +165,7 @@ class TestValidationUnit:
             f"{prefix}-001_date-20250220",
         ]
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(Exception) as e:
             formatting.check_and_format_names(names, prefix)
 
         assert (
@@ -183,7 +183,10 @@ class TestValidationUnit:
         new_name = f"{prefix}-002"
         existing_names = [f"{prefix}-001", f"{prefix}-002", f"{prefix}-003"]
         error_messages = validation.new_name_duplicates_existing(
-            new_name, existing_names, prefix
+            new_name,
+            existing_names,
+            prefix,
+            allow_letters_in_sub_ses_values=False,
         )
         assert len(error_messages) == 0
 
@@ -191,7 +194,10 @@ class TestValidationUnit:
         new_name = f"{prefix}-99999"
         existing_names = [f"{prefix}-999"]
         error_messages = validation.new_name_duplicates_existing(
-            new_name, existing_names, prefix
+            new_name,
+            existing_names,
+            prefix,
+            allow_letters_in_sub_ses_values=False,
         )
         assert len(error_messages) == 0
 
@@ -199,7 +205,10 @@ class TestValidationUnit:
         new_name = f"{prefix}-002_date-12345"
         existing_names = [f"{prefix}-002_date-00000", f"{prefix}-003"]
         error_messages = validation.new_name_duplicates_existing(
-            new_name, existing_names, prefix
+            new_name,
+            existing_names,
+            prefix,
+            allow_letters_in_sub_ses_values=False,
         )
         assert len(error_messages) == 1
         assert (
@@ -212,7 +221,10 @@ class TestValidationUnit:
         new_name = f"{prefix}-3"
         existing_names = [f"{prefix}-3", f"{prefix}-3_s-a"]
         error_messages = validation.new_name_duplicates_existing(
-            new_name, existing_names, prefix
+            new_name,
+            existing_names,
+            prefix,
+            allow_letters_in_sub_ses_values=False,
         )
         assert len(error_messages) == 1
         assert (

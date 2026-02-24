@@ -1,7 +1,11 @@
+import shutil
+
 import pytest_asyncio
+from textual.events import Click
 from textual.widgets._tabbed_content import ContentTab
 
 from datashuttle.configs import canonical_configs
+from datashuttle.tui.app import TuiApp
 from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 from datashuttle.tui.screens.project_selector import ProjectSelectorScreen
 
@@ -23,6 +27,9 @@ class TuiBase:
         """
         return (500, 500)
 
+    # Fixtures
+    # ---------------------------------------------------------------------------------
+
     @pytest_asyncio.fixture(scope="function")
     async def empty_project_paths(self, tmp_path_factory, monkeypatch):
         """Get the paths and project name for a non-existent (i.e. not
@@ -37,7 +44,7 @@ class TuiBase:
         2) It fails for testing CLI, because CLI spawns a new process in
            which `get_datashuttle_path()` is not monkeypatched.
         """
-        project_name = "my-test-project"
+        project_name = test_utils.get_test_project_name()
         tmp_path = tmp_path_factory.mktemp("test")
         tmp_config_path = tmp_path / "config"
 
@@ -63,6 +70,9 @@ class TuiBase:
         )
 
         return empty_project_paths
+
+    # Helper Functions
+    # ---------------------------------------------------------------------------------
 
     def monkeypatch_print(self, _monkeypatch):
         """Calls to `print` in datashuttle crash the TUI in the
@@ -240,3 +250,105 @@ class TuiBase:
             await transfer_task
 
         await self.close_messagebox(pilot)
+
+    async def double_click_input(self, pilot, sub_or_ses, control=False):
+        """Helper function to double click input to suggest next sub or ses.
+
+        Initially this function used `double_click` on the input, but it was brittle
+        in the CI tests leading to random errors. The below mocks the double click
+        in a different way, directly interacting with the custom object that
+        manages the double click, so is hopefully more robust.
+        """
+        expand_name = "session" if sub_or_ses == "ses" else "subject"
+
+        id = f"#create_folders_{expand_name}_input"
+
+        input_widget = pilot.app.screen.query_one(id)
+        input_widget.parent.click_info.prev_click_time = 10**100
+        input_widget.parent.click_info.prev_click_widget_id = id.removeprefix(
+            "#"
+        )
+
+        click_event = Click(
+            x=0,
+            y=0,
+            delta_x=0,
+            delta_y=0,
+            button=1,  # Left mouse button
+            shift=False,
+            meta=False,
+            ctrl=control,
+            widget=input_widget,
+        )
+
+        input_widget._on_click(click_event)
+
+        await pilot.pause(10)  # long pause required for testing on CI
+
+        await test_utils.await_task_by_name_if_present(
+            f"suggest_next_{sub_or_ses}_async_task"
+        )
+
+    # Shared checks
+    # ---------------------------------------------------------------------------------
+
+    async def check_next_sub_ses_in_tui(self, project):
+        """A central function for testing next sub / ses in the TUI.
+
+        This test is shared between ssh, aws and gdrive tests that
+        use the same logic to test the get next sub / ses functionality.
+
+        First, sub / ses folders are created in the project and uploaded
+        centrally. Then, the folders are removed  from the local path.
+        In this way, we can be use that `include_central` (which searches
+        the remote for the next sub / ses) is behaving correctly and not just
+        reading the local path.
+
+        Because sub-001 is created, the suggested sub we expect is sub-002.
+        Because ses-002 is created in sub-001, the suggested ses we expect is ses-003.
+        """
+        test_utils.make_local_folders_with_files_in(
+            project, "rawdata", "sub-001", ["ses-001", "ses-002"]
+        )
+        project.upload_entire_project()
+
+        shutil.rmtree(project.get_local_path())
+
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+            await self.check_and_click_onto_existing_project(
+                pilot, project.project_name
+            )
+
+            # Turn on the central checkbox
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_button"
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#suggest_next_sub_ses_central_checkbox"
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_close_button"
+            )
+
+            await self.fill_input(
+                pilot, "#create_folders_subject_input", "sub-001"
+            )
+
+            await self.double_click_input(pilot, "ses")
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_session_input"
+                ).value
+                == "ses-003"
+            )
+
+            await self.double_click_input(pilot, "sub")
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_subject_input"
+                ).value
+                == "sub-002"
+            )

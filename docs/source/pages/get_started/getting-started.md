@@ -94,7 +94,7 @@ We need to set the:
 
 ``datashuttle`` supports connecting to the central storage machine
 either as a mounted drive or through SHH. \
-See [Set up configs for transfer(set-up-a-project-for-transfer)
+See [Set up configs for transfer](set-up-a-project-for-transfer)
 for detailed instructions for
 connecting a mounted drive or by using SSH.
 
@@ -198,7 +198,7 @@ from datashuttle import DataShuttle
 project = DataShuttle("my_first_project")
 ```
 
-Next, we will use the `make_config_file()` method set the
+Next, we will use the [](make_config_file()) method set the
 configurations ('configs') for our project.
 
 
@@ -220,7 +220,7 @@ project.make_config_file(
 )
 ```
 
-If you want to change any config in the future, use the `update_config_file()` method
+If you want to change any config in the future, use the [](update_config_file()) method
 
 ```python
 project.update_config_file(
@@ -315,12 +315,12 @@ we only create `behav` and `ephys` folders.
 ```{image} /_static/screenshots/tutorial-1-create-datatype-dark.png
    :align: center
    :class: only-dark
-   :width: 400px
+   :width: 375px
 ```
 ```{image} /_static/screenshots/tutorial-1-create-datatype-light.png
    :align: center
    :class: only-light
-   :width: 400px
+   :width: 375px
 ```
 <br>
 
@@ -328,7 +328,7 @@ Finally, click `Create Folders` to create the project folders.
 :::
 :::{tab-item} Python API
 :sync: python
-We will create project folders with the `create_folders()` method.
+We will create project folders with the [](create_folders()) method.
 
 Following the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/)
 style we will  call the first subject `sub-001`. Additional key-value pairs
@@ -360,8 +360,8 @@ An error will be raised if names break with the specification and
 the folders will not be created.
 ```
 
-Two useful methods to automate folder creation are `get_next_sub()` and
-`get_next_ses()`. These can be used to automatically get the next subject
+Two useful methods to automate folder creation are [](get_next_sub()) and
+[](get_next_ses()). These can be used to automatically get the next subject
 and session names in a project.
 
 To get the next subject  in this project (`sub-002`) and the next
@@ -387,7 +387,7 @@ to the central project folder (`False` by default).
 
 This was a quick overview of creating folders—see
 and [How to use Create Folder Tags](how-to-create-folders) for full details
-including additional customisation with [Name Templates](how-to-use-name-templates).
+including additional customisation with [Validation Templates](how-to-use-validation-templates).
 
 ## Exploring folders
 
@@ -450,7 +450,7 @@ Finally, hover the mouse over the `Directory Tree` and press `CTRL+R` to refresh
 :::{tab-item} Python API
 :sync: python
 
-`create_folders()` returns the full filepaths of created datatype folders.
+[](create_folders()) returns the full filepaths of created datatype folders.
 
 These can be used in acquisition scripts to save data to these folders:
 
@@ -543,7 +543,7 @@ Next, we will use `Custom` transfers to move only a subset of the dataset.
 :::{tab-item} Python API
 :sync: python
 
-`upload_entire_project()` is a high level method that uploads all files
+[](upload_entire_project()) is a high level method that uploads all files
 in the project.
 This includes both the `rawdata` and `derivatives` top-level folders—see the
 [NeuroBlueprint specification](https://neuroblueprint.neuroinformatics.dev/latest/specification.html)
@@ -560,7 +560,7 @@ All files will be uploaded from the local version of the project to central stor
 Navigating to the `central_path` in your systems file browser, the newly transferred data
 will have appeared.
 
-Other methods (e.g. `upload_rawdata()` and `upload_custom()`) provide customisable
+Other methods (e.g. [](upload_rawdata()) and [](upload_custom())) provide customisable
 transfers (and every `upload` method has an equivalent `download` method).
 
 See the  [How to Transfer Data](how-to-transfer-data) page for full details
@@ -683,8 +683,8 @@ of files will now be available in the **local path**.
 :::{tab-item} Python API
 :sync: python
 
-We will use the `download_custom()` method (the download equivalent method of
-the `upload_custom()`).
+We will use the [](download_custom()) method (the download equivalent method of
+the [](upload_custom())).
 
 Convenience tags can be used to make downloading subsets of data easier:
 

@@ -2,14 +2,27 @@ import os
 
 import pytest
 
+from datashuttle import DataShuttle
 from datashuttle.tui.app import TuiApp
 from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 from datashuttle.utils import rclone, utils
 
-from ..tui_base import TuiBase
+from ... import test_utils
+from ...tests_tui.tui_base import TuiBase
+from . import aws_test_utils
 
 
+@pytest.mark.skipif(
+    not aws_test_utils.has_aws_environment_variables(),
+    reason="AWS set up environment variables must be set.",
+)
 class TestTuiSetupAws(TuiBase):
+    """
+    Set up the connection to AWS via the TUI. These tests require
+    environment variables to be set to allow the full set up,
+    like other transfer tests.
+    """
+
     @pytest.fixture(scope="function")
     def central_path_and_project(self, setup_project_paths):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
@@ -20,10 +33,18 @@ class TestTuiSetupAws(TuiBase):
 
         yield central_path, project_name
 
-        rclone.call_rclone(f"purge central_{project_name}_aws:{central_path}")
+        project = DataShuttle(project_name)
+
+        rclone.call_rclone_for_central_connection(
+            project.cfg,
+            f"purge central_{project_name}_aws:{central_path} {rclone.get_config_arg(project.cfg)}",
+        )
 
     @pytest.mark.asyncio
-    async def test_aws_connection_setup(self, central_path_and_project):
+    @pytest.mark.parametrize("set_encryption", [True, False])
+    async def test_aws_connection_setup(
+        self, central_path_and_project, set_encryption
+    ):
         """Test AWS connection setup via the TUI.
 
         AWS connection details are filled in the configs tab. The setup
@@ -47,10 +68,51 @@ class TestTuiSetupAws(TuiBase):
             )
 
             assert (
-                "AWS Connection Successful!"
-                in pilot.app.screen.query_one(
-                    "#setup_aws_messagebox_message"
-                ).renderable
+                "Would you like to encrypt the RClone config file"
+                in pilot.app.screen.query_one("#setup_aws_messagebox_message")
+                .render()
+                .plain
+            )
+
+            if set_encryption:
+                await self.scroll_to_click_pause(pilot, "#setup_aws_ok_button")
+
+                assert (
+                    "The Rclone config file was successfully encrypted. Setup complete!"
+                    in pilot.app.screen.query_one(
+                        "#setup_aws_messagebox_message"
+                    )
+                    .render()
+                    .plain
+                )
+
+                project = pilot.app.screen.interface.project
+
+                test_utils.check_rclone_file_is_encrypted(
+                    project.cfg.rclone.get_rclone_central_connection_config_filepath()
+                )
+
+            else:
+                await self.scroll_to_click_pause(
+                    pilot, "#setup_aws_encryption_no_button"
+                )
+
+                assert (
+                    "AWS Connection Successful!"
+                    in pilot.app.screen.query_one(
+                        "#setup_aws_messagebox_message"
+                    )
+                    .render()
+                    .plain
+                )
+
+            await self.scroll_to_click_pause(pilot, "#setup_aws_ok_button")
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#configs_go_to_project_screen_button"
+                ).visible
+                is True
             )
 
     @pytest.mark.asyncio
@@ -75,9 +137,9 @@ class TestTuiSetupAws(TuiBase):
 
             assert (
                 "AWS setup failed. Please check your configs and secret access key"
-                in pilot.app.screen.query_one(
-                    "#setup_aws_messagebox_message"
-                ).renderable
+                in pilot.app.screen.query_one("#setup_aws_messagebox_message")
+                .render()
+                .plain
             )
 
     async def setup_aws_project_and_run_connection_setup(
@@ -93,18 +155,18 @@ class TestTuiSetupAws(TuiBase):
         # Start connection setup
         assert (
             "Ready to setup AWS connection. Press OK to proceed"
-            in pilot.app.screen.query_one(
-                "#setup_aws_messagebox_message"
-            ).renderable
+            in pilot.app.screen.query_one("#setup_aws_messagebox_message")
+            .render()
+            .plain
         )
         await self.scroll_to_click_pause(pilot, "#setup_aws_ok_button")
 
         # Fill secret access key
         assert (
             "Please Enter your AWS Secret Access Key"
-            in pilot.app.screen.query_one(
-                "#setup_aws_messagebox_message"
-            ).renderable
+            in pilot.app.screen.query_one("#setup_aws_messagebox_message")
+            .render()
+            .plain
         )
         await self.fill_input(
             pilot,

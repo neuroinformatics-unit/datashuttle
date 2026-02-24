@@ -13,21 +13,20 @@ from typing import (
     Optional,
 )
 
-from datashuttle.configs import (
-    canonical_configs,
-)
+from datashuttle.configs import canonical_configs, canonical_folders
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import (
     validation,
 )
 
 
-def quick_validate_project(
+def validate_project_from_path(
     project_path: str | Path,
     top_level_folder: Optional[TopLevelFolder] = "rawdata",
     display_mode: DisplayMode = "warn",
     strict_mode: bool = False,
-    name_templates: Optional[Dict] = None,
+    validation_templates: Optional[Dict] = None,
+    allow_letters_in_sub_ses_values: bool = False,
 ) -> List[str]:
     """Perform validation on a NeuroBlueprint-formatted project.
 
@@ -53,10 +52,17 @@ def quick_validate_project(
         any folder not prefixed with sub-, ses- or a valid datatype will
         raise a validation issue.
 
-    name_templates
+    validation_templates
         A dictionary of templates for subject and session name
-        to validate against. See ``DataShuttle.set_name_templates()``
+        to validate against. See ``DataShuttle.set_validation_templates()``
         for details.
+
+    allow_letters_in_sub_ses_values
+        If `True`, any alphanumeric character are allowed for the values associated
+        with sub- or ses-  keys. Otherwise, values must be integer
+        and the following additional checks are performed:
+
+        - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
 
     Returns
     -------
@@ -77,6 +83,8 @@ def quick_validate_project(
 
     # Create some mock configs for the validation call,
     # then for each top-level folder, run the validation
+    # Note `get_internal_datashuttle_from_path` generates a placeholder
+    # folder path but this is not actually created.
     placeholder_configs = {
         key: None for key in canonical_configs.get_canonical_configs().keys()
     }
@@ -84,7 +92,7 @@ def quick_validate_project(
 
     cfg = Configs(
         project_name=project_path.name,
-        file_path=None,  # type: ignore
+        file_path=canonical_folders.get_internal_datashuttle_from_path(),
         input_dict=placeholder_configs,
     )
 
@@ -93,8 +101,9 @@ def quick_validate_project(
         top_level_folder_list=top_level_folders_to_validate,
         include_central=False,
         display_mode=display_mode,
-        name_templates=name_templates,
+        validation_templates=validation_templates,
         strict_mode=strict_mode,
+        allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
     )
 
     return error_messages

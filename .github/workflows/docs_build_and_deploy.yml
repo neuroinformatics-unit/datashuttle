@@ -14,12 +14,19 @@ on:
   pull_request:
   workflow_dispatch:
 
+# Cancel in-progress runs if a new run is triggered, except for main branch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   build_sphinx_docs:
     name: Build Sphinx Docs
     runs-on: ubuntu-latest
     steps:
-      - uses: neuroinformatics-unit/actions/build_sphinx_docs@v2
+      - uses: neuroinformatics-unit/actions/build_sphinx_docs@main
+        with:
+          use-artifactci: lazy
 
   deploy_sphinx_docs:
     name: Deploy Sphinx Docs

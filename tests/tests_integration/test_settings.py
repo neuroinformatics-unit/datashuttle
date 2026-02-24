@@ -13,43 +13,43 @@ from ..base import BaseTest
 
 class TestPersistentSettings(BaseTest):
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
-    def test_persistent_settings_name_templates(self, project):
-        """Test the 'name_templates' option that is stored in persistent
+    def test_persistent_settings_validation_templates(self, project):
+        """Test the 'validation_templates' option that is stored in persistent
         settings and adds a regexp to validate subject and session
         names against.
 
-        Here we test the mechanisms of getting and setting `name_templates`
+        Here we test the mechanisms of getting and setting `validation_templates`
         and then check that all validation are performing as expected when
         using them.
         """
-        # Load name_templates and check defaults are as expected
-        name_templates = project.get_name_templates()
+        # Load validation_templates and check defaults are as expected
+        validation_templates = project.get_validation_templates()
 
-        assert len(name_templates) == 3
-        assert name_templates["on"] is False
-        assert name_templates["sub"] is None
-        assert name_templates["ses"] is None
+        assert len(validation_templates) == 3
+        assert validation_templates["on"] is False
+        assert validation_templates["sub"] is None
+        assert validation_templates["ses"] is None
 
         # Set some new settings and check they become persistent
         sub_regexp = r"sub-\d_id-.?.?_random-.*"
         ses_regexp = r"ses-\d\d_id-.?.?.?_random-.*"
 
-        new_name_templates = {
+        new_validation_templates = {
             "on": True,
             "sub": sub_regexp,
             "ses": ses_regexp,
         }
 
-        project.set_name_templates(new_name_templates)
+        project.set_validation_templates(new_validation_templates)
 
         project_reload = test_utils.make_project(project.project_name)
 
-        reload_name_templates = project_reload.get_name_templates()
+        reload_validation_templates = project_reload.get_validation_templates()
 
-        assert len(reload_name_templates) == 3
-        assert reload_name_templates["on"] is True
-        assert reload_name_templates["sub"] == sub_regexp
-        assert reload_name_templates["ses"] == ses_regexp
+        assert len(reload_validation_templates) == 3
+        assert reload_validation_templates["on"] is True
+        assert reload_validation_templates["sub"] == sub_regexp
+        assert reload_validation_templates["ses"] == ses_regexp
 
         # Check the validation works correctly based on settings
         # when making sub / ses folders
@@ -96,7 +96,7 @@ class TestPersistentSettings(BaseTest):
                 ses_names=None,
                 include_central=False,
                 display_mode="error",
-                name_templates=reload_name_templates,
+                validation_templates=reload_validation_templates,
             )
         assert "does not match the template:" in str(e.value)
 
@@ -110,10 +110,10 @@ class TestPersistentSettings(BaseTest):
 
         assert "sub-3_id-abC_random-helloworld" in str(e.value)
 
-        # Turn it off the `name_template` option
+        # Turn it off the `validation_template` option
         # and check a bad ses name does not raise
-        reload_name_templates["on"] = False
-        project.set_name_templates(reload_name_templates)
+        reload_validation_templates["on"] = False
+        project.set_validation_templates(reload_validation_templates)
 
         project.create_folders("rawdata", good_sub, "ses-02")
 
@@ -153,7 +153,7 @@ class TestPersistentSettings(BaseTest):
 
         project = test_utils.make_project(project.project_name)
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(Exception) as e:
             project.create_folders("rawdata", "sub-@@@")
 
         assert (
@@ -179,6 +179,7 @@ class TestPersistentSettings(BaseTest):
                 "custom_transfer": "rawdata",
             },
             "bypass_validation": False,
+            "allow_letters_in_sub_ses_values": False,
             "overwrite_existing_files": "never",
             "dry_run": False,
             "suggest_next_sub_ses_central": False,
@@ -219,6 +220,7 @@ class TestPersistentSettings(BaseTest):
                 "custom_transfer": "derivatives",
             },
             "bypass_validation": True,
+            "allow_letters_in_sub_ses_values": True,
             "overwrite_existing_files": "always",
             "dry_run": True,
             "suggest_next_sub_ses_central": True,

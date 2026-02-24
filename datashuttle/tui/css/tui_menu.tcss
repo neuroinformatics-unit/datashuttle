@@ -246,11 +246,13 @@ MessageBox:light > #messagebox_top_container {
     margin: 2 1 0 0;
     dock: left;
 }
-
-
-#configs_go_to_project_screen_button {
+#configs_setup_connection_button {
     margin: 2 1 0 0;
 }
+#configs_go_to_project_screen_button {
+    margin: 2 1 0 8;
+}
+
 #configs_container > DatatypeCheckboxes {
     layout: grid;
     grid-size: 2 2;
@@ -314,25 +316,42 @@ config label and button align center */
 #validate_top_container {
     align: center top;
     content-align: center top;
-    margin: 2 0 0 0;
+    margin: 2 0 1 0;
     layout: vertical;
     overflow: hidden auto;
 }
 
-
 #validate_arguments_horizontal{
    height: auto;
-   margin: 0 1 1 1;
+   margin: 0 1 1 0;
 }
 
 #validate_top_level_folder_select {
     width: 30%;
+    margin: 0 0 0 1;
+}
+
+#validate_path_label {
+    margin: 0 0 0 2;
 }
 
 #validate_path_input {
     width: 80%;
     margin: 1 1 1 1;
 }
+
+#validate_allow_letters_in_sub_ses_values_checkbox {
+    margin: 0 0 0 6;
+}
+
+#validate_strict_mode_checkbox {
+    margin: 0 0 0 1;
+}
+
+#validate_include_central_checkbox {
+    margin: 0 6 0 1
+}
+
 
 #validate_select_button {
     margin: 1 1 1 1;
@@ -387,12 +406,8 @@ DisplayedDatatypesScreen {
 CreateFoldersSettingsScreen {
     align: center middle;
 }
-
-#labelTESTEST {
-    padding: 1 0 1 2;
-}
-#tabscreen_toplevel_select {
-    padding: 0 0 0 1;
+#create_folders_settings_toplevel_label {
+    margin: 1 0 0 2;
 }
 #create_tab_settings_outer_container {
     height: 80%;
@@ -401,26 +416,30 @@ CreateFoldersSettingsScreen {
     border: tall $panel-lighten-3;
 }
 #checkbox_container {
-    height: 65%;
+    height: 80%;
     overflow: hidden auto;
 }
-#toplevel_folder_select_container {
-    height: 15%;
+#create_folders_settings_allow_letters_in_checkbox {
+    padding: 0 6;
+}
+#create_folders_settings_checkbox_outer_container {
+    margin: 0 0 0 0;
 }
 #template_top_container {
-    height: 70%;
+    height: 75%;
     background: $primary-background;
     border: tall $panel-lighten-3;
     overflow: hidden auto;
- }
+}
+
 #template_inner_horizontal_container{
     height: 3;
 }
 
- #template_inner_container {
+#template_inner_container {
     height: 15;
     overflow: auto;
- }
+}
 
 #template_message_label {
     width: auto;
@@ -470,7 +489,7 @@ CreateFoldersSettingsScreen {
     background: $boost;
  }
 
- #template_settings_radioset:light:disabled {
+#template_settings_radioset:light:disabled {
     color: $panel-darken-2;
 }
 
@@ -481,6 +500,10 @@ CreateFoldersSettingsScreen {
 
 #template_settings_input:light:disabled {
     color: $panel-darken-2;
+}
+
+#create_folders_settings_close_button {
+    margin: 1 0 0 0;
 }
 
 /* Confirmation Screen --------------------------------------------------------------------- */
@@ -624,6 +647,11 @@ AcceptOrDeclineMessageBox {
     background: $primary-background;
  }
 
+#accept_or_decline_horizontal {
+    align: center middle;
+    width: 100%;
+}
+
  AcceptOrDeclineMessageBox:light > #accept_or_decline_messagebox_container {
     border: tall $panel-darken-3;
     background: $boost;
@@ -633,7 +661,7 @@ AcceptOrDeclineMessageBox {
     align: center middle;
     text-align: center;
     width: 100%;
-    margin: 0 0 1 2;
+    margin: 2 0 1 1;
  }
 
 #accept_or_decline_messagebox_accept_button {

@@ -5,13 +5,15 @@ import os
 from datashuttle import DataShuttle
 from datashuttle.utils import gdrive, utils
 
+from .. import transfer_test_utils
+
 
 def setup_project_for_gdrive(project: DataShuttle):
     """Set up a project with configs for Google Drive transfers.
 
     The connection credentials are fetched from the environment which
     the developer shall set themselves to test locally. In the CI, these
-    are set using the github secrets. A random string is added to the
+    are set using the GitHub secrets. A random string is added to the
     central path so that the test project paths do not interfere while
     running multiple test instances simultaneously in CI.
     """
@@ -35,14 +37,26 @@ def setup_gdrive_connection(project: DataShuttle):
     connection without a browser. The credentials are set in the environment
     by the CI. To run tests locally, the developer must set them themselves.
     """
-    state = {"first": True}
+    state = {"count": 0}
 
     def mock_input(_: str) -> str:
-        if state["first"]:
-            state["first"] = False
-            return "n"
+        # Before this function runs, the client secret will already
+        # be entered as we monkeypatch the function below.
+        if state["count"] == 0:
+            # Are you running datashuttle on a machine with access to a web browser? (y/n)
+            return_value = "n"
+            state["count"] += 1
+        elif state["count"] == 1:
+            # Execute the following on the machine with the web browser... Then paste the result.
+            return_value = os.environ["GDRIVE_CONFIG_TOKEN"]
+            state["count"] += 1
+        elif state["count"] == 2:
+            # Would you like to encrypt the RClone config file using...?
+            return_value = "y"
         else:
-            return os.environ["GDRIVE_CONFIG_TOKEN"]
+            raise ValueError(f"return count is {state['count']}")
+
+        return return_value
 
     original_input = copy.deepcopy(builtins.input)
     builtins.input = mock_input  # type: ignore
@@ -51,8 +65,24 @@ def setup_gdrive_connection(project: DataShuttle):
     gdrive.get_client_secret = lambda *args, **kwargs: os.environ[
         "GDRIVE_CLIENT_SECRET"
     ]
-
-    project.setup_google_drive_connection()
+    project.setup_gdrive_connection()
 
     builtins.input = original_input
     gdrive.get_client_secret = original_get_secret
+
+
+def has_gdrive_environment_variables():
+    """Check for environment variables needed to run GDrive tests.
+
+    Environment variables can be stored in a `.env` file in the
+    project root, for use with `python-dotenv`. Otherwise,
+    they are set up in GitHub actions.
+    """
+    required_variables = [
+        "GDRIVE_CLIENT_ID",
+        "GDRIVE_ROOT_FOLDER_ID",
+        "GDRIVE_CONFIG_TOKEN",
+        "GDRIVE_CLIENT_SECRET",
+    ]
+
+    return transfer_test_utils.check_if_env_vars_are_loaded(required_variables)

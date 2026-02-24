@@ -6,6 +6,10 @@ from ..base_transfer import BaseTransfer
 from . import gdrive_test_utils
 
 
+@pytest.mark.skipif(
+    not gdrive_test_utils.has_gdrive_environment_variables(),
+    reason="Google Drive set up environment variables must be set.",
+)
 class TestGdriveTransfer(BaseTransfer):
     @pytest.fixture(
         scope="class",
@@ -25,8 +29,9 @@ class TestGdriveTransfer(BaseTransfer):
 
         yield [pathtable, project]
 
-        rclone.call_rclone(
-            f"purge central_{project.project_name}_gdrive:{project.cfg['central_path'].parent}"
+        rclone.call_rclone_for_central_connection(
+            project.cfg,
+            f"purge central_{project.project_name}_gdrive:{project.get_central_path()} {rclone.get_config_arg(project.cfg)}",
         )
 
     @pytest.mark.parametrize(

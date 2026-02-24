@@ -16,12 +16,19 @@ from textual.widgets import (
     Static,
 )
 
+from datashuttle.utils import rclone_encryption
+
 
 class SetupSshScreen(ModalScreen):
     """Dialog window that sets up an SSH connection.
 
-    This asks to confirm the central hostkey, and takes password to setup
-    SSH key pair. Under the hood uses `project.setup_ssh_connection()`.
+    This asks to confirm the central hostkey, and takes password to set up
+    SSH key pair as well as encrypting the RClone config.
+
+    Due to how textual works, it is simpler for each button press to
+    trigger an action (e.g. set up host key) and then set up the widgets
+    for the next screen. Then, when the next button is pressed, we can
+    continue in this way of managing the screens.
     """
 
     def __init__(self, interface: Interface) -> None:
@@ -29,7 +36,7 @@ class SetupSshScreen(ModalScreen):
         super(SetupSshScreen, self).__init__()
 
         self.interface = interface
-        self.stage = 0
+        self.stage = "init"
         self.failed_password_attempts = 1
 
         self.key: paramiko.RSAKey
@@ -57,7 +64,7 @@ class SetupSshScreen(ModalScreen):
         """Update widgets immediately after they are mounted."""
         self.query_one("#setup_ssh_password_input").visible = False
 
-    def on_button_pressed(self, event: Button.pressed) -> None:
+    def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle button press on the SetupSshScreen.
 
         When each stage is successfully progressed by clicking the "ok" button,
@@ -67,20 +74,29 @@ class SetupSshScreen(ModalScreen):
         input, multiple attempts are allowed.
         """
         if event.button.id == "setup_ssh_cancel_button":
-            self.dismiss()
+            if self.stage == "set_up_encryption":
+                self.show_connection_successful_message()
+            else:
+                self.dismiss(False)
 
         if event.button.id == "setup_ssh_ok_button":
-            if self.stage == 0:
+            if self.stage == "init":
                 self.ask_user_to_accept_hostkeys()
 
-            elif self.stage == 1:
+            elif self.stage == "save_hostkeys":
                 self.save_hostkeys_and_prompt_password_input()
 
-            elif self.stage == 2:
+            elif self.stage == "setup_and_ask_for_encryption":
                 self.use_password_to_setup_ssh_key_pairs()
 
-            elif self.stage == 3:
-                self.dismiss()
+            elif self.stage == "set_up_encryption":
+                self.try_setup_rclone_encryption()
+
+            elif self.stage == "show_success_message":
+                self.show_connection_successful_message()
+
+            elif self.stage == "finished":
+                self.dismiss(True)
 
     def ask_user_to_accept_hostkeys(self) -> None:
         """Ask the user to accept the hostkey that identifies the central server.
@@ -112,7 +128,7 @@ class SetupSshScreen(ModalScreen):
             self.query_one("#setup_ssh_ok_button").disabled = True
 
         self.query_one("#messagebox_message_label").update(message)
-        self.stage += 1
+        self.stage = "save_hostkeys"
 
     def save_hostkeys_and_prompt_password_input(self) -> None:
         """Get the user password for the central server.
@@ -137,13 +153,14 @@ class SetupSshScreen(ModalScreen):
             self.query_one("#setup_ssh_ok_button").disabled = True
 
         self.query_one("#messagebox_message_label").update(message)
-        self.stage += 1
+        self.stage = "setup_and_ask_for_encryption"
 
     def use_password_to_setup_ssh_key_pairs(self) -> None:
-        """Get the user password for the central server.
+        """Set up the SSH key pair using the user-supplied password to the central server.
 
-        If correct, SSH key pair is set up and 'OK' button changed
-        to 'Finish'. Otherwise, continue allowing failed password attempts.
+        Next, set up the request asking if they would like to set
+        a (separate) password on their RClone config, using the
+        system credential manager.
         """
         password = self.query_one("#setup_ssh_password_input").value
 
@@ -153,14 +170,19 @@ class SetupSshScreen(ModalScreen):
 
         if success:
             message = (
-                f"Connection successful! SSH key "
-                f"saved to {self.interface.get_configs().ssh_key_path}"
+                f"Connection set up successfully.\n"
+                f"{rclone_encryption.get_explanation_message(self.interface.project.cfg)}"
             )
-            self.query_one("#setup_ssh_ok_button").label = "Finish"
-            self.query_one("#setup_ssh_cancel_button").disabled = True
-            self.stage += 1
+            self.query_one("#setup_ssh_ok_button").label = "Yes"
+            self.query_one("#setup_ssh_cancel_button").label = "No"
+            self.query_one("#setup_ssh_password_input").visible = False
+            self.stage = (
+                "set_up_encryption"  # Go to rclone encryption set up screen
+            )
 
         else:
+            if password != "":
+                output = output.replace(password, "[REDACTED]")
             message = (
                 f"Password setup failed. Check password is correct and try again."
                 f"\n\n{self.failed_password_attempts} failed password attempts."
@@ -169,3 +191,38 @@ class SetupSshScreen(ModalScreen):
             self.failed_password_attempts += 1
 
         self.query_one("#messagebox_message_label").update(message)
+
+    def try_setup_rclone_encryption(self):
+        """Try and encrypt the RClone config using the system credential manager.
+
+        If successful, the next screen confirms success.
+        """
+        success, output = self.interface.try_setup_rclone_encryption()
+
+        if success:
+            message = "Rclone config file was successfully encrypted."
+            self.query_one("#messagebox_message_label").update(message)
+            self.query_one("#setup_ssh_ok_button").label = "Ok"
+            self.query_one("#setup_ssh_cancel_button").remove()
+        else:
+            message = f"{output}\n\nTo try and encrypt the config file again, re-run the connection set up."
+            self.query_one("#messagebox_message_label").update(message)
+            self.query_one("#setup_ssh_ok_button").label = "Ok"
+            self.query_one("#setup_ssh_cancel_button").remove()
+
+        self.stage = "show_success_message"
+
+    def show_connection_successful_message(self):
+        """Show the final screen indicating the connection was successfully set up."""
+        self.query_one("#setup_ssh_ok_button").label = "Finish"
+
+        # Depending on what was the previous screen, `setup_ssh_cancel_button`
+        # may or may not be displayed.
+        try:
+            self.query_one("#setup_ssh_cancel_button").remove()
+        except BaseException:
+            pass
+
+        message = "Connection was set up successfully."
+        self.query_one("#messagebox_message_label").update(message)
+        self.stage = "finished"

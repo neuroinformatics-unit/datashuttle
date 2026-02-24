@@ -32,7 +32,7 @@ class TestTuiLocalOnlyProject(TuiBase):
             assert pilot.app.screen.interface.project.cfg == {
                 "local_path": local_path / project_name,
                 "central_path": None,
-                "connection_method": None,
+                "connection_method": "local_only",
                 "central_host_id": None,
                 "central_host_username": None,
                 "gdrive_client_id": None,
@@ -95,9 +95,9 @@ class TestTuiLocalOnlyProject(TuiBase):
 
             assert (
                 "The project type was changed from local to full."
-                in pilot.app.screen.query_one(
-                    "#messagebox_message_label"
-                ).renderable
+                in pilot.app.screen.query_one("#messagebox_message_label")
+                .render()
+                .plain
             )
             await self.close_messagebox(pilot)
 
@@ -160,9 +160,9 @@ class TestTuiLocalOnlyProject(TuiBase):
 
             assert (
                 "The project type was changed from full to local"
-                in pilot.app.screen.query_one(
-                    "#messagebox_message_label"
-                ).renderable
+                in pilot.app.screen.query_one("#messagebox_message_label")
+                .render()
+                .plain
             )
 
             await self.close_messagebox(pilot)
@@ -179,7 +179,7 @@ class TestTuiLocalOnlyProject(TuiBase):
             assert pilot.app.screen.interface.project.cfg == {
                 "local_path": local_path / project_name,
                 "central_path": None,
-                "connection_method": None,
+                "connection_method": "local_only",
                 "central_host_id": None,
                 "central_host_username": None,
                 "gdrive_client_id": None,

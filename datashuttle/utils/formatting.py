@@ -19,8 +19,9 @@ from datashuttle.utils import utils, validation
 def check_and_format_names(
     names: Union[list, str],
     prefix: Prefix,
-    name_templates: Optional[Dict] = None,
+    validation_templates: Optional[Dict] = None,
     bypass_validation: bool = False,
+    allow_letters_in_sub_ses_values: bool = False,
 ) -> List[str]:
     """Format a list of subject or session names.
 
@@ -44,14 +45,17 @@ def check_and_format_names(
     prefix
         "sub" or "ses" - this defines the prefix checks.
 
-    name_templates
+    validation_templates
         A dictionary of templates to validate subject and session name against.
-        e.g. {"name_templates": {"on": False, "sub": None, "ses": None}}
+        e.g. {"validation_templates": {"on": False, "sub": None, "ses": None}}
         where the "sub" and "ses" may contain a regexp to validate against.
 
     bypass_validation
         If `True`, NeuroBlueprint validation will be performed
         on the passed names.
+
+    allow_letters_in_sub_ses_values
+        If `True`, alphanumeric values will not raise an error.
 
     Returns
     -------
@@ -80,7 +84,8 @@ def check_and_format_names(
         error_messages = validation.validate_list_of_names(
             formatted_names,
             prefix,
-            name_templates=name_templates,
+            validation_templates=validation_templates,
+            allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
         )
         for message in error_messages:
             validation.raise_display_mode(message, "error", log=True)

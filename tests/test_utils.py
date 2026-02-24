@@ -1,7 +1,6 @@
 import asyncio
 import copy
 import glob
-import json
 import logging
 import os
 import pathlib
@@ -14,7 +13,7 @@ import yaml
 
 from datashuttle import DataShuttle
 from datashuttle.configs import canonical_configs, canonical_folders
-from datashuttle.utils import ds_logger, rclone
+from datashuttle.utils import ds_logger
 
 # -----------------------------------------------------------------------------
 # Setup and Teardown Test Project
@@ -40,11 +39,7 @@ def setup_project_default_configs(
 
     project.make_config_file(**default_configs)
 
-    rclone.setup_rclone_config_for_ssh(
-        project.cfg,
-        project.cfg.get_rclone_config_name("ssh"),
-        project.cfg.ssh_key_path,
-    )
+    project._setup_rclone_central_local_filesystem_config()
 
     if local_path:
         os.makedirs(local_path, exist_ok=True)
@@ -334,7 +329,13 @@ def check_datatype_sub_ses_uploaded_correctly(
 
 
 def make_and_check_local_project_folders(
-    project, top_level_folder, subs, sessions, datatype, datatypes_used=None
+    project,
+    top_level_folder,
+    subs,
+    sessions,
+    datatype,
+    datatypes_used=None,
+    allow_letters_in_sub_ses_values=False,
 ):
     """Make a local project folder tree with the specified datatype,
     subs, sessions and check it is made successfully.
@@ -347,7 +348,12 @@ def make_and_check_local_project_folders(
         datatypes_used = get_all_broad_folders_used()
 
     make_local_folders_with_files_in(
-        project, top_level_folder, subs, sessions, datatype
+        project,
+        top_level_folder,
+        subs,
+        sessions,
+        datatype,
+        allow_letters_in_sub_ses_values,
     )
 
     check_folder_tree_is_correct(
@@ -359,9 +365,20 @@ def make_and_check_local_project_folders(
 
 
 def make_local_folders_with_files_in(
-    project, top_level_folder, subs, sessions=None, datatype=""
+    project,
+    top_level_folder,
+    subs,
+    sessions=None,
+    datatype="",
+    allow_letters_in_sub_ses_values=False,
 ):
-    project.create_folders(top_level_folder, subs, sessions, datatype)
+    project.create_folders(
+        top_level_folder,
+        subs,
+        sessions,
+        datatype,
+        allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
+    )
     for root, dirs, _ in os.walk(project.cfg["local_path"]):
         if not dirs:
             path_ = Path(root) / "placeholder_file.txt"
@@ -415,36 +432,11 @@ def check_config_file(config_path, *kwargs):
             assert value == config_yaml[name], f"{name}"
 
 
-# -----------------------------------------------------------------------------
-# Search
-# -----------------------------------------------------------------------------
+def check_rclone_file_is_encrypted(rclone_config_path):
+    with open(rclone_config_path, "r", encoding="utf-8") as file:
+        first_line = file.readline().strip()
 
-
-def recursive_search_central(project: DataShuttle):
-    """
-    A convenience function to search project for files on remote folders
-    using rclone's recursive search.
-    """
-    all_filenames: list[str] = []
-
-    path_ = (project.cfg["central_path"] / "rawdata").as_posix()
-
-    # -R flag searches recursively
-    output = rclone.call_rclone(
-        f"lsjson -R {project.cfg.get_rclone_config_name()}:{path_}",
-        pipe_std=True,
-    )
-
-    all_files_or_folders = json.loads(output.stdout)
-
-    for file_or_folder in all_files_or_folders:
-        is_dir = file_or_folder.get("IsDir", False)
-
-        if not is_dir:
-            file_path = file_or_folder["Path"]
-            all_filenames.append(f"{path_}/{file_path}")
-
-    return all_filenames
+    assert first_line == "# Encrypted rclone configuration File"
 
 
 # -----------------------------------------------------------------------------
@@ -710,3 +702,12 @@ def monkeypatch_get_datashuttle_path(tmp_config_path, _monkeypatch):
         "datashuttle.configs.canonical_folders.get_datashuttle_path",
         mock_get_datashuttle_path,
     )
+
+
+def get_test_project_name():
+    """Get a name for the test project.
+
+    A project folder will get created in the config directory
+    of the users who run the test suite. Therefore, it has
+    an obscure name to reduce the change of a clash with a real project name."""
+    return "ds-unique-test-project-d375gd234vds2f"

@@ -73,9 +73,9 @@ class TestTuiLogging(TuiBase):
             assert "create-folders" in logging_tab.latest_log_path.stem
             assert (
                 "create-folders"
-                in logging_tab.query_one(
-                    "#logging_most_recent_label"
-                ).renderable
+                in logging_tab.query_one("#logging_most_recent_label")
+                .render()
+                .plain
             )
 
             # Check log screen shows on button click

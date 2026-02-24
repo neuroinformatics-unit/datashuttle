@@ -4,4 +4,5 @@ for the purposes of this regression test. They key information is:
 1) The project is called "test_project"
 2) All create and transfer checkboxes are not displayed, except for "f2pe".
 This is so we can check the persistent settings are updated as expected.
-3) The
+3) The central and local path are set to "old_ver" and connection_method "local_filesystem"
+4) Validation template set like: {"on": True, "sub": "hello_sub", "ses": None }

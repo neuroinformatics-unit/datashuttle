@@ -7,10 +7,16 @@ on:
     tags:
       - 'v*'
   pull_request:
+
   schedule:
-    # Weekly cron job at 12:00 AM UTC on Mondays.
+    # Cron runs on the 1st and 15th of every month.
     # This will only run on main by default.
-    - cron: '0 0 * * 1'
+    - cron: "0 0 1,15 * *"
+
+# Cancel in-progress runs if a new run is triggered, except for main branch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   linting:
@@ -19,6 +25,7 @@ jobs:
       - uses: neuroinformatics-unit/actions/lint@v2
 
   test:
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     needs: [linting]
     name: ${{ matrix.os }} py${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
@@ -28,16 +35,21 @@ jobs:
         shell: bash -l {0}
 
     strategy:
+      fail-fast: true
       matrix:
         # macos-14 is M1, macos-13 is intel. Run on earliest and
         # latest python versions. All python versions are tested in
         # the weekly cron job.
-        os: [ ubuntu-latest, windows-latest, macos-14, macos-13]
-        # Test all Python versions for cron job, and only first/last for other triggers
-        python-version: ${{ fromJson(github.event_name == 'schedule' && '["3.9", "3.10", "3.11", "3.12", "3.13"]' || '["3.9", "3.13"]') }}
+         # Test all Python versions for cron job, and only first/last for other triggers
+        os: ${{ fromJson(github.event_name == 'schedule'
+              && '["ubuntu-latest","windows-latest","macos-14","macos-15-intel"]'
+              || '["ubuntu-latest","windows-latest","macos-latest"]') }}
+        python-version: ${{ fromJson(github.event_name == 'schedule'
+              && '["3.9","3.10","3.11","3.12","3.13"]'
+              || '["3.9","3.13"]') }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v3
         with:
@@ -59,6 +71,26 @@ jobs:
           python -m pip install --upgrade pip
           pip install .[dev]
 
+      - name: Install pass on Linux
+        # this is required for Rclone config encryption
+        if: runner.os == 'Linux'
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y pass gnupg git
+
+          # Create a dedicated GPG home for this job
+          export GNUPGHOME="$(mktemp -d)"
+          echo "GNUPGHOME=$GNUPGHOME" >> "$GITHUB_ENV"   # <-- make it available to later steps
+
+          # Generate a non-interactive key (no passphrase), no expiry
+          gpg --batch --yes --pinentry-mode loopback --passphrase '' \
+              --quick-gen-key "CI Key <ci@example.invalid>" default default 0
+
+          # Initialize pass with the key fingerprint (more robust than UID)
+          FPR="$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr:/ {print $10; exit}')"
+          pass init "$FPR"
+
         # run SSH tests only on Linux because Windows and macOS
         # are already run within a virtual container and so cannot
         # run Linux containers because nested containerisation is disabled.
@@ -67,6 +99,10 @@ jobs:
         run: |
           sudo service mysql stop  # free up port 3306 for ssh tests
           pytest tests/tests_transfers/ssh
+
+      - name: Test all except central connections
+        run: |
+          pytest --ignore=tests/tests_transfers/ssh --ignore=tests/tests_transfers/gdrive --ignore=tests/tests_transfers/aws
 
       - name: Test Google Drive
         env:
@@ -86,20 +122,6 @@ jobs:
         run: |
           pytest tests/tests_transfers/aws
 
-      - name: All Other Tests
-        env:
-          GDRIVE_CLIENT_ID: ${{ secrets.GDRIVE_CLIENT_ID }}
-          GDRIVE_CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
-          GDRIVE_ROOT_FOLDER_ID: ${{ secrets.GDRIVE_ROOT_FOLDER_ID }}
-          GDRIVE_CONFIG_TOKEN: ${{ secrets.GDRIVE_CONFIG_TOKEN }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
-        run: |
-          pytest --ignore=tests/tests_transfers/ssh --ignore=tests/tests_transfers/gdrive --ignore=tests/tests_transfers/aws
-
-
   build_sdist_wheels:
     name: Build source distribution
     needs: [test]
@@ -115,7 +137,7 @@ jobs:
     if: github.event_name == 'push' && github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/download-artifact@v4
+    - uses: actions/download-artifact@v7
       with:
         name: artifact
         path: dist
