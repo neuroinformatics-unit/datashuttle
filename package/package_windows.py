@@ -132,6 +132,7 @@ shutil.rmtree(launcher_subdir)
 terminal_launcher_dist_dir = dist_dir / "terminal_launcher"
 vendored_output_path = dist_dir / "_vendored" / WEZTERM_FOLDERNAME
 
+
 shutil.copytree(
     vendored_dir / WEZTERM_FOLDERNAME, vendored_output_path, dirs_exist_ok=True
 )

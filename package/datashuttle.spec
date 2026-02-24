@@ -39,6 +39,7 @@ a = Analysis(
         'textual.widgets._tab_pane',
         'textual.widgets._input',
         'textual.widgets._tree_control',
+        'rich._unicode_data.unicode17-0-0'
     ],
     hookspath=['hooks'],
     hooksconfig={},
