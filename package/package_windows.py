@@ -9,6 +9,10 @@ import packaging_utils
 # ----------------------------------------------------------------------------------------------------------------------
 
 
+# TODO: tidy up
+# TODO: reduce size a little bit
+
+
 def make_inno_setup_script(version, base_path):
     """{} are required in text so easier to use this method"""
     file_body = (
