@@ -5,6 +5,7 @@ import sys
 import platform
 from glob import glob
 from pathlib import Path
+import shutil
 
 # Include .tcss files
 tcss_files = [
@@ -16,17 +17,15 @@ tcss_files = [
 env_prefix = sys.prefix
 
 # Detect OS and set rclone path
-if platform.system() == "Windows":
-    rclone_src = os.path.join(env_prefix, "bin", "rclone.exe")
-else:
-    rclone_src = os.path.join(env_prefix, "bin", "rclone")
 
-# Verify rclone exists
-if not os.path.isfile(rclone_src):
-    raise FileNotFoundError(f"rclone binary not found at: {rclone_src}")
+rclone_src = shutil.which("rclone")
 
-# Add rclone as a binary to be bundled
-binaries = [(rclone_src, '.')]
+if rclone_src is None:
+    raise FileNotFoundError(
+        "rclone not found in PATH. Ensure it is installed before running PyInstaller."
+    )
+
+binaries = [(rclone_src, ".")]
 
 a = Analysis(
     ['datashuttle_launcher.py'],  # terminal_launcher
