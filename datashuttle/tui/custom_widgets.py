@@ -100,7 +100,7 @@ class ClickableInput(Input):
 
     def on_key(self, event: events.Key) -> None:
         """Handle keyboard press on the Input."""
-        if event.key == "ctrl+q":
+        if event.key == "ctrl+y":
             self.mainwindow.copy_to_clipboard(self.value)
 
         elif event.key == "ctrl+o":
@@ -157,6 +157,7 @@ class CustomDirectoryTree(DirectoryTree):
         if not self.has_focus:  # type: ignore
             self.focus()
 
+
     def filter_paths(self, paths: Iterable[Path]) -> Iterable[Path]:
         """Filter out all hidden folders and files from CustomDirectoryTree display.
 
@@ -184,7 +185,7 @@ class CustomDirectoryTree(DirectoryTree):
             Textual event containing information on the key press.
 
         """
-        if event.key == "ctrl+q":
+        if event.key == "ctrl+y":
             path_ = self.get_node_at_line(self.hover_line).data.path
             path_str = path_.as_posix()
             self.mainwindow.copy_to_clipboard(path_str)
