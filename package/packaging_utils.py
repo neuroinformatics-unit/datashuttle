@@ -24,7 +24,7 @@ def download_wezterm(vendored_dir, wezterm_foldername):
 
     # Step 1: Download and extract WezTerm if missing
     if not wezterm_extracted_dir.exists():
-        print("⬇ Downloading WezTerm...")
+        print("Downloading WezTerm...")
         vendored_dir.mkdir(parents=True, exist_ok=True)
         response = requests.get(wezterm_url)
         response.raise_for_status()
