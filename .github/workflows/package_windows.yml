@@ -50,7 +50,7 @@ jobs:
 
       - name: Run Windows packaging script
         run: |
-          python package_windows.py
+          python package/package_windows.py
 
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
