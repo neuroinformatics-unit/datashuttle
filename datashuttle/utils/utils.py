@@ -79,6 +79,7 @@ def raise_error(message: str, exception) -> None:
     if a function call raises an exception in a python environment.
     """
     ds_logger.close_log_filehandler()
+
     raise exception(message)
 
 

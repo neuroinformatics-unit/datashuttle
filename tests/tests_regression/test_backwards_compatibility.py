@@ -6,7 +6,7 @@ import pytest
 
 from .. import test_utils
 
-TEST_PROJECT_NAME = "test_project"
+TEST_PROJECT_NAME = test_utils.get_test_project_name()
 
 
 class TestBackwardsCompatibility:

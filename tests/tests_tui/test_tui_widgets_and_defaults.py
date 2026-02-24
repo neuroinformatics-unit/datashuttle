@@ -1075,9 +1075,9 @@ class TestTuiWidgets(TuiBase):
                 "ephys",
                 "funcimg",
                 "anat",
-                "all",
-                "all_datatype",
                 "all_non_datatype",
+                # "all" and "all_datatype" will turn off transfer datatypes
+                # and are tested separately in `test_transfer_checkboxes_dynamic_on_off()`.
             ]:
                 await self.change_checkbox(
                     pilot, f"#transfer_{datatype}_checkbox"
@@ -1102,6 +1102,68 @@ class TestTuiWidgets(TuiBase):
             self.check_datatype_checkboxes(pilot, "create", expected_create)
 
             await pilot.pause()
+
+    @pytest.mark.asyncio
+    async def test_transfer_checkboxes_dynamic_on_off(
+        self, setup_project_paths
+    ):
+        """
+        This tests that mutually exclusive checkbox options turn
+        each other off / on when set. This is necessary for transfer
+        tab custom datatypes in which some checkboxes (e.g. "all")
+        should not be selected with other (e.g. "behav").
+        """
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+            # Set up the TUI on the 'transfer' tab (custom) and
+            # open the datatype selection screen
+            await self.check_and_click_onto_existing_project(
+                pilot, project_name
+            )
+
+            await self.switch_tab(pilot, "transfer")
+            await self.scroll_to_click_pause(
+                pilot, "#transfer_custom_radiobutton"
+            )
+
+            # Create a function to reload the settings dict, refreshing the contents
+            def load_dict():
+                return pilot.app.screen.interface.project._load_persistent_settings()[
+                    "tui"
+                ]["transfer_checkboxes_on"]
+
+            # turn on "behav" checkbox, check "all" is turned off
+            assert load_dict()["all"]["on"]
+            await self.change_checkbox(pilot, "#transfer_behav_checkbox")
+            assert not load_dict()["all"]["on"]
+
+            # Turn on "all_non_datatype" checkbox, check "behav" is kept on
+            await self.change_checkbox(
+                pilot, "#transfer_all_non_datatype_checkbox"
+            )
+            assert load_dict()["all_non_datatype"]["on"]
+            assert load_dict()["behav"]["on"]
+
+            # Turn on "all_datatype" checkbox, check "behav" is turned off
+            await self.change_checkbox(
+                pilot, "#transfer_all_datatype_checkbox"
+            )
+            assert load_dict()["all_datatype"]["on"]
+            assert not load_dict()["behav"]["on"]
+
+            # Turn on "all" checkbox and check all_non_datatype and all_datatype are switched off
+            await self.change_checkbox(pilot, "#transfer_all_checkbox")
+            assert load_dict()["all"]["on"]
+            assert not load_dict()["all_datatype"]["on"]
+            assert not load_dict()["all_non_datatype"]["on"]
+
+            # Turn on "all_non_datatype" and check "all" is now off
+            await self.change_checkbox(
+                pilot, "#transfer_all_non_datatype_checkbox"
+            )
+            assert not load_dict()["all"]["on"]
 
     def check_datatype_checkboxes(self, pilot, tab, expected_on):
         assert tab in ["create", "transfer"]
@@ -1228,7 +1290,7 @@ class TestTuiWidgets(TuiBase):
                 pilot.app.screen.query_one(
                     "#transfer_subject_input"
                 ).placeholder
-                == "e.g. sub-001"
+                == "e.g. sub-001 (default: all)"
             )
 
             assert (
@@ -1241,7 +1303,7 @@ class TestTuiWidgets(TuiBase):
                 pilot.app.screen.query_one(
                     "#transfer_session_input"
                 ).placeholder
-                == "e.g. ses-001"
+                == "e.g. ses-001 (default: all)"
             )
 
             assert (

@@ -10,8 +10,10 @@ def check_if_aws_bucket_exists(cfg: Configs) -> bool:
 
     The first part of`cfg["central_path"] should be an existing bucket name.
     """
-    output = rclone.call_rclone(
-        f"lsjson {cfg.get_rclone_config_name()}:", pipe_std=True
+    output = rclone.call_rclone_for_central_connection(
+        cfg,
+        f"lsjson {cfg.rclone.get_rclone_config_name()}: {rclone.get_config_arg(cfg)}",
+        pipe_std=True,
     )
 
     files_and_folders = json.loads(output.stdout)

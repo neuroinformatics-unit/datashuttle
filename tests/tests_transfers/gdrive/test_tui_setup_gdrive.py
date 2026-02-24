@@ -2,6 +2,7 @@ import os
 
 import pytest
 
+from datashuttle import DataShuttle
 from datashuttle.tui.app import TuiApp
 from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 from datashuttle.utils import rclone, utils
@@ -31,14 +32,23 @@ class TestTuiSetupGdrive(TuiBase):
 
         yield central_path, project_name
 
-        rclone.call_rclone(
-            f"purge central_{project_name}_gdrive:{central_path}"
+        project = DataShuttle(project_name)
+
+        rclone.call_rclone_for_central_connection(
+            project.cfg,
+            f"purge central_{project_name}_gdrive:{central_path} {rclone.get_config_arg(project.cfg)}",
         )
 
-    @pytest.mark.parametrize("central_path_none", [True, False])
+    @pytest.mark.parametrize(
+        "parameter_sets",
+        [
+            {"central_path_none": True, "set_encryption": True},
+            {"central_path_none": False, "set_encryption": False},
+        ],
+    )
     @pytest.mark.asyncio
     async def test_gdrive_connection_setup_without_browser(
-        self, central_path_none, central_path_and_project
+        self, parameter_sets, central_path_and_project
     ):
         """Test Google Drive connection setup via the TUI.
 
@@ -47,7 +57,13 @@ class TestTuiSetupGdrive(TuiBase):
         not possible to authenticate via a browser during tests, the connection
         setup is tested without a browser. The credentials in the environment are
         set by the CI. For testing locally, the developer must set these themselves.
+
+        We test the case when central path is None or not, and encryption
+        is set or not. We don't need to test every combination (these settings
+        are unrelated) so we test across parameter sets.
         """
+        central_path_none = parameter_sets["central_path_none"]
+        set_encryption = parameter_sets["set_encryption"]
         central_path, project_name = central_path_and_project
 
         app = TuiApp()
@@ -80,6 +96,7 @@ class TestTuiSetupGdrive(TuiBase):
                 "#setup_gdrive_generic_input_box",
                 os.environ["GDRIVE_CONFIG_TOKEN"],
             )
+
             await self.scroll_to_click_pause(
                 pilot, "#setup_gdrive_enter_button"
             )
@@ -89,13 +106,58 @@ class TestTuiSetupGdrive(TuiBase):
             )
 
             assert (
-                "Setup Complete!"
+                "Would you like to encrypt the RClone config file"
                 in pilot.app.screen.query_one(
                     "#gdrive_setup_messagebox_message"
                 )
                 .render()
                 .plain
             )
+
+            if set_encryption:
+                await self.scroll_to_click_pause(
+                    pilot, "#setup_gdrive_set_encryption_yes_button"
+                )
+
+                assert (
+                    "The encryption was successful. Setup complete!"
+                    in pilot.app.screen.query_one(
+                        "#gdrive_setup_messagebox_message"
+                    )
+                    .render()
+                    .plain
+                )
+
+                project = pilot.app.screen.interface.project
+
+                test_utils.check_rclone_file_is_encrypted(
+                    project.cfg.rclone.get_rclone_central_connection_config_filepath()
+                )
+
+            else:
+                await self.scroll_to_click_pause(
+                    pilot, "#setup_gdrive_set_encryption_no_button"
+                )
+
+                assert (
+                    "Setup complete!"
+                    in pilot.app.screen.query_one(
+                        "#gdrive_setup_messagebox_message"
+                    )
+                    .render()
+                    .plain
+                )
+
+                await self.scroll_to_click_pause(
+                    pilot, "#setup_gdrive_finish_button"
+                )
+
+                assert (
+                    pilot.app.screen.query_one(
+                        "#configs_go_to_project_screen_button"
+                    ).visible
+                    is True
+                )
 
     @pytest.mark.asyncio
     async def test_gdrive_connection_setup_incorrect_config_token(
@@ -135,6 +197,7 @@ class TestTuiSetupGdrive(TuiBase):
                 "#setup_gdrive_generic_input_box",
                 "placeholder",
             )
+
             await self.scroll_to_click_pause(
                 pilot, "#setup_gdrive_enter_button"
             )
@@ -190,6 +253,7 @@ class TestTuiSetupGdrive(TuiBase):
                 "#setup_gdrive_generic_input_box",
                 os.environ["GDRIVE_CONFIG_TOKEN"],
             )
+
             await self.scroll_to_click_pause(
                 pilot, "#setup_gdrive_enter_button"
             )
@@ -206,6 +270,7 @@ class TestTuiSetupGdrive(TuiBase):
                 .render()
                 .plain
             )
+
             assert (
                 "Error 404: File not found"
                 in pilot.app.screen.query_one(
@@ -238,29 +303,34 @@ class TestTuiSetupGdrive(TuiBase):
             )
 
             # Setup connection and cancel midway
+
             await self.setup_gdrive_connection_via_tui(pilot)
+
             assert (
-                "Please authenticate through browser"
+                "Please authenticate through your browser"
                 in pilot.app.screen.query_one(
                     "#gdrive_setup_messagebox_message"
                 )
                 .render()
                 .plain
             )
+
             await self.scroll_to_click_pause(
                 pilot, "#setup_gdrive_cancel_button"
             )
 
             # Try setting up the connection again
             await self.setup_gdrive_connection_via_tui(pilot)
+
             assert (
-                "Please authenticate through browser"
+                "Please authenticate through your browser"
                 in pilot.app.screen.query_one(
                     "#gdrive_setup_messagebox_message"
                 )
                 .render()
                 .plain
             )
+
             await self.scroll_to_click_pause(
                 pilot, "#setup_gdrive_cancel_button"
             )
@@ -339,6 +409,8 @@ class TestTuiSetupGdrive(TuiBase):
         )
 
         if with_browser:
-            await self.scroll_to_click_pause(pilot, "#setup_gdrive_yes_button")
+            await self.scroll_to_click_pause(
+                pilot, "#setup_gdrive_has_browser_yes_button"
+            )
         else:
             await self.scroll_to_click_pause(pilot, "#setup_gdrive_no_button")

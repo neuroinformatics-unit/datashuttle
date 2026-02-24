@@ -1,6 +1,7 @@
 import shutil
 
 import pytest_asyncio
+from textual.events import Click
 from textual.widgets._tabbed_content import ContentTab
 
 from datashuttle.configs import canonical_configs
@@ -43,7 +44,7 @@ class TuiBase:
         2) It fails for testing CLI, because CLI spawns a new process in
            which `get_datashuttle_path()` is not monkeypatched.
         """
-        project_name = "my-test-project"
+        project_name = test_utils.get_test_project_name()
         tmp_path = tmp_path_factory.mktemp("test")
         tmp_config_path = tmp_path / "config"
 
@@ -253,19 +254,40 @@ class TuiBase:
     async def double_click_input(self, pilot, sub_or_ses, control=False):
         """Helper function to double click input to suggest next sub or ses.
 
-        Because this function is performed in separate asyncio task, this was a little
-        brittle in the CI tests leading to random errors. The below
-        combination of awaiting the test, then pausing, stopped the errors.
+        Initially this function used `double_click` on the input, but it was brittle
+        in the CI tests leading to random errors. The below mocks the double click
+        in a different way, directly interacting with the custom object that
+        manages the double click, so is hopefully more robust.
         """
         expand_name = "session" if sub_or_ses == "ses" else "subject"
 
-        await self.double_click(
-            pilot, f"#create_folders_{expand_name}_input", control=control
+        id = f"#create_folders_{expand_name}_input"
+
+        input_widget = pilot.app.screen.query_one(id)
+        input_widget.parent.click_info.prev_click_time = 10**100
+        input_widget.parent.click_info.prev_click_widget_id = id.removeprefix(
+            "#"
         )
+
+        click_event = Click(
+            x=0,
+            y=0,
+            delta_x=0,
+            delta_y=0,
+            button=1,  # Left mouse button
+            shift=False,
+            meta=False,
+            ctrl=control,
+            widget=input_widget,
+        )
+
+        input_widget._on_click(click_event)
+
+        await pilot.pause(10)  # long pause required for testing on CI
+
         await test_utils.await_task_by_name_if_present(
             f"suggest_next_{sub_or_ses}_async_task"
         )
-        await pilot.pause(0.5)
 
     # Shared checks
     # ---------------------------------------------------------------------------------

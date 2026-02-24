@@ -4,13 +4,15 @@ import os
 from datashuttle import DataShuttle
 from datashuttle.utils import aws, utils
 
+from .. import transfer_test_utils
+
 
 def setup_project_for_aws(project: DataShuttle):
     """Update the config file for an AWS connection.
 
     The connection credentials are fetched from the environment which
     the developer shall set themselves to test locally. In the CI, these
-    are set using the github secrets. A random string is added to the
+    are set using the GitHub secrets. A random string is added to the
     central path so that the test project paths do not interfere while
     running multiple test instances simultaneously in CI.
     """
@@ -34,28 +36,39 @@ def setup_aws_connection(project: DataShuttle):
     The `AWS_SECRET_ACCESS_KEY` is set in the environment by the CI while
     testing. For testing locally, the developer must set it themselves.
     """
+
+    def mock_input(_: str) -> str:
+        return "y"
+
+    import builtins
+
+    original_input = copy.deepcopy(builtins.input)
+    builtins.input = mock_input  # type: ignore
+
     original_get_secret = copy.deepcopy(aws.get_aws_secret_access_key)
+
     aws.get_aws_secret_access_key = lambda *args, **kwargs: os.environ[
         "AWS_SECRET_ACCESS_KEY"
     ]
 
     project.setup_aws_connection()
 
+    builtins.input = original_input
     aws.get_aws_secret_access_key = original_get_secret
 
 
 def has_aws_environment_variables():
-    for key in [
+    """Check for environment variables needed to run AWS tests.
+
+    Environment variables can be stored in a `.env` file in the
+    project root, for use with `python-dotenv`. Otherwise,
+    they are set up in GitHub actions.
+    """
+    required_variables = [
         "AWS_BUCKET_NAME",
         "AWS_ACCESS_KEY_ID",
         "AWS_REGION",
         "AWS_SECRET_ACCESS_KEY",
-    ]:
-        if key not in os.environ:
-            return False
+    ]
 
-        # On CI triggered by forked repositories, secrets are empty
-        if os.environ[key].strip() == "":
-            return False
-
-    return True
+    return transfer_test_utils.check_if_env_vars_are_loaded(required_variables)
