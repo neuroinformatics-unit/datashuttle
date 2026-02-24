@@ -103,12 +103,39 @@ if (dist_path := project_root / "dist").exists():
     shutil.rmtree(dist_path)
 
 # Step 2: Run PyInstaller builds
-subprocess.run(f"pyinstaller {project_root / 'datashuttle.spec'}", shell=True)
+# subprocess.run(f"pyinstaller {project_root / 'datashuttle.spec'}", shell=True)
+# subprocess.run(
+#    f"pyinstaller {project_root / 'terminal_launcher_windows.spec'}",
+#    shell=True,
+# )
+
 subprocess.run(
-    f"pyinstaller {project_root / 'terminal_launcher_windows.spec'}",
-    shell=True,
+    [
+        "pyinstaller",
+        str(project_root / "datashuttle.spec"),
+        "--distpath",
+        str(project_root / "dist"),
+        "--workpath",
+        str(project_root / "build"),
+        "--noconfirm",
+        "--clean",
+    ],
+    check=True,
 )
 
+subprocess.run(
+    [
+        "pyinstaller",
+        str(project_root / "terminal_launcher_windows.spec"),
+        "--distpath",
+        str(project_root / "dist"),
+        "--workpath",
+        str(project_root / "build"),
+        "--noconfirm",
+        "--clean",
+    ],
+    check=True,
+)
 
 # Paths
 dist_dir = project_root / "dist"
