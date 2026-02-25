@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 from datashuttle import DataShuttle
 from datashuttle.configs import load_configs
 from datashuttle.utils import aws, rclone, ssh, utils
+from datashuttle.utils.rclone import get_local_and_central_file_differences
 
 
 class Interface:
@@ -361,6 +362,20 @@ class Interface:
             )
 
             return True, None
+
+        except Exception as e:
+            return False, str(e)
+
+    def get_transfer_diffs(
+        self, top_level_folders_to_check: List[TopLevelFolder]
+    ) -> InterfaceOutput:
+        """Get a dict of differences between the local and central project."""
+        try:
+            transfer_diffs = get_local_and_central_file_differences(
+                self.get_configs(),
+                top_level_folders_to_check=top_level_folders_to_check,
+            )
+            return True, transfer_diffs
 
         except Exception as e:
             return False, str(e)
