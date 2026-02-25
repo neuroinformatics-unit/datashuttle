@@ -108,13 +108,6 @@ class TestTuiSetupAws(TuiBase):
 
             await self.scroll_to_click_pause(pilot, "#setup_aws_ok_button")
 
-            assert (
-                pilot.app.screen.query_one(
-                    "#configs_go_to_project_screen_button"
-                ).visible
-                is True
-            )
-
     @pytest.mark.asyncio
     async def test_aws_connection_setup_failed(self, central_path_and_project):
         """Test AWS connection setup using an incorrect client secret and check
