@@ -1233,11 +1233,8 @@ class DataShuttle:
                 and kwargs["connection_method"] != "local_only"
             ):
                 # We need to ensure this rclone config is created if it was not created during
-                # initial set up because the project is local only. The rclone config for local filesystem
-                # is just a placeholder rclone config file anyway. This is not ideal but the alternative is to search
-                # for an existing config and create only if it does not exist, which requires calls to
-                # rclone because its config-saving path is not predictable, and this will be very
-                # slow and essentially pointless as recreating the config should simply overwrite it.
+                # initial set up because the project is local only. It does not matter if the
+                # RClone config is ever overwritten, it's just a placeholder.
                 self._setup_rclone_central_local_filesystem_config()
 
         new_cfg = copy.deepcopy(self.cfg)
