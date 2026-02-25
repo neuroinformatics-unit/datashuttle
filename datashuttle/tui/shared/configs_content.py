@@ -511,7 +511,15 @@ class ConfigsContent(Container):
 
     def show_project_screen_callback(self, was_successful: bool):
         """Show 'Go to Project Screen' button after connection set up screens exits."""
-        if was_successful:
+        assert self.id in [
+            "new_project_configs_content",
+            "tabscreen_configs_content",
+        ], (
+            "new project or tab screen id was changed."  # see below
+        )
+        on_new_project_screen = self.id == "new_project_configs_content"
+
+        if was_successful and on_new_project_screen:
             self.query_one(
                 "#configs_go_to_project_screen_button"
             ).visible = True
