@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from textual.worker import Worker
 
     from datashuttle.tui.app import TuiApp
-    from datashuttle.utils.custom_types import InterfaceOutput, Prefix
+    from datashuttle.utils.custom_types import InterfaceOutput
 
 import platform
 from pathlib import Path
@@ -238,24 +238,27 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
             self.app.show_modal_error_dialog(output)
 
 
-class SearchingCentralForNextSubSesPopup(ModalScreen):
-    """Show message and a loading indicator for suggesting the next subject or session.
+class CentralWaitingScreen(ModalScreen):
+    """Show a message and loading indicator while awaiting a slow central connection.
 
-    Used to await searching next sub/ses across including folders
-    present on the central machine. This search happens in a separate
-    thread to allow TUI to display the loading indicate without freezing.
-
-    Only displayed when the `include_central` flag is checked and the
-    connection method is "ssh".
+    Used when operations require network access (ssh, aws, gdrive), such as
+    suggesting the next sub/ses or validating the central project.
     """
 
-    def __init__(self, sub_or_ses: Prefix) -> None:
-        """Initialise SearchingCentralForNextSubSesPopup."""
+    def __init__(self, message: str) -> None:
+        """Initialise CentralWaitingScreen.
+
+        Parameters
+        ----------
+        message
+            Message to display while waiting.
+
+        """
         super().__init__()
-        self.message = f"Searching central for next {sub_or_ses}"
+        self.message = message
 
     def compose(self) -> ComposeResult:
-        """Add widgets to SearchingCentralForNextSubSesPopup."""
+        """Add widgets to CentralWaitingScreen."""
         yield Container(
             Label(self.message, id="searching_message_label"),
             LoadingIndicator(id="searching_animated_indicator"),
