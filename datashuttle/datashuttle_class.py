@@ -1221,9 +1221,7 @@ class DataShuttle:
                 ConfigError,
             )
 
-        self._start_log(
-            "update-config-file",
-        )
+        self._start_log("update-config-file", local_vars=kwargs)
 
         if "connection_method" in kwargs:
             if kwargs["connection_method"] is None:
