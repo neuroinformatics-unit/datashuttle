@@ -193,6 +193,17 @@ class CreateFoldersSettingsScreen(ModalScreen):
         self.fill_input_from_template()
         self.switch_template_container_disabled()
 
+        if self.interface.project.cfg["connection_method"] == "local_only":
+            search_central_id = "#suggest_next_sub_ses_central_checkbox"
+            self.query_one(
+                search_central_id
+            ).tooltip = (
+                "Cannot search central for suggestions in 'Local Only' mode."
+            )
+            self.query_one(search_central_id).disabled = True
+            with self.prevent(Checkbox.Changed):
+                self.query_one(search_central_id).value = False
+
     def init_input_values_holding_variable(self) -> None:
         """Add the project Name Templates to the relevant Inputs."""
         validation_templates = self.interface.get_validation_templates()
