@@ -66,7 +66,9 @@ class ValidateContent(Container):
 
         self.parent_class = parent_class
         self.interface = interface
-        self.validating_central_popup = None
+        self.validating_central_popup: (
+            modal_dialogs.CentralWaitingScreen | None
+        ) = None
 
     def compose(self) -> ComposeResult:
         """Set up the widgets for the container."""
@@ -270,6 +272,7 @@ class ValidateContent(Container):
         allow_letters_in_sub_ses_values,
     ) -> None:
         """Run validation in a separate thread to avoid freezing the TUI."""
+        assert self.interface is not None
         success, output = self.interface.validate_project(
             top_level_folder=top_level_folder,
             include_central=include_central,
