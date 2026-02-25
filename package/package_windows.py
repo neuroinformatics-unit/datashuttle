@@ -1,9 +1,9 @@
+import os
 import shutil
 import subprocess
 from pathlib import Path
 
 import packaging_utils
-import os
 from make_inno_setup_script import make_inno_setup_script
 
 WEZTERM_VERSION = packaging_utils.get_wezterm_version()
@@ -86,9 +86,7 @@ shutil.copytree(
 )
 
 # Copy the datashuttle license
-shutil.copy(
-    project_root / "license.txt", dist_dir
-)
+shutil.copy(project_root / "license.txt", dist_dir)
 
 # Copy the datashuttle icon
 shutil.copy(project_root / "NeuroBlueprint_icon.ico", dist_dir)
