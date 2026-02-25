@@ -1,5 +1,4 @@
-"""
-This script launches the terminal from inside the frozen, packaged
+"""This script launches the terminal from inside the frozen, packaged
 version of datashuttle (or from this script, if testing).
 
 It must know all paths relative parts to the wezterm executable.
@@ -11,15 +10,14 @@ in wezterm, packaged by `terminal_launcher_macos.spec`.
 """
 
 import os
-import platform
 import subprocess
 import sys
 from pathlib import Path
 
 import packaging_utils
 
-def main():
 
+def main():
     WEZTERM_VERSION = packaging_utils.get_wezterm_version()
 
     # Get the path relative to the running executable / script.
@@ -32,7 +30,7 @@ def main():
 
     # Get all relative paths to the Wezterm executable
     wezterm_path = base_path / f"_vendored/WezTerm-macos-{WEZTERM_VERSION}"
-    wezterm_exe_path = (wezterm_path / "Wezterm.app/Contents/MacOS/wezterm-gui")
+    wezterm_exe_path = wezterm_path / "Wezterm.app/Contents/MacOS/wezterm-gui"
     wezterm_config_path = wezterm_path / "wezterm_config.lua"
     datashutle_executable = base_path / "datashuttle"
 

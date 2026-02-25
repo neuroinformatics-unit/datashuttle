@@ -41,10 +41,13 @@ from datashuttle.utils.transfer_output_class import TransferOutput
 def get_command(command: str) -> str:
     """ """
     from pathlib import Path
+
     if getattr(sys, "frozen", False):
         # PyInstaller: binary extracted to _MEIPASS
         if sys.platform == "win32":
-            format_command = f'{str(Path(sys._MEIPASS) / "rclone.exe")} {command}'
+            format_command = (
+                f"{str(Path(sys._MEIPASS) / 'rclone.exe')} {command}"
+            )
         else:
             format_command = f"{sys._MEIPASS}/rclone {command}"
     else:

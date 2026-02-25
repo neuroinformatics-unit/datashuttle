@@ -1,5 +1,4 @@
-"""
-This script launches the terminal from inside the frozen, packaged
+"""This script launches the terminal from inside the frozen, packaged
 version of datashuttle (or from this script, if testing).
 
 It must know all paths relative parts to the wezterm executable.
@@ -11,7 +10,6 @@ in wezterm, packaged by `terminal_launcher_windows.spec`.
 """
 
 import os
-import platform
 import subprocess
 import sys
 from pathlib import Path
@@ -20,7 +18,6 @@ import packaging_utils
 
 
 def main():
-
     WEZTERM_VERSION = packaging_utils.get_wezterm_version()
 
     # Get the path relative to the running executable / script.
@@ -32,7 +29,11 @@ def main():
         base_path = Path(__file__).resolve().parent
 
     # Get all relative paths to the Wezterm executable
-    wezterm_path = (Path(__file__).parent.parent / "_vendored"/ f"WezTerm-windows-{WEZTERM_VERSION}")
+    wezterm_path = (
+        Path(__file__).parent.parent
+        / "_vendored"
+        / f"WezTerm-windows-{WEZTERM_VERSION}"
+    )
     wezterm_exe_path = wezterm_path / "wezterm-gui.exe"
     wezterm_config_path = wezterm_path / "wezterm_config.lua"
     datashutle_executable = base_path / "datashuttle" / "datashuttle.exe"
@@ -49,6 +50,7 @@ def main():
     cmd = f'"{wezterm_exe_path}" start -- "{datashutle_executable}"'
 
     subprocess.Popen(cmd, shell=True, env=env)
+
 
 if __name__ == "__main__":
     main()
