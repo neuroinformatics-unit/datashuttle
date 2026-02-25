@@ -787,6 +787,7 @@ def perform_rclone_check(
     local_filepath = cfg.get_base_folder(
         "local", top_level_folder
     ).parent.as_posix()
+
     central_filepath = cfg.get_base_folder(
         "central", top_level_folder
     ).parent.as_posix()
@@ -800,6 +801,7 @@ def perform_rclone_check(
             f'"{local_filepath}" '
             f'"{cfg.rclone.get_rclone_config_name()}:{central_filepath}" '
             f"--combined - "
+            f'--exclude "*.datashuttle/logs/*" '
             f"{get_config_arg(cfg)}",
             pipe_std=True,
         )
@@ -808,7 +810,8 @@ def perform_rclone_check(
             f"{rclone_args('check')} "
             f'"{local_filepath}" '
             f'"{cfg.rclone.get_rclone_config_name()}:{central_filepath}" '
-            f"--combined - ",
+            f"--combined - "
+            f'--exclude "*.datashuttle/logs/*"',
             pipe_std=True,
         )
 
