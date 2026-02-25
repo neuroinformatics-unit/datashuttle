@@ -1229,7 +1229,7 @@ class DataShuttle:
                 kwargs["connection_method"] = "local_only"
 
             if (
-                and self.cfg["connection_method"] == "local_only"
+                self.cfg["connection_method"] == "local_only"
                 and kwargs["connection_method"] != "local_only"
             ):
                 # We need to ensure this rclone config is created if it was not created during
