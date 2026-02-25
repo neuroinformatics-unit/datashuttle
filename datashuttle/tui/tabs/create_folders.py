@@ -26,6 +26,7 @@ from datashuttle.tui.custom_widgets import (
     CustomDirectoryTree,
     TreeAndInputTab,
 )
+from datashuttle.tui.screens import modal_dialogs
 from datashuttle.tui.screens.create_folder_settings import (
     CreateFoldersSettingsScreen,
 )
@@ -33,7 +34,6 @@ from datashuttle.tui.screens.datatypes import (
     CreateDatatypeCheckboxes,
     DisplayedDatatypesScreen,
 )
-from datashuttle.tui.screens import modal_dialogs
 from datashuttle.tui.tooltips import get_tooltip
 from datashuttle.tui.utils.tui_decorators import (
     ClickInfo,

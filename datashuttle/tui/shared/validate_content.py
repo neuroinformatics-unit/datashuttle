@@ -178,8 +178,14 @@ class ValidateContent(Container):
                 if include_central and self.interface.project.cfg[
                     "connection_method"
                 ] in ["aws", "gdrive", "ssh"]:
-                    self.validating_central_popup = modal_dialogs.CentralWaitingScreen("Validating central project...")
-                    self.parent_class.mainwindow.push_screen(self.validating_central_popup)
+                    self.validating_central_popup = (
+                        modal_dialogs.CentralWaitingScreen(
+                            "Validating central project..."
+                        )
+                    )
+                    self.parent_class.mainwindow.push_screen(
+                        self.validating_central_popup
+                    )
                     asyncio.create_task(
                         self.run_validate_and_dismiss_popup(
                             top_level_folder=top_level_folder,
@@ -248,7 +254,10 @@ class ValidateContent(Container):
             allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
         )
         await worker.wait()
-        if hasattr(self, "validating_central_popup") and self.validating_central_popup:
+        if (
+            hasattr(self, "validating_central_popup")
+            and self.validating_central_popup
+        ):
             self.validating_central_popup.dismiss()
             self.validating_central_popup = None
 
