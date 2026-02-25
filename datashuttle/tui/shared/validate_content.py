@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional, Union, cast
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+    from textual.worker import Worker
 
     from datashuttle.tui.interface import Interface
     from datashuttle.tui.screens.project_manager import ProjectManagerScreen
@@ -188,7 +189,7 @@ class ValidateContent(Container):
                     self.parent_class.mainwindow.push_screen(
                         self.validating_central_popup
                     )
-                    asyncio.create_task(
+                    self._validate_task = asyncio.create_task(
                         self.run_validate_and_dismiss_popup(
                             top_level_folder=top_level_folder,
                             include_central=include_central,
@@ -270,7 +271,7 @@ class ValidateContent(Container):
         include_central,
         strict_mode,
         allow_letters_in_sub_ses_values,
-    ) -> None:
+    ) -> Worker[None]:
         """Run validation in a separate thread to avoid freezing the TUI."""
         assert self.interface is not None
         success, output = self.interface.validate_project(
