@@ -40,11 +40,11 @@ from datashuttle.utils.transfer_output_class import TransferOutput
 
 def get_command(command: str) -> str:
     """ """
+    from pathlib import Path
     if getattr(sys, "frozen", False):
         # PyInstaller: binary extracted to _MEIPASS
-
         if sys.platform == "win32":
-            format_command = f'"{sys._MEIPASS}/rclone.exe" {command}'
+            format_command = f'{str(Path(sys._MEIPASS) / "rclone.exe")} {command}'
         else:
             format_command = f"{sys._MEIPASS}/rclone {command}"
     else:
@@ -620,7 +620,7 @@ def check_rclone_with_default_call() -> bool:
     """
     try:
         output = subprocess.run(
-            "rclone -h",
+            get_command("-h"),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=True,

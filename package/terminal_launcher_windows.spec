@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 a = Analysis(
-    ['terminal_launcher.py'],
+    ['terminal_launcher_windows.py'],
     pathex=[],
     binaries=[],
     datas=[],
