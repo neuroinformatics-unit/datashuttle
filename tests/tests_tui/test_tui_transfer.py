@@ -223,7 +223,9 @@ class TestTuiTransfer(TuiBase):
             await pilot.pause()
 
     @pytest.mark.asyncio
-    async def test_errors_are_reported_on_pop_up(self, setup_project_paths):
+    async def test_transfer_output_is_reported_on_pop_up(
+        self, setup_project_paths
+    ):
         """
         Check that transfer errors, or the case where no files are transferred,
         are displayed properly on the modal dialog that displays following
@@ -296,7 +298,10 @@ class TestTuiTransfer(TuiBase):
                 pilot, "upload", close_final_messagebox=False
             )
 
-            assert "Nothing was transferred from rawdata" in app.screen.message
+            assert (
+                "Nothing was transferred from derivatives"
+                in app.screen.message
+            )
 
             await pilot.pause()
 
