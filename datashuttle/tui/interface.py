@@ -259,14 +259,14 @@ class Interface:
             else:
                 transfer_func = self.project.download_entire_project
 
-            errors = transfer_func(
+            transfer_output = transfer_func(
                 overwrite_existing_files=self.tui_settings[
                     "overwrite_existing_files"
                 ],
                 dry_run=self.tui_settings["dry_run"],
             )
 
-            return True, errors
+            return True, transfer_output
 
         except Exception as e:
             return False, str(e)
@@ -302,14 +302,14 @@ class Interface:
                     else self.project.download_derivatives
                 )
 
-            errors = transfer_func(
+            transfer_output = transfer_func(
                 overwrite_existing_files=self.tui_settings[
                     "overwrite_existing_files"
                 ],
                 dry_run=self.tui_settings["dry_run"],
             )
 
-            return True, errors
+            return True, transfer_output
 
         except Exception as e:
             return False, str(e)
@@ -349,7 +349,7 @@ class Interface:
             else:
                 transfer_func = self.project.download_custom
 
-            errors = transfer_func(
+            transfer_output = transfer_func(
                 selected_top_level_folder,
                 sub_names=sub_names,
                 ses_names=ses_names,
@@ -360,7 +360,7 @@ class Interface:
                 dry_run=self.tui_settings["dry_run"],
             )
 
-            return True, errors
+            return True, transfer_output
 
         except Exception as e:
             return False, str(e)

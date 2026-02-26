@@ -300,6 +300,30 @@ class TestTuiTransfer(TuiBase):
 
             await pilot.pause()
 
+            await self.close_messagebox(pilot)
+
+            # make a new file and transfer again, to test the success message shows
+            new_file_rawdata = a_transferred_file.with_name(
+                "placeholder_2.txt"
+            )
+            new_file_derivatives = Path(
+                *(
+                    "derivatives" if part == "rawdata" else part
+                    for part in new_file_rawdata.parts
+                )
+            )
+            new_file_rawdata.touch()
+            new_file_derivatives.touch()
+
+            await self.run_transfer(
+                pilot, "upload", close_final_messagebox=False
+            )
+            assert "1 file was transferred from rawdata" in app.screen.message
+            assert (
+                "1 file was transferred from derivatives."
+                in app.screen.message
+            )
+
     @pytest.mark.asyncio()
     async def test_custom_transfer_default_sub_ses_all(
         self, mocker, setup_project_paths

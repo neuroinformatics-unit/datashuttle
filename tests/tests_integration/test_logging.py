@@ -482,9 +482,58 @@ class TestLogging:
         assert "ERROR" in log
         assert str(e.value) in log
 
+    def test_num_files_transferred_logging(self, project):
+        """ """
+        for top_level_folder in ["rawdata", "derivatives"]:
+            test_utils.make_local_folders_with_files_in(
+                project,
+                top_level_folder,
+                ["sub-001", "sub-002"],
+                ["ses-001", "ses-002"],
+                ["ephys", "behav"],
+            )
+        test_utils.delete_log_files(project.cfg.logging_path)
+
+        transfer_output = project.upload_rawdata()
+        assert transfer_output["num_transferred"]["rawdata"] == 8
+        assert transfer_output["num_transferred"]["derivatives"] is None
+
+        log = test_utils.read_log_file(project.cfg.logging_path)
+        assert "8 files were transferred from rawdata" in log
+        assert "derivatives" not in log
+        test_utils.delete_log_files(project.cfg.logging_path)
+
+        transfer_output = project.upload_derivatives()
+        assert transfer_output["num_transferred"]["derivatives"] == 8
+        assert transfer_output["num_transferred"]["rawdata"] is None
+
+        log = test_utils.read_log_file(project.cfg.logging_path)
+        assert "8 files were transferred from derivatives" in log
+        assert "rawdata" not in log
+        test_utils.delete_log_files(project.cfg.logging_path)
+
+        test_utils.make_local_folders_with_files_in(
+            project,
+            "derivatives",
+            ["sub-003"],
+            ["ses-001"],
+            ["ephys"],
+        )
+        test_utils.delete_log_files(project.cfg.logging_path)
+
+        transfer_output = project.upload_entire_project()
+
+        assert transfer_output["num_transferred"]["derivatives"] == 1
+        assert transfer_output["num_transferred"]["rawdata"] == 0
+
+        log = test_utils.read_log_file(project.cfg.logging_path)
+        assert "1 file was transferred from derivatives" in log
+        assert "Nothing was transferred from rawdata" in log
+        test_utils.delete_log_files(project.cfg.logging_path)
+
     def test_errors_are_caught_and_logged(self, project):
         """
-        Create errors in the transfer by locking files, and check
+        Create errors in the transfer output by locking files, and check
         the errors are correctly flagged in logs and `errors`. Also,
         perform a transfer where no files are transferred, and check
         this is flagged in logs and `errors`.
@@ -516,15 +565,20 @@ class TestLogging:
         if platform.system() == "Windows":
             lock = FileLock(a_transferred_file, timeout=5)
             with lock:
-                errors = project.upload_custom("rawdata", "all", "all", "all")
+                transfer_output = project.upload_custom(
+                    "rawdata", "all", "all", "all"
+                )
             error_message = "because another process has locked "
         else:
             thread = test_utils.lock_a_file(a_transferred_file)
-            errors = project.upload_custom("rawdata", "all", "all", "all")
+            transfer_output = project.upload_custom(
+                "rawdata", "all", "all", "all"
+            )
             thread.join()
             error_message = "size changed"
 
         # Check that errors and logs flag the transfer errors
+        errors = transfer_output["errors"]
         assert errors["file_names"] == [relative_path.as_posix()]
         assert error_message in errors["messages"][0]
 
@@ -539,10 +593,10 @@ class TestLogging:
         test_utils.delete_log_files(project.cfg.logging_path)
 
         # Check that it is flagged that no transfer took place for rawdata
-        errors = project.upload_custom("rawdata", "all", "all", "all")
+        transfer_output = project.upload_custom("rawdata", "all", "all", "all")
 
-        assert errors["nothing_was_transferred_rawdata"] is True
-        assert errors["nothing_was_transferred_derivatives"] is None
+        assert transfer_output["num_transferred"]["rawdata"] == 0
+        assert transfer_output["num_transferred"]["derivatives"] is None
 
         log = test_utils.read_log_file(project.cfg.logging_path)
         assert "Nothing was transferred from rawdata." in log
@@ -550,10 +604,12 @@ class TestLogging:
         test_utils.delete_log_files(project.cfg.logging_path)
 
         # Check that it is flagged that no transfer took place for derivatives
-        errors = project.upload_custom("derivatives", "all", "all", "all")
+        transfer_output = project.upload_custom(
+            "derivatives", "all", "all", "all"
+        )
 
-        assert errors["nothing_was_transferred_rawdata"] is None
-        assert errors["nothing_was_transferred_derivatives"] is True
+        assert transfer_output["num_transferred"]["rawdata"] is None
+        assert transfer_output["num_transferred"]["derivatives"] == 0
 
         log = test_utils.read_log_file(project.cfg.logging_path)
         assert "Nothing was transferred from derivatives." in log
@@ -562,10 +618,10 @@ class TestLogging:
 
         # Check that it is flagged that no transfer took place
         # for both rawdata and derivatives
-        errors = project.upload_entire_project()
+        transfer_output = project.upload_entire_project()
 
-        assert errors["nothing_was_transferred_rawdata"] is True
-        assert errors["nothing_was_transferred_derivatives"] is True
+        assert transfer_output["num_transferred"]["rawdata"] == 0
+        assert transfer_output["num_transferred"]["derivatives"] == 0
 
         log = test_utils.read_log_file(project.cfg.logging_path)
         assert "Nothing was transferred from rawdata." in log

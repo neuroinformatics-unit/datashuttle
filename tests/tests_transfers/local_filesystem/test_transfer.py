@@ -641,25 +641,29 @@ class TestFileTransfer(BaseTest):
         elif overwrite_existing_files == "always":
             assert test_utils.read_file(central_file_path) == ["file earlier"]
 
-    def test_errors_variable(self, project, monkeypatch):
+    def test_transfer_output(self, project, monkeypatch):
         """
-        Test that the `errors` variable is correctly
-        returned from every transfer function. `errors` is a variable
+        Test that the `test_transfer_output` variable is correctly
+        returned from every transfer function. `test_transfer_output` is a variable
         that contains information about any errors that were encountered
         during transfer.
         """
-
         # Monkeypatch the error-parsing function so it returns
         # predictable values.
         import datashuttle
 
         def test_errors(top_level_folder):
-            return {
-                "file_names": [f"{top_level_folder}/hello_world.txt"],
-                "messages": ["how are you?"],
-                "nothing_was_transferred_rawdata": None,
-                "nothing_was_transferred_derivatives": None,
+            from datashuttle.utils.transfer_output_class import TransferOutput
+
+            transfer_output = TransferOutput()
+            transfer_output.data = {
+                "errors": {
+                    "file_names": [f"{top_level_folder}/hello_world.txt"],
+                    "messages": ["how are you?"],
+                },
+                "num_transferred": {"rawdata": None, "derivatives": None},
             }
+            return transfer_output
 
         def monkeypatch_parse_output(top_level_folder, b):
             stdout = "stdout"
@@ -685,7 +689,7 @@ class TestFileTransfer(BaseTest):
             )
 
         # Run every transfer function and check that
-        # `errors` is returned correctly.
+        # `TransferOutput` is returned correctly.
         specific_file = (
             lambda path_: f"{path_}/rawdata/{subs[0]}/{sessions[0]}/ephys/placeholder_file.txt"
         )
@@ -716,13 +720,17 @@ class TestFileTransfer(BaseTest):
             project.download_entire_project,
         ]:
             assert func() == {
-                "file_names": [
-                    "rawdata/hello_world.txt",
-                    "derivatives/hello_world.txt",
-                ],
-                "messages": ["how are you?", "how are you?"],
-                "nothing_was_transferred_rawdata": None,
-                "nothing_was_transferred_derivatives": None,
+                "errors": {
+                    "file_names": [
+                        "rawdata/hello_world.txt",
+                        "derivatives/hello_world.txt",
+                    ],
+                    "messages": ["how are you?", "how are you?"],
+                },
+                "num_transferred": {
+                    "rawdata": None,
+                    "derivatives": None,
+                },
             }
 
     def get_paths_to_a_local_and_central_file(self, project, top_level_folder):

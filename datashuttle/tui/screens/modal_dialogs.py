@@ -247,12 +247,12 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
             await data_transfer_worker.wait()
             success, transfer_output = data_transfer_worker.result
 
-            self.dismiss()  # do not await here TODO: final check here
+            self.dismiss()  # do not await here
 
             if success:
                 if self.app.theme == "textual-dark":
                     no_transfer_color = "lightblue"
-                    transfer_color = "#44C97F"  # #44C97F
+                    transfer_color = "#44C97F"
                 else:
                     no_transfer_color = "blue"
                     transfer_color = "#1AA34A"
@@ -261,7 +261,6 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
                     no_transfer_color, transfer_color
                 )
 
-                # TODO: set only if errors detected
                 message = (
                     f"Transfer finished.\n"
                     f"{transfer_output_message}\n\n"
@@ -274,7 +273,7 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
                     else {}
                 )
 
-                self.app.push_screen(
+                await self.app.push_screen(
                     MessageBox(
                         message, border_color="grey", **messagebox_kwargs
                     )
