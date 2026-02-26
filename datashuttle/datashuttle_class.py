@@ -26,7 +26,7 @@ if TYPE_CHECKING:
         OverwriteExistingFiles,
         Prefix,
         TopLevelFolder,
-        TransferErrors,
+        TransferOutput,
     )
 
 import yaml
@@ -327,7 +327,7 @@ class DataShuttle:
         dry_run: bool = False,
         init_log: bool = True,
         display_errors: bool = True,
-    ) -> TransferErrors:
+    ) -> TransferOutput:
         """Upload data from a local project to the central project folder.
 
         Parameters
@@ -416,7 +416,7 @@ class DataShuttle:
         dry_run: bool = False,
         init_log: bool = True,
         display_errors: bool = True,
-    ) -> TransferErrors:
+    ) -> TransferOutput:
         """Download data from the central project to the local project folder.
 
         Parameters
@@ -474,7 +474,7 @@ class DataShuttle:
 
         self._check_top_level_folder(top_level_folder)
 
-        errors = TransferData(
+        transfer_output = TransferData(
             self.cfg,
             "download",
             top_level_folder,
@@ -486,12 +486,12 @@ class DataShuttle:
         ).run()
 
         if display_errors:
-            rclone.log_rclone_copy_errors_api(errors)
+            rclone.log_rclone_copy_errors_api(transfer_output)
 
         if init_log:
             ds_logger.close_log_filehandler()
 
-        return errors
+        return transfer_output
 
     # Specific top-level folder
     # ----------------------------------------------------------------------------------
@@ -504,7 +504,7 @@ class DataShuttle:
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ) -> TransferErrors:
+    ) -> TransferOutput:
         """Upload all files in the `rawdata` top level folder.
 
         Parameters
@@ -534,7 +534,7 @@ class DataShuttle:
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ) -> TransferErrors:
+    ) -> TransferOutput:
         """Upload all files in the `derivatives` top level folder.
 
         Parameters
@@ -564,7 +564,7 @@ class DataShuttle:
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ) -> TransferErrors:
+    ) -> TransferOutput:
         """Download all files in the `rawdata` top level folder.
 
         Parameters
@@ -594,7 +594,7 @@ class DataShuttle:
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ) -> TransferErrors:
+    ) -> TransferOutput:
         """Download all files in the `derivatives` top level folder.
 
         Parameters
@@ -624,7 +624,7 @@ class DataShuttle:
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ) -> TransferErrors:
+    ) -> TransferOutput:
         """Upload the entire project.
 
         Includes every top level folder (e.g. ``rawdata``, ``derivatives``).
@@ -651,12 +651,12 @@ class DataShuttle:
             },
         )
 
-        errors = self._transfer_entire_project(
+        transfer_output = self._transfer_entire_project(
             "upload", overwrite_existing_files, dry_run
         )
         ds_logger.close_log_filehandler()
 
-        return errors
+        return transfer_output
 
     @check_configs_set
     @check_is_not_local_project
@@ -664,7 +664,7 @@ class DataShuttle:
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ) -> TransferErrors:
+    ) -> TransferOutput:
         """Download the entire project.
 
         Includes every top level folder (e.g. ``rawdata``, ``derivatives``).
@@ -691,13 +691,13 @@ class DataShuttle:
             },
         )
 
-        errors = self._transfer_entire_project(
+        transfer_output = self._transfer_entire_project(
             "download", overwrite_existing_files, dry_run
         )
 
         ds_logger.close_log_filehandler()
 
-        return errors
+        return transfer_output
 
     @check_configs_set
     @check_is_not_local_project
@@ -706,7 +706,7 @@ class DataShuttle:
         filepath: Union[str, Path],
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ) -> TransferErrors:
+    ) -> TransferOutput:
         """Upload a specific file or folder.
 
         If transferring a single file, the path including the filename is
@@ -739,13 +739,13 @@ class DataShuttle:
             },
         )
 
-        errors = self._transfer_specific_file_or_folder(
+        transfer_output = self._transfer_specific_file_or_folder(
             "upload", filepath, overwrite_existing_files, dry_run
         )
 
         ds_logger.close_log_filehandler()
 
-        return errors
+        return transfer_output
 
     @check_configs_set
     @check_is_not_local_project
@@ -754,7 +754,7 @@ class DataShuttle:
         filepath: Union[str, Path],
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ) -> TransferErrors:
+    ) -> TransferOutput:
         """Download a specific file or folder.
 
         If transferring a single file, the path including the filename is
@@ -788,13 +788,13 @@ class DataShuttle:
             },
         )
 
-        errors = self._transfer_specific_file_or_folder(
+        transfer_output = self._transfer_specific_file_or_folder(
             "download", filepath, overwrite_existing_files, dry_run
         )
 
         ds_logger.close_log_filehandler()
 
-        return errors
+        return transfer_output
 
     def _transfer_top_level_folder(
         self,
@@ -804,7 +804,7 @@ class DataShuttle:
         dry_run: bool = False,
         init_log: bool = True,
         display_errors: bool = True,
-    ) -> TransferErrors:
+    ) -> TransferOutput:
         """Upload or download files within a particular top-level-folder.
 
         A centralised function to upload or download data within
@@ -827,7 +827,7 @@ class DataShuttle:
             else self.download_custom
         )
 
-        errors = transfer_func(
+        transfer_output = transfer_func(
             top_level_folder,
             "all",
             "all",
@@ -841,11 +841,11 @@ class DataShuttle:
         if init_log:
             ds_logger.close_log_filehandler()
 
-        return errors
+        return transfer_output
 
     def _transfer_specific_file_or_folder(
         self, upload_or_download, filepath, overwrite_existing_files, dry_run
-    ) -> TransferErrors:
+    ) -> TransferOutput:
         """Core function for upload/download_specific_folder_or_file()."""
         if isinstance(filepath, str):
             filepath = Path(filepath)
@@ -886,13 +886,13 @@ class DataShuttle:
                 overwrite_existing_files, dry_run
             ),
         )
-        stdout, stderr, errors = rclone.parse_rclone_copy_output(
+        stdout, stderr, transfer_output = rclone.parse_rclone_copy_output(
             top_level_folder, output
         )
         rclone.log_stdout_stderr_python_api(stdout, stderr)
-        rclone.log_rclone_copy_errors_api(errors)
+        rclone.log_rclone_copy_errors_api(transfer_output)
 
-        return errors
+        return transfer_output
 
     # -------------------------------------------------------------------------
     # SSH
@@ -1632,13 +1632,13 @@ class DataShuttle:
         upload_or_download: Literal["upload", "download"],
         overwrite_existing_files: OverwriteExistingFiles,
         dry_run: bool,
-    ) -> TransferErrors:
+    ) -> TransferOutput:
         """Transfer the entire project.
 
         i.e. every 'top level folder' (e.g. 'rawdata', 'derivatives').
         See ``upload_custom()`` or ``download_custom()`` for parameters.
         """
-        all_errors = rclone.get_empty_errors_dict()
+        all_output = rclone.get_empty_transfer_output_dict()
 
         for top_level_folder in canonical_folders.get_top_level_folders():
             utils.log_and_message(
@@ -1647,7 +1647,7 @@ class DataShuttle:
                 f"*************************************\n"
             )
 
-            errors = self._transfer_top_level_folder(
+            transfer_output = self._transfer_top_level_folder(
                 upload_or_download,
                 top_level_folder,
                 overwrite_existing_files=overwrite_existing_files,
@@ -1656,15 +1656,19 @@ class DataShuttle:
                 display_errors=False,
             )
 
-            all_errors["file_names"] += errors["file_names"]
-            all_errors["messages"] += errors["messages"]
+            all_output["errors"]["file_names"] += transfer_output["errors"][
+                "file_names"
+            ]
+            all_output["errors"]["messages"] += transfer_output["errors"][
+                "messages"
+            ]
+            all_output["num_files_transferred"][top_level_folder] = (
+                transfer_output["num_files_transferred"][top_level_folder]
+            )
 
-            key = f"nothing_was_transferred_{top_level_folder}"
-            all_errors[key] = errors[key]  # type: ignore
+        rclone.log_rclone_copy_errors_api(all_output)
 
-        rclone.log_rclone_copy_errors_api(all_errors)
-
-        return all_errors
+        return all_output
 
     def _start_log(
         self,

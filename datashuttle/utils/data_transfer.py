@@ -104,11 +104,13 @@ class TransferData:
                 ),
             )
 
-            stdout, stderr, errors = rclone.parse_rclone_copy_output(
+            stdout, stderr, transfer_output = rclone.parse_rclone_copy_output(
                 self.__top_level_folder, output
             )
 
-            if output.returncode != 0 and not any(errors["messages"]):
+            if output.returncode != 0 and not any(
+                transfer_output["errors"]["messages"]
+            ):
                 raise RuntimeError(
                     "Errors were detected in transfer but not reported properly. "
                     "Please contact the datashuttle team."
@@ -118,10 +120,12 @@ class TransferData:
 
         else:
             utils.log_and_message("No files included. None transferred.")
-            errors = rclone.get_empty_errors_dict()
-            errors[f"nothing_was_transferred_{self.__top_level_folder}"] = True
+            transfer_output = rclone.get_empty_transfer_output_dict()
+            transfer_output["num_files_transferred"][
+                self.__top_level_folder
+            ] = 0
 
-        return errors
+        return transfer_output
 
     # -------------------------------------------------------------------------
     # Build the --include list

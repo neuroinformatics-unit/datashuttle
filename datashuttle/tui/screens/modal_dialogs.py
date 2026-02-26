@@ -245,13 +245,11 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
         try:
             data_transfer_worker = self.transfer_func()
             await data_transfer_worker.wait()
-            success, output = data_transfer_worker.result
+            success, transfer_output = data_transfer_worker.result
 
-            self.dismiss()
+            self.dismiss()  # do not await here TODO: final check here
 
             if success:
-                errors = output
-
                 errors_message = ""
 
                 messagebox_kwargs = {}
@@ -262,24 +260,31 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
                     else "lightblue"
                 )
 
-                if errors["nothing_was_transferred_rawdata"] is True:
-                    errors_message += f"[{no_transfer_col}]\nNothing was transferred from rawdata.[/{no_transfer_col}]\n"
+                for top_level_folder in ["rawdata", "derivatives"]:
+                    num_transferred = transfer_output["num_files_transferred"][
+                        top_level_folder
+                    ]
+                    if num_transferred is None:
+                        continue
+                    elif num_transferred == 0:
+                        errors_message += f"[{no_transfer_col}]\nNothing was transferred from {top_level_folder}.[/{no_transfer_col}]\n"
 
-                if errors["nothing_was_transferred_derivatives"] is True:
-                    errors_message += f"[{no_transfer_col}]\nNothing was transferred from derivatives.[/{no_transfer_col}]\n"
+                    else:  # TODO: make this error nicer
+                        errors_message += f"[green]\n{num_transferred} file/s were transferred from {top_level_folder}.[/green]\n"
 
-                if any(errors["messages"]):
-                    if errors["file_names"]:
+                errors_dict = transfer_output["errors"]
+                if any(errors_dict["messages"]):
+                    if errors_dict["file_names"]:
                         errors_message += (
                             "\n[red]Errors detected! in files:[/red]\n"
                         )
-                        errors_message += "\n".join(errors["file_names"])
+                        errors_message += "\n".join(errors_dict["file_names"])
                     else:
                         errors_message += "\n[red]Errors detected![/red]"
                     errors_message += (
                         "[red]\n\nThe error messages are:[/red]\n"
                     )
-                    errors_message += "\n\n".join(errors["messages"])
+                    errors_message += "\n\n".join(errors_dict["messages"])
                     messagebox_kwargs = {"width": "75%", "height": "75%"}
 
                 if errors_message == "":

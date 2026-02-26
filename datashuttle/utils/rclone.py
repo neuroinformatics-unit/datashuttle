@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from datashuttle.utils.custom_types import (
         OverwriteExistingFiles,
         TopLevelFolder,
-        TransferErrors,
+        TransferOutput,
     )
 
 import json
@@ -689,7 +689,7 @@ def log_stdout_stderr_python_api(stdout: str, stderr: str) -> None:
     utils.log_and_message(message)
 
 
-def log_rclone_copy_errors_api(errors: TransferErrors) -> None:
+def log_rclone_copy_errors_api(transfer_output: TransferOutput) -> None:
     """Log the `errors` dictionary.
 
     The `errors` dictionary contains all pertinent information on
@@ -702,12 +702,21 @@ def log_rclone_copy_errors_api(errors: TransferErrors) -> None:
     """
     message = ""
 
-    if errors["nothing_was_transferred_rawdata"] is True:
-        message += "\n\nNothing was transferred from rawdata.\n"
+    for top_level_folder in ["rawdata", "derivatives"]:
+        num_transferred = transfer_output["num_files_transferred"][
+            top_level_folder
+        ]
 
-    if errors["nothing_was_transferred_derivatives"] is True:
-        message += "\n\nNothing was transferred from derivatives.\n"
+        if num_transferred is None:
+            continue
+        elif num_transferred == 0:
+            message += (
+                f"\n\nNothing was transferred from {top_level_folder}.\n"
+            )
+        else:  # TODO: make this error nicer (file was vs files were)
+            message += f"\n\n{num_transferred} file/s were transferred from {top_level_folder}.\n"
 
+    errors = transfer_output["errors"]
     if any(errors["messages"]):
         if any(errors["file_names"]):
             message += (
@@ -729,83 +738,88 @@ def log_rclone_copy_errors_api(errors: TransferErrors) -> None:
 
 def parse_rclone_copy_output(
     top_level_folder: TopLevelFolder | None, output: CompletedProcess
-) -> tuple[str, str, TransferErrors]:
+) -> tuple[str, str, TransferOutput]:
     """Format the `rclone copy` output ready for logging.
 
     Reformat and combine the string streams and `errors`
     dictionary from stdout and stderr output of `rclone copy`.
     see `reformat_rclone_copy_output()` for details.
     """
-    stdout, out_errors = reformat_rclone_copy_output(
+    stdout, stdout_outputs = reformat_rclone_copy_output(
         output.stdout, top_level_folder=top_level_folder
     )
-
-    stderr, err_errors = reformat_rclone_copy_output(
+    stderr, stderr_outputs = reformat_rclone_copy_output(
         output.stderr, top_level_folder=top_level_folder
     )
 
-    # TODO: this should be refactored so that if these are never set
-    # on `out_errors` two separate dicts are used. This is poor.
-    assert out_errors["nothing_was_transferred_rawdata"] is None
-    assert out_errors["nothing_was_transferred_derivatives"] is None
+    # Note `stdout_outputs` 'num_files' entries are not expected to be filled in.
+    # This is not ideal, but beats having to two dict formats just to handle this case.
+    # The std err entry is expected to be filled in, otherwise the RClone log format is not as we expect
+    for key in ["rawdata", "derivatives"]:
+        assert stdout_outputs["num_files_transferred"][key] is None
 
     # Combine the two `errors` output
-    all_errors: TransferErrors = {
-        "file_names": out_errors["file_names"] + err_errors["file_names"],
-        "messages": out_errors["messages"] + err_errors["messages"],
-        "nothing_was_transferred_rawdata": err_errors[
-            "nothing_was_transferred_rawdata"
-        ],
-        "nothing_was_transferred_derivatives": err_errors[
-            "nothing_was_transferred_derivatives"
-        ],
+    all_transfer_output: TransferOutput = {
+        "errors": {
+            "file_names": stdout_outputs["errors"]["file_names"]
+            + stderr_outputs["errors"]["file_names"],
+            "messages": stdout_outputs["errors"]["messages"]
+            + stderr_outputs["errors"]["messages"],
+        },
+        "num_files_transferred": {
+            "rawdata": stderr_outputs["num_files_transferred"]["rawdata"],
+            "derivatives": stderr_outputs["num_files_transferred"][
+                "derivatives"
+            ],
+        },
     }
 
-    all_errors["file_names"] = list(set(all_errors["file_names"]))  # type: ignore
+    all_transfer_output["errors"]["file_names"] = list(
+        set(all_transfer_output["errors"]["file_names"])
+    )
 
-    return stdout, stderr, all_errors
+    return stdout, stderr, all_transfer_output
 
 
-def get_empty_errors_dict() -> TransferErrors:
+def get_empty_transfer_output_dict() -> TransferOutput:
     """Return the `errors` dictionary with default values.
 
     The `errors` dictionary holds information
     about errors which occurred during `rclone copy` transfer.
     The dict entries are:
 
-    file_names
-        A list of file names associated with errors.
+    errors:
+        file_names
+            A list of file names associated with errors.
 
-    messages
-        A list of messages associated with errors. For each file name,
-        there will be an associated message, but it is also possible to
-        have messages that are not associated with any file name.
+        messages
+            A list of messages associated with errors. For each file name,
+            there will be an associated message, but it is also possible to
+            have messages that are not associated with any file name.
 
-    nothing_was_transferred_rawdata
-        A flag that can take the value `None`, `True` or `False`.
-        If `None`, this top-level folder was not attempted to be transferred.
-        If `True`, it was attempted and nothing was transferred. If `False`,
-        it was attempted and something was transferred.
-
-    nothing_was_transferred_derivatives
-        See `nothing_was_transferred_rawdata`, this is the equivalent for
-        the derivatives' folder.
+    num_files_transferred:
+        rawdata or derivatives
+            A flag that can take the value `None`, `True` or `False`.
+            If `None`, this top-level folder was not attempted to be transferred.
+            If `True`, it was attempted and nothing was transferred. If `False`,
+            it was attempted and something was transferred.
 
     The rawdata and derivatives flags must be split as some functions
     transfer a single, or both, top level folders in one command.
     """
     return {
-        "file_names": [],
-        "messages": [],
-        "nothing_was_transferred_rawdata": None,
-        "nothing_was_transferred_derivatives": None,
+        "errors": {"file_names": [], "messages": []},
+        "num_files_transferred": {
+            "rawdata": None,
+            "derivatives": None,
+        },
     }
 
 
 def reformat_rclone_copy_output(
     stream: bytes,
     top_level_folder: TopLevelFolder | None = None,
-) -> tuple[str, TransferErrors]:
+) -> tuple[str, TransferOutput]:
     """Parse the output of `rclone copy` for convenient error checking.
 
     Rclone's `copy` command (called with `--use-json-log`) outputs a lot of
@@ -830,13 +844,13 @@ def reformat_rclone_copy_output(
         to be dumped to a log file.
 
     errors
-        A dictionary (`TransferErrors`) containing key information
+        A dictionary (`TransferOutput`) containing key information
         about issues in the transfer.
 
     """
     split_stream = stream.decode("utf-8").split("\n")
 
-    errors = get_empty_errors_dict()
+    transfer_output = get_empty_transfer_output_dict()
 
     for idx, line in enumerate(split_stream):
         try:
@@ -849,18 +863,19 @@ def reformat_rclone_copy_output(
                 full_filepath = Path(
                     f"{top_level_folder}/{line_json['object']}"
                 ).as_posix()
-                errors["file_names"].append(full_filepath)
-                errors["messages"].append(
+                transfer_output["errors"]["file_names"].append(full_filepath)
+                transfer_output["errors"]["messages"].append(
                     f"The file {full_filepath} failed to transfer. Reason: {line_json['msg']}"
                 )
             else:
-                errors["messages"].append(f"ERROR : {line_json['msg']}")
+                transfer_output["errors"]["messages"].append(
+                    f"ERROR : {line_json['msg']}"
+                )
 
         elif "stats" in line_json and "totalTransfers" in line_json["stats"]:
-            if line_json["stats"]["totalTransfers"] == 0:
-                errors[f"nothing_was_transferred_{top_level_folder}"] = True  # type:ignore
-            else:
-                errors[f"nothing_was_transferred_{top_level_folder}"] = False  # type:ignore
+            transfer_output["num_files_transferred"][top_level_folder] = (
+                line_json["stats"]["totalTransfers"]
+            )
 
         split_stream[idx] = (
             f"{line_json['time'][:19]} {line_json['level'].upper()} : {line_json['msg']}"
@@ -868,7 +883,7 @@ def reformat_rclone_copy_output(
 
     format_stream = "\n".join(split_stream)
 
-    return format_stream, errors
+    return format_stream, transfer_output
 
 
 def make_rclone_transfer_options(

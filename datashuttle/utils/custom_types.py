@@ -17,10 +17,18 @@ ConnectionMethods = Literal[
 ]
 
 
-class TransferErrors(TypedDict):
+class TransferOutput(TypedDict):
     """Type `errors` dictionary (used for collecting `rclone copy` output)."""
 
+    errors: _TransferOutputErrors
+    num_files_transferred: _TransferOutputNumFiles
+
+
+class _TransferOutputErrors:
     file_names: list[str]
     messages: list[str]
-    nothing_was_transferred_rawdata: bool | None
-    nothing_was_transferred_derivatives: bool | None
+
+
+class _TransferOutputNumFiles:
+    rawdata: int | None
+    derivatives: int | None
