@@ -212,12 +212,9 @@ class ConfigsContent(Container):
             ),
             Horizontal(
                 Button("Save", id="configs_save_configs_button"),
-                Horizontal(
-                    Button(
-                        "Setup Button",
-                        id="configs_setup_connection_button",
-                    ),
-                    id="setup_buttons_container",
+                Button(
+                    "Setup Button",
+                    id="configs_setup_connection_button",
                 ),
                 # Below button is always hidden when accessing
                 # configs from project manager screen
@@ -490,7 +487,8 @@ class ConfigsContent(Container):
         assert self.interface is not None, "type narrow flexible `interface`"
 
         self.parent_class.mainwindow.push_screen(
-            setup_ssh.SetupSshScreen(self.interface)
+            setup_ssh.SetupSshScreen(self.interface),
+            self.show_project_screen_callback,
         )
 
     def setup_gdrive_connection(self) -> None:
@@ -498,7 +496,8 @@ class ConfigsContent(Container):
         assert self.interface is not None, "type narrow flexible `interface`"
 
         self.parent_class.mainwindow.push_screen(
-            setup_gdrive.SetupGdriveScreen(self.interface)
+            setup_gdrive.SetupGdriveScreen(self.interface),
+            self.show_project_screen_callback,
         )
 
     def setup_aws_connection(self) -> None:
@@ -506,8 +505,24 @@ class ConfigsContent(Container):
         assert self.interface is not None, "type narrow flexible `interface`"
 
         self.parent_class.mainwindow.push_screen(
-            setup_aws.SetupAwsScreen(self.interface)
+            setup_aws.SetupAwsScreen(self.interface),
+            self.show_project_screen_callback,
         )
+
+    def show_project_screen_callback(self, was_successful: bool):
+        """Show 'Go to Project Screen' button after connection set up screens exits."""
+        assert self.id in [
+            "new_project_configs_content",
+            "tabscreen_configs_content",
+        ], (
+            "new project or tab screen id was changed."  # see below
+        )
+        on_new_project_screen = self.id == "new_project_configs_content"
+
+        if was_successful and on_new_project_screen:
+            self.query_one(
+                "#configs_go_to_project_screen_button"
+            ).visible = True
 
     def widget_configs_match_saved_configs(self):
         """Ensure configs as set on screen match those stored in the project object.
@@ -555,9 +570,11 @@ class ConfigsContent(Container):
         if success:
             self.interface = interface
 
-            self.query_one(
-                "#configs_go_to_project_screen_button"
-            ).visible = True
+            if cfg_kwargs["connection_method"] not in ["ssh", "gdrive", "aws"]:
+                # Show central connection methods after connection is set up.
+                self.query_one(
+                    "#configs_go_to_project_screen_button"
+                ).visible = True
 
             # A message template to display custom message to user according to the chosen connection method
             message_template = tui_utils.get_project_created_message_template()

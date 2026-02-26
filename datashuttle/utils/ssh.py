@@ -210,7 +210,7 @@ def connect_client(
             f"3) The central_host_id: {cfg['central_host_id']} is"
             f" correct.\n"
             f"4) The central username:"
-            f" {cfg['central_host_username']}, and password are correct.\n"
+            f" {cfg['central_host_username']}, and password are correct.\n\n"
             f"Original error: {e}",
             ConnectionError,
         )

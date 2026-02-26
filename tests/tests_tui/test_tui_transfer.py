@@ -302,6 +302,41 @@ class TestTuiTransfer(TuiBase):
 
             await pilot.pause()
 
+    @pytest.mark.asyncio()
+    async def test_custom_transfer_default_sub_ses_all(
+        self, mocker, setup_project_paths
+    ):
+        """
+        This PR tests that for subject and session inputs on the custom
+        transfer screen, passing no argument will call the transfer
+        function with arguments "all".
+        """
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+            await self.check_and_click_onto_existing_project(
+                pilot, project_name
+            )
+            await self.switch_tab(pilot, "transfer")
+
+            await self.scroll_to_click_pause(
+                pilot, "#transfer_custom_radiobutton"
+            )
+
+            spy_download_custom = mocker.spy(
+                pilot.app.screen.interface.project, "download_custom"
+            )
+
+            await self.run_transfer(pilot, "download")
+
+            _, kwargs_ = spy_download_custom.call_args_list[0]
+
+            assert kwargs_["sub_names"] == ["all"]
+            assert kwargs_["ses_names"] == ["all"]
+
+            await pilot.pause()
+
     async def switch_top_level_folder_select(
         self, pilot, id, top_level_folder
     ):

@@ -152,7 +152,7 @@ class AcceptOrDeclineMessageBox(ModalScreen):
         self.decline_button_label = decline_button_label
 
     def compose(self) -> ComposeResult:
-        """Add widgets to the RenameFileOrFolderScreen."""
+        """Add widgets to the AcceptOrDeclineMessageBox."""
         yield Container(
             Label(self.message, id="accept_or_decline_messagebox_label"),
             Horizontal(
@@ -164,13 +164,13 @@ class AcceptOrDeclineMessageBox(ModalScreen):
                     self.decline_button_label,
                     id="accept_or_decline_messagebox_decline_button",
                 ),
-                id="rename_screen_horizontal",
+                id="accept_or_decline_horizontal",
             ),
             id="accept_or_decline_messagebox_container",
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """Handle button pressed on the RenameFileOrFolderScreen."""
+        """Handle button pressed on the AcceptOrDeclineMessageBox."""
         if event.button.id == "accept_or_decline_messagebox_accept_button":
             self.dismiss(True)
 

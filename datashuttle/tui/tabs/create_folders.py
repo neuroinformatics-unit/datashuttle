@@ -30,7 +30,7 @@ from datashuttle.tui.screens.create_folder_settings import (
     CreateFoldersSettingsScreen,
 )
 from datashuttle.tui.screens.datatypes import (
-    DatatypeCheckboxes,
+    CreateDatatypeCheckboxes,
     DisplayedDatatypesScreen,
 )
 from datashuttle.tui.screens.modal_dialogs import (
@@ -95,7 +95,7 @@ class CreateFoldersTab(TreeAndInputTab):
         )
         yield Label("Datatype(s)", id="create_folders_datatype_label")
         yield Container(
-            self.get_datatype_checkboxes_widget(),
+            self.create_datatype_checkboxes_widget(),
             id="create_folders_datatype_container",  #
         )
         yield Horizontal(
@@ -167,7 +167,7 @@ class CreateFoldersTab(TreeAndInputTab):
             "#create_folders_datatype_checkboxes"
         ).remove()
 
-        await container.mount(self.get_datatype_checkboxes_widget())
+        await container.mount(self.create_datatype_checkboxes_widget())
 
     @require_double_click
     def on_clickable_input_clicked(
@@ -229,7 +229,7 @@ class CreateFoldersTab(TreeAndInputTab):
 
         """
         if self.templates_on(prefix):
-            fill_value = self.interface.get_name_templates()[prefix]
+            fill_value = self.interface.get_validation_templates()[prefix]
         else:
             fill_value = f"{prefix}-"
 
@@ -239,8 +239,8 @@ class CreateFoldersTab(TreeAndInputTab):
     def templates_on(self, prefix: Prefix) -> bool:
         """Return `True` if the name templates are used in the project."""
         return (
-            self.interface.get_name_templates()["on"]
-            and self.interface.get_name_templates()[prefix] is not None
+            self.interface.get_validation_templates()["on"]
+            and self.interface.get_validation_templates()[prefix] is not None
         )
 
     # Validation
@@ -380,7 +380,7 @@ class CreateFoldersTab(TreeAndInputTab):
     ) -> Worker[None]:
         """Fill an Input the next subject / session in the project (local).
 
-        If `name_templates` are set, then the sub- or ses- first key
+        If `validation_templates` are set, then the sub- or ses- first key
         of the template name will be replaced with the suggested
         sub or ses key-value. Otherwise, the sub/ses key-value pair only
         will be suggested.
@@ -453,7 +453,9 @@ class CreateFoldersTab(TreeAndInputTab):
                 next_val = output
 
         if self.templates_on(prefix):
-            split_name = self.interface.get_name_templates()[prefix].split("_")
+            split_name = self.interface.get_validation_templates()[
+                prefix
+            ].split("_")
             fill_value = "_".join([next_val, *split_name[1:]])
         else:
             fill_value = next_val
@@ -541,8 +543,12 @@ class CreateFoldersTab(TreeAndInputTab):
         """Refresh the tree through the reactive attribute `path`."""
         self.query_one("#create_folders_directorytree").path = new_root_path
 
-    def get_datatype_checkboxes_widget(self):
+    def create_datatype_checkboxes_widget(self):
         """Create the datatype checkboxes, centralised as used in multiple places."""
-        return DatatypeCheckboxes(
+        return CreateDatatypeCheckboxes(
             self.interface, id="create_folders_datatype_checkboxes"
         )
+
+    def get_datatype_checkbox_widget(self) -> CreateDatatypeCheckboxes:
+        """Get the datatype checkboxes widget for the `create` tab."""
+        return self.query_one("CreateDatatypeCheckboxes")

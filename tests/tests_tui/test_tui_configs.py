@@ -20,7 +20,7 @@ class TestTuiConfigs(TuiConfigsBase):
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("kwargs_set", [1, 2])
-    async def test_make_new_project_configs__(
+    async def test_make_new_project_configs(
         self,
         empty_project_paths,
         kwargs_set,
@@ -239,9 +239,9 @@ class TestTuiConfigs(TuiConfigsBase):
             )
 
             assert (
-                pilot.app.screen.query_one(
-                    "#messagebox_message_label"
-                ).renderable
+                pilot.app.screen.query_one("#messagebox_message_label")
+                .render()
+                .plain
                 == "The project name must contain alphanumeric characters only."
             )
             await pilot.pause()

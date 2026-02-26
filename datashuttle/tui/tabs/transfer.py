@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 from rich.text import Text
 from textual import work
 from textual.containers import Container, Horizontal, Vertical
+from textual.css.query import NoMatches
 from textual.widgets import (
     Button,
     Checkbox,
@@ -32,8 +33,8 @@ from datashuttle.tui.custom_widgets import (
     TreeAndInputTab,
 )
 from datashuttle.tui.screens.datatypes import (
-    DatatypeCheckboxes,
     DisplayedDatatypesScreen,
+    TransferDatatypeCheckboxes,
 )
 from datashuttle.tui.screens.modal_dialogs import (
     ConfirmAndAwaitTransferPopup,
@@ -131,17 +132,17 @@ class TransferTab(TreeAndInputTab):
             ClickableInput(
                 self.mainwindow,
                 id="transfer_subject_input",
-                placeholder="e.g. sub-001",
+                placeholder="e.g. sub-001 (default: all)",
             ),
             Label("Session(s)", id="transfer_session_label"),
             ClickableInput(
                 self.mainwindow,
                 id="transfer_session_input",
-                placeholder="e.g. ses-001",
+                placeholder="e.g. ses-001 (default: all)",
             ),
             # These are almost identical to create tab
             Label("Datatype(s)", id="transfer_datatype_label"),
-            self.get_datatypes_checkboxes_widget(),
+            self.create_datatype_checkboxes_widget(),
             self.get_displayed_datatypes_button(),
         ]
 
@@ -217,8 +218,6 @@ class TransferTab(TreeAndInputTab):
             "#transfer_tab_overwrite_select",
             "#transfer_tab_dry_run_checkbox",
         ]:
-            from textual.css.query import NoMatches
-
             try:
                 # if checkbox is removed by user, hard to predict, skip.
                 self.query_one(id).tooltip = get_tooltip(id)
@@ -338,7 +337,7 @@ class TransferTab(TreeAndInputTab):
                 id="transfer_tab_displayed_datatypes_button",
             ),
         )
-        await container.mount(self.get_datatypes_checkboxes_widget())
+        await container.mount(self.create_datatype_checkboxes_widget())
         await container.mount(self.get_displayed_datatypes_button())
 
     def on_custom_directory_tree_directory_tree_special_key_press(
@@ -410,6 +409,12 @@ class TransferTab(TreeAndInputTab):
                     "#transfer_subject_input", "#transfer_session_input"
                 )
             )
+
+            if sub_names == [""]:
+                sub_names = ["all"]
+            if ses_names == [""]:
+                ses_names = ["all"]
+
             success, output = self.interface.transfer_custom_selection(
                 selected_top_level_folder,
                 sub_names,
@@ -422,11 +427,10 @@ class TransferTab(TreeAndInputTab):
 
         return success, output
 
-    def get_datatypes_checkboxes_widget(self):
+    def create_datatype_checkboxes_widget(self):
         """Create the datatype checkboxes, centralised as used in multiple places."""
-        return DatatypeCheckboxes(
+        return TransferDatatypeCheckboxes(
             self.interface,
-            create_or_transfer="transfer",
             id="transfer_custom_datatype_checkboxes",
         )
 
@@ -436,3 +440,7 @@ class TransferTab(TreeAndInputTab):
             "Displayed Datatypes",
             id="transfer_tab_displayed_datatypes_button",
         )
+
+    def get_datatype_checkbox_widget(self) -> TransferDatatypeCheckboxes:
+        """Get the datatype checkboxes widget for the transfer tab."""
+        return self.query_one("TransferDatatypeCheckboxes")

@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 from datashuttle import DataShuttle
 from datashuttle.configs import load_configs
-from datashuttle.utils import aws, gdrive, rclone, ssh, utils
+from datashuttle.utils import aws, rclone, ssh, utils
 
 
 class Interface:
@@ -35,7 +35,7 @@ class Interface:
     def __init__(self) -> None:
         """Initialise the Interface class."""
         self.project: DataShuttle
-        self.name_templates: Dict = {}
+        self.validation_templates: Dict = {}
         self.tui_settings: Dict = {}
 
         self.gdrive_rclone_setup_process: subprocess.Popen | None = None
@@ -56,7 +56,7 @@ class Interface:
             self.project = project
             return True, None
 
-        except BaseException as e:
+        except Exception as e:
             return False, str(e)
 
     def setup_new_project(
@@ -82,7 +82,7 @@ class Interface:
 
             return True, None
 
-        except BaseException as e:
+        except Exception as e:
             return False, str(e)
 
     def set_configs_on_existing_project(
@@ -102,7 +102,7 @@ class Interface:
             self.project.update_config_file(**cfg_kwargs)
             return True, None
 
-        except BaseException as e:
+        except Exception as e:
             return False, str(e)
 
     def create_folders(
@@ -145,7 +145,7 @@ class Interface:
             )
             return True, None
 
-        except BaseException as e:
+        except Exception as e:
             return False, str(e)
 
     def validate_names(
@@ -182,7 +182,7 @@ class Interface:
                 top_level_folder,
                 sub_names,
                 ses_names,
-                self.get_name_templates(),
+                self.get_validation_templates(),
                 bypass_validation=False,
                 allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
             )
@@ -192,7 +192,7 @@ class Interface:
                 "format_ses": format_ses,
             }
 
-        except BaseException as e:
+        except Exception as e:
             return False, str(e)
 
     def validate_project(
@@ -237,7 +237,7 @@ class Interface:
             )
             return True, results
 
-        except BaseException as e:
+        except Exception as e:
             return False, str(e)
 
     # Transfer
@@ -268,7 +268,7 @@ class Interface:
 
             return True, errors
 
-        except BaseException as e:
+        except Exception as e:
             return False, str(e)
 
     def transfer_top_level_only(
@@ -311,7 +311,7 @@ class Interface:
 
             return True, errors
 
-        except BaseException as e:
+        except Exception as e:
             return False, str(e)
 
     def transfer_custom_selection(
@@ -362,14 +362,14 @@ class Interface:
 
             return True, errors
 
-        except BaseException as e:
+        except Exception as e:
             return False, str(e)
 
     # Name templates
     # ----------------------------------------------------------------------------------
 
-    def get_name_templates(self) -> Dict:
-        """Return the `name_templates` defining templates to validate against.
+    def get_validation_templates(self) -> Dict:
+        """Return the `validation_templates` defining templates to validate against.
 
         These are stored in a variable to avoid constantly
         reading these values from disk where they are stored in
@@ -377,28 +377,30 @@ class Interface:
         and the file contents are in sync, so when changed
         on the TUI side they are updated also, in `get_tui_settings`.
         """
-        if not self.name_templates:
-            self.name_templates = self.project.get_name_templates()
+        if not self.validation_templates:
+            self.validation_templates = self.project.get_validation_templates()
 
-        return self.name_templates
+        return self.validation_templates
 
-    def set_name_templates(self, name_templates: Dict) -> InterfaceOutput:
-        """Set the `name_templates` here and on disk.
+    def set_validation_templates(
+        self, validation_templates: Dict
+    ) -> InterfaceOutput:
+        """Set the `validation_templates` here and on disk.
 
-        See `get_name_templates` for more information.
+        See `get_validation_templates` for more information.
         """
         try:
-            self.project.set_name_templates(name_templates)
-            self.name_templates = name_templates
+            self.project.set_validation_templates(validation_templates)
+            self.validation_templates = validation_templates
             return True, None
 
-        except BaseException as e:
+        except Exception as e:
             return False, str(e)
 
     def get_tui_settings(self) -> Dict:
         """Return the "tui" field of `persistent_settings`.
 
-        Similar to `get_name_templates`, there are held on the
+        Similar to `get_validation_templates`, there are held on the
         class to avoid constantly reading from disk.
         """
         if not self.tui_settings:
@@ -465,7 +467,7 @@ class Interface:
                 include_central=include_central,
             )
             return True, next_sub
-        except BaseException as e:
+        except Exception as e:
             return False, str(e)
 
     def get_next_ses(
@@ -480,7 +482,7 @@ class Interface:
                 include_central=include_central,
             )
             return True, next_ses
-        except BaseException as e:
+        except Exception as e:
             return False, str(e)
 
     def get_ssh_hostkey(self) -> InterfaceOutput:
@@ -490,7 +492,7 @@ class Interface:
                 self.project.cfg["central_host_id"]
             )
             return True, key
-        except BaseException as e:
+        except Exception as e:
             return False, str(e)
 
     def save_hostkey_locally(self, key: paramiko.RSAKey) -> InterfaceOutput:
@@ -503,7 +505,7 @@ class Interface:
             )
             return True, None
 
-        except BaseException as e:
+        except Exception as e:
             return False, str(e)
 
     def setup_key_pair_and_rclone_config(
@@ -526,7 +528,7 @@ class Interface:
 
             return True, None
 
-        except BaseException as e:
+        except Exception as e:
             return False, str(e)
 
     # Setup Google Drive
@@ -560,7 +562,7 @@ class Interface:
             )
 
             return True, None
-        except BaseException as e:
+        except Exception as e:
             return False, str(e)
 
     def get_rclone_message_for_gdrive_without_browser(
@@ -568,14 +570,14 @@ class Interface:
     ) -> InterfaceOutput:
         """Get the rclone message for Google Drive setup without a browser."""
         try:
-            output = gdrive.preliminary_for_setup_without_browser(
+            output = rclone.preliminary_setup_gdrive_config_without_browser(
                 self.project.cfg,
                 gdrive_client_secret,
-                self.project.cfg.get_rclone_config_name("gdrive"),
+                self.project.cfg.rclone.get_rclone_config_name("gdrive"),
                 log=False,
             )
             return True, output
-        except BaseException as e:
+        except Exception as e:
             return False, str(e)
 
     def terminate_gdrive_setup(self) -> None:
@@ -597,7 +599,11 @@ class Interface:
         The `self.gdrive_setup_process_killed` flag helps prevent raising errors in case the
         process was killed manually.
         """
-        stdout, stderr = process.communicate()
+        stdout, stderr = (
+            rclone.await_call_rclone_with_popen_for_central_connection_raise_on_fail(
+                self.project.cfg, process, log=False
+            )
+        )
 
         if not self.gdrive_setup_process_killed:
             if process.returncode != 0:
@@ -622,6 +628,17 @@ class Interface:
                 self.project.cfg
             )
             aws.raise_if_bucket_absent(self.project.cfg)
+            return True, None
+        except Exception as e:
+            return False, str(e)
+
+    # Set RClone Encryption
+    # ------------------------------------------------------------------------------------
+
+    def try_setup_rclone_encryption(self):
+        """Try and encrypt the RClone config file for the current `connection_method`."""
+        try:
+            self.project._try_encrypt_rclone_config(is_using_api=False)
             return True, None
         except BaseException as e:
             return False, str(e)

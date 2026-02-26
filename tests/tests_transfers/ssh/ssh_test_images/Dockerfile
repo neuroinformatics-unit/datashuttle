@@ -1,5 +1,5 @@
 # Use a base image with the desired OS (e.g., Ubuntu, Debian, etc.)
-FROM ubuntu:latest
+FROM ubuntu:20.04
 
 # Install SSH server
 RUN apt-get update && \

@@ -19,6 +19,8 @@ from datashuttle.utils.custom_exceptions import (
 
 from .. import test_utils
 
+TEST_PROJECT_NAME = test_utils.get_test_project_name()
+
 
 class TestLogging:
     @pytest.fixture(scope="function")
@@ -89,7 +91,7 @@ class TestLogging:
         Switch on datashuttle logging as required for
         these tests, then turn back off during tear-down.
         """
-        project_name = "test_project"
+        project_name = TEST_PROJECT_NAME
         test_utils.delete_project_if_it_exists(project_name)
         test_utils.set_datashuttle_loggers(disable=False)
 
@@ -154,8 +156,9 @@ class TestLogging:
         log = test_utils.read_log_file(project.cfg.logging_path)
 
         assert "Starting logging for command make-config-file" in log
-        assert "\nVariablesState:\nlocals: {'local_path':" in log
         assert "Successfully created rclone config." in log
+        assert 'New config file: \n {\n    "local_path": ' in log
+        assert '"connection_method": "local_filesystem"' in log
         assert (
             "Configuration file has been saved and options loaded into datashuttle."
             in log
@@ -168,11 +171,8 @@ class TestLogging:
         log = test_utils.read_log_file(project.cfg.logging_path)
 
         assert "Starting logging for command update-config-file" in log
-        assert (
-            "\n\nVariablesState:\nlocals: {'kwargs': {'central_host_id':"
-            in log
-        )
         assert "Update successful. New config file:" in log
+        assert 'New config file: \n {\n    "local_path":' in log
         assert """ "central_host_id": "test_id",\n """ in log
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
@@ -293,7 +293,7 @@ class TestLogging:
         assert "Using config file from" in log
         assert "--include" in log
         assert "sub-11/ses-123/anat/**" in log
-        assert "/central/test_project/rawdata" in log
+        assert f"/central/{TEST_PROJECT_NAME}/rawdata" in log
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_logs_upload_and_download_folder_or_file(
@@ -382,7 +382,7 @@ class TestLogging:
 
         configs["local_path"] = "~"
 
-        with pytest.raises(BaseException):
+        with pytest.raises(Exception):
             project.make_config_file(**configs)
 
         # Because an error was raised, the log will stay in the
@@ -415,10 +415,6 @@ class TestLogging:
             "'central_host_username' are required if 'connection_method' is 'ssh'"
             in log
         )
-        assert (
-            "VariablesState:\nlocals: {'kwargs': {'connection_method': 'ssh'"
-            in log
-        )
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_logs_bad_create_folders_error(self, project):
@@ -449,7 +445,7 @@ class TestLogging:
         test_utils.delete_log_files(project.cfg.logging_path)
 
         # Check a validation error is logged.
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(Exception) as e:
             project.validate_project("rawdata", display_mode="error")
 
         log = test_utils.read_log_file(project.cfg.logging_path)
@@ -478,7 +474,7 @@ class TestLogging:
         project.create_folders("rawdata", "sub-001")
         test_utils.delete_log_files(project.cfg.logging_path)  #
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(Exception) as e:
             project.create_folders("rawdata", "sub-001_id-a")
 
         log = test_utils.read_log_file(project.cfg.logging_path)

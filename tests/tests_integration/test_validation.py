@@ -5,6 +5,7 @@ import warnings
 import pytest
 
 from datashuttle import validate_project_from_path
+from datashuttle.configs import canonical_folders
 from datashuttle.utils import formatting, validation
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
@@ -697,8 +698,8 @@ class TestValidation(BaseTest):
         assert "DUPLICATE_NAME" in str(w[1].message)
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
-    def test_tags_in_name_templates_pass_validation(self, project):
-        """It is useful to allow tags in the `name_templates` as it means
+    def test_tags_in_validation_templates_pass_validation(self, project):
+        """It is useful to allow tags in the `validation_templates` as it means
         auto-completion in the TUI can use tags for automatic name
         generation. Because all subject and session names are
         fully formatted (e.g. @DATE@ converted to actual dates)
@@ -706,13 +707,13 @@ class TestValidation(BaseTest):
         and other tags with their regexp equivalent. Check
         this behaviour here.
         """
-        name_templates = {
+        validation_templates = {
             "on": True,
             "sub": r"sub-\d\d_@DATE@",
             "ses": r"ses-\d\d\d@DATETIME@",
         }
 
-        project.set_name_templates(name_templates)
+        project.set_validation_templates(validation_templates)
 
         # Standard behaviour, should not raise
         project.create_folders(
@@ -736,8 +737,8 @@ class TestValidation(BaseTest):
         assert "TEMPLATE: The name: ses-001_datex-20241212" in str(e.value)
 
         # Do a quick test for time
-        name_templates["sub"] = r"sub-\d\d_@TIME@"
-        project.set_name_templates(name_templates)
+        validation_templates["sub"] = r"sub-\d\d_@TIME@"
+        project.set_validation_templates(validation_templates)
 
         # use time tag, should not raise
         project.create_folders(
@@ -750,14 +751,14 @@ class TestValidation(BaseTest):
             project.create_folders("rawdata", "sub-03_mime_010101")
         assert "TEMPLATE: The name: ses-001_datex-20241212" in str(e.value)
 
-    def test_name_templates_validate_project(self, project):
+    def test_validation_templates_validate_project(self, project):
         # set up name templates
-        name_templates = {
+        validation_templates = {
             "on": True,
             "sub": r"sub-\d\d_id-\d.?",
             "ses": r"ses-\d\d_id-\d.?",
         }
-        project.set_name_templates(name_templates)
+        project.set_validation_templates(validation_templates)
 
         # Create names that match, check this does not error
         project.create_folders(
@@ -787,7 +788,7 @@ class TestValidation(BaseTest):
     # Test Quick Validation Function
     # ----------------------------------------------------------------------------------
 
-    def test_quick_validation(self, mocker, project):
+    def test_validate_project_from_path(self, mocker, project):
         project.create_folders("rawdata", "sub-1")
         os.makedirs(project.cfg["local_path"] / "rawdata" / "sub-02")
         project.create_folders("derivatives", "sub-1")
@@ -803,6 +804,12 @@ class TestValidation(BaseTest):
         assert "VALUE_LENGTH" in str(w[1].message)
         assert len(w) == 2
 
+        # This is used internally to generate a Configs class,
+        # but should not actually be written to.
+        assert (
+            not canonical_folders.get_internal_datashuttle_from_path().exists()
+        )
+
         # For good measure, monkeypatch and change all defaults,
         # ensuring they are propagated to the validate_project
         # function (which is tested above)
@@ -816,15 +823,15 @@ class TestValidation(BaseTest):
             project.get_local_path(),
             display_mode="print",
             top_level_folder="derivatives",
-            name_templates={"on": False},
+            validation_templates={"on": False},
         )
 
         _, kwargs = spy_validate_func.call_args_list[0]
         assert kwargs["display_mode"] == "print"
         assert kwargs["top_level_folder_list"] == ["derivatives"]
-        assert kwargs["name_templates"] == {"on": False}
+        assert kwargs["validation_templates"] == {"on": False}
 
-    def test_quick_validation_top_level_folder(self, project):
+    def test_validate_from_path_top_level_folder(self, project):
         """Test that errors are raised as expected on
         bad project path input.
         """
