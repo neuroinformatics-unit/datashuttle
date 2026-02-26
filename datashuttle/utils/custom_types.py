@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Literal, Tuple, TypedDict
+from typing import Any, Literal, Tuple
 
 DisplayMode = Literal["error", "warn", "print"]
 
@@ -15,20 +15,3 @@ InterfaceOutput = Tuple[bool, Any]
 ConnectionMethods = Literal[
     "ssh", "local_filesystem", "gdrive", "aws", "local_only"
 ]
-
-
-class TransferOutput(TypedDict):
-    """Type `errors` dictionary (used for collecting `rclone copy` output)."""
-
-    errors: _TransferOutputErrors
-    num_files_transferred: _TransferOutputNumFiles
-
-
-class _TransferOutputErrors:
-    file_names: list[str]
-    messages: list[str]
-
-
-class _TransferOutputNumFiles:
-    rawdata: int | None
-    derivatives: int | None

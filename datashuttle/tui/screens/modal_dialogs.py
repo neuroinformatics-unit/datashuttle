@@ -250,50 +250,28 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
             self.dismiss()  # do not await here TODO: final check here
 
             if success:
-                errors_message = ""
+                if self.app.theme == "textual-dark":
+                    no_transfer_color = "lightblue"
+                    transfer_color = "#44C97F"  # #44C97F
+                else:
+                    no_transfer_color = "blue"
+                    transfer_color = "#1AA34A"
 
-                messagebox_kwargs = {}
-
-                no_transfer_col = (
-                    "blue"
-                    if self.app.theme == "textual-light"
-                    else "lightblue"
+                transfer_output_message = transfer_output.create_tui_message(
+                    no_transfer_color, transfer_color
                 )
 
-                for top_level_folder in ["rawdata", "derivatives"]:
-                    num_transferred = transfer_output["num_files_transferred"][
-                        top_level_folder
-                    ]
-                    if num_transferred is None:
-                        continue
-                    elif num_transferred == 0:
-                        errors_message += f"[{no_transfer_col}]\nNothing was transferred from {top_level_folder}.[/{no_transfer_col}]\n"
-
-                    else:  # TODO: make this error nicer
-                        errors_message += f"[green]\n{num_transferred} file/s were transferred from {top_level_folder}.[/green]\n"
-
-                errors_dict = transfer_output["errors"]
-                if any(errors_dict["messages"]):
-                    if errors_dict["file_names"]:
-                        errors_message += (
-                            "\n[red]Errors detected! in files:[/red]\n"
-                        )
-                        errors_message += "\n".join(errors_dict["file_names"])
-                    else:
-                        errors_message += "\n[red]Errors detected![/red]"
-                    errors_message += (
-                        "[red]\n\nThe error messages are:[/red]\n"
-                    )
-                    errors_message += "\n\n".join(errors_dict["messages"])
-                    messagebox_kwargs = {"width": "75%", "height": "75%"}
-
-                if errors_message == "":
-                    errors_message += "No errors detected"
-
+                # TODO: set only if errors detected
                 message = (
                     f"Transfer finished.\n"
-                    f"{errors_message}\n\n"
+                    f"{transfer_output_message}\n\n"
                     f"Check the most recent logs for full details."
+                )
+
+                messagebox_kwargs = (
+                    {"width": "75%", "height": "75%"}
+                    if transfer_output.errors_detected()
+                    else {}
                 )
 
                 self.app.push_screen(
@@ -302,7 +280,7 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
                     )
                 )
             else:
-                self.app.show_modal_error_dialog(output)
+                self.app.show_modal_error_dialog(transfer_output)
 
         except Exception as e:
             self.app.show_modal_error_dialog(str(e))

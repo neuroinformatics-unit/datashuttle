@@ -26,7 +26,6 @@ if TYPE_CHECKING:
         OverwriteExistingFiles,
         Prefix,
         TopLevelFolder,
-        TransferOutput,
     )
 
 import yaml
@@ -62,6 +61,7 @@ from datashuttle.utils.decorators import (  # noqa
     requires_aws_configs,
     requires_ssh_configs,
 )
+from datashuttle.utils.transfer_output_class import TransferOutput
 
 # -----------------------------------------------------------------------------
 # Project Manager Class
@@ -1638,7 +1638,7 @@ class DataShuttle:
         i.e. every 'top level folder' (e.g. 'rawdata', 'derivatives').
         See ``upload_custom()`` or ``download_custom()`` for parameters.
         """
-        all_output = rclone.get_empty_transfer_output_dict()
+        all_output = TransferOutput()
 
         for top_level_folder in canonical_folders.get_top_level_folders():
             utils.log_and_message(
@@ -1662,9 +1662,10 @@ class DataShuttle:
             all_output["errors"]["messages"] += transfer_output["errors"][
                 "messages"
             ]
-            all_output["num_files_transferred"][top_level_folder] = (
-                transfer_output["num_files_transferred"][top_level_folder]
-            )
+
+            all_output["num_transferred"][top_level_folder] = transfer_output[
+                "num_transferred"
+            ][top_level_folder]
 
         rclone.log_rclone_copy_errors_api(all_output)
 

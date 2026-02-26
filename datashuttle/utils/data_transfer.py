@@ -9,6 +9,7 @@ from datashuttle.utils.custom_types import (
     Prefix,
     TopLevelFolder,
 )
+from datashuttle.utils.transfer_output_class import TransferOutput
 
 
 class TransferData:
@@ -89,7 +90,7 @@ class TransferData:
 
         self.check_input_arguments()
 
-    def run(self):
+    def run(self) -> TransferOutput:
         """Run the transfer."""
         include_list = self.build_a_list_of_all_files_and_folders_to_transfer()
 
@@ -120,10 +121,8 @@ class TransferData:
 
         else:
             utils.log_and_message("No files included. None transferred.")
-            transfer_output = rclone.get_empty_transfer_output_dict()
-            transfer_output["num_files_transferred"][
-                self.__top_level_folder
-            ] = 0
+            transfer_output = TransferOutput()
+            transfer_output["num_transferred"][self.__top_level_folder] = 0
 
         return transfer_output
 
