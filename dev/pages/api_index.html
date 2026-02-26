@@ -1,0 +1,1472 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>API Reference &#8212; datashuttle</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=69c4b1bb" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'pages/api_index';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://datashuttle.neuroinformatics.dev/latest/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="canonical" href="https://datashuttle.neuroinformatics.dev/pages/api_index.html" />
+    <link rel="icon" href="../_static/logo_light.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Roadmap" href="community/roadmap.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo_light.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/logo_dark.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">datashuttle v0.1.dev1</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="get_started/index.html">
+    Get started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="user_guides/index.html">
+    User guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="community/index.html">
+    Community
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle" title="Zulip (chat)" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-comments fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Zulip (chat)</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="get_started/index.html">
+    Get started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="user_guides/index.html">
+    User guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="community/index.html">
+    Community
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle" title="Zulip (chat)" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-comments fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Zulip (chat)</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">API Reference</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="api-reference">
+<span id="id1"></span><h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">datashuttle.</span></span><span class="sig-name descname"><span class="pre">DataShuttle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_startup_message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle" title="Link to this definition">#</a></dt>
+<dd><p>DataShuttle is a tool for neuroscience project management and data transfer.</p>
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.check_name_formatting" title="datashuttle.DataShuttle.check_name_formatting"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_name_formatting</span></code></a>(names, prefix[, ...])</p></td>
+<td><p>Format a list of subject or session names.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.create_folders" title="datashuttle.DataShuttle.create_folders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_folders</span></code></a>(top_level_folder, sub_names)</p></td>
+<td><p>Create a folder tree in the project folder.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.download_custom" title="datashuttle.DataShuttle.download_custom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_custom</span></code></a>(top_level_folder, sub_names, ...)</p></td>
+<td><p>Download data from the central project to the local project folder.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.download_derivatives" title="datashuttle.DataShuttle.download_derivatives"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_derivatives</span></code></a>([...])</p></td>
+<td><p>Download all files in the <cite>derivatives</cite> top level folder.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.download_entire_project" title="datashuttle.DataShuttle.download_entire_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_entire_project</span></code></a>([...])</p></td>
+<td><p>Download the entire project.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.download_rawdata" title="datashuttle.DataShuttle.download_rawdata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_rawdata</span></code></a>([overwrite_existing_files, ...])</p></td>
+<td><p>Download all files in the <cite>rawdata</cite> top level folder.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.download_specific_folder_or_file" title="datashuttle.DataShuttle.download_specific_folder_or_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_specific_folder_or_file</span></code></a>(filepath[, ...])</p></td>
+<td><p>Download a specific file or folder.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.encrypt_rclone_config" title="datashuttle.DataShuttle.encrypt_rclone_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">encrypt_rclone_config</span></code></a>()</p></td>
+<td><p>Encrypt the rclone config file for the central connection.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_central_path" title="datashuttle.DataShuttle.get_central_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_central_path</span></code></a>()</p></td>
+<td><p>Return the project central path.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_config_path" title="datashuttle.DataShuttle.get_config_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_config_path</span></code></a>()</p></td>
+<td><p>Return the full path to the DataShuttle config file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_configs" title="datashuttle.DataShuttle.get_configs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_configs</span></code></a>()</p></td>
+<td><p>Return the datashuttle configs.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_datashuttle_path" title="datashuttle.DataShuttle.get_datashuttle_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datashuttle_path</span></code></a>()</p></td>
+<td><p>Return the path to the local datashuttle folder.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_existing_projects" title="datashuttle.DataShuttle.get_existing_projects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_existing_projects</span></code></a>()</p></td>
+<td><p>Return a list of existing project names found on the local machine.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_local_path" title="datashuttle.DataShuttle.get_local_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_local_path</span></code></a>()</p></td>
+<td><p>Return the projects local path.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_logging_path" title="datashuttle.DataShuttle.get_logging_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_logging_path</span></code></a>()</p></td>
+<td><p>Return the path where datashuttle logs are written.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_next_ses" title="datashuttle.DataShuttle.get_next_ses"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_next_ses</span></code></a>(top_level_folder, sub[, ...])</p></td>
+<td><p>Return the next session number.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_next_sub" title="datashuttle.DataShuttle.get_next_sub"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_next_sub</span></code></a>(top_level_folder[, ...])</p></td>
+<td><p>Return the next subject number.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_rclone_central_config_path" title="datashuttle.DataShuttle.get_rclone_central_config_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_rclone_central_config_path</span></code></a>()</p></td>
+<td><p>Get the path to the Rclone config for the current <cite>connection_method</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_validation_templates" title="datashuttle.DataShuttle.get_validation_templates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_validation_templates</span></code></a>()</p></td>
+<td><p>Return the regexp templates used for validation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.is_local_project" title="datashuttle.DataShuttle.is_local_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_local_project</span></code></a>()</p></td>
+<td><p>Return a bool indicating whether the project is 'local only'.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.make_config_file" title="datashuttle.DataShuttle.make_config_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_config_file</span></code></a>(local_path[, central_path, ...])</p></td>
+<td><p>Initialize the configurations for datashuttle on the local machine.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.remove_rclone_encryption" title="datashuttle.DataShuttle.remove_rclone_encryption"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_rclone_encryption</span></code></a>()</p></td>
+<td><p>Unencrypt the rclone config file for the central connection.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.set_validation_templates" title="datashuttle.DataShuttle.set_validation_templates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_validation_templates</span></code></a>(...)</p></td>
+<td><p>Update the persistent settings with new name templates.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.setup_aws_connection" title="datashuttle.DataShuttle.setup_aws_connection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_aws_connection</span></code></a>()</p></td>
+<td><p>Set up a connection to AWS S3 buckets using the provided credentials.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.setup_gdrive_connection" title="datashuttle.DataShuttle.setup_gdrive_connection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_gdrive_connection</span></code></a>()</p></td>
+<td><p>Set up a connection to Google Drive using the provided credentials.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.setup_ssh_connection" title="datashuttle.DataShuttle.setup_ssh_connection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_ssh_connection</span></code></a>()</p></td>
+<td><p>Set up a connection to the central server using SSH.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.show_configs" title="datashuttle.DataShuttle.show_configs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_configs</span></code></a>()</p></td>
+<td><p>Print the current configs to the terminal.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.update_config_file" title="datashuttle.DataShuttle.update_config_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_config_file</span></code></a>(**kwargs)</p></td>
+<td><p>Update the configuration file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.upload_custom" title="datashuttle.DataShuttle.upload_custom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_custom</span></code></a>(top_level_folder, sub_names, ...)</p></td>
+<td><p>Upload data from a local project to the central project folder.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.upload_derivatives" title="datashuttle.DataShuttle.upload_derivatives"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_derivatives</span></code></a>([...])</p></td>
+<td><p>Upload all files in the <cite>derivatives</cite> top level folder.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.upload_entire_project" title="datashuttle.DataShuttle.upload_entire_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_entire_project</span></code></a>([...])</p></td>
+<td><p>Upload the entire project.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.upload_rawdata" title="datashuttle.DataShuttle.upload_rawdata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_rawdata</span></code></a>([overwrite_existing_files, ...])</p></td>
+<td><p>Upload all files in the <cite>rawdata</cite> top level folder.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.upload_specific_folder_or_file" title="datashuttle.DataShuttle.upload_specific_folder_or_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_specific_folder_or_file</span></code></a>(filepath[, ...])</p></td>
+<td><p>Upload a specific file or folder.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.validate_project" title="datashuttle.DataShuttle.validate_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_project</span></code></a>(top_level_folder, display_mode)</p></td>
+<td><p>Perform validation on the project.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.create_folders">
+<span class="sig-name descname"><span class="pre">create_folders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bypass_validation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_letters_in_sub_ses_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.create_folders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.create_folders" title="Link to this definition">#</a></dt>
+<dd><p>Create a folder tree in the project folder.</p>
+<p>The passed names are initially formatted and validated,
+then folders are created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>top_level_folder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'rawdata'</span></code>, <code class="docutils literal notranslate"><span class="pre">'derivatives'</span></code>]</span>) – Whether to make the folders within <cite>rawdata</cite> or
+<cite>derivatives</cite>.</p></li>
+<li><p><strong>sub_names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – subject name / list of subject names to make
+within the top-level project folder
+(if not already, these will be prefixed with
+“sub-“)</p></li>
+<li><p><strong>ses_names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – session name / list of session names.
+(if not already, these will be prefixed with
+“ses-“). If no session is provided, no session-level
+folders are made.</p></li>
+<li><p><strong>datatype</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – The datatype to make in the sub / ses folders.
+(e.g. “ephys”, “behav”, “anat”). If “” is
+passed no datatype will be created. Broad or
+Narrow NeuroBlueprint datatypes are accepted.</p></li>
+<li><p><strong>bypass_validation</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <cite>True</cite>, folders will be created even if they are not
+valid to NeuroBlueprint style.</p></li>
+<li><p><strong>allow_letters_in_sub_ses_values</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – <p>If <cite>True</cite>, any alphanumeric character are allowed for the values associated
+with sub- or ses-  keys. Otherwise, values must be integer
+and the following additional checks are performed:</p>
+<ul>
+<li><p>Labels must be the same length (e.g. sub-01 and sub-002 is invalid).</p></li>
+</ul>
+</p></li>
+<li><p><strong>log</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <cite>True</cite>, details of folder creation will be logged.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary of the full filepaths made during folder creation,
+where the keys are the type of folder made and the values are a
+list of created folder paths (Path objects). If datatype were
+created, the dict keys will separate created folders by datatype
+name. Similarly, if only subject or session level folders were
+created, these are separated by “sub” and “ses” keys.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>created_paths</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>sub_names or ses_names may contain formatting tags</p>
+<dl class="simple">
+<dt>&#64;TO&#64;</dt><dd><p>used to make a range of subjects / sessions.
+Boundaries of the range must be either side of the tag
+e.g. sub-001&#64;TO&#64;003 will generate [“sub-001”, “sub-002”, “sub-003”]</p>
+</dd>
+<dt>&#64;DATE&#64;, &#64;TIME&#64; &#64;DATETIME&#64;</dt><dd><p>will add date-&lt;value&gt;, time-&lt;value&gt; or
+date-&lt;value&gt;_time-&lt;value&gt; keys respectively. Only one per-name
+is permitted.
+e.g. sub-001_&#64;DATE&#64; will generate sub-001_date-20220101 (on the 1st january, 2022).</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>project.create_folders(“rawdata”, “sub-001”, datatype=”behav”)</p>
+<p>project.create_folders(“rawdata”, “sub-002&#64;TO&#64;005”, [“ses-001”, “ses-002”], [“ephys”, “behav”])</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.upload_custom">
+<span class="sig-name descname"><span class="pre">upload_custom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.upload_custom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.upload_custom" title="Link to this definition">#</a></dt>
+<dd><p>Upload data from a local project to the central project folder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>top_level_folder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'rawdata'</span></code>, <code class="docutils literal notranslate"><span class="pre">'derivatives'</span></code>]</span>) – The top-level folder (e.g. <cite>“rawdata”</cite>, <cite>“derivatives”</cite>) to transfer within.</p></li>
+<li><p><strong>sub_names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></span>) – A subject name / list of subject names. These must
+be prefixed with <code class="docutils literal notranslate"><span class="pre">&quot;sub-&quot;</span></code>, or the prefix will be
+automatically added. <code class="docutils literal notranslate"><span class="pre">&quot;&#64;*&#64;&quot;</span></code> can be used as a wildcard.
+“all” will search for all sub-folders in the
+datatype folder to upload.</p></li>
+<li><p><strong>ses_names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></span>) – A session name / list of session names, similar to
+sub_names but requiring a <code class="docutils literal notranslate"><span class="pre">&quot;ses-&quot;</span></code> prefix.</p></li>
+<li><p><strong>datatype</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – The (broad or narrow) NeuroBlueprint datatypes to transfer.
+If <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>, any broad or narrow datatype folder will be transferred.</p></li>
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
+there is any difference in date or size.
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
+by files on source with newer creation / modification datetime.</p></li>
+<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
+transfer was taking place, but no files will be moved.</p></li>
+<li><p><strong>init_log</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to handle logging. This should
+always be <code class="docutils literal notranslate"><span class="pre">True</span></code>, unless logger is handled elsewhere
+(e.g. in a calling function).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.download_custom">
+<span class="sig-name descname"><span class="pre">download_custom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.download_custom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.download_custom" title="Link to this definition">#</a></dt>
+<dd><p>Download data from the central project to the local project folder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>top_level_folder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'rawdata'</span></code>, <code class="docutils literal notranslate"><span class="pre">'derivatives'</span></code>]</span>) – The top-level folder (e.g. <cite>“rawdata”</cite>, <cite>“derivatives”</cite>) to transfer within.</p></li>
+<li><p><strong>sub_names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></span>) – A subject name / list of subject names. These must
+be prefixed with <code class="docutils literal notranslate"><span class="pre">&quot;sub-&quot;</span></code>, or the prefix will be
+automatically added. <code class="docutils literal notranslate"><span class="pre">&quot;&#64;*&#64;&quot;</span></code> can be used as a wildcard.
+“all” will search for all sub-folders in the
+datatype folder to upload.</p></li>
+<li><p><strong>ses_names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></span>) – A session name / list of session names, similar to
+sub_names but requiring a <code class="docutils literal notranslate"><span class="pre">&quot;ses-&quot;</span></code> prefix.</p></li>
+<li><p><strong>datatype</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – The (broad or narrow) NeuroBlueprint datatypes to transfer.
+If <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>, any broad or narrow datatype folder will be transferred.</p></li>
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
+there is any difference in date or size.
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
+by files on source with newer creation / modification datetime.</p></li>
+<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
+transfer was taking place, but no files will be moved.</p></li>
+<li><p><strong>init_log</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to handle logging. This should
+always be <code class="docutils literal notranslate"><span class="pre">True</span></code>, unless logger is handled elsewhere
+(e.g. in a calling function).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.upload_rawdata">
+<span class="sig-name descname"><span class="pre">upload_rawdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.upload_rawdata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.upload_rawdata" title="Link to this definition">#</a></dt>
+<dd><p>Upload all files in the <cite>rawdata</cite> top level folder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
+there is any difference in date or size.
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
+by files on source with newer creation / modification datetime.</p></li>
+<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
+transfer was taking place, but no files will be moved.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.upload_derivatives">
+<span class="sig-name descname"><span class="pre">upload_derivatives</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.upload_derivatives"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.upload_derivatives" title="Link to this definition">#</a></dt>
+<dd><p>Upload all files in the <cite>derivatives</cite> top level folder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
+there is any difference in date or size.
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
+by files on source with newer creation / modification datetime.</p></li>
+<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
+transfer was taking place, but no files will be moved.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.download_rawdata">
+<span class="sig-name descname"><span class="pre">download_rawdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.download_rawdata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.download_rawdata" title="Link to this definition">#</a></dt>
+<dd><p>Download all files in the <cite>rawdata</cite> top level folder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
+there is any difference in date or size.
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
+by files on source with newer creation / modification datetime.</p></li>
+<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
+transfer was taking place, but no files will be moved..</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.download_derivatives">
+<span class="sig-name descname"><span class="pre">download_derivatives</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.download_derivatives"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.download_derivatives" title="Link to this definition">#</a></dt>
+<dd><p>Download all files in the <cite>derivatives</cite> top level folder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
+there is any difference in date or size.
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
+by files on source with newer creation / modification datetime.</p></li>
+<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
+transfer was taking place, but no files will be moved.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.upload_entire_project">
+<span class="sig-name descname"><span class="pre">upload_entire_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.upload_entire_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.upload_entire_project" title="Link to this definition">#</a></dt>
+<dd><p>Upload the entire project.</p>
+<p>Includes every top level folder (e.g. <code class="docutils literal notranslate"><span class="pre">rawdata</span></code>, <code class="docutils literal notranslate"><span class="pre">derivatives</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
+there is any difference in date or size.
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
+by files on source with newer creation / modification datetime.</p></li>
+<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
+transfer was taking place, but no files will be moved.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.download_entire_project">
+<span class="sig-name descname"><span class="pre">download_entire_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.download_entire_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.download_entire_project" title="Link to this definition">#</a></dt>
+<dd><p>Download the entire project.</p>
+<p>Includes every top level folder (e.g. <code class="docutils literal notranslate"><span class="pre">rawdata</span></code>, <code class="docutils literal notranslate"><span class="pre">derivatives</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
+there is any difference in date or size.
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
+by files on source with newer creation / modification datetime.</p></li>
+<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
+transfer was taking place, but no files will be moved.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.upload_specific_folder_or_file">
+<span class="sig-name descname"><span class="pre">upload_specific_folder_or_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.upload_specific_folder_or_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.upload_specific_folder_or_file" title="Link to this definition">#</a></dt>
+<dd><p>Upload a specific file or folder.</p>
+<p>If transferring a single file, the path including the filename is
+required (see ‘filepath’ input). If a folder, wildcards “*” or “**” must be used to transfer
+all files in the folder (“*”) or all files and sub-folders (“**”).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span>) – a string containing the full filepath.</p></li>
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
+there is any difference in date or size.
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
+by files on source with newer creation / modification datetime.</p></li>
+<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
+transfer was taking place, but no files will be moved.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.download_specific_folder_or_file">
+<span class="sig-name descname"><span class="pre">download_specific_folder_or_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.download_specific_folder_or_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.download_specific_folder_or_file" title="Link to this definition">#</a></dt>
+<dd><p>Download a specific file or folder.</p>
+<p>If transferring a single file, the path including the filename is
+required (see ‘filepath’ input). If a folder, wildcards “*” or “**”
+must be used to transfer all files in the folder (“*”) or all files
+and sub-folders (“**”).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span>) – a string containing the full filepath.</p></li>
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
+there is any difference in date or size.
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
+by files on source with newer creation / modification datetime.</p></li>
+<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
+transfer was taking place, but no files will be moved.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.setup_ssh_connection">
+<span class="sig-name descname"><span class="pre">setup_ssh_connection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.setup_ssh_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.setup_ssh_connection" title="Link to this definition">#</a></dt>
+<dd><p>Set up a connection to the central server using SSH.</p>
+<p>Assumes the central_host_id and central_host_username
+are set in configs (see make_config_file() and update_config_file()).
+First, the server key will be displayed, requiring
+verification of the server ID. This will store the
+hostkey for all future use.</p>
+<p>Next, prompt to input their password for the central
+cluster. Once input, SSH private / public key pair
+will be setup.</p>
+<p>Do not log this method, too high a risk of logging secrets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.setup_gdrive_connection">
+<span class="sig-name descname"><span class="pre">setup_gdrive_connection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.setup_gdrive_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.setup_gdrive_connection" title="Link to this definition">#</a></dt>
+<dd><p>Set up a connection to Google Drive using the provided credentials.</p>
+<p>Assumes <cite>gdrive_root_folder_id</cite> is set in configs.</p>
+<p>First, the user will be prompted to enter their Google Drive client
+secret if <cite>gdrive_client_id</cite> is set in the configs.</p>
+<p>Next, the user will be asked if their machine has access to a browser.
+If not, they will be prompted to input a config_token after running an
+rclone command displayed to the user on a machine with access to a browser.</p>
+<p>Next, with the provided credentials, the final setup will be done. This
+opens up a browser if the user confirmed access to a browser.</p>
+<p>Do not log this method, too high a risk of logging secrets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.setup_aws_connection">
+<span class="sig-name descname"><span class="pre">setup_aws_connection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.setup_aws_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.setup_aws_connection" title="Link to this definition">#</a></dt>
+<dd><p>Set up a connection to AWS S3 buckets using the provided credentials.</p>
+<p>Assumes <cite>aws_access_key_id</cite> and <cite>aws_region</cite> are set in configs.</p>
+<p>First, the user will be prompted to input their AWS secret access key.</p>
+<p>Next, with the provided credentials, the final connection setup will be done.</p>
+<p>Do not log this method, too high a risk of logging secrets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.encrypt_rclone_config">
+<span class="sig-name descname"><span class="pre">encrypt_rclone_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.encrypt_rclone_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.encrypt_rclone_config" title="Link to this definition">#</a></dt>
+<dd><p>Encrypt the rclone config file for the central connection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.remove_rclone_encryption">
+<span class="sig-name descname"><span class="pre">remove_rclone_encryption</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.remove_rclone_encryption"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.remove_rclone_encryption" title="Link to this definition">#</a></dt>
+<dd><p>Unencrypt the rclone config file for the central connection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.make_config_file">
+<span class="sig-name descname"><span class="pre">make_config_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">central_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'local_only'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">central_host_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">central_host_username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gdrive_client_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gdrive_root_folder_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_access_key_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_region</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.make_config_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.make_config_file" title="Link to this definition">#</a></dt>
+<dd><p>Initialize the configurations for datashuttle on the local machine.</p>
+<p>Once initialized, these settings will be used each
+time the datashuttle is opened.</p>
+<p>These settings are stored in a config file on the
+datashuttle path (not in the project folder) on the
+local machine. Use <code class="docutils literal notranslate"><span class="pre">get_config_path()</span></code> to get the
+full path to the saved config file.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">update_config_file()</span></code> to selectively update settings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>local_path</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – path to project folder on local machine</p></li>
+<li><p><strong>central_path</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – Filepath to central project.
+If this is local (i.e. <code class="docutils literal notranslate"><span class="pre">connection_method</span> <span class="pre">=</span> <span class="pre">&quot;local_filesystem&quot;</span></code>),
+this is the full path on the local filesystem
+Otherwise, if this is via ssh (i.e. <code class="docutils literal notranslate"><span class="pre">connection</span> <span class="pre">method</span> <span class="pre">=</span> <span class="pre">&quot;ssh&quot;</span></code>),
+this is the path to the project folder on central machine.
+This should be a full path to central folder i.e. this cannot
+include ~ home folder syntax, must contain the full path
+(e.g. <code class="docutils literal notranslate"><span class="pre">/nfs/nhome/live/jziminski</span></code>)</p></li>
+<li><p><strong>connection_method</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'ssh'</span></code>, <code class="docutils literal notranslate"><span class="pre">'local_filesystem'</span></code>, <code class="docutils literal notranslate"><span class="pre">'gdrive'</span></code>, <code class="docutils literal notranslate"><span class="pre">'aws'</span></code>, <code class="docutils literal notranslate"><span class="pre">'local_only'</span></code>] | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – The method used to connect to the central project filesystem,
+<code class="docutils literal notranslate"><span class="pre">None</span></code> is an alias for <code class="docutils literal notranslate"><span class="pre">&quot;local_only&quot;</span></code>.
+e.g. <code class="docutils literal notranslate"><span class="pre">&quot;local_filesystem&quot;</span></code> (e.g. mounted drive) or <code class="docutils literal notranslate"><span class="pre">&quot;ssh&quot;</span></code></p></li>
+<li><p><strong>central_host_id</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – server address for central host for ssh connection
+e.g. <code class="docutils literal notranslate"><span class="pre">&quot;ssh.swc.ucl.ac.uk&quot;</span></code></p></li>
+<li><p><strong>central_host_username</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – username for which to log in to central host.
+e.g. <code class="docutils literal notranslate"><span class="pre">&quot;jziminski&quot;</span></code></p></li>
+<li><p><strong>gdrive_client_id</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – The client ID used to authenticate with the Google Drive API via OAuth 2.0.
+This is obtained from the Google Cloud Console when setting up API credentials.
+e.g. “1234567890-abc123def456.apps.googleusercontent.com”</p></li>
+<li><p><strong>gdrive_root_folder_id</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – The folder ID for the Google Drive folder to connect to. This can be copied
+directly from your browser when on the folder in Google Drive.
+e.g. 1eoAnopd2ZHOd87LgiPtgViFE7u3R9sSw</p></li>
+<li><p><strong>aws_access_key_id</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – The AWS access key ID used to authenticate requests to AWS services.
+This is part of your AWS credentials and can be generated via the AWS IAM console.
+e.g. “AKIAIOSFODNN7EXAMPLE”</p></li>
+<li><p><strong>aws_region</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – The AWS region in which your resources are located.
+This determines the data center your requests are routed to.
+e.g. “us-west-2”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.update_config_file">
+<span class="sig-name descname"><span class="pre">update_config_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.update_config_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.update_config_file" title="Link to this definition">#</a></dt>
+<dd><p>Update the configuration file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – A dictionary of key-value pairs containing the config
+settings to update. For example,
+<code class="docutils literal notranslate"><span class="pre">{&quot;connection_method&quot;:</span> <span class="pre">&quot;local_filesystem&quot;,</span> <span class="pre">&quot;central_path&quot;:</span> <span class="pre">&quot;/my/local/path&quot;}</span></code>
+will update the <code class="docutils literal notranslate"><span class="pre">connection_method</span></code> and <code class="docutils literal notranslate"><span class="pre">central_path</span></code> settings.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.get_local_path">
+<span class="sig-name descname"><span class="pre">get_local_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_local_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_local_path" title="Link to this definition">#</a></dt>
+<dd><p>Return the projects local path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.get_central_path">
+<span class="sig-name descname"><span class="pre">get_central_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_central_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_central_path" title="Link to this definition">#</a></dt>
+<dd><p>Return the project central path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.get_datashuttle_path">
+<span class="sig-name descname"><span class="pre">get_datashuttle_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_datashuttle_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_datashuttle_path" title="Link to this definition">#</a></dt>
+<dd><p>Return the path to the local datashuttle folder.</p>
+<p>This is where configs and other datashuttle files are stored.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.get_config_path">
+<span class="sig-name descname"><span class="pre">get_config_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_config_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_config_path" title="Link to this definition">#</a></dt>
+<dd><p>Return the full path to the DataShuttle config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.get_rclone_central_config_path">
+<span class="sig-name descname"><span class="pre">get_rclone_central_config_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_rclone_central_config_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_rclone_central_config_path" title="Link to this definition">#</a></dt>
+<dd><p>Get the path to the Rclone config for the current <cite>connection_method</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.get_configs">
+<span class="sig-name descname"><span class="pre">get_configs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_configs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_configs" title="Link to this definition">#</a></dt>
+<dd><p>Return the datashuttle configs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Configs</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.get_logging_path">
+<span class="sig-name descname"><span class="pre">get_logging_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_logging_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_logging_path" title="Link to this definition">#</a></dt>
+<dd><p>Return the path where datashuttle logs are written.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.get_existing_projects">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">get_existing_projects</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_existing_projects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_existing_projects" title="Link to this definition">#</a></dt>
+<dd><p>Return a list of existing project names found on the local machine.</p>
+<p>This is based on project folders in the “home / .datashuttle” folder
+that contain valid config.yaml files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.get_next_sub">
+<span class="sig-name descname"><span class="pre">get_next_sub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_with_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_central</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_next_sub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_next_sub" title="Link to this definition">#</a></dt>
+<dd><p>Return the next subject number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>top_level_folder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'rawdata'</span></code>, <code class="docutils literal notranslate"><span class="pre">'derivatives'</span></code>]</span>) – The top-level folder, “rawdata” or “derivatives”.</p></li>
+<li><p><strong>return_with_prefix</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <cite>True</cite>, return the subject with the “sub-” prefix.</p></li>
+<li><p><strong>include_central</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <cite>False, only get names from `local_path</cite>, otherwise from
+<cite>local_path</cite> and <cite>central_path</cite>. If in local-project mode,
+this flag is ignored.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>The next subject ID.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.get_next_ses">
+<span class="sig-name descname"><span class="pre">get_next_ses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_with_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_central</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_next_ses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_next_ses" title="Link to this definition">#</a></dt>
+<dd><p>Return the next session number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>top_level_folder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'rawdata'</span></code>, <code class="docutils literal notranslate"><span class="pre">'derivatives'</span></code>]</span>) – The top-level folder, “rawdata” or “derivatives”.</p></li>
+<li><p><strong>sub</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Name of the subject to find the next session of.</p></li>
+<li><p><strong>return_with_prefix</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <cite>True</cite>, return with the “ses-” prefix.</p></li>
+<li><p><strong>include_central</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, only get names from <code class="docutils literal notranslate"><span class="pre">local_path</span></code>, otherwise from
+<code class="docutils literal notranslate"><span class="pre">local_path</span></code> and <code class="docutils literal notranslate"><span class="pre">central_path</span></code>. If in local-project mode,
+this flag is ignored.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>The next session ID.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.is_local_project">
+<span class="sig-name descname"><span class="pre">is_local_project</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.is_local_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.is_local_project" title="Link to this definition">#</a></dt>
+<dd><p>Return a bool indicating whether the project is ‘local only’.</p>
+<p>A project is ‘local-only’ if it has no <code class="docutils literal notranslate"><span class="pre">central_path</span></code> and <code class="docutils literal notranslate"><span class="pre">connection_method</span></code>.
+It can be used to make folders and validate, but not for transfer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.get_validation_templates">
+<span class="sig-name descname"><span class="pre">get_validation_templates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_validation_templates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_validation_templates" title="Link to this definition">#</a></dt>
+<dd><p>Return the regexp templates used for validation.</p>
+<p>If the “on” key is set to <cite>False</cite>, template validation is not performed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>e.g. {“validation_templates”: {“on”: False, “sub”: None, “ses”: None}}</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>validation_templates</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.set_validation_templates">
+<span class="sig-name descname"><span class="pre">set_validation_templates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_validation_templates</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.set_validation_templates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.set_validation_templates" title="Link to this definition">#</a></dt>
+<dd><p>Update the persistent settings with new name templates.</p>
+<p>Name templates are regexp for that, when <code class="docutils literal notranslate"><span class="pre">validation_templates[&quot;on&quot;]</span></code> is
+set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;sub&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;ses&quot;</span></code> names are validated against
+the regexp contained in the dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_validation_templates</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></span>) – e.g. <code class="docutils literal notranslate"><span class="pre">{&quot;validation_templates&quot;:</span> <span class="pre">{&quot;on&quot;:</span> <span class="pre">False,</span> <span class="pre">&quot;sub&quot;:</span> <span class="pre">None,</span> <span class="pre">&quot;ses&quot;:</span> <span class="pre">None}}</span></code>
+where <code class="docutils literal notranslate"><span class="pre">&quot;sub&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;ses&quot;</span></code> can be a regexp that subject and session
+names respectively are validated against.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.show_configs">
+<span class="sig-name descname"><span class="pre">show_configs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.show_configs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.show_configs" title="Link to this definition">#</a></dt>
+<dd><p>Print the current configs to the terminal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.validate_project">
+<span class="sig-name descname"><span class="pre">validate_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_central</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_letters_in_sub_ses_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.validate_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.validate_project" title="Link to this definition">#</a></dt>
+<dd><p>Perform validation on the project.</p>
+<p>This checks the subject and session level folders to
+ensure there are no NeuroBlueprint formatting issues.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>top_level_folder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'rawdata'</span></code>, <code class="docutils literal notranslate"><span class="pre">'derivatives'</span></code>] | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – Folder to check, either <code class="docutils literal notranslate"><span class="pre">&quot;rawdata&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;derivatives&quot;</span></code>. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+will check both folders.</p></li>
+<li><p><strong>display_mode</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'error'</span></code>, <code class="docutils literal notranslate"><span class="pre">'warn'</span></code>, <code class="docutils literal notranslate"><span class="pre">'print'</span></code>]</span>) – The validation issues are displayed as <code class="docutils literal notranslate"><span class="pre">&quot;error&quot;</span></code> (raise error)
+<code class="docutils literal notranslate"><span class="pre">&quot;warn&quot;</span></code> (show warning) or <code class="docutils literal notranslate"><span class="pre">&quot;print&quot;</span></code></p></li>
+<li><p><strong>include_central</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, only the local project is validated. Otherwise, both
+local and central projects are validated. If in local-project mode,
+this flag is ignored.</p></li>
+<li><p><strong>strict_mode</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, only allow NeuroBlueprint-formatted folders to exist in
+the project. By default, non-NeuroBlueprint folders (e.g. a folder
+called ‘<cite>my_stuff’</cite> in the ‘<cite>rawdata’</cite>) are allowed, and only folders
+starting with sub- or ses- prefix are checked. In <code class="docutils literal notranslate"><span class="pre">Strict</span> <span class="pre">Mode</span></code>,
+any folder not prefixed with sub-, ses- or a valid datatype will
+raise a validation issue.</p></li>
+<li><p><strong>allow_letters_in_sub_ses_values</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – <p>If <cite>True</cite>, any alphanumeric character are allowed for the values associated
+with sub- or ses-  keys. Otherwise, values must be integer
+and the following additional checks are performed:</p>
+<ul>
+<li><p>Labels must be the same length (e.g. sub-01 and sub-002 is invalid).</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of validation errors found in the project.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>error_messages</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.DataShuttle.check_name_formatting">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">check_name_formatting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_letters_in_sub_ses_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.check_name_formatting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.check_name_formatting" title="Link to this definition">#</a></dt>
+<dd><p>Format a list of subject or session names.</p>
+<p>Pass list of names to check how these will be auto-formatted,
+for example as when passed to <code class="docutils literal notranslate"><span class="pre">create_folders()</span></code> or <code class="docutils literal notranslate"><span class="pre">upload_custom()</span></code></p>
+<p>Useful for checking tags e.g. &#64;TO&#64;, &#64;DATE&#64;, &#64;DATETIME&#64;, &#64;DATE&#64;.
+This method will print the formatted list of names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></span>) – A string or list of subject or session names.</p></li>
+<li><p><strong>prefix</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'sub'</span></code>, <code class="docutils literal notranslate"><span class="pre">'ses'</span></code>]</span>) – The relevant subject or session prefix,
+e.g. <code class="docutils literal notranslate"><span class="pre">&quot;sub-&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;ses-&quot;</span></code></p></li>
+<li><p><strong>allow_letters_in_sub_ses_values</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – <p>If <cite>True</cite>, any alphanumeric character are allowed for the values associated
+with sub- or ses-  keys. Otherwise, values must be integer
+and the following additional checks are performed:</p>
+<ul>
+<li><p>Labels must be the same length (e.g. sub-01 and sub-002 is invalid).</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="datashuttle.validate_project_from_path">
+<span class="sig-prename descclassname"><span class="pre">datashuttle.</span></span><span class="sig-name descname"><span class="pre">validate_project_from_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rawdata'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'warn'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_templates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_letters_in_sub_ses_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_functions.html#validate_project_from_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.validate_project_from_path" title="Link to this definition">#</a></dt>
+<dd><p>Perform validation on a NeuroBlueprint-formatted project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_path</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span>) – Path to the project to validate. Must include the project
+name, and hold a “rawdata” or “derivatives” folder.</p></li>
+<li><p><strong>top_level_folder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'rawdata'</span></code>, <code class="docutils literal notranslate"><span class="pre">'derivatives'</span></code>] | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – The top-level folder (“rawdata” or “derivatives”) to
+perform validation. If <cite>None</cite>, both are checked.</p></li>
+<li><p><strong>display_mode</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'error'</span></code>, <code class="docutils literal notranslate"><span class="pre">'warn'</span></code>, <code class="docutils literal notranslate"><span class="pre">'print'</span></code>]</span>) – The validation issues are displayed as <code class="docutils literal notranslate"><span class="pre">&quot;error&quot;</span></code> (raise error),
+<code class="docutils literal notranslate"><span class="pre">&quot;warn&quot;</span></code> (show warning), or <code class="docutils literal notranslate"><span class="pre">&quot;print&quot;</span></code>.</p></li>
+<li><p><strong>strict_mode</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, only allow NeuroBlueprint-formatted folders to exist in
+the project. By default, non-NeuroBlueprint folders (e.g. a folder
+called ‘my_stuff’ in the ‘rawdata’) are allowed, and only folders
+starting with sub- or ses- prefix are checked. In <cite>Strict Mode</cite>,
+any folder not prefixed with sub-, ses- or a valid datatype will
+raise a validation issue.</p></li>
+<li><p><strong>validation_templates</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – A dictionary of templates for subject and session name
+to validate against. See <code class="docutils literal notranslate"><span class="pre">DataShuttle.set_validation_templates()</span></code>
+for details.</p></li>
+<li><p><strong>allow_letters_in_sub_ses_values</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – <p>If <cite>True</cite>, any alphanumeric character are allowed for the values associated
+with sub- or ses-  keys. Otherwise, values must be integer
+and the following additional checks are performed:</p>
+<ul>
+<li><p>Labels must be the same length (e.g. sub-01 and sub-002 is invalid).</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of validation errors found in the project.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>error_messages</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle"><code class="docutils literal notranslate"><span class="pre">DataShuttle</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.create_folders"><code class="docutils literal notranslate"><span class="pre">DataShuttle.create_folders()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.upload_custom"><code class="docutils literal notranslate"><span class="pre">DataShuttle.upload_custom()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.download_custom"><code class="docutils literal notranslate"><span class="pre">DataShuttle.download_custom()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.upload_rawdata"><code class="docutils literal notranslate"><span class="pre">DataShuttle.upload_rawdata()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.upload_derivatives"><code class="docutils literal notranslate"><span class="pre">DataShuttle.upload_derivatives()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.download_rawdata"><code class="docutils literal notranslate"><span class="pre">DataShuttle.download_rawdata()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.download_derivatives"><code class="docutils literal notranslate"><span class="pre">DataShuttle.download_derivatives()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.upload_entire_project"><code class="docutils literal notranslate"><span class="pre">DataShuttle.upload_entire_project()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.download_entire_project"><code class="docutils literal notranslate"><span class="pre">DataShuttle.download_entire_project()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.upload_specific_folder_or_file"><code class="docutils literal notranslate"><span class="pre">DataShuttle.upload_specific_folder_or_file()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.download_specific_folder_or_file"><code class="docutils literal notranslate"><span class="pre">DataShuttle.download_specific_folder_or_file()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.setup_ssh_connection"><code class="docutils literal notranslate"><span class="pre">DataShuttle.setup_ssh_connection()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.setup_gdrive_connection"><code class="docutils literal notranslate"><span class="pre">DataShuttle.setup_gdrive_connection()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.setup_aws_connection"><code class="docutils literal notranslate"><span class="pre">DataShuttle.setup_aws_connection()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.encrypt_rclone_config"><code class="docutils literal notranslate"><span class="pre">DataShuttle.encrypt_rclone_config()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.remove_rclone_encryption"><code class="docutils literal notranslate"><span class="pre">DataShuttle.remove_rclone_encryption()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.make_config_file"><code class="docutils literal notranslate"><span class="pre">DataShuttle.make_config_file()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.update_config_file"><code class="docutils literal notranslate"><span class="pre">DataShuttle.update_config_file()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.get_local_path"><code class="docutils literal notranslate"><span class="pre">DataShuttle.get_local_path()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.get_central_path"><code class="docutils literal notranslate"><span class="pre">DataShuttle.get_central_path()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.get_datashuttle_path"><code class="docutils literal notranslate"><span class="pre">DataShuttle.get_datashuttle_path()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.get_config_path"><code class="docutils literal notranslate"><span class="pre">DataShuttle.get_config_path()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.get_rclone_central_config_path"><code class="docutils literal notranslate"><span class="pre">DataShuttle.get_rclone_central_config_path()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.get_configs"><code class="docutils literal notranslate"><span class="pre">DataShuttle.get_configs()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.get_logging_path"><code class="docutils literal notranslate"><span class="pre">DataShuttle.get_logging_path()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.get_existing_projects"><code class="docutils literal notranslate"><span class="pre">DataShuttle.get_existing_projects()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.get_next_sub"><code class="docutils literal notranslate"><span class="pre">DataShuttle.get_next_sub()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.get_next_ses"><code class="docutils literal notranslate"><span class="pre">DataShuttle.get_next_ses()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.is_local_project"><code class="docutils literal notranslate"><span class="pre">DataShuttle.is_local_project()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.get_validation_templates"><code class="docutils literal notranslate"><span class="pre">DataShuttle.get_validation_templates()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.set_validation_templates"><code class="docutils literal notranslate"><span class="pre">DataShuttle.set_validation_templates()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.show_configs"><code class="docutils literal notranslate"><span class="pre">DataShuttle.show_configs()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.validate_project"><code class="docutils literal notranslate"><span class="pre">DataShuttle.validate_project()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.DataShuttle.check_name_formatting"><code class="docutils literal notranslate"><span class="pre">DataShuttle.check_name_formatting()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.validate_project_from_path"><code class="docutils literal notranslate"><span class="pre">validate_project_from_path()</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><p class="sphinx-version">
+Created using <a href="https://sphinx-doc.org/">Sphinx</a> 9.1.0.
+<br/>
+</p>
+<p class="theme-version">
+Built with the
+<a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a>
+0.16.1.
+</p></div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><div class="things-in-a-row">
+    <a href="https://www.sainsburywellcome.org/web/">
+        <img src="../_static/light-logo-swc.png" alt="Sponsors" class="only-light img-sponsor"/>
+        <img src="../_static/dark-logo-swc.png" alt="Sponsors" class="only-dark img-sponsor"/>
+    </a>
+    <a href="https://www.ucl.ac.uk/gatsby/gatsby-computational-neuroscience-unit">
+        <img src="../_static/light-logo-gatsby.png" alt="Sponsors" class="only-light img-sponsor"/>
+        <img src="../_static/dark-logo-gatsby.png" alt="Sponsors" class="only-dark img-sponsor"/>
+    </a>
+    <a href="https://www.ucl.ac.uk/">
+        <img src="../_static/light-logo-ucl.png" alt="Sponsors" class="only-light img-sponsor"/>
+        <img src="../_static/dark-logo-ucl.png" alt="Sponsors" class="only-dark img-sponsor"/>
+    </a>
+</div></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

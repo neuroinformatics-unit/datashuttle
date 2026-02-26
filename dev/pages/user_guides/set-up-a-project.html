@@ -1,0 +1,1039 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Set up a project &#8212; datashuttle</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=69c4b1bb" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'pages/user_guides/set-up-a-project';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://datashuttle.neuroinformatics.dev/latest/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="canonical" href="https://datashuttle.neuroinformatics.dev/pages/user_guides/set-up-a-project.html" />
+    <link rel="icon" href="../../_static/logo_light.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Choose a terminal" href="choose-a-terminal.html" />
+    <link rel="prev" title="User guides" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo_light.png" class="logo__image only-light" alt=""/>
+    <img src="../../_static/logo_dark.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">datashuttle v0.1.dev1</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../community/index.html">
+    Community
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api_index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle" title="Zulip (chat)" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-comments fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Zulip (chat)</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../community/index.html">
+    Community
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api_index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle" title="Zulip (chat)" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-comments fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Zulip (chat)</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Set up a project</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="choose-a-terminal.html">Choose a terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="validate.html">Project validation</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="create-folders.html">Create folders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transfer-data.html">Transfer data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="update-configs.html">Update configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="read-logs.html">Read the logs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="use-validation-templates.html">Validation Templates</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">User guides</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Set up a project</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="set-up-a-project">
+<span id="id1"></span><h1>Set up a project<a class="headerlink" href="#set-up-a-project" title="Link to this heading">#</a></h1>
+<p>The first section of this guide will
+set up a “local-only” project that can create
+and validate project folders. This requires
+only minimal configuration to get started.</p>
+<p>To see how a datashuttle project can be set up for transfer,
+visit the <a class="reference internal" href="#set-up-a-project-for-transfer"><span class="std std-ref">Set up a project for transfer</span></a> section.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="gui" for="sd-tab-item-0">
+Graphical Interface</label><div class="sd-tab-content docutils">
+<p>Selecting <code class="docutils literal notranslate"><span class="pre">Make</span> <span class="pre">New</span> <span class="pre">Project</span></code> will take you to the project set up screen.</p>
+<p>Enter the name of your project, the path to your project folder and
+select <code class="docutils literal notranslate"><span class="pre">No</span> <span class="pre">connection</span> <span class="pre">(local</span> <span class="pre">only)</span></code> (note that the <code class="docutils literal notranslate"><span class="pre">Central</span> <span class="pre">Path</span></code> option
+will be disabled).</p>
+<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-make-screen-dark.png"><img alt="../../_images/tutorial-1-make-screen-dark.png" class="align-center only-dark" src="../../_images/tutorial-1-make-screen-dark.png" style="width: 900px;" />
+</a>
+<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-make-screen-light.png"><img alt="../../_images/tutorial-1-make-screen-light.png" class="align-center only-light" src="../../_images/tutorial-1-make-screen-light.png" style="width: 900px;" />
+</a>
+<br>
+<p>You will now be able to go to the project manager screen:</p>
+<a class="only-dark reference internal image-reference" href="../../_images/how-to-create-folders-example-dark.png"><img alt="../../_images/how-to-create-folders-example-dark.png" class="align-center only-dark" src="../../_images/how-to-create-folders-example-dark.png" style="width: 900px;" />
+</a>
+<a class="only-light reference internal image-reference" href="../../_images/how-to-create-folders-example-light.png"><img alt="../../_images/how-to-create-folders-example-light.png" class="align-center only-light" src="../../_images/how-to-create-folders-example-light.png" style="width: 900px;" />
+</a>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-1">
+Python API</label><div class="sd-tab-content docutils">
+<p>First, import <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> and set up a project with the <code class="docutils literal notranslate"><span class="pre">project_name</span></code>.
+If a project already exists, this should match the project folder name (i.e. the level above <code class="docutils literal notranslate"><span class="pre">rawdata</span></code>).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datashuttle</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataShuttle</span>
+
+<span class="n">project</span> <span class="o">=</span> <span class="n">DataShuttle</span><span class="p">(</span><span class="s2">&quot;my_project_name&quot;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>Next, give <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> the path to the project folder (this can,
+but doesn’t have to, include the <code class="docutils literal notranslate"><span class="pre">project_name</span></code>)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="n">project</span><span class="o">.</span><span class="n">make_config_file</span><span class="p">(</span>
+    <span class="n">local_path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;C:\MyUsername\my_data\my_project_name&quot;</span>
+<span class="p">)</span>
+
+</pre></div>
+</div>
+<p><br />
+The project is now ready for use, and in future can be instantiated with the line:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">DataShuttle</span><span class="p">(</span><span class="s2">&quot;my_project_name&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(i.e. you will not have to set the <code class="docutils literal notranslate"><span class="pre">local_path</span></code> again).</p>
+<p>If you wish to change the project settings at a later time, use <a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.update_config_file" title="datashuttle.DataShuttle.update_config_file"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">update_config_file()</span></code></a>.</p>
+</div>
+</div>
+<p>Now, this project is ready for creating and validating
+folders to the <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/latest/index.html">NeuroBlueprint</a> standard. See <a class="reference internal" href="create-folders.html#how-to-create-folders"><span class="std std-ref">create folders</span></a>
+and <a class="reference internal" href="validate.html#tutorial-validation"><span class="std std-ref">validate folders</span></a> for details.</p>
+<p>If you would also like to transfer files to a central storage, see the next section.</p>
+<section id="set-up-a-project-for-transfer">
+<span id="id2"></span><h2>Set up a project for transfer<a class="headerlink" href="#set-up-a-project-for-transfer" title="Link to this heading">#</a></h2>
+<p>Above, we have set up a <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> project by providing the <strong>project name</strong>
+and <strong>local path</strong>. To set up a project for transfer, we need to provide
+additional information:</p>
+<ol class="arabic simple">
+<li><p><strong>central path</strong>: location of the project on the central storage.</p></li>
+<li><p>Connection-specific settings (e.g. if using a mounted drive, SSH, Google Drive or
+Amazon Web Services (AWS)).</p></li>
+</ol>
+<a class="only-dark reference internal image-reference" href="../../_images/datashuttle-overview-dark.png"><img alt="../../_images/datashuttle-overview-dark.png" class="align-center only-dark" src="../../_images/datashuttle-overview-dark.png" style="width: 500px;" />
+</a>
+<a class="only-light reference internal image-reference" href="../../_images/datashuttle-overview-light.png"><img alt="../../_images/datashuttle-overview-light.png" class="align-center only-light" src="../../_images/datashuttle-overview-light.png" style="width: 500px;" />
+</a>
+<br>
+<p>How the <strong>central path</strong> is set depends on whether your connection to
+central storage is connected to through a
+<a class="reference internal" href="#new-project-mounted-drive"><span class="std std-ref">mounted drive</span></a>, via
+<a class="reference internal" href="#new-project-ssh"><span class="std std-ref">SSH</span></a> or is an
+<a class="reference internal" href="#new-project-aws"><span class="std std-ref">AWS S3 Bucket</span></a>
+or
+<a class="reference internal" href="#new-project-gdrive"><span class="std std-ref">Google Drive</span></a>.</p>
+<p>If you are unsure of your connection method, speak to your lab administrator
+or IT department.</p>
+<section id="connecting-to-central-storage-through-a-mounted-drive">
+<span id="new-project-mounted-drive"></span><h3>Connecting to central storage through a mounted drive<a class="headerlink" href="#connecting-to-central-storage-through-a-mounted-drive" title="Link to this heading">#</a></h3>
+<p>In this case, the central storage machine is mounted as a drive
+on the local machine.</p>
+<p>We simply need to set the <strong>central path</strong> as the path to
+the central project as it appears on the local machine’s filesystem.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header sd-bg-info sd-bg-text-info">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-info" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg></span><span class="sd-summary-text">Local Filesystem Example</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">Imagine your central storage is a remote server that is mounted to
+your machine at <code class="docutils literal notranslate"><span class="pre">X:\username</span></code>. You want your project folder to
+be located at <code class="docutils literal notranslate"><span class="pre">X:\username\my_projects</span></code>.</p>
+<p class="sd-card-text">In this case, you can set the <strong>central path</strong> to <code class="docutils literal notranslate"><span class="pre">X:\username\my_projects</span></code>
+and with <strong>connection method</strong> to <strong>local filesystem</strong>.</p>
+<p class="sd-card-text">The project folder will be located
+at <code class="docutils literal notranslate"><span class="pre">X:\username\my_projects\my_project_name</span></code>.
+You may pass the central path without the <strong>project name</strong>,
+(it will be automatically included).</p>
+</div>
+</details><div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="gui" for="sd-tab-item-2">
+Graphical Interface</label><div class="sd-tab-content docutils">
+<p>First, click the <code class="docutils literal notranslate"><span class="pre">Make</span> <span class="pre">New</span> <span class="pre">Project</span></code> button from the launch page.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Make</span> <span class="pre">New</span> <span class="pre">Project</span></code> screen will be displayed:</p>
+<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-make-screen-local-filesystem-dark.png"><img alt="../../_images/tutorial-1-make-screen-local-filesystem-dark.png" class="align-center only-dark" src="../../_images/tutorial-1-make-screen-local-filesystem-dark.png" style="width: 900px;" />
+</a>
+<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-make-screen-local-filesystem-light.png"><img alt="../../_images/tutorial-1-make-screen-local-filesystem-light.png" class="align-center only-light" src="../../_images/tutorial-1-make-screen-local-filesystem-light.png" style="width: 900px;" />
+</a>
+<br>
+<p id="general-tui-datashuttle-setup">Setting up <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> is as simple as entering the <code class="docutils literal notranslate"><span class="pre">Project</span> <span class="pre">name</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Local</span> <span class="pre">Path</span></code> and <code class="docutils literal notranslate"><span class="pre">Central</span> <span class="pre">Path</span></code> into the relevant input boxes.</p>
+<p>The paths do not need to end in the project name—it will be automatically added.
+You can paste a path into the input boxes with <code class="docutils literal notranslate"><span class="pre">CTRL+V</span></code> or use <code class="docutils literal notranslate"><span class="pre">Select</span></code>
+to navigate to paths on your local filesystem.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Connection</span> <span class="pre">Method</span></code> can be changed to <code class="docutils literal notranslate"><span class="pre">Local</span> <span class="pre">Filesystem</span></code>.</p>
+<p>Once all information is input, click <code class="docutils literal notranslate"><span class="pre">Save</span></code> to set up the project.
+You can then navigate to the <code class="docutils literal notranslate"><span class="pre">Project</span> <span class="pre">Manager</span></code> screen by clicking the
+<code class="docutils literal notranslate"><span class="pre">Go</span> <span class="pre">To</span> <span class="pre">Project</span> <span class="pre">Screen</span></code> button that appears.</p>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-3">
+Python API</label><div class="sd-tab-content docutils">
+<p>We will first import the <code class="docutils literal notranslate"><span class="pre">DataShuttle</span></code> class and initialise
+it with the <code class="docutils literal notranslate"><span class="pre">project_name</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datashuttle</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataShuttle</span>
+
+<span class="n">project</span> <span class="o">=</span> <span class="n">DataShuttle</span><span class="p">(</span><span class="s2">&quot;my_first_project&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Next, the <a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.make_config_file" title="datashuttle.DataShuttle.make_config_file"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">make_config_file()</span></code></a> method can be used to set up a new
+project with the desired <strong>local path</strong>, <strong>central path</strong> and
+<strong>connection method</strong>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">make_config_file</span><span class="p">(</span>
+    <span class="n">local_path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;C:\my_local_machine\username\my_projects\my_first_project&quot;</span><span class="p">,</span>
+    <span class="n">central_path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;X:\a_mounted_drive\username\my_projects\my_first_project&quot;</span><span class="p">,</span>
+    <span class="n">connection_method</span><span class="o">=</span><span class="s2">&quot;local_filesystem&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="connecting-to-central-storage-through-ssh">
+<span id="new-project-ssh"></span><h3>Connecting to central storage through SSH<a class="headerlink" href="#connecting-to-central-storage-through-ssh" title="Link to this heading">#</a></h3>
+<p>A common method of connecting to a central server is by using <a class="reference external" href="https://www.ssh.com/academy/ssh/protocol">SSH</a>.</p>
+<p>The following details must be set in the project configs prior to setting up the connection:</p>
+<ol class="arabic simple">
+<li><p><strong>central host id:</strong> This is the address of the server you want to connect to.</p></li>
+<li><p><strong>central host username:</strong> This is your profile username on the server you want to
+connect to.</p></li>
+<li><p><strong>central path</strong>: This is the path to the project <em>on the server</em>.</p></li>
+</ol>
+<p>Once the configs are saved, we can set up the connection by clicking <code class="docutils literal notranslate"><span class="pre">Set</span> <span class="pre">Up</span> <span class="pre">SSH</span> <span class="pre">Connection</span></code>
+(through the TUI) or running the function <a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.setup_ssh_connection" title="datashuttle.DataShuttle.setup_ssh_connection"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">setup_ssh_connection()</span></code></a> in Python.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header sd-bg-info sd-bg-text-info">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-info" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg></span><span class="sd-summary-text">SSH Example</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">Let’s say the central project was stored on a remote server with
+address <code class="docutils literal notranslate"><span class="pre">ssh.swc.ucl.ac.uk</span></code>, and your account username on the server
+is <code class="docutils literal notranslate"><span class="pre">myusername</span></code>.</p>
+<p class="sd-card-text">We want to store the project at the location (on the server)
+<code class="docutils literal notranslate"><span class="pre">/ceph/my_lab/my_name/my_projects/project_name/</span></code>.</p>
+<p class="sd-card-text">Then the settings would be:</p>
+<p class="sd-card-text"><strong>central host id</strong>: <code class="docutils literal notranslate"><span class="pre">ssh.swc.ucl.ac.uk</span></code></p>
+<p class="sd-card-text"><strong>central host username</strong>: <code class="docutils literal notranslate"><span class="pre">myusername</span></code></p>
+<p class="sd-card-text"><strong>central path</strong>: <code class="docutils literal notranslate"><span class="pre">/ceph/my_lab/my_name/my_projects/project_name/</span></code></p>
+<p class="sd-card-text">You may pass the <strong>local path</strong> and <strong>central path</strong> without
+the <strong>project name</strong>, it will be automatically included.</p>
+<p class="sd-card-text">Note that Linux-based shortcuts (e.g. <code class="docutils literal notranslate"><span class="pre">~</span></code> for home directory) are not permitted.</p>
+</div>
+</details><div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="gui" for="sd-tab-item-4">
+Graphical Interface</label><div class="sd-tab-content docutils">
+<a class="only-dark reference internal image-reference" href="../../_images/how-to-create-project-ssh-dark.png"><img alt="../../_images/how-to-create-project-ssh-dark.png" class="align-center only-dark" src="../../_images/how-to-create-project-ssh-dark.png" style="width: 900px;" />
+</a>
+<a class="only-light reference internal image-reference" href="../../_images/how-to-create-project-ssh-light.png"><img alt="../../_images/how-to-create-project-ssh-light.png" class="align-center only-light" src="../../_images/how-to-create-project-ssh-light.png" style="width: 900px;" />
+</a>
+<br>
+<p>When setting up a new project, the <strong>project name</strong> and <strong>local path</strong>
+can be input exactly the
+<a class="reference internal" href="#general-tui-datashuttle-setup"><span class="std std-ref">same as when setting without SSH</span></a>.</p>
+<p>Select the <code class="docutils literal notranslate"><span class="pre">Connection</span> <span class="pre">Method</span></code> as <code class="docutils literal notranslate"><span class="pre">SSH</span></code>.</p>
+<p>Next, input the <code class="docutils literal notranslate"><span class="pre">Central</span> <span class="pre">Host</span> <span class="pre">ID</span></code>, <code class="docutils literal notranslate"><span class="pre">Central</span> <span class="pre">Host</span> <span class="pre">Username</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Central</span> <span class="pre">Path</span></code> as described above.</p>
+<p>Clicking <code class="docutils literal notranslate"><span class="pre">Save</span></code> will save these project configs. A button
+<code class="docutils literal notranslate"><span class="pre">Set</span> <span class="pre">up</span> <span class="pre">SSH</span> <span class="pre">Connection</span></code> will appear. Click to
+confirm the server ID and enter your password
+(you will only need to do this once).</p>
+</div>
+<input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-5">
+Python API</label><div class="sd-tab-content docutils">
+<p>The <code class="docutils literal notranslate"><span class="pre">connection_method</span></code> configuration must be set to <code class="docutils literal notranslate"><span class="pre">&quot;ssh&quot;</span></code>
+to use the SSH protocol for data transfers.</p>
+<p>Enter the <code class="docutils literal notranslate"><span class="pre">central_path</span></code>, <code class="docutils literal notranslate"><span class="pre">central_host_id</span></code> and
+<code class="docutils literal notranslate"><span class="pre">central_host_username</span></code> as  described above.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">make_config_file</span><span class="p">(</span>
+	<span class="n">local_path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;C:\path\to\local\my_projects\my_first_project&quot;</span><span class="p">,</span>
+	<span class="n">central_path</span><span class="o">=</span><span class="s2">&quot;/nfs/path_on_server/myprojects/central&quot;</span><span class="p">,</span>
+	<span class="n">connection_method</span><span class="o">=</span><span class="s2">&quot;ssh&quot;</span><span class="p">,</span>
+	<span class="n">central_host_id</span><span class="o">=</span><span class="s2">&quot;ssh.swc.ucl.ac.uk&quot;</span><span class="p">,</span>
+	<span class="n">central_host_username</span><span class="o">=</span><span class="s2">&quot;username&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Next, a one-time command to set up the SSH connection must be run:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">setup_ssh_connection</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Running <a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.setup_ssh_connection" title="datashuttle.DataShuttle.setup_ssh_connection"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">setup_ssh_connection()</span></code></a> will require verification
+that the SSH server connected to is correct (pressing <code class="docutils literal notranslate"><span class="pre">y</span></code> to proceed).</p>
+<p>Finally, your password to the central server will be requested (you will
+only need to do this once).</p>
+</div>
+</div>
+</section>
+<section id="connecting-to-central-storage-through-google-drive">
+<span id="new-project-gdrive"></span><h3>Connecting to central storage through Google Drive<a class="headerlink" href="#connecting-to-central-storage-through-google-drive" title="Link to this heading">#</a></h3>
+<p>The following details control the transfer of data to <a class="reference external" href="https://drive.google.com">Google Drive</a>:</p>
+<ol class="arabic simple">
+<li><p><strong>gdrive root folder id:</strong> This is the Google Drive ID of the root folder to connect to.
+It is the alphanumeric code in the URL to the folder on the Google Drive website (after <code class="docutils literal notranslate"><span class="pre">/folders/</span></code>).</p></li>
+<li><p><strong>gdrive client id</strong> (optional): This is a client ID that can be provided to speed up data transfer.
+See <a class="reference external" href="https://rclone.org/drive/#making-your-own-client-id">here</a> for a guide on generating the client ID through
+the Google API Console. If not provided, <a class="reference external" href="https://rclone.org/">RClone’s</a> shared default client ID is used, which may be slower.</p></li>
+<li><p><strong>central path</strong> (optional): This is the path to the project <em>relative to the root folder</em>.
+If not provided, it is assumed the <code class="docutils literal notranslate"><span class="pre">gdrive_root_folder_id</span></code> points directly to the project folder.</p></li>
+</ol>
+<p>Once the configs are saved, we can set up the connection by clicking <code class="docutils literal notranslate"><span class="pre">Set</span> <span class="pre">Up</span> <span class="pre">Google</span> <span class="pre">Drive</span> <span class="pre">Connection</span></code>
+(through the TUI) or running the function <a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.setup_gdrive_connection" title="datashuttle.DataShuttle.setup_gdrive_connection"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">setup_gdrive_connection()</span></code></a> in Python.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>If you change the <code class="docutils literal notranslate"><span class="pre">gdrive_root_folder_id</span></code>, you must re-run the connection set up.</p>
+</div>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header sd-bg-info sd-bg-text-info">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-info" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg></span><span class="sd-summary-text">Google Drive Example</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">Let’s say the central project was stored on a Google Drive folder
+with root folder id <code class="docutils literal notranslate"><span class="pre">1KAN9QLD2K2EANE</span></code>, and your Google Drive client id
+is <code class="docutils literal notranslate"><span class="pre">93412981629-2icf0ba09cks9skjkcrs85tinf73s2bqv.apps.googleusercontent.com</span></code>.</p>
+<p class="sd-card-text">We want to store the project at the path (relative to the root folder)
+<code class="docutils literal notranslate"><span class="pre">/my_name/my_projects/project_name/</span></code>.</p>
+<p class="sd-card-text">Then the settings would be:</p>
+<p class="sd-card-text"><strong>gdrive root folder id</strong>: <code class="docutils literal notranslate"><span class="pre">1KAN9QLD2K2EANE</span></code></p>
+<p class="sd-card-text"><strong>gdrive client id</strong>: <code class="docutils literal notranslate"><span class="pre">93412981629-2icf0ba09cks9skjkcrs85tinf73s2bqv.apps.googleusercontent.com</span></code></p>
+<p class="sd-card-text"><strong>central path</strong>: <code class="docutils literal notranslate"><span class="pre">/my_name/my_projects/project_name/</span></code></p>
+<p class="sd-card-text">You may pass the <strong>central path</strong> without
+the <strong>project name</strong>, it will be automatically included.</p>
+</div>
+</details><div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="gui" for="sd-tab-item-6">
+Graphical Interface</label><div class="sd-tab-content docutils">
+<a class="only-dark reference internal image-reference" href="../../_images/how-to-create-project-gdrive-dark.png"><img alt="../../_images/how-to-create-project-gdrive-dark.png" class="align-center only-dark" src="../../_images/how-to-create-project-gdrive-dark.png" style="width: 900px;" />
+</a>
+<a class="only-light reference internal image-reference" href="../../_images/how-to-create-project-gdrive-light.png"><img alt="../../_images/how-to-create-project-gdrive-light.png" class="align-center only-light" src="../../_images/how-to-create-project-gdrive-light.png" style="width: 900px;" />
+</a>
+<br>
+<p>When setting up a new project, the <strong>project name</strong> and <strong>local path</strong>
+can be input exactly the
+<a class="reference internal" href="#general-tui-datashuttle-setup"><span class="std std-ref">same as when setting with local filesystem</span></a>.</p>
+<p>Select the <code class="docutils literal notranslate"><span class="pre">Connection</span> <span class="pre">Method</span></code> as <code class="docutils literal notranslate"><span class="pre">Google</span> <span class="pre">Drive</span></code>.</p>
+<p>Next, input the <code class="docutils literal notranslate"><span class="pre">Google</span> <span class="pre">Drive</span> <span class="pre">Root</span> <span class="pre">Folder</span> <span class="pre">ID</span></code>, <code class="docutils literal notranslate"><span class="pre">Client</span> <span class="pre">ID</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Central</span> <span class="pre">Path</span></code> as described above.</p>
+<p>Clicking <code class="docutils literal notranslate"><span class="pre">Save</span></code> will save these project configs. A
+<code class="docutils literal notranslate"><span class="pre">Set</span> <span class="pre">up</span> <span class="pre">Google</span> <span class="pre">Drive</span> <span class="pre">Connection</span></code> button will appear. Click to
+start the setup, you will be required to enter your Google Drive
+client secret and then authenticate via a browser.</p>
+<p>If you do not have access to an internet browser on your machine,
+instructions will be provided for browserless connection set up.</p>
+</div>
+<input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-7">
+Python API</label><div class="sd-tab-content docutils">
+<p>The <code class="docutils literal notranslate"><span class="pre">connection_method</span></code> configuration must be set to <code class="docutils literal notranslate"><span class="pre">&quot;gdrive&quot;</span></code>
+to use the Google Drive for data transfers.</p>
+<p>Enter the <code class="docutils literal notranslate"><span class="pre">central_path</span></code>, <code class="docutils literal notranslate"><span class="pre">gdrive_root_folder_id</span></code> and
+<code class="docutils literal notranslate"><span class="pre">gdrive_client_id</span></code> as  described above.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">make_config_file</span><span class="p">(</span>
+	<span class="n">local_path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;C:\path\to\local\my_projects\my_first_project&quot;</span><span class="p">,</span>
+	<span class="n">central_path</span><span class="o">=</span><span class="s2">&quot;/my_name/my_projects/project_name/&quot;</span><span class="p">,</span>
+	<span class="n">connection_method</span><span class="o">=</span><span class="s2">&quot;gdrive&quot;</span><span class="p">,</span>
+	<span class="n">gdrive_client_id</span><span class="o">=</span><span class="s2">&quot;93412981629-2icf0ba09cks9skjkcrs85tinf73s2bqv.apps.googleusercontent.com&quot;</span><span class="p">,</span>
+	<span class="n">gdrive_root_folder_id</span><span class="o">=</span><span class="s2">&quot;1KAN9QLD2K2EANE&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Next, a one-time command to set up the connection must be run:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">setup_gdrive_connection</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Running <a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.setup_gdrive_connection" title="datashuttle.DataShuttle.setup_gdrive_connection"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">setup_gdrive_connection()</span></code></a> will prompt to you to enter your
+Google Drive client secret.</p>
+<p>Finally, you will be required to authenticate to Google Drive via your browser.
+If you do not have access to an internet browser on your machine,
+instructions will be provided for browserless connection set up.</p>
+</div>
+</div>
+</section>
+<section id="connecting-to-central-storage-through-aws-s3-bucket">
+<span id="new-project-aws"></span><h3>Connecting to central storage through AWS S3 Bucket<a class="headerlink" href="#connecting-to-central-storage-through-aws-s3-bucket" title="Link to this heading">#</a></h3>
+<p>The following details are required to connect to an AWS S3 Bucket:</p>
+<ol class="arabic simple">
+<li><p><strong>aws access key id:</strong> This is the access key ID that allows you to connect to AWS buckets and can be set up through the AWS website.
+See <a class="reference external" href="https://repost.aws/knowledge-center/create-access-key">here</a> for a guide on creating an access key and
+<a class="reference external" href="https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonS3FullAccess.html#AmazonS3FullAccess">this guide</a>
+for ensuring your access key has the correct permissions. You will also require the
+associated <strong>aws secret access key</strong> that acts as a password.</p></li>
+<li><p><strong>aws region:</strong> This is the region of your AWS bucket as stated on the bucket details on the AWS website.</p></li>
+<li><p><strong>central path</strong>:  For AWS connections, the <code class="docutils literal notranslate"><span class="pre">central_path</span></code> <strong>must</strong> start with the bucket name.
+You can then extend this to point to the project folder on the bucket, or leave it as only the bucket
+name only to transfer directly to the bucket root.</p></li>
+</ol>
+<p>Once the configs are saved, we can set up the connection by clicking <code class="docutils literal notranslate"><span class="pre">Set</span> <span class="pre">Up</span> <span class="pre">AWS</span> <span class="pre">Connection</span></code>
+(through the TUI) or running the function <a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.setup_aws_connection" title="datashuttle.DataShuttle.setup_aws_connection"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">setup_aws_connection()</span></code></a> in Python.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header sd-bg-info sd-bg-text-info">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-info" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg></span><span class="sd-summary-text">AWS Example</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">Let’s say the central project was stored on an AWS bucket in the region
+<code class="docutils literal notranslate"><span class="pre">eu-north-1</span></code>, and your AWS access key id
+is <code class="docutils literal notranslate"><span class="pre">ADI82KSN29OE10CKAO92MSW9</span></code>.</p>
+<p class="sd-card-text">We want to store the project at the path (starting with the bucket name)
+<code class="docutils literal notranslate"><span class="pre">my_bucket_name/my_name/my_projects/project_name/</span></code>.</p>
+<p class="sd-card-text">Then the settings would be:</p>
+<p class="sd-card-text"><strong>aws access key id</strong>: <code class="docutils literal notranslate"><span class="pre">ADI82KSN29OE10CKAO92MSW9</span></code></p>
+<p class="sd-card-text"><strong>aws region</strong>: <code class="docutils literal notranslate"><span class="pre">eu-north-1</span></code></p>
+<p class="sd-card-text"><strong>central path</strong>: <code class="docutils literal notranslate"><span class="pre">my_bucket_name/my_name/my_projects/project_name/</span></code></p>
+<p class="sd-card-text">You may pass the <strong>central path</strong> without
+the <strong>project name</strong>, it will be automatically included.</p>
+</div>
+</details><div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="gui" for="sd-tab-item-8">
+Graphical Interface</label><div class="sd-tab-content docutils">
+<a class="only-dark reference internal image-reference" href="../../_images/how-to-create-project-aws-dark.png"><img alt="../../_images/how-to-create-project-aws-dark.png" class="align-center only-dark" src="../../_images/how-to-create-project-aws-dark.png" style="width: 900px;" />
+</a>
+<a class="only-light reference internal image-reference" href="../../_images/how-to-create-project-aws-light.png"><img alt="../../_images/how-to-create-project-aws-light.png" class="align-center only-light" src="../../_images/how-to-create-project-aws-light.png" style="width: 900px;" />
+</a>
+<br>
+<p>When setting up a new project, the <strong>project name</strong> and <strong>local path</strong>
+can be input exactly the
+<a class="reference internal" href="#general-tui-datashuttle-setup"><span class="std std-ref">same as when setting with local filesystem</span></a>.</p>
+<p>Select the <code class="docutils literal notranslate"><span class="pre">Connection</span> <span class="pre">Method</span></code> as <code class="docutils literal notranslate"><span class="pre">AWS</span> <span class="pre">S3</span></code>.</p>
+<p>Next, input the <code class="docutils literal notranslate"><span class="pre">AWS</span> <span class="pre">Access</span> <span class="pre">Key</span> <span class="pre">ID</span></code>, <code class="docutils literal notranslate"><span class="pre">AWS</span> <span class="pre">Region</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Central</span> <span class="pre">Path</span></code> as described above.</p>
+<p>Clicking <code class="docutils literal notranslate"><span class="pre">Save</span></code> will save these project configs. A button
+<code class="docutils literal notranslate"><span class="pre">Set</span> <span class="pre">up</span> <span class="pre">AWS</span> <span class="pre">Connection</span></code> will appear. Click to
+start the setup, you will be required to enter your <code class="docutils literal notranslate"><span class="pre">AWS</span> <span class="pre">Secret</span> <span class="pre">Access</span> <span class="pre">Key</span></code>.</p>
+</div>
+<input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-9">
+Python API</label><div class="sd-tab-content docutils">
+<p>The <code class="docutils literal notranslate"><span class="pre">connection_method</span></code> configuration must be set to <code class="docutils literal notranslate"><span class="pre">&quot;aws&quot;</span></code>
+to use the AWS for data transfers.</p>
+<p>Enter the <code class="docutils literal notranslate"><span class="pre">central_path</span></code>, <code class="docutils literal notranslate"><span class="pre">aws_access_key_id</span></code> and
+<code class="docutils literal notranslate"><span class="pre">aws_region</span></code> as  described above.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">make_config_file</span><span class="p">(</span>
+	<span class="n">local_path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;C:\path\to\local\my_projects\my_first_project&quot;</span><span class="p">,</span>
+	<span class="n">central_path</span><span class="o">=</span><span class="s2">&quot;my_bucket_name/my_name/my_projects/project_name/&quot;</span><span class="p">,</span>
+	<span class="n">connection_method</span><span class="o">=</span><span class="s2">&quot;aws&quot;</span><span class="p">,</span>
+	<span class="n">aws_access_key_id</span><span class="o">=</span><span class="s2">&quot;ADI82KSN29OE10CKAO92MSW9&quot;</span><span class="p">,</span>
+	<span class="n">aws_region</span><span class="o">=</span><span class="s2">&quot;eu-north-1&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Next, a one-time command to set up the AWS connection must be run:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">setup_aws_connection</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Running <a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.setup_aws_connection" title="datashuttle.DataShuttle.setup_aws_connection"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">setup_aws_connection()</span></code></a> will require entering your
+<code class="docutils literal notranslate"><span class="pre">AWS</span> <span class="pre">Secret</span> <span class="pre">Access</span> <span class="pre">Key</span></code> and the setup will be completed.</p>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="encrypting-your-connection-credentials">
+<span id="password-protection"></span><h1>Encrypting your connection credentials<a class="headerlink" href="#encrypting-your-connection-credentials" title="Link to this heading">#</a></h1>
+<p>Datashuttle uses <a class="reference external" href="https://rclone.org/">RClone</a> for all data transfers.
+RClone stores connection credentials in a
+local configuration file that, by default, is not encrypted.</p>
+<p>This file can include:</p>
+<ul class="simple">
+<li><p><strong>SSH:</strong> your private SSH key</p></li>
+<li><p><strong>Google Drive:</strong> your OAuth access token and client secret</p></li>
+<li><p><strong>Amazon S3:</strong> your AWS Access Key ID and Secret Access Key</p></li>
+</ul>
+<p>These are stored in your home directory, which is expected to be secure. However, for an
+additional layer of security, it is possible to encrypt the Rclone config file using the
+system credential manager of your operating system. This file will then be
+unreadable for anyone who does not have access to your machine user account. Note that
+anyone with access to the machine user account will be able to decrypt the Rclone file.</p>
+<p>For details on setting up encryption, see the section below. On Windows, you will
+need to be running in PowerShell, and on Linux you will need <code class="docutils literal notranslate"><span class="pre">pass</span></code> package installed.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-10">
+Windows</label><div class="sd-tab-content docutils">
+<p>On Windows, the PowerShell <code class="docutils literal notranslate"><span class="pre">PSCredential</span></code> system to encrypt the RClone config file.</p>
+<ul class="simple">
+<li><p>A random password is generated and stored as a <code class="docutils literal notranslate"><span class="pre">.clixml</span></code> credential file.</p></li>
+<li><p>The password can only be decrypted by the same Windows user account that created it.</p></li>
+<li><p>The encryption and decryption process uses PowerShell, so PowerShell must be available (it will not work from <code class="docutils literal notranslate"><span class="pre">cmd.exe</span></code>).</p></li>
+</ul>
+<p>When encryption is enabled, RClone automatically retrieves the password from the PSCredential store whenever it runs.</p>
+</div>
+<input id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-11">
+macOS</label><div class="sd-tab-content docutils">
+<p>On macOS, the built-in Keychain via the <code class="docutils literal notranslate"><span class="pre">security</span></code> command-line tool is used.</p>
+<ul class="simple">
+<li><p>A random password is generated using <code class="docutils literal notranslate"><span class="pre">openssl</span> <span class="pre">rand</span> <span class="pre">-base64</span> <span class="pre">40</span></code>.</p></li>
+<li><p>The password is securely stored in your login Keychain under the service name corresponding to your RClone config.</p></li>
+<li><p>Only your macOS user account can access this key.</p></li>
+</ul>
+<p>When you first set up encryption, macOS may prompt you to authorize access to the Keychain.
+Once approved, RClone will automatically retrieve the key when needed.</p>
+</div>
+<input id="sd-tab-item-12" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-12">
+Linux</label><div class="sd-tab-content docutils">
+<p>On Linux, the <code class="docutils literal notranslate"><span class="pre">pass</span></code> package is used to manage the encryption. You can install it with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>pass
+</pre></div>
+</div>
+<p>Next, you need to initialize the password store with your GPG key:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pass<span class="w"> </span>init<span class="w"> </span>&lt;your-gpg-id&gt;
+</pre></div>
+</div>
+<p>Once initialized, Datashuttle will:</p>
+<ul>
+<li><p>Generate a random password with <code class="docutils literal notranslate"><span class="pre">openssl</span> <span class="pre">rand</span> <span class="pre">-base64</span> <span class="pre">40</span></code></p></li>
+<li><p>Store it securely in the GPG-encrypted password store</p></li>
+<li><p>Configure RClone to retrieve it automatically with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/usr/bin/pass<span class="w"> </span>&lt;rclone_config_name&gt;
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<section id="removing-encryption">
+<h2>Removing encryption<a class="headerlink" href="#removing-encryption" title="Link to this heading">#</a></h2>
+<p>Encryption of the Rclone config file used for the central connection
+(either SSH, Google Drive or AWS) can be removed with the following command:</p>
+<p><a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.remove_rclone_encryption" title="datashuttle.DataShuttle.remove_rclone_encryption"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">remove_rclone_encryption()</span></code></a></p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Set up a project</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-a-project-for-transfer">Set up a project for transfer</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#connecting-to-central-storage-through-a-mounted-drive">Connecting to central storage through a mounted drive</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#connecting-to-central-storage-through-ssh">Connecting to central storage through SSH</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#connecting-to-central-storage-through-google-drive">Connecting to central storage through Google Drive</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#connecting-to-central-storage-through-aws-s3-bucket">Connecting to central storage through AWS S3 Bucket</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#encrypting-your-connection-credentials">Encrypting your connection credentials</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#removing-encryption">Removing encryption</a></li>
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><p class="sphinx-version">
+Created using <a href="https://sphinx-doc.org/">Sphinx</a> 9.1.0.
+<br/>
+</p>
+<p class="theme-version">
+Built with the
+<a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a>
+0.16.1.
+</p></div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><div class="things-in-a-row">
+    <a href="https://www.sainsburywellcome.org/web/">
+        <img src="../../_static/light-logo-swc.png" alt="Sponsors" class="only-light img-sponsor"/>
+        <img src="../../_static/dark-logo-swc.png" alt="Sponsors" class="only-dark img-sponsor"/>
+    </a>
+    <a href="https://www.ucl.ac.uk/gatsby/gatsby-computational-neuroscience-unit">
+        <img src="../../_static/light-logo-gatsby.png" alt="Sponsors" class="only-light img-sponsor"/>
+        <img src="../../_static/dark-logo-gatsby.png" alt="Sponsors" class="only-dark img-sponsor"/>
+    </a>
+    <a href="https://www.ucl.ac.uk/">
+        <img src="../../_static/light-logo-ucl.png" alt="Sponsors" class="only-light img-sponsor"/>
+        <img src="../../_static/dark-logo-ucl.png" alt="Sponsors" class="only-dark img-sponsor"/>
+    </a>
+</div></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

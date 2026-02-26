@@ -1,0 +1,704 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Project validation &#8212; datashuttle</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=69c4b1bb" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'pages/user_guides/validate';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://datashuttle.neuroinformatics.dev/latest/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="canonical" href="https://datashuttle.neuroinformatics.dev/pages/user_guides/validate.html" />
+    <link rel="icon" href="../../_static/logo_light.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Create folders" href="create-folders.html" />
+    <link rel="prev" title="Choose a terminal" href="choose-a-terminal.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo_light.png" class="logo__image only-light" alt=""/>
+    <img src="../../_static/logo_dark.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">datashuttle v0.1.dev1</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../community/index.html">
+    Community
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api_index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle" title="Zulip (chat)" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-comments fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Zulip (chat)</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../community/index.html">
+    Community
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api_index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle" title="Zulip (chat)" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-comments fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Zulip (chat)</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="set-up-a-project.html">Set up a project</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="choose-a-terminal.html">Choose a terminal</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Project validation</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="create-folders.html">Create folders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transfer-data.html">Transfer data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="update-configs.html">Update configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="read-logs.html">Read the logs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="use-validation-templates.html">Validation Templates</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">User guides</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Project validation</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="project-validation">
+<span id="tutorial-validation"></span><h1>Project validation<a class="headerlink" href="#project-validation" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> can validate a project against the
+<a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/latest/specification.html">NeuroBlueprint specification</a>.
+This will find and display a list of all formatting errors in the project.</p>
+<p>To quickly validate an existing project with only the project path, see how to <a class="reference internal" href="../get_started/quick-validate-project.html#validate-project-from-path"><span class="std std-ref">validate a project from a path</span></a>.</p>
+<p>Below we will cover how to validate a datashuttle-managed project
+(which will additionally <a class="reference internal" href="read-logs.html#how-to-read-the-logs"><span class="std std-ref">log</span></a> the validation results).</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="validating-a-local-project">
+<h1>Validating a local project<a class="headerlink" href="#validating-a-local-project" title="Link to this heading">#</a></h1>
+<p>Validation will highlight validation errors within a project. For example, consider
+<code class="docutils literal notranslate"><span class="pre">my_project</span></code>, which has a <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/latest/index.html">NeuroBlueprint</a>
+error (a subject that does not have an integer value):</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>└──<span class="w"> </span>my_project/
+<span class="w">    </span>└──<span class="w"> </span>rawdata/
+<span class="w">        </span>└──<span class="w"> </span>sub-abc
+</pre></div>
+</div>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="gui" for="sd-tab-item-0">
+Graphical Interface</label><div class="sd-tab-content docutils">
+<p>In a set-up datashuttle project, the <code class="docutils literal notranslate"><span class="pre">Validate</span></code> tab
+can be used to validate the project.</p>
+<p>Clicking the validate button will print all validation
+issues to the output region. See the sections below
+for details on the options.</p>
+<a class="only-light reference internal image-reference" href="../../_images/tutorial-validation-light.png"><img alt="../../_images/tutorial-validation-light.png" class="align-center only-light" src="../../_images/tutorial-validation-light.png" style="width: 800px;" />
+</a>
+<a class="only-dark reference internal image-reference" href="../../_images/tutorial-validation-dark.png"><img alt="../../_images/tutorial-validation-dark.png" class="align-center only-dark" src="../../_images/tutorial-validation-dark.png" style="width: 800px;" />
+</a>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-1">
+Python API</label><div class="sd-tab-content docutils">
+<p>Project validation can be run with the <a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.validate_project" title="datashuttle.DataShuttle.validate_project"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">validate_project</span></code></a> function.</p>
+<p>Violations of the <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/latest/index.html">NeuroBlueprint</a> can be set to raise an error, be displayed as warnings or printed as output.
+They are also returned in a list of strings.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datashuttle</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataShuttle</span>
+
+<span class="n">project</span> <span class="o">=</span> <span class="n">DataShuttle</span><span class="p">(</span><span class="s2">&quot;my_project&quot;</span><span class="p">)</span>
+
+<span class="n">project</span><span class="o">.</span><span class="n">make_config_file</span><span class="p">(</span><span class="n">local_path</span><span class="o">=</span><span class="s2">&quot;/path/to/my/project&quot;</span><span class="p">)</span>  <span class="c1"># only required once, on initial project set up</span>
+
+<span class="n">error_messages</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">validate_project</span><span class="p">(</span>
+    <span class="s2">&quot;rawdata&quot;</span><span class="p">,</span>
+    <span class="n">display_mode</span><span class="o">=</span><span class="s2">&quot;warn&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="c1"># UserWarning: BAD_VALUE: The value for prefix sub in name sub-abc is not an integer. Path: &lt;path to folder&gt;</span>
+</pre></div>
+</div>
+<p>This outputs any <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/latest/index.html">NeuroBlueprint</a> validation as a warning.</p>
+<p>The returned <code class="docutils literal notranslate"><span class="pre">error_messages</span></code> is a last of strings containing all validation errors, to be used if required e.g.:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">error_messages</span><span class="p">)</span>
+<span class="c1"># [BAD_VALUE: The value for prefix sub in name sub-abc is not an integer. Path: &lt;path to folder&gt;]</span>
+</pre></div>
+</div>
+<p>The options for <code class="docutils literal notranslate"><span class="pre">display_mode</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;error&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;warn&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;print&quot;</span></code>.
+For <code class="docutils literal notranslate"><span class="pre">&quot;error&quot;</span></code>, only the first  encountered <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/latest/index.html">NeuroBlueprint</a> violation will be raised.</p>
+</div>
+</div>
+<p>Below, we will explore the two key options <code class="docutils literal notranslate"><span class="pre">strict_mode</span></code> and <code class="docutils literal notranslate"><span class="pre">include_central</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By default, only <code class="docutils literal notranslate"><span class="pre">sub-</span></code> and <code class="docutils literal notranslate"><span class="pre">ses-</span></code> prefixed folders are validated
+in the project. To validate all folders (including
+<a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/latest/specification.html#datatype">datatypes</a>)
+use <code class="docutils literal notranslate"><span class="pre">strict_mode</span></code>.</p>
+</div>
+<section id="strict-mode">
+<h2><code class="docutils literal notranslate"><span class="pre">strict_mode</span></code><a class="headerlink" href="#strict-mode" title="Link to this heading">#</a></h2>
+<p>In strict-mode, all folders outside the <code class="docutils literal notranslate"><span class="pre">datatype</span></code> folder (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;ephys&quot;</span></code>)
+must be <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/latest/index.html">NeuroBlueprint</a>-formatted.</p>
+<p><a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/latest/index.html">NeuroBlueprint</a> does not require all folders in the project to be <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/latest/index.html">NeuroBlueprint</a>-formatted <code class="docutils literal notranslate"><span class="pre">sub-</span></code>, <code class="docutils literal notranslate"><span class="pre">ses-</span></code> or
+datatype folders.</p>
+<p>For example, <code class="docutils literal notranslate"><span class="pre">some_other_folder</span></code>:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>└──<span class="w"> </span>my_project/
+<span class="w">    </span>└──<span class="w"> </span>rawdata/
+<span class="w">        </span>├──<span class="w"> </span>sub-001/
+<span class="w">        </span>│<span class="w">   </span>└──<span class="w"> </span>...
+<span class="w">        </span>└──<span class="w"> </span>some_other_folder/
+<span class="w">            </span>└──<span class="w"> </span>...
+</pre></div>
+</div>
+<p>However, this means it is hard to validate all folder names, as it is not possible to determine whether
+these are mistakes e.g. <code class="docutils literal notranslate"><span class="pre">rat-001</span></code> or auxiliary folders. By default, <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> will only look for
+<code class="docutils literal notranslate"><span class="pre">sub-</span></code> or <code class="docutils literal notranslate"><span class="pre">ses-</span></code> prefixed files to validate.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">strict_mode</span></code>, non-<a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/latest/index.html">NeuroBlueprint</a> formatted folders are not allowed (except within datatype folders).
+Therefore, any additional folders at the subject or session level will raise a validation error, for example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">validate_project</span><span class="p">(</span>
+    <span class="s2">&quot;rawdata&quot;</span><span class="p">,</span>
+    <span class="n">display_mode</span><span class="o">=</span><span class="s2">&quot;print&quot;</span><span class="p">,</span>
+    <span class="n">strict_mode</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="c1"># BAD_NAME: The name: some_other_folder of type: sub- is not valid. Path: &lt;path to folder&gt;</span>
+
+</pre></div>
+</div>
+</section>
+<section id="include-central">
+<h2><code class="docutils literal notranslate"><span class="pre">include_central</span></code><a class="headerlink" href="#include-central" title="Link to this heading">#</a></h2>
+<p>Validation can be performed across all folders in projects in which data is transferred
+between a ‘local’ and ‘central’ machine. The validation will combine <code class="docutils literal notranslate"><span class="pre">sub-</span></code> and <code class="docutils literal notranslate"><span class="pre">ses-</span></code>
+folders across local and central before validation. This is useful check against inconsistent value lengths
+(e.g. <code class="docutils literal notranslate"><span class="pre">sub-001</span></code> vs <code class="docutils literal notranslate"><span class="pre">sub-02</span></code>) and duplicate names (e.g. <code class="docutils literal notranslate"><span class="pre">sub-001</span></code> and <code class="docutils literal notranslate"><span class="pre">sub-001_date-20240101</span></code>) across
+the local and central project.</p>
+<p>To perform this type of validation, connection configurations <a class="reference internal" href="set-up-a-project.html#set-up-a-project-for-transfer"><span class="std std-ref">must be set</span></a>.
+The <code class="docutils literal notranslate"><span class="pre">include_central</span></code> argument must be set to <code class="docutils literal notranslate"><span class="pre">True</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">error_messages</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">validate_project</span><span class="p">(</span>
+    <span class="s2">&quot;rawdata&quot;</span><span class="p">,</span>
+    <span class="n">display_mode</span><span class="o">=</span><span class="s2">&quot;warn&quot;</span><span class="p">,</span>
+    <span class="n">include_central</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="allow-letters-in-sub-ses-values">
+<h2><code class="docutils literal notranslate"><span class="pre">allow_letters_in_sub_ses_values</span></code><a class="headerlink" href="#allow-letters-in-sub-ses-values" title="Link to this heading">#</a></h2>
+<p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, any alphanumeric character are allowed for the values associated with <code class="docutils literal notranslate"><span class="pre">sub-</span></code> or ses- <code class="docutils literal notranslate"><span class="pre">keys</span></code>.
+Otherwise, values must be integer and the following additional checks are performed:</p>
+<ul class="simple">
+<li><p>Labels must be the same length (e.g. <code class="docutils literal notranslate"><span class="pre">sub-01</span></code> and <code class="docutils literal notranslate"><span class="pre">sub-002</span></code> is invalid).</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Project validation</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#validating-a-local-project">Validating a local project</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#strict-mode"><code class="docutils literal notranslate"><span class="pre">strict_mode</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#include-central"><code class="docutils literal notranslate"><span class="pre">include_central</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#allow-letters-in-sub-ses-values"><code class="docutils literal notranslate"><span class="pre">allow_letters_in_sub_ses_values</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><p class="sphinx-version">
+Created using <a href="https://sphinx-doc.org/">Sphinx</a> 9.1.0.
+<br/>
+</p>
+<p class="theme-version">
+Built with the
+<a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a>
+0.16.1.
+</p></div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><div class="things-in-a-row">
+    <a href="https://www.sainsburywellcome.org/web/">
+        <img src="../../_static/light-logo-swc.png" alt="Sponsors" class="only-light img-sponsor"/>
+        <img src="../../_static/dark-logo-swc.png" alt="Sponsors" class="only-dark img-sponsor"/>
+    </a>
+    <a href="https://www.ucl.ac.uk/gatsby/gatsby-computational-neuroscience-unit">
+        <img src="../../_static/light-logo-gatsby.png" alt="Sponsors" class="only-light img-sponsor"/>
+        <img src="../../_static/dark-logo-gatsby.png" alt="Sponsors" class="only-dark img-sponsor"/>
+    </a>
+    <a href="https://www.ucl.ac.uk/">
+        <img src="../../_static/light-logo-ucl.png" alt="Sponsors" class="only-light img-sponsor"/>
+        <img src="../../_static/dark-logo-ucl.png" alt="Sponsors" class="only-dark img-sponsor"/>
+    </a>
+</div></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
