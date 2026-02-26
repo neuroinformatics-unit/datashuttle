@@ -21,6 +21,11 @@ from .. import test_utils
 
 TEST_PROJECT_NAME = test_utils.get_test_project_name()
 
+if os.getenv("CI") == "true":
+    LOG_LEVEL = "INFO"
+else:
+    LOG_LEVEL = os.getenv("DS_LOG_LEVEL", "DEBUG")
+
 
 class TestLogging:
     @pytest.fixture(scope="function")
