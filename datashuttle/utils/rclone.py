@@ -689,7 +689,7 @@ def log_stdout_stderr_python_api(stdout: str, stderr: str) -> None:
     utils.log_and_message(message)
 
 
-def log_rclone_copy_errors_api(errors):
+def log_rclone_copy_errors_api(errors: TransferErrors) -> None:
     """Log the `errors` dictionary.
 
     The `errors` dictionary contains all pertinent information on
@@ -727,12 +727,14 @@ def log_rclone_copy_errors_api(errors):
     utils.log_and_message(message, use_rich=True)
 
 
-def parse_rclone_copy_output(top_level_folder, output):
+def parse_rclone_copy_output(
+    top_level_folder: TopLevelFolder | None, output: CompletedProcess
+) -> tuple[str, str, TransferErrors]:
     """Format the `rclone copy` output ready for logging.
 
     Reformat and combine the string streams and `errors`
     dictionary from stdout and stderr output of `rclone copy`.
-    see `reformat_rclone_copy_output() for details.
+    see `reformat_rclone_copy_output()` for details.
     """
     stdout, out_errors = reformat_rclone_copy_output(
         output.stdout, top_level_folder=top_level_folder
@@ -742,8 +744,13 @@ def parse_rclone_copy_output(top_level_folder, output):
         output.stderr, top_level_folder=top_level_folder
     )
 
+    # TODO: this should be refactored so that if these are never set
+    # on `out_errors` two separate dicts are used. This is poor.
+    assert out_errors["nothing_was_transferred_rawdata"] is None
+    assert out_errors["nothing_was_transferred_derivatives"] is None
+
     # Combine the two `errors` output
-    all_errors = {
+    all_errors: TransferErrors = {
         "file_names": out_errors["file_names"] + err_errors["file_names"],
         "messages": out_errors["messages"] + err_errors["messages"],
         "nothing_was_transferred_rawdata": err_errors[
@@ -754,7 +761,7 @@ def parse_rclone_copy_output(top_level_folder, output):
         ],
     }
 
-    all_errors["file_names"] = list(set(all_errors["file_names"]))
+    all_errors["file_names"] = list(set(all_errors["file_names"]))  # type: ignore
 
     return stdout, stderr, all_errors
 
@@ -889,7 +896,7 @@ def make_rclone_transfer_options(
 def get_local_and_central_file_differences(
     cfg: Configs,
     top_level_folders_to_check: List[TopLevelFolder],
-) -> Dict:
+) -> Dict[str, List]:
     """Format a structure of all changes between local and central.
 
     Rclone output comes as a list of files, separated by newlines,

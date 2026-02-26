@@ -66,11 +66,11 @@ class MessageBox(ModalScreen):
         border_color
             Color of the MessageBox border (e.g. green if the message is positive).
 
-        height
-            The height of the messagebox.
-
         width
             The width of the messagebox.
+
+        height
+            The height of the messagebox.
 
         """
         super(MessageBox, self).__init__()
@@ -299,7 +299,7 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
             else:
                 self.app.show_modal_error_dialog(output)
 
-        except BaseException as e:
+        except Exception as e:
             self.app.show_modal_error_dialog(str(e))
 
 

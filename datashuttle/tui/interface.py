@@ -640,5 +640,5 @@ class Interface:
         try:
             self.project._try_encrypt_rclone_config(is_using_api=False)
             return True, None
-        except BaseException as e:
+        except Exception as e:
             return False, str(e)

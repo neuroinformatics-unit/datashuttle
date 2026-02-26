@@ -107,7 +107,7 @@ MessageBox {
     height: 3;
 }
 
-/* NOTE: `messagebox_top_container` width and height are defined on the `MessageBox` class.
+/* NOTE: `messagebox_top_container` width and height are defined on the `MessageBox` class. */
 
 /* Light Mode Error Screen */
 

@@ -292,8 +292,6 @@ class TestTuiTransfer(TuiBase):
 
             # Transfer again to check the message displays indicating
             # no files were transferred.
-            await self.run_transfer(pilot, "upload")
-
             await self.run_transfer(
                 pilot, "upload", close_final_messagebox=False
             )

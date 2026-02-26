@@ -707,7 +707,10 @@ def monkeypatch_get_datashuttle_path(tmp_config_path, _monkeypatch):
 
 
 def lock_a_file(file_path, duration=5):
-    """"""
+    """
+    Lock a file by writing to it continuously for a specified duration in a separate thread.
+    Used to create transfer errors for testing.
+    """
 
     def continually_write_to_file(path, duration):
         end_time = time.time() + duration
@@ -716,12 +719,12 @@ def lock_a_file(file_path, duration=5):
                 f.write("LOCKED\n")
                 f.flush()
 
-    t = threading.Thread(
+    thread = threading.Thread(
         target=continually_write_to_file, args=(file_path, duration)
     )
-    t.start()
+    thread.start()
 
-    return t
+    return thread
 
 
 def get_test_project_name():

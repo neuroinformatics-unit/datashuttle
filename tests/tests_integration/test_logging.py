@@ -513,8 +513,6 @@ class TestLogging:
 
         test_utils.delete_log_files(project.cfg.logging_path)
 
-        test_utils.delete_log_files(project.cfg.logging_path)
-
         if platform.system() == "Windows":
             lock = FileLock(a_transferred_file, timeout=5)
             with lock:
