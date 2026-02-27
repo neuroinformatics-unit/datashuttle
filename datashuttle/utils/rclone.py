@@ -27,10 +27,30 @@ import os
 import platform
 import shlex
 import subprocess
+import sys
 import tempfile
 
 from datashuttle.configs import canonical_configs
 from datashuttle.utils import rclone_encryption, utils
+
+
+def get_command(command: str) -> str:
+    """ """
+    from pathlib import Path
+
+    if getattr(sys, "frozen", False):
+        # PyInstaller: binary extracted to _MEIPASS
+        if sys.platform == "win32":
+            format_command = (
+                f"{str(Path(sys._MEIPASS) / 'rclone.exe')} {command}"
+            )
+        else:
+            format_command = f"{sys._MEIPASS}/rclone {command}"
+    else:
+        # Normal Python execution: use PATH or fixed path
+        format_command = f"rclone {command}"  # or provide full path if needed
+
+    return format_command
 
 
 def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
@@ -49,13 +69,17 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
     subprocess.CompletedProcess with `stdout` and `stderr` attributes.
 
     """
-    command = "rclone " + command
+    format_command = get_command(command)
+
     if pipe_std:
         output = subprocess.run(
-            command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+            format_command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=True,
         )
     else:
-        output = subprocess.run(command, shell=True)
+        output = subprocess.run(format_command, shell=True)
 
     if output.returncode != 0:
         prompt_rclone_download_if_does_not_exist()
@@ -101,18 +125,18 @@ def call_rclone_through_script_for_central_connection(
     """
     system = platform.system()
 
-    command = "rclone " + command
-
     if system == "Windows":
         suffix = ".bat"
     else:
         suffix = ".sh"
         command = "#!/bin/bash\n" + command
 
+    format_command = get_command(command)
+
     with tempfile.NamedTemporaryFile(
         mode="w", suffix=suffix, delete=False
     ) as tmp_script:
-        tmp_script.write(command)
+        tmp_script.write(format_command)
         tmp_script_path = tmp_script.name
 
     try:
@@ -595,7 +619,7 @@ def check_rclone_with_default_call() -> bool:
     """
     try:
         output = subprocess.run(
-            "rclone -h",
+            get_command("-h"),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=True,

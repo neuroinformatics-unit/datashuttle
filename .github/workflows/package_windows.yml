@@ -1,0 +1,59 @@
+name: windows-build
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ "v*" ]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: powershell
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+          auto-update-conda: true
+          channels: conda-forge
+          activate-environment: "datashuttle-test"
+
+      - name: Install rclone
+        run: |
+          conda activate datashuttle-test
+          conda install -c conda-forge rclone
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .[dev]
+          pip install pyinstaller
+
+      # Install Inno Setup silently
+      - name: Install Inno Setup
+        run: |
+          choco install innosetup --yes
+
+      - name: Verify Inno Setup installation
+        run: |
+          Get-Command "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+
+      - name: Run Windows packaging script
+        run: |
+          python package/package_windows.py
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: package\Output\datashuttle_0.0.0.exe
