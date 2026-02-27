@@ -23,13 +23,11 @@ author = "Neuroinformatics Unit"
 # Retrieve the version number from the package
 try:
     release = setuptools_scm.get_version(root="../..", relative_to=__file__)
-    release = release.split("+")[0]  # remove git hash
+    release = release.split(".dev")[0]  # remove dev tag and git hash
 except LookupError:
     # if git is not initialised, still allow local build
     # with a dummy version
     release = "0.0.0"
-
-doc_version = "dev" if "dev" in release else f"v{release}"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -150,11 +148,6 @@ html_theme_options = {
             "type": "fontawesome",
         },
     ],
-    "switcher": {
-        "json_url": "https://datashuttle.neuroinformatics.dev/latest/_static/switcher.json",
-        "version_match": doc_version,
-    },
-    "navbar_end": ["version-switcher", "theme-switcher", "navbar-icon-links"],
     "logo": {
         "text": f"datashuttle v{release}",
         "image_light": "_static/logo_light.png",
