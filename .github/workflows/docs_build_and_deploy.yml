@@ -11,7 +11,6 @@ on:
       - main
     tags:
       - 'v*'
-  pull_request:
   workflow_dispatch:
 
 # Cancel in-progress runs if a new run is triggered, except for main branch.
@@ -33,7 +32,7 @@ jobs:
     needs: build_sphinx_docs
     permissions:
       contents: write
-    if: github.event_name == 'push' && github.ref_type == 'tag'
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: neuroinformatics-unit/actions/deploy_sphinx_docs@v2
