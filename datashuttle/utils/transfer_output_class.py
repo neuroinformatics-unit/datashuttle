@@ -89,7 +89,7 @@ class TransferOutput(UserDict):
         """Create a message summarising the transfer, for display in the TUI.
 
         This is very similar to `self.create_python_api_message()`, but these
-        are sufficient subtle differences to warrant two separate functions.
+        are sufficiently subtle differences to warrant two separate functions.
         """
         message = ""
 
