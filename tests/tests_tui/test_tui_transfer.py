@@ -1,4 +1,8 @@
+import platform
+from pathlib import Path
+
 import pytest
+from filelock import FileLock
 
 from datashuttle.configs import canonical_configs
 from datashuttle.tui.app import TuiApp
@@ -218,6 +222,113 @@ class TestTuiTransfer(TuiBase):
 
             await pilot.pause()
 
+    @pytest.mark.asyncio
+    async def test_transfer_output_is_reported_on_pop_up(
+        self, setup_project_paths
+    ):
+        """
+        Check that transfer errors, or the case where no files are transferred,
+        are displayed properly on the modal dialog that displays following
+        the transfer.
+        """
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        subs, sessions = test_utils.get_default_sub_sessions_to_test()
+
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+            # Set up the project files to transfer and navigate
+            # to the transfer screen
+            await self.check_and_click_onto_existing_project(
+                pilot, project_name
+            )
+            await self.switch_tab(pilot, "transfer")
+
+            project = pilot.app.screen.interface.project
+
+            self.setup_project_for_data_transfer(
+                project,
+                subs,
+                sessions,
+                ["rawdata", "derivatives"],
+                "upload",
+            )
+
+            relative_path = (
+                Path("rawdata")
+                / subs[0]
+                / sessions[0]
+                / "ephys"
+                / "placeholder_file.txt"
+            )
+
+            # Lock a file and perform the transfer, which will have errors.
+            # Check the errors are displayed in the pop-up window.
+            a_transferred_file = project.get_local_path() / relative_path
+
+            if platform.system() == "Windows":
+                lock = FileLock(a_transferred_file, timeout=5)
+                with lock:
+                    await self.run_transfer(
+                        pilot, "upload", close_final_messagebox=False
+                    )
+                error_message = "because another process has locked "
+            else:
+                thread = test_utils.lock_a_file(
+                    a_transferred_file, duration=20
+                )
+
+                await self.run_transfer(
+                    pilot, "upload", close_final_messagebox=False
+                )
+                thread.join()
+                error_message = "size changed"
+
+            displayed_message = app.screen.message
+
+            assert relative_path.as_posix() in displayed_message
+
+            assert error_message in displayed_message
+
+            await self.close_messagebox(pilot)
+
+            # Transfer again to check the message displays indicating
+            # no files were transferred.
+            await self.run_transfer(
+                pilot, "upload", close_final_messagebox=False
+            )
+
+            assert (
+                "Nothing was transferred from derivatives"
+                in app.screen.message
+            )
+
+            await pilot.pause()
+
+            await self.close_messagebox(pilot)
+
+            # make a new file and transfer again, to test the success message shows
+            new_file_rawdata = a_transferred_file.with_name(
+                "placeholder_2.txt"
+            )
+            new_file_derivatives = Path(
+                *(
+                    "derivatives" if part == "rawdata" else part
+                    for part in new_file_rawdata.parts
+                )
+            )
+            new_file_rawdata.touch()
+            new_file_derivatives.touch()
+
+            await self.run_transfer(
+                pilot, "upload", close_final_messagebox=False
+            )
+            assert "1 file was transferred from rawdata" in app.screen.message
+            assert (
+                "1 file was transferred from derivatives."
+                in app.screen.message
+            )
+
     @pytest.mark.asyncio()
     async def test_custom_transfer_default_sub_ses_all(
         self, mocker, setup_project_paths
@@ -262,14 +373,16 @@ class TestTuiTransfer(TuiBase):
             await self.move_select_to_position(pilot, id, position=5)
             assert pilot.app.screen.query_one(id).value == "derivatives"
 
-    async def run_transfer(self, pilot, upload_or_download):
+    async def run_transfer(
+        self, pilot, upload_or_download, close_final_messagebox=True
+    ):
         # Check assumed default is correct on the transfer switch
         assert pilot.app.screen.query_one("#transfer_switch").value is False
 
         if upload_or_download == "download":
             await self.scroll_to_click_pause(pilot, "#transfer_switch")
 
-        await self.click_and_await_transfer(pilot)
+        await self.click_and_await_transfer(pilot, close_final_messagebox)
 
     def setup_project_for_data_transfer(
         self,

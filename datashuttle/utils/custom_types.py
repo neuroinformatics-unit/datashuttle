@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Literal, Tuple
 
 DisplayMode = Literal["error", "warn", "print"]

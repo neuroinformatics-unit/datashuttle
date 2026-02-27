@@ -5,6 +5,8 @@ import logging
 import os
 import pathlib
 import shutil
+import threading
+import time
 import warnings
 from os.path import join
 from pathlib import Path
@@ -702,6 +704,27 @@ def monkeypatch_get_datashuttle_path(tmp_config_path, _monkeypatch):
         "datashuttle.configs.canonical_folders.get_datashuttle_path",
         mock_get_datashuttle_path,
     )
+
+
+def lock_a_file(file_path, duration=5):
+    """
+    Lock a file by writing to it continuously for a specified duration in a separate thread.
+    Used to create transfer errors for testing.
+    """
+
+    def continually_write_to_file(path, duration):
+        end_time = time.time() + duration
+        with open(path, "a") as f:
+            while time.time() < end_time:
+                f.write("LOCKED\n")
+                f.flush()
+
+    thread = threading.Thread(
+        target=continually_write_to_file, args=(file_path, duration)
+    )
+    thread.start()
+
+    return thread
 
 
 def get_test_project_name():

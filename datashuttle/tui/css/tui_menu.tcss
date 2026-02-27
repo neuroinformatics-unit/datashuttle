@@ -91,11 +91,6 @@ MessageBox {
     align: center middle;
 }
 
-#messagebox_top_container {
-    height: 15;
-    width: 65;
- }
-
 #messagebox_message_container {
     align: center middle;
     overflow: hidden auto;
@@ -111,6 +106,8 @@ MessageBox {
     align: center bottom;
     height: 3;
 }
+
+/* NOTE: `messagebox_top_container` width and height are defined on the `MessageBox` class. */
 
 /* Light Mode Error Screen */
 

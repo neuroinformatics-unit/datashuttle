@@ -49,7 +49,13 @@ class MessageBox(ModalScreen):
 
     """
 
-    def __init__(self, message: str, border_color: str) -> None:
+    def __init__(
+        self,
+        message: str,
+        border_color: str,
+        width: str = "65",
+        height: str = "15",
+    ) -> None:
         """Initialise the MessageBox.
 
         Parameters
@@ -60,15 +66,23 @@ class MessageBox(ModalScreen):
         border_color
             Color of the MessageBox border (e.g. green if the message is positive).
 
+        width
+            The width of the messagebox.
+
+        height
+            The height of the messagebox.
+
         """
         super(MessageBox, self).__init__()
 
         self.message = message
         self.border_color = border_color
+        self.top_container_width = width
+        self.top_container_height = height
 
     def compose(self) -> ComposeResult:
         """Add widgets to the MessageBox."""
-        yield Container(
+        self.top_container = Container(
             Container(
                 Static(self.message, id="messagebox_message_label"),
                 id="messagebox_message_container",
@@ -76,6 +90,8 @@ class MessageBox(ModalScreen):
             Container(Button("OK"), id="messagebox_ok_button"),
             id="messagebox_top_container",
         )
+
+        yield self.top_container
 
     def on_mount(self) -> None:
         """Update widgets immediately after mounting."""
@@ -92,6 +108,9 @@ class MessageBox(ModalScreen):
             "thick",
             color,
         )
+
+        self.top_container.styles.width = self.top_container_width
+        self.top_container.styles.height = self.top_container_height
 
     def on_button_pressed(self) -> None:
         """Handle button press."""
@@ -219,23 +238,47 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
 
     async def handle_transfer_and_update_ui_when_complete(self) -> None:
         """Run the data transfer worker and updates the UI on completion."""
-        data_transfer_worker = self.transfer_func()
-        await data_transfer_worker.wait()
-        success, output = data_transfer_worker.result
-        self.dismiss()
+        try:
+            data_transfer_worker = self.transfer_func()
+            await data_transfer_worker.wait()
+            success, transfer_output = data_transfer_worker.result
 
-        if success:
-            self.app.push_screen(
-                MessageBox(
-                    "Transfer finished."
-                    "\n\n"
-                    "Check the most recent logs to "
-                    "ensure transfer completed successfully.",
-                    border_color="grey",
+            self.dismiss()  # do not await here
+
+            if success:
+                if self.app.theme == "textual-dark":
+                    no_transfer_color = "lightblue"
+                    transfer_color = "#44C97F"
+                else:
+                    no_transfer_color = "blue"
+                    transfer_color = "#1AA34A"
+
+                transfer_output_message = transfer_output.create_tui_message(
+                    no_transfer_color, transfer_color
                 )
-            )
-        else:
-            self.app.show_modal_error_dialog(output)
+
+                message = (
+                    f"Transfer finished.\n"
+                    f"{transfer_output_message}\n\n"
+                    f"Check the most recent logs for full details."
+                )
+
+                messagebox_kwargs = (
+                    {"width": "75%", "height": "75%"}
+                    if transfer_output.errors_detected()
+                    else {}
+                )
+
+                await self.app.push_screen(
+                    MessageBox(
+                        message, border_color="grey", **messagebox_kwargs
+                    )
+                )
+            else:
+                self.app.show_modal_error_dialog(transfer_output)
+
+        except Exception as e:
+            self.app.show_modal_error_dialog(str(e))
 
 
 class SearchingCentralForNextSubSesPopup(ModalScreen):

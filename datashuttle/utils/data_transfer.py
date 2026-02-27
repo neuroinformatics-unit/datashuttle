@@ -9,6 +9,7 @@ from datashuttle.utils.custom_types import (
     Prefix,
     TopLevelFolder,
 )
+from datashuttle.utils.transfer_output_class import TransferOutput
 
 
 class TransferData:
@@ -33,7 +34,6 @@ class TransferData:
         datatype: Union[str, List[str]],
         overwrite_existing_files: OverwriteExistingFiles,
         dry_run: bool,
-        log: bool,
     ):
         """Initialise TransferData.
 
@@ -71,9 +71,6 @@ class TransferData:
             Perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved.
 
-        log
-            if `True`, log and print the transfer output.
-
         """
         self.__cfg = cfg
         self.__upload_or_download = upload_or_download
@@ -84,6 +81,8 @@ class TransferData:
         self.__base_folder = self.__cfg.get_base_folder(
             self.__local_or_central, self.__top_level_folder
         )
+        self.__overwrite_existing_files = overwrite_existing_files
+        self.__dry_run = dry_run
 
         self.sub_names = self.to_list(sub_names)
         self.ses_names = self.to_list(ses_names)
@@ -91,6 +90,8 @@ class TransferData:
 
         self.check_input_arguments()
 
+    def run(self) -> TransferOutput:
+        """Run the transfer."""
         include_list = self.build_a_list_of_all_files_and_folders_to_transfer()
 
         if any(include_list):
@@ -100,15 +101,30 @@ class TransferData:
                 self.__top_level_folder,
                 include_list,
                 rclone.make_rclone_transfer_options(
-                    overwrite_existing_files, dry_run
+                    self.__overwrite_existing_files, self.__dry_run
                 ),
             )
 
-            if log:
-                utils.log_and_message(output.stderr.decode("utf-8"))
+            stdout, stderr, transfer_output = rclone.parse_rclone_copy_output(
+                self.__top_level_folder, output
+            )
+
+            if output.returncode != 0 and not any(
+                transfer_output["errors"]["messages"]
+            ):
+                raise RuntimeError(
+                    "Errors were detected in transfer but not reported properly. "
+                    "Please contact the datashuttle team."
+                )
+
+            rclone.log_stdout_stderr_python_api(stdout, stderr)
+
         else:
-            if log:
-                utils.log_and_message("No files included. None transferred.")
+            utils.log_and_message("No files included. None transferred.")
+            transfer_output = TransferOutput()
+            transfer_output["num_transferred"][self.__top_level_folder] = 0
+
+        return transfer_output
 
     # -------------------------------------------------------------------------
     # Build the --include list

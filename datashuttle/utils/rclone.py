@@ -28,9 +28,12 @@ import platform
 import shlex
 import subprocess
 import tempfile
+from pathlib import Path
+from subprocess import CompletedProcess
 
 from datashuttle.configs import canonical_configs
 from datashuttle.utils import rclone_encryption, utils
+from datashuttle.utils.transfer_output_class import TransferOutput
 
 
 def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
@@ -661,7 +664,7 @@ def transfer_data(
             cfg,
             f"{rclone_args('copy')} "
             f'"{local_filepath}" "{cfg.rclone.get_rclone_config_name()}:'
-            f'{central_filepath}" {extra_arguments} {get_config_arg(cfg)}',
+            f'{central_filepath}" {extra_arguments} {get_config_arg(cfg)} --use-json-log',
         )
 
     elif upload_or_download == "download":
@@ -669,10 +672,127 @@ def transfer_data(
             cfg,
             f"{rclone_args('copy')} "
             f'"{cfg.rclone.get_rclone_config_name()}:'
-            f'{central_filepath}" "{local_filepath}"  {extra_arguments} {get_config_arg(cfg)}',
+            f'{central_filepath}" "{local_filepath}" {extra_arguments} {get_config_arg(cfg)} --use-json-log',
         )
 
     return output
+
+
+def log_stdout_stderr_python_api(stdout: str, stderr: str) -> None:
+    """Log `stdout` and `stderr`."""
+    message = (
+        f"\n\n**************  STDOUT  **************\n"
+        f"{stdout}"
+        f"\n\n**************  STDERR  **************\n"
+        f"{stderr}"
+    )
+
+    utils.log_and_message(message)
+
+
+def log_rclone_transfer_output(transfer_output: TransferOutput) -> None:
+    """Log the `TransferOutput` dictionary.
+
+    The `TransferOutput` dictionary contains all pertinent information on
+    issues that occurred when running `rclone copy`. Note this logs
+    for the API, the TUI display is handled separately.
+    """
+    message = transfer_output.create_python_api_message()
+
+    utils.log_and_message(message, use_rich=True)
+
+
+def parse_rclone_copy_output(
+    top_level_folder: TopLevelFolder | None, output: CompletedProcess
+) -> tuple[str, str, TransferOutput]:
+    """Format the `rclone copy` output ready for logging.
+
+    Reformat and combine the string streams and `TransferOutput`
+    dictionary from stdout and stderr output of `rclone copy`.
+    see `reformat_rclone_copy_output()` for details.
+    """
+    stdout, stdout_outputs = reformat_rclone_copy_output(
+        output.stdout, top_level_folder=top_level_folder
+    )
+    stderr, stderr_outputs = reformat_rclone_copy_output(
+        output.stderr, top_level_folder=top_level_folder
+    )
+
+    combined_transfer_output = TransferOutput.merge_std_outputs(
+        stdout_outputs, stderr_outputs
+    )
+
+    return stdout, stderr, combined_transfer_output
+
+
+def reformat_rclone_copy_output(
+    stream: bytes,
+    top_level_folder: TopLevelFolder | None = None,
+) -> tuple[str, TransferOutput]:
+    """Parse the output of `rclone copy` for convenient error checking.
+
+    Rclone's `copy` command (called with `--use-json-log`) outputs a lot of
+    information related to the transfer. We dump this in text form to a log
+    file. However, we also want to grab any key events (errors, or complete
+    lack of transferred files) so these can be displayed separately.
+
+    This function iterates through all lines in the `rclone copy` output.
+    This output is typically a mix of string format and json format.
+    If the line is json-encoded, then we extract important information
+    and format it to string, and re-insert it into the output.
+
+    In this way, we have a string-format output ready to be
+    dumped to the logs, as well as an `errors` dictionary containing
+    details on all key information.
+
+    Returns
+    -------
+    format_stream
+        The input stream, converted to string and with all
+        json-formatted lines reformatted as string. This is ready
+        to be dumped to a log file.
+
+    errors
+        A dictionary (`TransferOutput`) containing key information
+        about issues in the transfer.
+
+    """
+    split_stream = stream.decode("utf-8").split("\n")
+
+    transfer_output = TransferOutput()
+
+    for idx, line in enumerate(split_stream):
+        try:
+            line_json = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+
+        if line_json["level"] in ["error", "critical"]:
+            if "object" in line_json:
+                full_filepath = Path(
+                    f"{top_level_folder}/{line_json['object']}"
+                ).as_posix()
+                transfer_output["errors"]["file_names"].append(full_filepath)
+                transfer_output["errors"]["messages"].append(
+                    f"The file {full_filepath} failed to transfer. Reason: {line_json['msg']}"
+                )
+            else:
+                transfer_output["errors"]["messages"].append(
+                    f"ERROR : {line_json['msg']}"
+                )
+
+        elif "stats" in line_json and "totalTransfers" in line_json["stats"]:
+            transfer_output["num_transferred"][top_level_folder] = line_json[
+                "stats"
+            ]["totalTransfers"]
+
+        split_stream[idx] = (
+            f"{line_json['time'][:19]} {line_json['level'].upper()} : {line_json['msg']}"
+        )
+
+    format_stream = "\n".join(split_stream)
+
+    return format_stream, transfer_output
 
 
 def make_rclone_transfer_options(
@@ -700,7 +820,7 @@ def make_rclone_transfer_options(
 def get_local_and_central_file_differences(
     cfg: Configs,
     top_level_folders_to_check: List[TopLevelFolder],
-) -> Dict:
+) -> Dict[str, List]:
     """Format a structure of all changes between local and central.
 
     Rclone output comes as a list of files, separated by newlines,

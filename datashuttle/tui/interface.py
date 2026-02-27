@@ -260,20 +260,20 @@ class Interface:
             else:
                 transfer_func = self.project.download_entire_project
 
-            transfer_func(
+            transfer_output = transfer_func(
                 overwrite_existing_files=self.tui_settings[
                     "overwrite_existing_files"
                 ],
                 dry_run=self.tui_settings["dry_run"],
             )
 
-            return True, None
+            return True, transfer_output
 
         except Exception as e:
             return False, str(e)
 
     def transfer_top_level_only(
-        self, selected_top_level_folder: str, upload: bool
+        self, selected_top_level_folder: TopLevelFolder, upload: bool
     ) -> InterfaceOutput:
         """Transfer all files within a selected top level folder.
 
@@ -303,14 +303,14 @@ class Interface:
                     else self.project.download_derivatives
                 )
 
-            transfer_func(
+            transfer_output = transfer_func(
                 overwrite_existing_files=self.tui_settings[
                     "overwrite_existing_files"
                 ],
                 dry_run=self.tui_settings["dry_run"],
             )
 
-            return True, None
+            return True, transfer_output
 
         except Exception as e:
             return False, str(e)
@@ -350,7 +350,7 @@ class Interface:
             else:
                 transfer_func = self.project.download_custom
 
-            transfer_func(
+            transfer_output = transfer_func(
                 selected_top_level_folder,
                 sub_names=sub_names,
                 ses_names=ses_names,
@@ -361,7 +361,7 @@ class Interface:
                 dry_run=self.tui_settings["dry_run"],
             )
 
-            return True, None
+            return True, transfer_output
 
         except Exception as e:
             return False, str(e)
@@ -655,5 +655,5 @@ class Interface:
         try:
             self.project._try_encrypt_rclone_config(is_using_api=False)
             return True, None
-        except BaseException as e:
+        except Exception as e:
             return False, str(e)
