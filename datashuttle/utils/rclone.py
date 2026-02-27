@@ -203,7 +203,8 @@ def run_function_that_requires_encrypted_rclone_config_access(
 
     if check_config_exists and not rclone_config_filepath.is_file():
         raise RuntimeError(
-            f"The way RClone configs are managed has changed since version v0.7.1\n"
+            f"The Rclone config file cannot be found. You may be seeing this as the way "
+            f"Rclone configs are managed was changed in v0.7.1\n"
             f"Please set up the {cfg['connection_method']} connection again."
         )
 

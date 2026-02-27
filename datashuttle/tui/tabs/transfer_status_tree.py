@@ -19,7 +19,6 @@ from datashuttle.configs import canonical_folders
 from datashuttle.tui.custom_widgets import (
     CustomDirectoryTree,
 )
-from datashuttle.utils.rclone import get_local_and_central_file_differences
 
 
 class TransferStatusTree(CustomDirectoryTree):
@@ -78,8 +77,16 @@ class TransferStatusTree(CustomDirectoryTree):
         self.update_local_transfer_paths()
 
         if self.mainwindow.load_global_settings()["show_transfer_tree_status"]:
-            self.update_transfer_diffs()
-
+            success, output = self.interface.get_transfer_diffs(
+                top_level_folders_to_check=["rawdata", "derivatives"]
+            )
+            if success:
+                self.transfer_diffs = output
+            else:
+                self.mainwindow.show_modal_error_dialog(
+                    f"Could not update transfer tree status. See the below error:\n{output}"
+                )
+                return
         if not init:
             self.reload()
 
@@ -96,13 +103,6 @@ class TransferStatusTree(CustomDirectoryTree):
                         [Path(f"{path[0]}/{file}") for file in path[2]]
                     )
         self.transfer_paths = paths_list
-
-    def update_transfer_diffs(self) -> None:
-        """Update the transfer diffs used to style the DirectoryTree."""
-        self.transfer_diffs = get_local_and_central_file_differences(
-            self.interface.get_configs(),
-            top_level_folders_to_check=["rawdata", "derivatives"],
-        )
 
     # Overridden Methods
     # ----------------------------------------------------------------------------------
