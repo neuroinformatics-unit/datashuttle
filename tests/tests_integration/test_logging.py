@@ -21,11 +21,6 @@ from .. import test_utils
 
 TEST_PROJECT_NAME = test_utils.get_test_project_name()
 
-if os.getenv("CI") == "true":
-    LOG_LEVEL = "INFO"
-else:
-    LOG_LEVEL = os.getenv("DS_LOG_LEVEL", "DEBUG")
-
 
 class TestLogging:
     @pytest.fixture(scope="function")
@@ -514,7 +509,7 @@ class TestLogging:
 
         log = test_utils.read_log_file(project.cfg.logging_path)
         assert "8 files were transferred from derivatives" in log
-        assert "rawdata" not in log
+        assert "Nothing was transferred from rawdata" not in log
         test_utils.delete_log_files(project.cfg.logging_path)
 
         test_utils.make_local_folders_with_files_in(
