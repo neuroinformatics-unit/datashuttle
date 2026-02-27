@@ -492,7 +492,8 @@ class TestFileTransfer(BaseTest):
             assert "--dry-run" not in log
 
     @pytest.mark.parametrize(
-        "overwrite_existing_files", ["never", "if_source_newer", "if_different", "always"]
+        "overwrite_existing_files",
+        ["never", "if_source_newer", "if_different", "always"],
     )
     @pytest.mark.parametrize(
         "transfer_method", ["entire_project", "custom", "top_level_folder"]
