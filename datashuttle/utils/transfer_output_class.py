@@ -120,7 +120,7 @@ class TransferOutput(UserDict):
 
         if any(errors_dict["messages"]):
             if errors_dict["file_names"]:
-                message += "\n[red]Errors detected! in files:[/red]\n"
+                message += "\n[red]Errors detected! In files:[/red]\n"
                 message += "\n".join(errors_dict["file_names"])
             else:
                 message += "\n[red]Errors detected![/red]"
