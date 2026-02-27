@@ -40,9 +40,9 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=5a057da9"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'pages/community/contributing';</script>
@@ -124,7 +124,7 @@
     <img src="../../_static/logo_dark.png" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">datashuttle v0.7.1</p>
+    <p class="title logo__title">datashuttle v0.1</p>
   
 </a></div>
     
@@ -436,7 +436,7 @@ Otherwise, feel free to dive right in and start contributing by
 and <a class="reference internal" href="#pull-requests"><span class="std std-ref">opening a pull request</span></a>.</p>
 <p>The core development team will support you in contributing code, regardless of your experience!</p>
 <section id="creating-a-development-environment">
-<h2>Creating a development environment<a class="headerlink" href="#creating-a-development-environment" title="Link to this heading">#</a></h2>
+<span id="developer-install"></span><h2>Creating a development environment<a class="headerlink" href="#creating-a-development-environment" title="Link to this heading">#</a></h2>
 <p>For detailed instructions on installing <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> along with
 all necessary packages for development, refer to the <code class="docutils literal notranslate"><span class="pre">Developers</span></code> tab on the
 <a class="reference internal" href="../get_started/install.html#how-to-install"><span class="std std-ref">How to install <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code></span></a> page.</p>
@@ -522,14 +522,46 @@ skip pre-commit checks, and ask for help in your PR.</p>
 <p>For docstrings, we adhere to the <a class="reference external" href="https://numpydoc.readthedocs.io/en/latest/format.html">numpydoc</a> style.
 Make sure to provide docstrings for all public functions, classes, and methods.</p>
 </section>
+<section id="running-tests-locally">
+<h2>Running tests locally<a class="headerlink" href="#running-tests-locally" title="Link to this heading">#</a></h2>
+<p>Unit and integration tests are important tools to ensure the code is working
+as expected, and protect against regressions introduced by future changes.</p>
+<p>All tests are automatically run on GitHub Actions for open PRs. However, running tests locally can
+be useful to verify that everything works correctly on your system. We use <a class="reference external" href="https://docs.pytest.org/en/stable/">pytest</a>
+to manage running <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> tests.</p>
+<p>Before running the tests, make sure <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> is <a class="reference internal" href="#developer-install"><span class="std std-ref">installed in development mode</span></a></p>
+<section id="running-the-full-test-suite">
+<h3>Running the full test suite<a class="headerlink" href="#running-the-full-test-suite" title="Link to this heading">#</a></h3>
+<p>From the root of the repository, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest
+</pre></div>
+</div>
+<p>This runs all tests that can be executed in the local development environment.</p>
+<p>To run a specific test file, you can include the path to the file, for example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>tests/test_validation.py
+</pre></div>
+</div>
+<p>or to run any tests with names that match a keyword:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>-k<span class="w"> </span>validate
+</pre></div>
+</div>
+</section>
+<section id="tests-requiring-additional-infrastructure">
+<h3>Tests requiring additional infrastructure<a class="headerlink" href="#tests-requiring-additional-infrastructure" title="Link to this heading">#</a></h3>
+<p>Some tests depend on external infrastructure and are skipped automatically
+when run locally:</p>
+<ul class="simple">
+<li><p>SSH transfer tests require that Docker is installed and running.</p></li>
+<li><p>Cloud storage tests (Google Drive, AWS) require private credentials to run
+and are generally not expected to be run outside the GitHub Actions environment. Please
+contact the development team if you require local testing of Google Drive or AWS for your contribution.</p></li>
+</ul>
+</section>
+</section>
 <section id="contributing-documentation">
 <h2>Contributing documentation<a class="headerlink" href="#contributing-documentation" title="Link to this heading">#</a></h2>
-<p>It is very important that the documentation for <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> is clear,
-accurate and concise. A key principle of <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> is it should
-make data acquisition simple and easy—therefore it should be
-well-documented.</p>
-<p>For these reasons every part of all software must be documented as
-thoroughly as possible, and all new features must be fully documented. If you
+<p>To ensure ease of use, all parts of <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> must be documented as
+thoroughly as possible, and all new features should be fully documented. If you
 notice any areas where the documentation can be improved, please don’t hesitate
 to make a contribution.</p>
 <section id="working-with-the-documentation">
@@ -563,6 +595,17 @@ Most content is found under <code class="docutils literal notranslate"><span cla
 <p>If you aren’t sure where the changes should be made, please
 <a class="reference external" href="https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle">get in touch!</a></p>
 </section>
+<section id="previewing-the-documentation-in-continuous-integration">
+<h3>Previewing the documentation in continuous integration<a class="headerlink" href="#previewing-the-documentation-in-continuous-integration" title="Link to this heading">#</a></h3>
+<p>We use <a class="reference external" href="https://artifact.ci/">artifact.ci</a> to preview the documentation that is built as part of our GitHub Actions workflow. To do so:</p>
+<ol class="arabic simple">
+<li><p>Go to the “Checks” tab in the GitHub PR.</p></li>
+<li><p>Click on the “Docs” section on the left.</p></li>
+<li><p>If the “Build Sphinx Docs” action is successful, a summary section will appear under the block diagram with a link to preview the built documentation.</p></li>
+<li><p>Click on the link and wait for the files to be uploaded (it may take a while the first time). You may be asked to sign in to GitHub.</p></li>
+<li><p>Once the upload is complete, look for <code class="docutils literal notranslate"><span class="pre">docs/build/html/index.html</span></code> under the “Detected Entrypoints” section.</p></li>
+</ol>
+</section>
 </section>
 </section>
 
@@ -592,9 +635,15 @@ Most content is found under <code class="docutils literal notranslate"><span cla
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-development-environment">Creating a development environment</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pull-requests">Pull requests</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#formatting-and-pre-commit-hooks">Formatting and pre-commit hooks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-tests-locally">Running tests locally</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#running-the-full-test-suite">Running the full test suite</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-requiring-additional-infrastructure">Tests requiring additional infrastructure</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contributing-documentation">Contributing documentation</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#working-with-the-documentation">Working with the documentation</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#editing-the-documentation">Editing the documentation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#previewing-the-documentation-in-continuous-integration">Previewing the documentation in continuous integration</a></li>
 </ul>
 </li>
 </ul>
@@ -622,7 +671,7 @@ Most content is found under <code class="docutils literal notranslate"><span cla
     <div class="footer-items__start">
       
         <div class="footer-item"><p class="sphinx-version">
-Created using <a href="https://sphinx-doc.org/">Sphinx</a> 8.1.3.
+Created using <a href="https://sphinx-doc.org/">Sphinx</a> 9.1.0.
 <br/>
 </p>
 <p class="theme-version">

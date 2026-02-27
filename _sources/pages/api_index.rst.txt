@@ -7,4 +7,4 @@ API Reference
 
 .. autoclass:: DataShuttle
 
-.. autofunction:: quick_validate_project
+.. autofunction:: validate_project_from_path

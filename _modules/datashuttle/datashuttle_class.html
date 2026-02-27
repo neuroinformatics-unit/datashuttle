@@ -39,9 +39,9 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=5a057da9"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/datashuttle/datashuttle_class';</script>
@@ -121,7 +121,7 @@
     <img src="../../_static/logo_dark.png" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">datashuttle v0.7.1</p>
+    <p class="title logo__title">datashuttle v0.1</p>
   
 </a></div>
     
@@ -428,14 +428,16 @@
 <span class="p">)</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+
     <span class="kn">from</span><span class="w"> </span><span class="nn">datashuttle.utils.custom_types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">ConnectionMethods</span><span class="p">,</span>
         <span class="n">DisplayMode</span><span class="p">,</span>
         <span class="n">OverwriteExistingFiles</span><span class="p">,</span>
         <span class="n">Prefix</span><span class="p">,</span>
         <span class="n">TopLevelFolder</span><span class="p">,</span>
     <span class="p">)</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">paramiko</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">datashuttle.configs</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -446,11 +448,14 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">datashuttle.configs.config_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">Configs</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datashuttle.datashuttle_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">_format_top_level_folder</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datashuttle.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">aws</span><span class="p">,</span>
     <span class="n">ds_logger</span><span class="p">,</span>
     <span class="n">folders</span><span class="p">,</span>
     <span class="n">formatting</span><span class="p">,</span>
+    <span class="n">gdrive</span><span class="p">,</span>
     <span class="n">getters</span><span class="p">,</span>
     <span class="n">rclone</span><span class="p">,</span>
+    <span class="n">rclone_encryption</span><span class="p">,</span>
     <span class="n">ssh</span><span class="p">,</span>
     <span class="n">utils</span><span class="p">,</span>
     <span class="n">validation</span><span class="p">,</span>
@@ -463,6 +468,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">datashuttle.utils.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa</span>
     <span class="n">check_configs_set</span><span class="p">,</span>
     <span class="n">check_is_not_local_project</span><span class="p">,</span>
+    <span class="n">requires_aws_configs</span><span class="p">,</span>
     <span class="n">requires_ssh_configs</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -512,8 +518,6 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_attributes_after_config_load</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">rclone</span><span class="o">.</span><span class="n">prompt_rclone_download_if_does_not_exist</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_attributes_after_config_load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update all private attributes according to config contents.&quot;&quot;&quot;</span>
@@ -535,6 +539,7 @@
         <span class="n">ses_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">datatype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
         <span class="n">bypass_validation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">allow_letters_in_sub_ses_values</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a folder tree in the project folder.</span>
@@ -569,6 +574,13 @@
 <span class="sd">        bypass_validation</span>
 <span class="sd">            If `True`, folders will be created even if they are not</span>
 <span class="sd">            valid to NeuroBlueprint style.</span>
+
+<span class="sd">        allow_letters_in_sub_ses_values</span>
+<span class="sd">            If `True`, any alphanumeric character are allowed for the values associated</span>
+<span class="sd">            with sub- or ses-  keys. Otherwise, values must be integer</span>
+<span class="sd">            and the following additional checks are performed:</span>
+
+<span class="sd">            - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).</span>
 
 <span class="sd">        log</span>
 <span class="sd">            If `True`, details of folder creation will be logged.</span>
@@ -606,7 +618,16 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;create-folders&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
+                <span class="s2">&quot;create-folders&quot;</span><span class="p">,</span>
+                <span class="n">local_vars</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;top_level_folder&quot;</span><span class="p">:</span> <span class="n">top_level_folder</span><span class="p">,</span>
+                    <span class="s2">&quot;sub_names&quot;</span><span class="p">:</span> <span class="n">sub_names</span><span class="p">,</span>
+                    <span class="s2">&quot;ses_names&quot;</span><span class="p">:</span> <span class="n">ses_names</span><span class="p">,</span>
+                    <span class="s2">&quot;datatype&quot;</span><span class="p">:</span> <span class="n">datatype</span><span class="p">,</span>
+                    <span class="s2">&quot;bypass_validation&quot;</span><span class="p">:</span> <span class="n">bypass_validation</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_top_level_folder</span><span class="p">(</span><span class="n">top_level_folder</span><span class="p">)</span>
 
@@ -620,14 +641,15 @@
         <span class="n">utils</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Formatting Names...&quot;</span><span class="p">)</span>
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">log_names</span><span class="p">([</span><span class="s2">&quot;sub_names&quot;</span><span class="p">,</span> <span class="s2">&quot;ses_names&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">sub_names</span><span class="p">,</span> <span class="n">ses_names</span><span class="p">])</span>
 
-        <span class="n">name_templates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_name_templates</span><span class="p">()</span>
+        <span class="n">validation_templates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_validation_templates</span><span class="p">()</span>
 
         <span class="n">format_sub</span><span class="p">,</span> <span class="n">format_ses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_and_validate_names</span><span class="p">(</span>
             <span class="n">top_level_folder</span><span class="p">,</span>
             <span class="n">sub_names</span><span class="p">,</span>
             <span class="n">ses_names</span><span class="p">,</span>
-            <span class="n">name_templates</span><span class="p">,</span>
+            <span class="n">validation_templates</span><span class="p">,</span>
             <span class="n">bypass_validation</span><span class="p">,</span>
+            <span class="n">allow_letters_in_sub_ses_values</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -663,18 +685,27 @@
         <span class="n">top_level_folder</span><span class="p">:</span> <span class="n">TopLevelFolder</span><span class="p">,</span>
         <span class="n">sub_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
         <span class="n">ses_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]],</span>
-        <span class="n">name_templates</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+        <span class="n">validation_templates</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
         <span class="n">bypass_validation</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">allow_letters_in_sub_ses_values</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
         <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Central method to format and validate subject and session names.&quot;&quot;&quot;</span>
         <span class="n">format_sub</span> <span class="o">=</span> <span class="n">formatting</span><span class="o">.</span><span class="n">check_and_format_names</span><span class="p">(</span>
-            <span class="n">sub_names</span><span class="p">,</span> <span class="s2">&quot;sub&quot;</span><span class="p">,</span> <span class="n">name_templates</span><span class="p">,</span> <span class="n">bypass_validation</span>
+            <span class="n">sub_names</span><span class="p">,</span>
+            <span class="s2">&quot;sub&quot;</span><span class="p">,</span>
+            <span class="n">validation_templates</span><span class="p">,</span>
+            <span class="n">bypass_validation</span><span class="p">,</span>
+            <span class="n">allow_letters_in_sub_ses_values</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">ses_names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">format_ses</span> <span class="o">=</span> <span class="n">formatting</span><span class="o">.</span><span class="n">check_and_format_names</span><span class="p">(</span>
-                <span class="n">ses_names</span><span class="p">,</span> <span class="s2">&quot;ses&quot;</span><span class="p">,</span> <span class="n">name_templates</span><span class="p">,</span> <span class="n">bypass_validation</span>
+                <span class="n">ses_names</span><span class="p">,</span>
+                <span class="s2">&quot;ses&quot;</span><span class="p">,</span>
+                <span class="n">validation_templates</span><span class="p">,</span>
+                <span class="n">bypass_validation</span><span class="p">,</span>
+                <span class="n">allow_letters_in_sub_ses_values</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">format_ses</span> <span class="o">=</span> <span class="p">[]</span>
@@ -688,7 +719,8 @@
                 <span class="n">include_central</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="n">display_mode</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">,</span>
                 <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
-                <span class="n">name_templates</span><span class="o">=</span><span class="n">name_templates</span><span class="p">,</span>
+                <span class="n">validation_templates</span><span class="o">=</span><span class="n">validation_templates</span><span class="p">,</span>
+                <span class="n">allow_letters_in_sub_ses_values</span><span class="o">=</span><span class="n">allow_letters_in_sub_ses_values</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">format_sub</span><span class="p">,</span> <span class="n">format_ses</span>
@@ -751,7 +783,17 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload-custom&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
+                <span class="s2">&quot;upload-custom&quot;</span><span class="p">,</span>
+                <span class="n">local_vars</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;top_level_folder&quot;</span><span class="p">:</span> <span class="n">top_level_folder</span><span class="p">,</span>
+                    <span class="s2">&quot;sub_names&quot;</span><span class="p">:</span> <span class="n">sub_names</span><span class="p">,</span>
+                    <span class="s2">&quot;ses_names&quot;</span><span class="p">:</span> <span class="n">ses_names</span><span class="p">,</span>
+                    <span class="s2">&quot;datatype&quot;</span><span class="p">:</span> <span class="n">datatype</span><span class="p">,</span>
+                    <span class="s2">&quot;overwrite_existing_files&quot;</span><span class="p">:</span> <span class="n">overwrite_existing_files</span><span class="p">,</span>
+                    <span class="s2">&quot;dry_run&quot;</span><span class="p">:</span> <span class="n">dry_run</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_top_level_folder</span><span class="p">(</span><span class="n">top_level_folder</span><span class="p">)</span>
 
@@ -825,7 +867,17 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download-custom&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
+                <span class="s2">&quot;download-custom&quot;</span><span class="p">,</span>
+                <span class="n">local_vars</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;top_level_folder&quot;</span><span class="p">:</span> <span class="n">top_level_folder</span><span class="p">,</span>
+                    <span class="s2">&quot;sub_names&quot;</span><span class="p">:</span> <span class="n">sub_names</span><span class="p">,</span>
+                    <span class="s2">&quot;ses_names&quot;</span><span class="p">:</span> <span class="n">ses_names</span><span class="p">,</span>
+                    <span class="s2">&quot;datatype&quot;</span><span class="p">:</span> <span class="n">datatype</span><span class="p">,</span>
+                    <span class="s2">&quot;overwrite_existing_files&quot;</span><span class="p">:</span> <span class="n">overwrite_existing_files</span><span class="p">,</span>
+                    <span class="s2">&quot;dry_run&quot;</span><span class="p">:</span> <span class="n">dry_run</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_top_level_folder</span><span class="p">(</span><span class="n">top_level_folder</span><span class="p">)</span>
 
@@ -1009,7 +1061,13 @@
 <span class="sd">            transfer was taking place, but no files will be moved.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload-entire-project&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
+            <span class="s2">&quot;upload-entire-project&quot;</span><span class="p">,</span>
+            <span class="n">local_vars</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;overwrite_existing_files&quot;</span><span class="p">:</span> <span class="n">overwrite_existing_files</span><span class="p">,</span>
+                <span class="s2">&quot;dry_run&quot;</span><span class="p">:</span> <span class="n">dry_run</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_entire_project</span><span class="p">(</span>
             <span class="s2">&quot;upload&quot;</span><span class="p">,</span> <span class="n">overwrite_existing_files</span><span class="p">,</span> <span class="n">dry_run</span>
         <span class="p">)</span>
@@ -1043,7 +1101,13 @@
 <span class="sd">            transfer was taking place, but no files will be moved.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download-entire-project&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
+            <span class="s2">&quot;download-entire-project&quot;</span><span class="p">,</span>
+            <span class="n">local_vars</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;overwrite_existing_files&quot;</span><span class="p">:</span> <span class="n">overwrite_existing_files</span><span class="p">,</span>
+                <span class="s2">&quot;dry_run&quot;</span><span class="p">:</span> <span class="n">dry_run</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_entire_project</span><span class="p">(</span>
             <span class="s2">&quot;download&quot;</span><span class="p">,</span> <span class="n">overwrite_existing_files</span><span class="p">,</span> <span class="n">dry_run</span>
         <span class="p">)</span>
@@ -1083,7 +1147,14 @@
 <span class="sd">            transfer was taking place, but no files will be moved.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload-specific-folder-or-file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
+            <span class="s2">&quot;upload-specific-folder-or-file&quot;</span><span class="p">,</span>
+            <span class="n">local_vars</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;filepath&quot;</span><span class="p">:</span> <span class="n">filepath</span><span class="p">,</span>
+                <span class="s2">&quot;overwrite_existing_files&quot;</span><span class="p">:</span> <span class="n">overwrite_existing_files</span><span class="p">,</span>
+                <span class="s2">&quot;dry_run&quot;</span><span class="p">:</span> <span class="n">dry_run</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_specific_file_or_folder</span><span class="p">(</span>
             <span class="s2">&quot;upload&quot;</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">overwrite_existing_files</span><span class="p">,</span> <span class="n">dry_run</span>
@@ -1127,7 +1198,12 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
-            <span class="s2">&quot;download-specific-folder-or-file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">()</span>
+            <span class="s2">&quot;download-specific-folder-or-file&quot;</span><span class="p">,</span>
+            <span class="n">local_vars</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;filepath&quot;</span><span class="p">:</span> <span class="n">filepath</span><span class="p">,</span>
+                <span class="s2">&quot;overwrite_existing_files&quot;</span><span class="p">:</span> <span class="n">overwrite_existing_files</span><span class="p">,</span>
+                <span class="s2">&quot;dry_run&quot;</span><span class="p">:</span> <span class="n">dry_run</span><span class="p">,</span>
+            <span class="p">},</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_specific_file_or_folder</span><span class="p">(</span>
@@ -1152,7 +1228,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">upload_or_download</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">top_level_folder</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">()</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">upload_or_download</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">top_level_folder</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">local_vars</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;upload_or_download&quot;</span><span class="p">:</span> <span class="n">upload_or_download</span><span class="p">,</span>
+                    <span class="s2">&quot;top_level_folder&quot;</span><span class="p">:</span> <span class="n">top_level_folder</span><span class="p">,</span>
+                    <span class="s2">&quot;overwrite_existing_files&quot;</span><span class="p">:</span> <span class="n">overwrite_existing_files</span><span class="p">,</span>
+                    <span class="s2">&quot;dry_run&quot;</span><span class="p">:</span> <span class="n">dry_run</span><span class="p">,</span>
+                <span class="p">},</span>
             <span class="p">)</span>
 
         <span class="n">transfer_func</span> <span class="o">=</span> <span class="p">(</span>
@@ -1186,17 +1268,25 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">base_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;central_path&quot;</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">path_starts_with_base_folder</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
-            <span class="n">utils</span><span class="o">.</span><span class="n">log_and_raise_error</span><span class="p">(</span>
-                <span class="s2">&quot;Transfer failed. &quot;</span>
-                <span class="s2">&quot;Must pass the full filepath to file or folder to transfer.&quot;</span><span class="p">,</span>
-                <span class="ne">ValueError</span><span class="p">,</span>
+        <span class="k">if</span> <span class="n">base_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">path_starts_with_base_folder</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+                <span class="n">utils</span><span class="o">.</span><span class="n">log_and_raise_error</span><span class="p">(</span>
+                    <span class="s2">&quot;Transfer failed. &quot;</span>
+                    <span class="s2">&quot;Must pass the full filepath to file or folder to transfer.&quot;</span><span class="p">,</span>
+                    <span class="ne">ValueError</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="n">processed_filepath</span> <span class="o">=</span> <span class="n">filepath</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">base_path</span><span class="p">)</span>
+
+            <span class="n">top_level_folder</span> <span class="o">=</span> <span class="n">processed_filepath</span><span class="o">.</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">processed_filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="o">*</span><span class="n">processed_filepath</span><span class="o">.</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;connection_method&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;gdrive&quot;</span><span class="p">,</span> <span class="p">(</span>
+                <span class="s2">&quot;`None` only permitted for gdrive or local only mode.&quot;</span>
             <span class="p">)</span>
 
-        <span class="n">processed_filepath</span> <span class="o">=</span> <span class="n">filepath</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">base_path</span><span class="p">)</span>
-
-        <span class="n">top_level_folder</span> <span class="o">=</span> <span class="n">processed_filepath</span><span class="o">.</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">processed_filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="o">*</span><span class="n">processed_filepath</span><span class="o">.</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+            <span class="n">processed_filepath</span> <span class="o">=</span> <span class="n">filepath</span>
 
         <span class="n">include_list</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;--include /</span><span class="si">{</span><span class="n">processed_filepath</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
         <span class="n">output</span> <span class="o">=</span> <span class="n">rclone</span><span class="o">.</span><span class="n">transfer_data</span><span class="p">(</span>
@@ -1204,7 +1294,7 @@
             <span class="n">upload_or_download</span><span class="p">,</span>
             <span class="n">top_level_folder</span><span class="p">,</span>
             <span class="n">include_list</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">make_rclone_transfer_options</span><span class="p">(</span>
+            <span class="n">rclone</span><span class="o">.</span><span class="n">make_rclone_transfer_options</span><span class="p">(</span>
                 <span class="n">overwrite_existing_files</span><span class="p">,</span> <span class="n">dry_run</span>
             <span class="p">),</span>
         <span class="p">)</span>
@@ -1231,50 +1321,216 @@
 <span class="sd">        Next, prompt to input their password for the central</span>
 <span class="sd">        cluster. Once input, SSH private / public key pair</span>
 <span class="sd">        will be setup.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
-            <span class="s2">&quot;setup-ssh-connection-to-central-server&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">()</span>
-        <span class="p">)</span>
 
-        <span class="n">verified</span> <span class="o">=</span> <span class="n">ssh</span><span class="o">.</span><span class="n">verify_ssh_central_host</span><span class="p">(</span>
+<span class="sd">        Do not log this method, too high a risk of logging secrets.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;connection_method&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;ssh&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;configs `connection_method` must be &#39;ssh&#39; to set up SSH connection.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">verified</span> <span class="o">=</span> <span class="n">ssh</span><span class="o">.</span><span class="n">verify_ssh_central_host_api</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;central_host_id&quot;</span><span class="p">],</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">hostkeys_path</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">verified</span><span class="p">:</span>
-            <span class="n">ssh</span><span class="o">.</span><span class="n">setup_ssh_key</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_setup_rclone_central_ssh_config</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">private_key_str</span> <span class="o">=</span> <span class="n">ssh</span><span class="o">.</span><span class="n">setup_ssh_key_api</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setup_rclone_central_ssh_config</span><span class="p">(</span><span class="n">private_key_str</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">utils</span><span class="o">.</span><span class="n">log_and_message</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Your SSH key will be stored in the rclone config at:</span><span class="se">\n</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">rclone</span><span class="o">.</span><span class="n">get_rclone_central_connection_config_filepath</span><span class="p">()</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">rclone</span><span class="o">.</span><span class="n">rclone_file_is_encrypted</span><span class="p">():</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ask_user_rclone_encryption</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_try_encrypt_rclone_config</span><span class="p">()</span>
+
+            <span class="n">rclone</span><span class="o">.</span><span class="n">check_successful_connection_and_raise_error_on_fail</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span>
+            <span class="p">)</span>
+
+            <span class="n">utils</span><span class="o">.</span><span class="n">log_and_message</span><span class="p">(</span>
+                <span class="s2">&quot;SSH key pair setup successfully. SSH key saved to the RClone config file.&quot;</span>
+            <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DataShuttle.write_public_key">
-<a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.write_public_key">[docs]</a>
-    <span class="nd">@requires_ssh_configs</span>
-    <span class="nd">@check_is_not_local_project</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">write_public_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the public SSH key to a specified filepath.</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Google Drive</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
 
-<span class="sd">        By default, only the SSH private key is stored in the</span>
-<span class="sd">        datashuttle configs folder. Use this function to save</span>
-<span class="sd">        the public key.</span>
+<div class="viewcode-block" id="DataShuttle.setup_gdrive_connection">
+<a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.setup_gdrive_connection">[docs]</a>
+    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_gdrive_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set up a connection to Google Drive using the provided credentials.</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        filepath</span>
-<span class="sd">            Full filepath (including filename) to write the</span>
-<span class="sd">            public key to.</span>
+<span class="sd">        Assumes `gdrive_root_folder_id` is set in configs.</span>
 
+<span class="sd">        First, the user will be prompted to enter their Google Drive client</span>
+<span class="sd">        secret if `gdrive_client_id` is set in the configs.</span>
+
+<span class="sd">        Next, the user will be asked if their machine has access to a browser.</span>
+<span class="sd">        If not, they will be prompted to input a config_token after running an</span>
+<span class="sd">        rclone command displayed to the user on a machine with access to a browser.</span>
+
+<span class="sd">        Next, with the provided credentials, the final setup will be done. This</span>
+<span class="sd">        opens up a browser if the user confirmed access to a browser.</span>
+
+<span class="sd">        Do not log this method, too high a risk of logging secrets.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">key</span><span class="p">:</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">RSAKey</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">RSAKey</span><span class="o">.</span><span class="n">from_private_key_file</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ssh_key_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;connection_method&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;gdrive&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;configs `connection_method` must be &#39;gdrive&#39; to set up Google Drive connection.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;gdrive_client_id&quot;</span><span class="p">]:</span>
+            <span class="n">gdrive_client_secret</span> <span class="o">=</span> <span class="n">gdrive</span><span class="o">.</span><span class="n">get_client_secret</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">gdrive_client_secret</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">browser_available</span> <span class="o">=</span> <span class="n">gdrive</span><span class="o">.</span><span class="n">ask_user_for_browser</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">browser_available</span><span class="p">:</span>
+            <span class="n">config_token</span> <span class="o">=</span> <span class="n">gdrive</span><span class="o">.</span><span class="n">prompt_and_get_config_token</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
+                <span class="n">gdrive_client_secret</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">rclone</span><span class="o">.</span><span class="n">get_rclone_config_name</span><span class="p">(</span><span class="s2">&quot;gdrive&quot;</span><span class="p">),</span>
+                <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">config_token</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">process</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_rclone_gdrive_config</span><span class="p">(</span>
+            <span class="n">gdrive_client_secret</span><span class="p">,</span> <span class="n">config_token</span>
         <span class="p">)</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">public</span><span class="p">:</span>
-            <span class="n">public</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">get_base64</span><span class="p">())</span>
-        <span class="n">public</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+        <span class="n">rclone</span><span class="o">.</span><span class="n">await_call_rclone_with_popen_for_central_connection_raise_on_fail</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">process</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">rclone</span><span class="o">.</span><span class="n">rclone_file_is_encrypted</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ask_user_rclone_encryption</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_try_encrypt_rclone_config</span><span class="p">()</span>
+
+        <span class="n">rclone</span><span class="o">.</span><span class="n">check_successful_connection_and_raise_error_on_fail</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
+
+        <span class="n">utils</span><span class="o">.</span><span class="n">log_and_message</span><span class="p">(</span><span class="s2">&quot;Google Drive Connection Successful.&quot;</span><span class="p">)</span></div>
+
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># AWS S3</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="DataShuttle.setup_aws_connection">
+<a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.setup_aws_connection">[docs]</a>
+    <span class="nd">@requires_aws_configs</span>
+    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_aws_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set up a connection to AWS S3 buckets using the provided credentials.</span>
+
+<span class="sd">        Assumes `aws_access_key_id` and `aws_region` are set in configs.</span>
+
+<span class="sd">        First, the user will be prompted to input their AWS secret access key.</span>
+
+<span class="sd">        Next, with the provided credentials, the final connection setup will be done.</span>
+
+<span class="sd">        Do not log this method, too high a risk of logging secrets.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;connection_method&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;aws&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;configs `connection_method` must be &#39;aws&#39; to &quot;</span>
+                <span class="s2">&quot;set up Amazon Web Services S3 Bucket connection.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">aws_secret_access_key</span> <span class="o">=</span> <span class="n">aws</span><span class="o">.</span><span class="n">get_aws_secret_access_key</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_rclone_aws_config</span><span class="p">(</span><span class="n">aws_secret_access_key</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">rclone</span><span class="o">.</span><span class="n">rclone_file_is_encrypted</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ask_user_rclone_encryption</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_try_encrypt_rclone_config</span><span class="p">()</span>
+
+        <span class="n">rclone</span><span class="o">.</span><span class="n">check_successful_connection_and_raise_error_on_fail</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
+        <span class="n">aws</span><span class="o">.</span><span class="n">raise_if_bucket_absent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
+
+        <span class="n">utils</span><span class="o">.</span><span class="n">log_and_message</span><span class="p">(</span><span class="s2">&quot;AWS Connection Successful.&quot;</span><span class="p">)</span></div>
+
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Rclone config encryption</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ask_user_rclone_encryption</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get user input to determine if they want to encrypt the rclone config.&quot;&quot;&quot;</span>
+        <span class="n">input_</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_user_input</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">rclone_encryption</span><span class="o">.</span><span class="n">get_explanation_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Press &#39;y&#39; to encrypt the Rclone config or leave blank to skip.&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">input_</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_try_encrypt_rclone_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_using_api</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Try to encrypt the rclone config file.</span>
+
+<span class="sd">        If it fails, error and let the user know the config file is unencrypted.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">encrypt_rclone_config</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">config_path</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">rclone</span><span class="o">.</span><span class="n">get_rclone_central_connection_config_filepath</span><span class="p">()</span>
+            <span class="p">)</span>
+
+            <span class="n">api_prompt</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;Use `encrypt_rclone_config()` to attempt to encrypt the file again &quot;</span>
+                <span class="k">if</span> <span class="n">is_using_api</span>
+                <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+            <span class="p">)</span>
+
+            <span class="c1"># don&#39;t log during encryption</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">raise_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Config encryption failed:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">api_prompt</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;IMPORTANT: The config at </span><span class="si">{</span><span class="n">config_path</span><span class="si">}</span><span class="s2"> is not currently encrypted.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="ne">RuntimeError</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Rclone config file for the central connection &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;connection_method&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> was successfully encrypted.&quot;</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="DataShuttle.encrypt_rclone_config">
+<a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.encrypt_rclone_config">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">encrypt_rclone_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Encrypt the rclone config file for the central connection.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">rclone</span><span class="o">.</span><span class="n">rclone_file_is_encrypted</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_rclone_encryption</span><span class="p">()</span>
+
+        <span class="n">rclone_encryption</span><span class="o">.</span><span class="n">run_rclone_config_encrypt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">rclone</span><span class="o">.</span><span class="n">set_rclone_config_encryption_state</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataShuttle.remove_rclone_encryption">
+<a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.remove_rclone_encryption">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_rclone_encryption</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Unencrypt the rclone config file for the central connection.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">rclone</span><span class="o">.</span><span class="n">rclone_file_is_encrypted</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The config for the current connection method: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;connection_method&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;is not encrypted. Cannot unencrypt.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">rclone_encryption</span><span class="o">.</span><span class="n">remove_rclone_encryption</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">rclone</span><span class="o">.</span><span class="n">set_rclone_config_encryption_state</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
 
 
     <span class="c1"># -------------------------------------------------------------------------</span>
@@ -1286,14 +1542,18 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">make_config_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">local_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">central_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">connection_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">central_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">connection_method</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ConnectionMethods</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;local_only&quot;</span><span class="p">,</span>
         <span class="n">central_host_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">central_host_username</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">gdrive_client_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">gdrive_root_folder_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">aws_access_key_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">aws_region</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the configurations for datashuttle on the local machine.</span>
 
-<span class="sd">        Once initialised, these settings will be used each</span>
+<span class="sd">        Once initialized, these settings will be used each</span>
 <span class="sd">        time the datashuttle is opened.</span>
 
 <span class="sd">        These settings are stored in a config file on the</span>
@@ -1320,6 +1580,7 @@
 
 <span class="sd">        connection_method</span>
 <span class="sd">            The method used to connect to the central project filesystem,</span>
+<span class="sd">            ``None`` is an alias for ``&quot;local_only&quot;``.</span>
 <span class="sd">            e.g. ``&quot;local_filesystem&quot;`` (e.g. mounted drive) or ``&quot;ssh&quot;``</span>
 
 <span class="sd">        central_host_id</span>
@@ -1330,12 +1591,35 @@
 <span class="sd">            username for which to log in to central host.</span>
 <span class="sd">            e.g. ``&quot;jziminski&quot;``</span>
 
+<span class="sd">        gdrive_client_id</span>
+<span class="sd">            The client ID used to authenticate with the Google Drive API via OAuth 2.0.</span>
+<span class="sd">            This is obtained from the Google Cloud Console when setting up API credentials.</span>
+<span class="sd">            e.g. &quot;1234567890-abc123def456.apps.googleusercontent.com&quot;</span>
+
+<span class="sd">        gdrive_root_folder_id</span>
+<span class="sd">            The folder ID for the Google Drive folder to connect to. This can be copied</span>
+<span class="sd">            directly from your browser when on the folder in Google Drive.</span>
+<span class="sd">            e.g. 1eoAnopd2ZHOd87LgiPtgViFE7u3R9sSw</span>
+
+<span class="sd">        aws_access_key_id</span>
+<span class="sd">            The AWS access key ID used to authenticate requests to AWS services.</span>
+<span class="sd">            This is part of your AWS credentials and can be generated via the AWS IAM console.</span>
+<span class="sd">            e.g. &quot;AKIAIOSFODNN7EXAMPLE&quot;</span>
+
+<span class="sd">        aws_region</span>
+<span class="sd">            The AWS region in which your resources are located.</span>
+<span class="sd">            This determines the data center your requests are routed to.</span>
+<span class="sd">            e.g. &quot;us-west-2&quot;</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
             <span class="s2">&quot;make-config-file&quot;</span><span class="p">,</span>
-            <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">(),</span>
             <span class="n">store_in_temp_folder</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">connection_method</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># For backward compatibility</span>
+            <span class="n">connection_method</span> <span class="o">=</span> <span class="s2">&quot;local_only&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
             <span class="n">utils</span><span class="o">.</span><span class="n">log_and_raise_error</span><span class="p">(</span>
@@ -1353,6 +1637,10 @@
                 <span class="s2">&quot;connection_method&quot;</span><span class="p">:</span> <span class="n">connection_method</span><span class="p">,</span>
                 <span class="s2">&quot;central_host_id&quot;</span><span class="p">:</span> <span class="n">central_host_id</span><span class="p">,</span>
                 <span class="s2">&quot;central_host_username&quot;</span><span class="p">:</span> <span class="n">central_host_username</span><span class="p">,</span>
+                <span class="s2">&quot;gdrive_client_id&quot;</span><span class="p">:</span> <span class="n">gdrive_client_id</span><span class="p">,</span>
+                <span class="s2">&quot;gdrive_root_folder_id&quot;</span><span class="p">:</span> <span class="n">gdrive_root_folder_id</span><span class="p">,</span>
+                <span class="s2">&quot;aws_access_key_id&quot;</span><span class="p">:</span> <span class="n">aws_access_key_id</span><span class="p">,</span>
+                <span class="s2">&quot;aws_region&quot;</span><span class="p">:</span> <span class="n">aws_region</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
 
@@ -1365,7 +1653,8 @@
 
         <span class="c1"># This is just a placeholder rclone config that will suffice</span>
         <span class="c1"># if central is a &#39;local filesystem&#39;.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_rclone_central_local_filesystem_config</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">connection_method</span> <span class="o">!=</span> <span class="s2">&quot;local_only&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setup_rclone_central_local_filesystem_config</span><span class="p">()</span>
 
         <span class="n">utils</span><span class="o">.</span><span class="n">log_and_message</span><span class="p">(</span>
             <span class="s2">&quot;Configuration file has been saved and &quot;</span>
@@ -1380,17 +1669,38 @@
 <div class="viewcode-block" id="DataShuttle.update_config_file">
 <a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.update_config_file">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_config_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the configuration file.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the configuration file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            A dictionary of key-value pairs containing the config</span>
+<span class="sd">            settings to update. For example,</span>
+<span class="sd">            ``{&quot;connection_method&quot;: &quot;local_filesystem&quot;, &quot;central_path&quot;: &quot;/my/local/path&quot;}``</span>
+<span class="sd">            will update the ``connection_method`` and ``central_path`` settings.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">:</span>
             <span class="n">utils</span><span class="o">.</span><span class="n">log_and_raise_error</span><span class="p">(</span>
                 <span class="s2">&quot;Must have a config loaded before updating configs.&quot;</span><span class="p">,</span>
                 <span class="n">ConfigError</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
-            <span class="s2">&quot;update-config-file&quot;</span><span class="p">,</span>
-            <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">(),</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;update-config-file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;connection_method&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;connection_method&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># For backward compatibility</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;connection_method&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;local_only&quot;</span>
+
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;connection_method&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;local_only&quot;</span>
+                <span class="ow">and</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;connection_method&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;local_only&quot;</span>
+            <span class="p">):</span>
+                <span class="c1"># We need to ensure this rclone config is created if it was not created during</span>
+                <span class="c1"># initial set up because the project is local only. It does not matter if the</span>
+                <span class="c1"># RClone config is ever overwritten, it&#39;s just a placeholder.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_setup_rclone_central_local_filesystem_config</span><span class="p">()</span>
 
         <span class="n">new_cfg</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
         <span class="n">new_cfg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -1440,6 +1750,14 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">get_config_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the full path to the DataShuttle config file.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span></div>
+
+
+<div class="viewcode-block" id="DataShuttle.get_rclone_central_config_path">
+<a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.get_rclone_central_config_path">[docs]</a>
+    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_rclone_central_config_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the path to the Rclone config for the current `connection_method`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">rclone</span><span class="o">.</span><span class="n">get_rclone_config_filepath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataShuttle.get_configs">
@@ -1499,9 +1817,9 @@
 <span class="sd">        The next subject ID.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">name_template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_name_templates</span><span class="p">()</span>
-        <span class="n">name_template_regexp</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">name_template</span><span class="p">[</span><span class="s2">&quot;sub&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">name_template</span><span class="p">[</span><span class="s2">&quot;on&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">validation_template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_validation_templates</span><span class="p">()</span>
+        <span class="n">validation_template_regexp</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">validation_template</span><span class="p">[</span><span class="s2">&quot;sub&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">validation_template</span><span class="p">[</span><span class="s2">&quot;on&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_local_project</span><span class="p">():</span>
@@ -1514,7 +1832,7 @@
             <span class="n">include_central</span><span class="o">=</span><span class="n">include_central</span><span class="p">,</span>
             <span class="n">return_with_prefix</span><span class="o">=</span><span class="n">return_with_prefix</span><span class="p">,</span>
             <span class="n">search_str</span><span class="o">=</span><span class="s2">&quot;sub-*&quot;</span><span class="p">,</span>
-            <span class="n">name_template_regexp</span><span class="o">=</span><span class="n">name_template_regexp</span><span class="p">,</span>
+            <span class="n">validation_template_regexp</span><span class="o">=</span><span class="n">validation_template_regexp</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -1551,9 +1869,9 @@
 <span class="sd">        The next session ID.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">name_template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_name_templates</span><span class="p">()</span>
-        <span class="n">name_template_regexp</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">name_template</span><span class="p">[</span><span class="s2">&quot;ses&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">name_template</span><span class="p">[</span><span class="s2">&quot;on&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">validation_template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_validation_templates</span><span class="p">()</span>
+        <span class="n">validation_template_regexp</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">validation_template</span><span class="p">[</span><span class="s2">&quot;ses&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">validation_template</span><span class="p">[</span><span class="s2">&quot;on&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_local_project</span><span class="p">():</span>
@@ -1566,7 +1884,7 @@
             <span class="n">include_central</span><span class="o">=</span><span class="n">include_central</span><span class="p">,</span>
             <span class="n">return_with_prefix</span><span class="o">=</span><span class="n">return_with_prefix</span><span class="p">,</span>
             <span class="n">search_str</span><span class="o">=</span><span class="s2">&quot;ses-*&quot;</span><span class="p">,</span>
-            <span class="n">name_template_regexp</span><span class="o">=</span><span class="n">name_template_regexp</span><span class="p">,</span>
+            <span class="n">validation_template_regexp</span><span class="o">=</span><span class="n">validation_template_regexp</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -1585,41 +1903,43 @@
     <span class="c1"># Name Templates</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="DataShuttle.get_name_templates">
-<a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.get_name_templates">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_name_templates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.get_validation_templates">
+<a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.get_validation_templates">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_validation_templates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the regexp templates used for validation.</span>
 
 <span class="sd">        If the &quot;on&quot; key is set to `False`, template validation is not performed.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        name_templates</span>
-<span class="sd">            e.g. {&quot;name_templates&quot;: {&quot;on&quot;: False, &quot;sub&quot;: None, &quot;ses&quot;: None}}</span>
+<span class="sd">        validation_templates</span>
+<span class="sd">            e.g. {&quot;validation_templates&quot;: {&quot;on&quot;: False, &quot;sub&quot;: None, &quot;ses&quot;: None}}</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_persistent_settings</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;name_templates&quot;</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;validation_templates&quot;</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="DataShuttle.set_name_templates">
-<a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.set_name_templates">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">set_name_templates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_name_templates</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.set_validation_templates">
+<a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.set_validation_templates">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_validation_templates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_validation_templates</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the persistent settings with new name templates.</span>
 
-<span class="sd">        Name templates are regexp for that, when ``name_templates[&quot;on&quot;]`` is</span>
+<span class="sd">        Name templates are regexp for that, when ``validation_templates[&quot;on&quot;]`` is</span>
 <span class="sd">        set to ``True``, ``&quot;sub&quot;`` and ``&quot;ses&quot;`` names are validated against</span>
 <span class="sd">        the regexp contained in the dict.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        new_name_templates</span>
-<span class="sd">            e.g. ``{&quot;name_templates&quot;: {&quot;on&quot;: False, &quot;sub&quot;: None, &quot;ses&quot;: None}}``</span>
+<span class="sd">        new_validation_templates</span>
+<span class="sd">            e.g. ``{&quot;validation_templates&quot;: {&quot;on&quot;: False, &quot;sub&quot;: None, &quot;ses&quot;: None}}``</span>
 <span class="sd">            where ``&quot;sub&quot;`` or ``&quot;ses&quot;`` can be a regexp that subject and session</span>
 <span class="sd">            names respectively are validated against.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_update_persistent_setting</span><span class="p">(</span><span class="s2">&quot;name_templates&quot;</span><span class="p">,</span> <span class="n">new_name_templates</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_persistent_setting</span><span class="p">(</span>
+            <span class="s2">&quot;validation_templates&quot;</span><span class="p">,</span> <span class="n">new_validation_templates</span>
+        <span class="p">)</span></div>
 
 
     <span class="c1"># -------------------------------------------------------------------------</span>
@@ -1647,6 +1967,7 @@
         <span class="n">display_mode</span><span class="p">:</span> <span class="n">DisplayMode</span><span class="p">,</span>
         <span class="n">include_central</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">strict_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">allow_letters_in_sub_ses_values</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform validation on the project.</span>
 
@@ -1676,6 +1997,13 @@
 <span class="sd">            any folder not prefixed with sub-, ses- or a valid datatype will</span>
 <span class="sd">            raise a validation issue.</span>
 
+<span class="sd">        allow_letters_in_sub_ses_values</span>
+<span class="sd">            If `True`, any alphanumeric character are allowed for the values associated</span>
+<span class="sd">            with sub- or ses-  keys. Otherwise, values must be integer</span>
+<span class="sd">            and the following additional checks are performed:</span>
+
+<span class="sd">            - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).</span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        error_messages</span>
@@ -1695,10 +2023,9 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
             <span class="s2">&quot;validate-project&quot;</span><span class="p">,</span>
-            <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">(),</span>
         <span class="p">)</span>
 
-        <span class="n">name_templates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_name_templates</span><span class="p">()</span>
+        <span class="n">validation_templates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_validation_templates</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_local_project</span><span class="p">():</span>
             <span class="n">include_central</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1712,8 +2039,9 @@
             <span class="n">top_level_folder_to_validate</span><span class="p">,</span>
             <span class="n">include_central</span><span class="o">=</span><span class="n">include_central</span><span class="p">,</span>
             <span class="n">display_mode</span><span class="o">=</span><span class="n">display_mode</span><span class="p">,</span>
-            <span class="n">name_templates</span><span class="o">=</span><span class="n">name_templates</span><span class="p">,</span>
+            <span class="n">validation_templates</span><span class="o">=</span><span class="n">validation_templates</span><span class="p">,</span>
             <span class="n">strict_mode</span><span class="o">=</span><span class="n">strict_mode</span><span class="p">,</span>
+            <span class="n">allow_letters_in_sub_ses_values</span><span class="o">=</span><span class="n">allow_letters_in_sub_ses_values</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span>
@@ -1724,7 +2052,11 @@
 <div class="viewcode-block" id="DataShuttle.check_name_formatting">
 <a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.check_name_formatting">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">check_name_formatting</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">prefix</span><span class="p">:</span> <span class="n">Prefix</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_name_formatting</span><span class="p">(</span>
+        <span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
+        <span class="n">prefix</span><span class="p">:</span> <span class="n">Prefix</span><span class="p">,</span>
+        <span class="n">allow_letters_in_sub_ses_values</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Format a list of subject or session names.</span>
 
 <span class="sd">        Pass list of names to check how these will be auto-formatted,</span>
@@ -1742,6 +2074,13 @@
 <span class="sd">            The relevant subject or session prefix,</span>
 <span class="sd">            e.g. ``&quot;sub-&quot;`` or ``&quot;ses-&quot;``</span>
 
+<span class="sd">        allow_letters_in_sub_ses_values</span>
+<span class="sd">            If `True`, any alphanumeric character are allowed for the values associated</span>
+<span class="sd">            with sub- or ses-  keys. Otherwise, values must be integer</span>
+<span class="sd">            and the following additional checks are performed:</span>
+
+<span class="sd">            - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">prefix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sub&quot;</span><span class="p">,</span> <span class="s2">&quot;ses&quot;</span><span class="p">]:</span>
             <span class="n">utils</span><span class="o">.</span><span class="n">log_and_raise_error</span><span class="p">(</span>
@@ -1752,7 +2091,11 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">names</span><span class="p">]</span>
 
-        <span class="n">formatted_names</span> <span class="o">=</span> <span class="n">formatting</span><span class="o">.</span><span class="n">check_and_format_names</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+        <span class="n">formatted_names</span> <span class="o">=</span> <span class="n">formatting</span><span class="o">.</span><span class="n">check_and_format_names</span><span class="p">(</span>
+            <span class="n">names</span><span class="p">,</span>
+            <span class="n">prefix</span><span class="p">,</span>
+            <span class="n">allow_letters_in_sub_ses_values</span><span class="o">=</span><span class="n">allow_letters_in_sub_ses_values</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span><span class="n">formatted_names</span><span class="p">)</span></div>
 
 
@@ -1898,17 +2241,42 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">folders</span><span class="o">.</span><span class="n">create_folders</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">project_metadata_path</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_rclone_central_ssh_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_rclone_central_ssh_config</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">private_key_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">rclone</span><span class="o">.</span><span class="n">setup_rclone_config_for_ssh</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_rclone_config_name</span><span class="p">(</span><span class="s2">&quot;ssh&quot;</span><span class="p">),</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ssh_key_path</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">rclone</span><span class="o">.</span><span class="n">get_rclone_config_name</span><span class="p">(</span><span class="s2">&quot;ssh&quot;</span><span class="p">),</span>
+            <span class="n">private_key_str</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_setup_rclone_central_local_filesystem_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">rclone</span><span class="o">.</span><span class="n">setup_rclone_config_for_local_filesystem</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_rclone_config_name</span><span class="p">(</span><span class="s2">&quot;local_filesystem&quot;</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">rclone</span><span class="o">.</span><span class="n">get_rclone_config_name</span><span class="p">(</span><span class="s2">&quot;local_filesystem&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_rclone_gdrive_config</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gdrive_client_secret</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">config_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">rclone</span><span class="o">.</span><span class="n">setup_rclone_config_for_gdrive</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">rclone</span><span class="o">.</span><span class="n">get_rclone_config_name</span><span class="p">(</span><span class="s2">&quot;gdrive&quot;</span><span class="p">),</span>
+            <span class="n">gdrive_client_secret</span><span class="p">,</span>
+            <span class="n">config_token</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_rclone_aws_config</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">aws_secret_access_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rclone</span><span class="o">.</span><span class="n">setup_rclone_config_for_aws</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">rclone</span><span class="o">.</span><span class="n">get_rclone_config_name</span><span class="p">(</span><span class="s2">&quot;aws&quot;</span><span class="p">),</span>
+            <span class="n">aws_secret_access_key</span><span class="p">,</span>
+            <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="c1"># Persistent settings</span>
@@ -1976,8 +2344,15 @@
 <span class="sd">        Added keys:</span>
 <span class="sd">            v0.4.0: tui &quot;overwrite_existing_files&quot; and &quot;dry_run&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="s2">&quot;name_templates&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
-            <span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">canonical_configs</span><span class="o">.</span><span class="n">get_name_templates_defaults</span><span class="p">())</span>
+        <span class="k">if</span> <span class="s2">&quot;validation_templates&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;name_templates&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+                <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;validation_templates&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
+                    <span class="s2">&quot;name_templates&quot;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                    <span class="n">canonical_configs</span><span class="o">.</span><span class="n">get_validation_templates_defaults</span><span class="p">()</span>
+                <span class="p">)</span>
 
         <span class="n">canonical_tui_configs</span> <span class="o">=</span> <span class="n">canonical_configs</span><span class="o">.</span><span class="n">get_tui_config_defaults</span><span class="p">()</span>
 
@@ -1988,6 +2363,7 @@
             <span class="s2">&quot;overwrite_existing_files&quot;</span><span class="p">,</span>
             <span class="s2">&quot;dry_run&quot;</span><span class="p">,</span>
             <span class="s2">&quot;suggest_next_sub_ses_central&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;allow_letters_in_sub_ses_values&quot;</span><span class="p">,</span>
         <span class="p">]:</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;tui&quot;</span><span class="p">]:</span>
                 <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;tui&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">canonical_tui_configs</span><span class="p">[</span><span class="s2">&quot;tui&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
@@ -2040,7 +2416,7 @@
     <div class="footer-items__start">
       
         <div class="footer-item"><p class="sphinx-version">
-Created using <a href="https://sphinx-doc.org/">Sphinx</a> 8.1.3.
+Created using <a href="https://sphinx-doc.org/">Sphinx</a> 9.1.0.
 <br/>
 </p>
 <p class="theme-version">

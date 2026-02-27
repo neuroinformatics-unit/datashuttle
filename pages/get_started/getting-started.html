@@ -40,9 +40,9 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=5a057da9"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'pages/get_started/getting-started';</script>
@@ -51,7 +51,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="User guides" href="../user_guides/index.html" />
-    <link rel="prev" title="Set up a project" href="set-up-a-project.html" />
+    <link rel="prev" title="Install" href="install.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -124,7 +124,7 @@
     <img src="../../_static/logo_dark.png" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">datashuttle v0.7.1</p>
+    <p class="title logo__title">datashuttle v0.1</p>
   
 </a></div>
     
@@ -365,7 +365,6 @@
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Get Started</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
-<li class="toctree-l1"><a class="reference internal" href="set-up-a-project.html">Set up a project</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Walkthrough <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code></a></li>
 </ul>
 </div>
@@ -439,9 +438,9 @@ a neuroscience project with <code class="docutils literal notranslate"><span cla
 <p>We will highlight  <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code>’s key features by creating
 a ‘mock’ experiment, standardised to the
 <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/">NeuroBlueprint</a> style.</p>
-<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-example-file-tree-dark.png"><img alt="../../_images/tutorial-1-example-file-tree-dark.png" class="only-dark align-center" src="../../_images/tutorial-1-example-file-tree-dark.png" style="width: 550px;" />
+<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-example-file-tree-dark.png"><img alt="../../_images/tutorial-1-example-file-tree-dark.png" class="align-center only-dark" src="../../_images/tutorial-1-example-file-tree-dark.png" style="width: 550px;" />
 </a>
-<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-example-file-tree-light.png"><img alt="../../_images/tutorial-1-example-file-tree-light.png" class="only-light align-center" src="../../_images/tutorial-1-example-file-tree-light.png" style="width: 550px;" />
+<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-example-file-tree-light.png"><img alt="../../_images/tutorial-1-example-file-tree-light.png" class="align-center only-light" src="../../_images/tutorial-1-example-file-tree-light.png" style="width: 550px;" />
 </a>
 <br>
 <p>We will upload data to a central data storage machine,
@@ -458,9 +457,9 @@ on the <a class="reference internal" href="install.html#how-to-install"><span cl
 Graphical Interface</label><div class="sd-tab-content docutils">
 <p>Entering <code class="docutils literal notranslate"><span class="pre">datashuttle</span> <span class="pre">launch</span></code> after installation
 will launch the application in your terminal:</p>
-<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-landing-screen-dark.png"><img alt="../../_images/tutorial-1-landing-screen-dark.png" class="only-dark align-center" src="../../_images/tutorial-1-landing-screen-dark.png" style="width: 700px;" />
+<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-landing-screen-dark.png"><img alt="../../_images/tutorial-1-landing-screen-dark.png" class="align-center only-dark" src="../../_images/tutorial-1-landing-screen-dark.png" style="width: 700px;" />
 </a>
-<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-landing-screen-light.png"><img alt="../../_images/tutorial-1-landing-screen-light.png" class="only-light align-center" src="../../_images/tutorial-1-landing-screen-light.png" style="width: 700px;" />
+<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-landing-screen-light.png"><img alt="../../_images/tutorial-1-landing-screen-light.png" class="align-center only-light" src="../../_images/tutorial-1-landing-screen-light.png" style="width: 700px;" />
 </a>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
@@ -492,7 +491,7 @@ to set up your project.</p>
 </ol>
 <p><code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> supports connecting to the central storage machine
 either as a mounted drive or through SHH. <br />
-See [Set up configs for transfer(set-up-a-project-for-transfer)
+See <a class="reference internal" href="../user_guides/set-up-a-project.html#set-up-a-project-for-transfer"><span class="std std-ref">Set up configs for transfer</span></a>
 for detailed instructions for
 connecting a mounted drive or by using SSH.</p>
 <p>In this walkthrough, we will set our central storage as a
@@ -503,16 +502,16 @@ folder on our local machine for simplicity.</p>
 Graphical Interface</label><div class="sd-tab-content docutils">
 <p>Click <code class="docutils literal notranslate"><span class="pre">Make</span> <span class="pre">New</span> <span class="pre">Project</span></code> and you
 will be taken to the project set up page.</p>
-<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-make-screen-dark.png"><img alt="../../_images/tutorial-1-make-screen-dark.png" class="only-dark align-center" src="../../_images/tutorial-1-make-screen-dark.png" style="width: 900px;" />
+<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-make-screen-dark.png"><img alt="../../_images/tutorial-1-make-screen-dark.png" class="align-center only-dark" src="../../_images/tutorial-1-make-screen-dark.png" style="width: 900px;" />
 </a>
-<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-make-screen-light.png"><img alt="../../_images/tutorial-1-make-screen-light.png" class="only-light align-center" src="../../_images/tutorial-1-make-screen-light.png" style="width: 900px;" />
+<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-make-screen-light.png"><img alt="../../_images/tutorial-1-make-screen-light.png" class="align-center only-light" src="../../_images/tutorial-1-make-screen-light.png" style="width: 900px;" />
 </a>
 <br>
 <p>We’ll call our project <code class="docutils literal notranslate"><span class="pre">my_first_project</span></code> and can type this into
 the first input box on the page:</p>
-<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-make-project-name-dark.png"><img alt="../../_images/tutorial-1-make-project-name-dark.png" class="only-dark align-center" src="../../_images/tutorial-1-make-project-name-dark.png" style="width: 400px;" />
+<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-make-project-name-dark.png"><img alt="../../_images/tutorial-1-make-project-name-dark.png" class="align-center only-dark" src="../../_images/tutorial-1-make-project-name-dark.png" style="width: 400px;" />
 </a>
-<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-make-project-name-light.png"><img alt="../../_images/tutorial-1-make-project-name-light.png" class="only-light align-center" src="../../_images/tutorial-1-make-project-name-light.png" style="width: 400px;" />
+<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-make-project-name-light.png"><img alt="../../_images/tutorial-1-make-project-name-light.png" class="align-center only-light" src="../../_images/tutorial-1-make-project-name-light.png" style="width: 400px;" />
 </a>
 <br>
 <p>Next we need to specify the <strong>local path</strong>, the location on our machine where
@@ -520,9 +519,9 @@ acquired data will be saved. Choose any directory that is
 convenient.</p>
 <p>In this example we will add the folder <code class="docutils literal notranslate"><span class="pre">&quot;local&quot;</span></code>
 to the end of the filepath for clarity:</p>
-<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-make-local-path-dark.png"><img alt="../../_images/tutorial-1-make-local-path-dark.png" class="only-dark align-center" src="../../_images/tutorial-1-make-local-path-dark.png" style="width: 400px;" />
+<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-make-local-path-dark.png"><img alt="../../_images/tutorial-1-make-local-path-dark.png" class="align-center only-dark" src="../../_images/tutorial-1-make-local-path-dark.png" style="width: 400px;" />
 </a>
-<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-make-local-path-light.png"><img alt="../../_images/tutorial-1-make-local-path-light.png" class="only-light align-center" src="../../_images/tutorial-1-make-local-path-light.png" style="width: 400px;" />
+<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-make-local-path-light.png"><img alt="../../_images/tutorial-1-make-local-path-light.png" class="align-center only-light" src="../../_images/tutorial-1-make-local-path-light.png" style="width: 400px;" />
 </a>
 <br>
 <p>The filepath can be typed into the input, copied in with <code class="docutils literal notranslate"><span class="pre">CTRL+V</span></code>
@@ -535,9 +534,9 @@ if connecting via SSH.</p>
 <li><p>Copy the contents of the <em>local path</em> input by clicking it, hovering over it and pressing <code class="docutils literal notranslate"><span class="pre">CTRL+Q</span></code> to copy.</p></li>
 <li><p>Paste it into the <em>central path</em> input with <code class="docutils literal notranslate"><span class="pre">CTRL+V</span></code> and change “local” to “central”.</p></li>
 </ol>
-<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-make-central-path-dark.png"><img alt="../../_images/tutorial-1-make-central-path-dark.png" class="only-dark align-center" src="../../_images/tutorial-1-make-central-path-dark.png" style="width: 400px;" />
+<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-make-central-path-dark.png"><img alt="../../_images/tutorial-1-make-central-path-dark.png" class="align-center only-dark" src="../../_images/tutorial-1-make-central-path-dark.png" style="width: 400px;" />
 </a>
-<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-make-central-path-light.png"><img alt="../../_images/tutorial-1-make-central-path-light.png" class="only-light align-center" src="../../_images/tutorial-1-make-central-path-light.png" style="width: 400px;" />
+<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-make-central-path-light.png"><img alt="../../_images/tutorial-1-make-central-path-light.png" class="align-center only-light" src="../../_images/tutorial-1-make-central-path-light.png" style="width: 400px;" />
 </a>
 <br>
 <p>You can now click <code class="docutils literal notranslate"><span class="pre">Save</span></code> to set up the project.</p>
@@ -555,7 +554,7 @@ with our chosen <code class="docutils literal notranslate"><span class="pre">pro
 <span class="n">project</span> <span class="o">=</span> <span class="n">DataShuttle</span><span class="p">(</span><span class="s2">&quot;my_first_project&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Next, we will use the <code class="docutils literal notranslate"><span class="pre">make_config_file()</span></code> method set the
+<p>Next, we will use the <a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.make_config_file" title="datashuttle.DataShuttle.make_config_file"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">make_config_file()</span></code></a> method set the
 configurations (‘configs’) for our project.</p>
 <p>First, we need to specify the <code class="docutils literal notranslate"><span class="pre">local_path</span></code> as the location on our machine
 where the projact (and acquired data) will be located.</p>
@@ -570,7 +569,7 @@ as we are not using SSH in this example.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>If you want to change any config in the future, use the <code class="docutils literal notranslate"><span class="pre">update_config_file()</span></code> method</p>
+<p>If you want to change any config in the future, use the <a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.update_config_file" title="datashuttle.DataShuttle.update_config_file"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">update_config_file()</span></code></a> method</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">update_config_file</span><span class="p">(</span>
     <span class="n">local_path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;C:\a\new\path&quot;</span>
 <span class="p">)</span>
@@ -591,9 +590,9 @@ in which to store the acquired data.</p>
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="gui" for="sd-tab-item-4">
 Graphical Interface</label><div class="sd-tab-content docutils">
 <p>We will create standardised project folders using the <code class="docutils literal notranslate"><span class="pre">Create</span></code> tab.</p>
-<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-create-screen-dark.png"><img alt="../../_images/tutorial-1-create-screen-dark.png" class="only-dark align-center" src="../../_images/tutorial-1-create-screen-dark.png" style="width: 900px;" />
+<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-create-screen-dark.png"><img alt="../../_images/tutorial-1-create-screen-dark.png" class="align-center only-dark" src="../../_images/tutorial-1-create-screen-dark.png" style="width: 900px;" />
 </a>
-<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-create-screen-light.png"><img alt="../../_images/tutorial-1-create-screen-light.png" class="only-light align-center" src="../../_images/tutorial-1-create-screen-light.png" style="width: 900px;" />
+<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-create-screen-light.png"><img alt="../../_images/tutorial-1-create-screen-light.png" class="align-center only-light" src="../../_images/tutorial-1-create-screen-light.png" style="width: 900px;" />
 </a>
 <br>
 <p>Following the <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/">NeuroBlueprint</a>
@@ -606,9 +605,9 @@ Our first session will be <code class="docutils literal notranslate"><span class
 <p>We could start by typing <code class="docutils literal notranslate"><span class="pre">sub-001</span></code> into the subject input box, but
 it is more convenient to simply double-left-click it. This will suggest
 the next subject number based on the current subjects in the project:</p>
-<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-create-subject-dark.png"><img alt="../../_images/tutorial-1-create-subject-dark.png" class="only-dark align-center" src="../../_images/tutorial-1-create-subject-dark.png" style="width: 400px;" />
+<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-create-subject-dark.png"><img alt="../../_images/tutorial-1-create-subject-dark.png" class="align-center only-dark" src="../../_images/tutorial-1-create-subject-dark.png" style="width: 400px;" />
 </a>
-<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-create-subject-light.png"><img alt="../../_images/tutorial-1-create-subject-light.png" class="only-light align-center" src="../../_images/tutorial-1-create-subject-light.png" style="width: 400px;" />
+<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-create-subject-light.png"><img alt="../../_images/tutorial-1-create-subject-light.png" class="align-center only-light" src="../../_images/tutorial-1-create-subject-light.png" style="width: 400px;" />
 </a>
 <br>
 <div class="admonition note">
@@ -622,18 +621,18 @@ to see the nature of the error.</p>
 <p>Next, we can input the session name. Double-left-click on the session
 input to automatically fill with <code class="docutils literal notranslate"><span class="pre">ses-001</span></code>. We can then add
 today’s date with the <code class="docutils literal notranslate"><span class="pre">&#64;DATE&#64;</span></code> convenience tag:</p>
-<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-create-session-dark.png"><img alt="../../_images/tutorial-1-create-session-dark.png" class="only-dark align-center" src="../../_images/tutorial-1-create-session-dark.png" style="width: 400px;" />
+<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-create-session-dark.png"><img alt="../../_images/tutorial-1-create-session-dark.png" class="align-center only-dark" src="../../_images/tutorial-1-create-session-dark.png" style="width: 400px;" />
 </a>
-<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-create-session-light.png"><img alt="../../_images/tutorial-1-create-session-light.png" class="only-light align-center" src="../../_images/tutorial-1-create-session-light.png" style="width: 400px;" />
+<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-create-session-light.png"><img alt="../../_images/tutorial-1-create-session-light.png" class="align-center only-light" src="../../_images/tutorial-1-create-session-light.png" style="width: 400px;" />
 </a>
 <br>
 <p>Today’s date will be automatically added when the session folder is created.</p>
 <p>The datatype folders to create can be set with the <code class="docutils literal notranslate"><span class="pre">Datatype(s)</span></code> checkboxes.
 Uncheck the <code class="docutils literal notranslate"><span class="pre">funcimg</span></code> and <code class="docutils literal notranslate"><span class="pre">anat</span></code> datatype boxes to ensure
 we only create <code class="docutils literal notranslate"><span class="pre">behav</span></code> and <code class="docutils literal notranslate"><span class="pre">ephys</span></code> folders.</p>
-<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-create-datatype-dark.png"><img alt="../../_images/tutorial-1-create-datatype-dark.png" class="only-dark align-center" src="../../_images/tutorial-1-create-datatype-dark.png" style="width: 400px;" />
+<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-create-datatype-dark.png"><img alt="../../_images/tutorial-1-create-datatype-dark.png" class="align-center only-dark" src="../../_images/tutorial-1-create-datatype-dark.png" style="width: 375px;" />
 </a>
-<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-create-datatype-light.png"><img alt="../../_images/tutorial-1-create-datatype-light.png" class="only-light align-center" src="../../_images/tutorial-1-create-datatype-light.png" style="width: 400px;" />
+<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-create-datatype-light.png"><img alt="../../_images/tutorial-1-create-datatype-light.png" class="align-center only-light" src="../../_images/tutorial-1-create-datatype-light.png" style="width: 375px;" />
 </a>
 <br>
 <p>Finally, click <code class="docutils literal notranslate"><span class="pre">Create</span> <span class="pre">Folders</span></code> to create the project folders.</p>
@@ -641,7 +640,7 @@ we only create <code class="docutils literal notranslate"><span class="pre">beha
 <input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-5">
 Python API</label><div class="sd-tab-content docutils">
-<p>We will create project folders with the <code class="docutils literal notranslate"><span class="pre">create_folders()</span></code> method.</p>
+<p>We will create project folders with the <a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.create_folders" title="datashuttle.DataShuttle.create_folders"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">create_folders()</span></code></a> method.</p>
 <p>Following the <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/">NeuroBlueprint</a>
 style we will  call the first subject <code class="docutils literal notranslate"><span class="pre">sub-001</span></code>. Additional key-value pairs
 could be included if desired (see the
@@ -667,8 +666,8 @@ folders only:</p>
 An error will be raised if names break with the specification and
 the folders will not be created.</p>
 </div>
-<p>Two useful methods to automate folder creation are <code class="docutils literal notranslate"><span class="pre">get_next_sub()</span></code> and
-<code class="docutils literal notranslate"><span class="pre">get_next_ses()</span></code>. These can be used to automatically get the next subject
+<p>Two useful methods to automate folder creation are <a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.get_next_sub" title="datashuttle.DataShuttle.get_next_sub"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">get_next_sub()</span></code></a> and
+<a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.get_next_ses" title="datashuttle.DataShuttle.get_next_ses"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">get_next_ses()</span></code></a>. These can be used to automatically get the next subject
 and session names in a project.</p>
 <p>To get the next subject  in this project (<code class="docutils literal notranslate"><span class="pre">sub-002</span></code>) and the next
 session for that subject (<code class="docutils literal notranslate"><span class="pre">ses-001</span></code>) we can run:</p>
@@ -689,7 +688,7 @@ to the central project folder (<code class="docutils literal notranslate"><span 
 </div>
 <p>This was a quick overview of creating folders—see
 and <a class="reference internal" href="../user_guides/create-folders.html#how-to-create-folders"><span class="std std-ref">How to use Create Folder Tags</span></a> for full details
-including additional customisation with <a class="reference internal" href="../user_guides/use-name-templates.html#how-to-use-name-templates"><span class="std std-ref">Name Templates</span></a>.</p>
+including additional customisation with <a class="reference internal" href="../user_guides/use-validation-templates.html#how-to-use-validation-templates"><span class="std std-ref">Validation Templates</span></a>.</p>
 </section>
 <section id="exploring-folders">
 <h2>Exploring folders<a class="headerlink" href="#exploring-folders" title="Link to this heading">#</a></h2>
@@ -703,9 +702,9 @@ folder paths to acquisition software.</p>
 Graphical Interface</label><div class="sd-tab-content docutils">
 <p>When folders are created the <code class="docutils literal notranslate"><span class="pre">Directory</span> <span class="pre">Tree</span></code> on the left-hand side
 will update to display the new folders:</p>
-<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-explore-folders-dark.png"><img alt="../../_images/tutorial-1-explore-folders-dark.png" class="only-dark align-center" src="../../_images/tutorial-1-explore-folders-dark.png" style="width: 400px;" />
+<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-explore-folders-dark.png"><img alt="../../_images/tutorial-1-explore-folders-dark.png" class="align-center only-dark" src="../../_images/tutorial-1-explore-folders-dark.png" style="width: 400px;" />
 </a>
-<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-explore-folders-light.png"><img alt="../../_images/tutorial-1-explore-folders-light.png" class="only-light align-center" src="../../_images/tutorial-1-explore-folders-light.png" style="width: 400px;" />
+<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-explore-folders-light.png"><img alt="../../_images/tutorial-1-explore-folders-light.png" class="align-center only-light" src="../../_images/tutorial-1-explore-folders-light.png" style="width: 400px;" />
 </a>
 <br>
 <p>By hovering over a folder with the mouse we can quickly
@@ -723,7 +722,7 @@ take the form of simple text files with their extensions changed.</p>
 by right-clicking each file and selecting “Download (or) Save Link As…”.
 Alternatively you can create them in your favourite text editor.</p>
 <p>Next, hover over the <code class="docutils literal notranslate"><span class="pre">behav</span></code> folder the <code class="docutils literal notranslate"><span class="pre">Directory</span> <span class="pre">Tree</span></code> with your
-mouse and and press <code class="docutils literal notranslate"><span class="pre">CTRL+O</span></code> to open the folder in your file browser.
+mouse and press <code class="docutils literal notranslate"><span class="pre">CTRL+O</span></code> to open the folder in your file browser.
 Move the mock behavioural data file (<code class="docutils literal notranslate"><span class="pre">sub-001_ses-001_camera-top.mp4</span></code>)
 into the <code class="docutils literal notranslate"><span class="pre">behav</span></code> datatype folder.</p>
 <p>Next, repeat this for the <code class="docutils literal notranslate"><span class="pre">ephys</span></code> datatype by moving the remaining
@@ -734,7 +733,7 @@ electrophysiology files to the <code class="docutils literal notranslate"><span 
 <input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-7">
 Python API</label><div class="sd-tab-content docutils">
-<p><code class="docutils literal notranslate"><span class="pre">create_folders()</span></code> returns the full filepaths of created datatype folders.</p>
+<p><a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.create_folders" title="datashuttle.DataShuttle.create_folders"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">create_folders()</span></code></a> returns the full filepaths of created datatype folders.</p>
 <p>These can be used in acquisition scripts to save data to these folders:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">folder_path_dict</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">create_folders</span><span class="p">(</span>
     <span class="n">top_level_folder</span><span class="o">=</span><span class="s2">&quot;rawdata&quot;</span><span class="p">,</span>
@@ -783,9 +782,9 @@ It takes on the options <strong>never</strong>, <strong>always</strong> or <stro
 Graphical Interface</label><div class="sd-tab-content docutils">
 <p>Switch to the <code class="docutils literal notranslate"><span class="pre">Transfer</span></code> tab.  On the left we again
 see a <code class="docutils literal notranslate"><span class="pre">Directory</span> <span class="pre">Tree</span></code> displaying the local version of the project:</p>
-<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-upload-dark.png"><img alt="../../_images/tutorial-1-transfer-screen-upload-dark.png" class="only-dark align-center" src="../../_images/tutorial-1-transfer-screen-upload-dark.png" style="width: 900px;" />
+<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-upload-dark.png"><img alt="../../_images/tutorial-1-transfer-screen-upload-dark.png" class="align-center only-dark" src="../../_images/tutorial-1-transfer-screen-upload-dark.png" style="width: 900px;" />
 </a>
-<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-upload-light.png"><img alt="../../_images/tutorial-1-transfer-screen-upload-light.png" class="only-light align-center" src="../../_images/tutorial-1-transfer-screen-upload-light.png" style="width: 900px;" />
+<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-upload-light.png"><img alt="../../_images/tutorial-1-transfer-screen-upload-light.png" class="align-center only-light" src="../../_images/tutorial-1-transfer-screen-upload-light.png" style="width: 900px;" />
 </a>
 <br>
 <p>The first page on the <code class="docutils literal notranslate"><span class="pre">Transfer</span></code> tab allows us to upload the entire project,
@@ -804,7 +803,7 @@ on transfer options, as well as <code class="docutils literal notranslate"><span
 <input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-9">
 Python API</label><div class="sd-tab-content docutils">
-<p><code class="docutils literal notranslate"><span class="pre">upload_entire_project()</span></code> is a high level method that uploads all files
+<p><a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.upload_entire_project" title="datashuttle.DataShuttle.upload_entire_project"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">upload_entire_project()</span></code></a> is a high level method that uploads all files
 in the project.
 This includes both the <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> and <code class="docutils literal notranslate"><span class="pre">derivatives</span></code> top-level folders—see the
 <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/latest/specification.html">NeuroBlueprint specification</a>
@@ -816,7 +815,7 @@ for details.</p>
 <p>All files will be uploaded from the local version of the project to central storage.</p>
 <p>Navigating to the <code class="docutils literal notranslate"><span class="pre">central_path</span></code> in your systems file browser, the newly transferred data
 will have appeared.</p>
-<p>Other methods (e.g. <code class="docutils literal notranslate"><span class="pre">upload_rawdata()</span></code> and <code class="docutils literal notranslate"><span class="pre">upload_custom()</span></code>) provide customisable
+<p>Other methods (e.g. <a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.upload_rawdata" title="datashuttle.DataShuttle.upload_rawdata"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">upload_rawdata()</span></code></a> and <a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.upload_custom" title="datashuttle.DataShuttle.upload_custom"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">upload_custom()</span></code></a>) provide customisable
 transfers (and every <code class="docutils literal notranslate"><span class="pre">upload</span></code> method has an equivalent <code class="docutils literal notranslate"><span class="pre">download</span></code> method).</p>
 <p>See the  <a class="reference internal" href="../user_guides/transfer-data.html#how-to-transfer-data"><span class="std std-ref">How to Transfer Data</span></a> page for full details
 on transfer methods and <a class="reference internal" href="../user_guides/transfer-data.html#id1"><span class="std std-ref">arguments</span></a>.</p>
@@ -839,7 +838,7 @@ only the behavioural ‘test’ sessions from a specific range of subjects.</p>
 from your <strong>local path</strong>.</p>
 <p>We will next download data from the <strong>central path</strong> to our now-empty local project.</p>
 <p>In practice when setting up <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> on a new machine, you would
-again <a class="reference internal" href="set-up-a-project.html#set-up-a-project-for-transfer"><span class="std std-ref">make a new project</span></a>.</p>
+again <a class="reference internal" href="../user_guides/set-up-a-project.html#set-up-a-project-for-transfer"><span class="std std-ref">make a new project</span></a>.</p>
 </div>
 <p>We will look at a small subset of possible
 options here—see <a class="reference internal" href="../user_guides/transfer-data.html#making-custom-transfers"><span class="std std-ref">How to make Custom Transfers</span></a> for all possibilities.</p>
@@ -849,37 +848,37 @@ options here—see <a class="reference internal" href="../user_guides/transfer-d
 Graphical Interface</label><div class="sd-tab-content docutils">
 <p>The <code class="docutils literal notranslate"><span class="pre">Custom</span></code> transfer screen has options for selecting specific combinations
 of subjects, sessions and datatypes.</p>
-<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-custom-dark.png"><img alt="../../_images/tutorial-1-transfer-screen-custom-dark.png" class="only-dark align-center" src="../../_images/tutorial-1-transfer-screen-custom-dark.png" style="width: 600px;" />
+<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-custom-dark.png"><img alt="../../_images/tutorial-1-transfer-screen-custom-dark.png" class="align-center only-dark" src="../../_images/tutorial-1-transfer-screen-custom-dark.png" style="width: 600px;" />
 </a>
-<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-custom-light.png"><img alt="../../_images/tutorial-1-transfer-screen-custom-light.png" class="only-light align-center" src="../../_images/tutorial-1-transfer-screen-custom-light.png" style="width: 600px;" />
+<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-custom-light.png"><img alt="../../_images/tutorial-1-transfer-screen-custom-light.png" class="align-center only-light" src="../../_images/tutorial-1-transfer-screen-custom-light.png" style="width: 600px;" />
 </a>
 <br>
 <p>In the subject input, we can simply type <code class="docutils literal notranslate"><span class="pre">all</span></code> (in this case, we only have one subject anyway).</p>
-<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-custom-subjects-dark.png"><img alt="../../_images/tutorial-1-transfer-screen-custom-subjects-dark.png" class="only-dark align-center" src="../../_images/tutorial-1-transfer-screen-custom-subjects-dark.png" style="width: 400px;" />
+<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-custom-subjects-dark.png"><img alt="../../_images/tutorial-1-transfer-screen-custom-subjects-dark.png" class="align-center only-dark" src="../../_images/tutorial-1-transfer-screen-custom-subjects-dark.png" style="width: 400px;" />
 </a>
-<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-custom-subjects-light.png"><img alt="../../_images/tutorial-1-transfer-screen-custom-subjects-light.png" class="only-light align-center" src="../../_images/tutorial-1-transfer-screen-custom-subjects-light.png" style="width: 400px;" />
+<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-custom-subjects-light.png"><img alt="../../_images/tutorial-1-transfer-screen-custom-subjects-light.png" class="align-center only-light" src="../../_images/tutorial-1-transfer-screen-custom-subjects-light.png" style="width: 400px;" />
 </a>
 <br>
 <p>Next, let’s specify what session to download. We can use the
 <a class="reference internal" href="../user_guides/transfer-data.html#transfer-the-wildcard-tag"><span class="std std-ref">wildcard tag</span></a>
 to avoid typing the exact date—<code class="docutils literal notranslate"><span class="pre">ses-001_&#64;*&#64;</span></code>:</p>
-<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-custom-sessions-dark.png"><img alt="../../_images/tutorial-1-transfer-screen-custom-sessions-dark.png" class="only-dark align-center" src="../../_images/tutorial-1-transfer-screen-custom-sessions-dark.png" style="width: 400px;" />
+<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-custom-sessions-dark.png"><img alt="../../_images/tutorial-1-transfer-screen-custom-sessions-dark.png" class="align-center only-dark" src="../../_images/tutorial-1-transfer-screen-custom-sessions-dark.png" style="width: 400px;" />
 </a>
-<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-custom-sessions-light.png"><img alt="../../_images/tutorial-1-transfer-screen-custom-sessions-light.png" class="only-light align-center" src="../../_images/tutorial-1-transfer-screen-custom-sessions-light.png" style="width: 400px;" />
+<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-custom-sessions-light.png"><img alt="../../_images/tutorial-1-transfer-screen-custom-sessions-light.png" class="align-center only-light" src="../../_images/tutorial-1-transfer-screen-custom-sessions-light.png" style="width: 400px;" />
 </a>
 <br>
 <p>This is useful if you want to download many sessions, all with different dates.</p>
 <p>Then, select only the <code class="docutils literal notranslate"><span class="pre">behav</span></code> datatype from the datatype checkboxes.</p>
-<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-custom-datatypes-dark.png"><img alt="../../_images/tutorial-1-transfer-screen-custom-datatypes-dark.png" class="only-dark align-center" src="../../_images/tutorial-1-transfer-screen-custom-datatypes-dark.png" style="width: 400px;" />
+<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-custom-datatypes-dark.png"><img alt="../../_images/tutorial-1-transfer-screen-custom-datatypes-dark.png" class="align-center only-dark" src="../../_images/tutorial-1-transfer-screen-custom-datatypes-dark.png" style="width: 400px;" />
 </a>
-<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-custom-datatypes-light.png"><img alt="../../_images/tutorial-1-transfer-screen-custom-datatypes-light.png" class="only-light align-center" src="../../_images/tutorial-1-transfer-screen-custom-datatypes-light.png" style="width: 400px;" />
+<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-custom-datatypes-light.png"><img alt="../../_images/tutorial-1-transfer-screen-custom-datatypes-light.png" class="align-center only-light" src="../../_images/tutorial-1-transfer-screen-custom-datatypes-light.png" style="width: 400px;" />
 </a>
 <br>
 <p>Finally, we can select <code class="docutils literal notranslate"><span class="pre">Download</span></code> from the upload / download switch,
 and click <code class="docutils literal notranslate"><span class="pre">Transfer</span></code>.</p>
-<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-custom-switch-dark.png"><img alt="../../_images/tutorial-1-transfer-screen-custom-switch-dark.png" class="only-dark align-center" src="../../_images/tutorial-1-transfer-screen-custom-switch-dark.png" style="width: 580px;" />
+<a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-custom-switch-dark.png"><img alt="../../_images/tutorial-1-transfer-screen-custom-switch-dark.png" class="align-center only-dark" src="../../_images/tutorial-1-transfer-screen-custom-switch-dark.png" style="width: 580px;" />
 </a>
-<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-custom-switch-light.png"><img alt="../../_images/tutorial-1-transfer-screen-custom-switch-light.png" class="only-light align-center" src="../../_images/tutorial-1-transfer-screen-custom-switch-light.png" style="width: 580px;" />
+<a class="only-light reference internal image-reference" href="../../_images/tutorial-1-transfer-screen-custom-switch-light.png"><img alt="../../_images/tutorial-1-transfer-screen-custom-switch-light.png" class="align-center only-light" src="../../_images/tutorial-1-transfer-screen-custom-switch-light.png" style="width: 580px;" />
 </a>
 <br>
 <p>The transfer will complete, and the custom selection
@@ -888,8 +887,8 @@ of files will now be available in the <strong>local path</strong>.</p>
 <input id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-11">
 Python API</label><div class="sd-tab-content docutils">
-<p>We will use the <code class="docutils literal notranslate"><span class="pre">download_custom()</span></code> method (the download equivalent method of
-the <code class="docutils literal notranslate"><span class="pre">upload_custom()</span></code>).</p>
+<p>We will use the <a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.download_custom" title="datashuttle.DataShuttle.download_custom"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">download_custom()</span></code></a> method (the download equivalent method of
+the <a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.upload_custom" title="datashuttle.DataShuttle.upload_custom"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">upload_custom()</span></code></a>).</p>
 <p>Convenience tags can be used to make downloading subsets of data easier:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">download_custom</span><span class="p">(</span>
     <span class="n">top_level_folder</span><span class="o">=</span><span class="s2">&quot;rawdata&quot;</span><span class="p">,</span>
@@ -990,7 +989,7 @@ with any questions or feedback.</p>
     <div class="footer-items__start">
       
         <div class="footer-item"><p class="sphinx-version">
-Created using <a href="https://sphinx-doc.org/">Sphinx</a> 8.1.3.
+Created using <a href="https://sphinx-doc.org/">Sphinx</a> 9.1.0.
 <br/>
 </p>
 <p class="theme-version">

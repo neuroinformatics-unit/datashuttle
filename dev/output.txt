@@ -1,6 +1,0 @@
-pages/user_guides/choose-a-terminal.md:56: [redirected with Found] https://apps.microsoft.com/detail/9n0dx20hk701?rtc=1&amp;hl=en-gb&amp;gl=GB to https://apps.microsoft.com/detail/9n0dx20hk701?rtc=1&amp%3Bhl=en-gb&amp%3Bgl=GB&hl=en-US&gl=US
-pages/get_started/install.md:21: [redirected permanently] https://docs.anaconda.com/free/anaconda/getting-started/index.html to https://www.anaconda.com/docs/main
-pages/community/contributing.md:209: [redirected permanently] https://artifact.ci/ to https://www.artifact.ci/
-pages/user_guides/set-up-a-project.md:333: [redirected with Found] https://drive.google.com to https://workspace.google.com/intl/en-US/products/drive/
-pages/user_guides/choose-a-terminal.md:69: [redirected permanently] https://warp.dev/ to https://www.warp.dev:443/
-pages/community/guiding-principles.md:18: [redirected permanently] https://www.nwb.org/ to https://nwb.org/

@@ -40,9 +40,9 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=5a057da9"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'pages/user_guides/choose-a-terminal';</script>
@@ -51,7 +51,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Project validation" href="validate.html" />
-    <link rel="prev" title="User guides" href="index.html" />
+    <link rel="prev" title="Set up a project" href="set-up-a-project.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -124,7 +124,7 @@
     <img src="../../_static/logo_dark.png" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">datashuttle v0.7.1</p>
+    <p class="title logo__title">datashuttle v0.1</p>
   
 </a></div>
     
@@ -364,6 +364,8 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="set-up-a-project.html">Set up a project</a></li>
+
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Choose a terminal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="validate.html">Project validation</a></li>
 
@@ -371,7 +373,7 @@
 <li class="toctree-l1"><a class="reference internal" href="transfer-data.html">Transfer data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="update-configs.html">Update configs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="read-logs.html">Read the logs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="use-name-templates.html">Name templates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="use-validation-templates.html">Validation Templates</a></li>
 </ul>
 </div>
 </nav></div>
@@ -442,18 +444,18 @@ See below for recommended terminals for these operating systems.</p>
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 <label class="sd-tab-label" for="sd-tab-item-0">
 Good Rendering</label><div class="sd-tab-content docutils">
-<a class="only-dark reference internal image-reference" href="../../_images/choose-a-terminal-good-dark.png"><img alt="../../_images/choose-a-terminal-good-dark.png" class="only-dark align-center" src="../../_images/choose-a-terminal-good-dark.png" style="width: 900px;" />
+<a class="only-dark reference internal image-reference" href="../../_images/choose-a-terminal-good-dark.png"><img alt="../../_images/choose-a-terminal-good-dark.png" class="align-center only-dark" src="../../_images/choose-a-terminal-good-dark.png" style="width: 900px;" />
 </a>
-<a class="only-light reference internal image-reference" href="../../_images/choose-a-terminal-good-light.png"><img alt="../../_images/choose-a-terminal-good-light.png" class="only-light align-center" src="../../_images/choose-a-terminal-good-light.png" style="width: 900px;" />
+<a class="only-light reference internal image-reference" href="../../_images/choose-a-terminal-good-light.png"><img alt="../../_images/choose-a-terminal-good-light.png" class="align-center only-light" src="../../_images/choose-a-terminal-good-light.png" style="width: 900px;" />
 </a>
 <br>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
 <label class="sd-tab-label" for="sd-tab-item-1">
 Bad Rendering</label><div class="sd-tab-content docutils">
-<a class="only-dark reference internal image-reference" href="../../_images/choose-a-terminal-bad-dark.png"><img alt="../../_images/choose-a-terminal-bad-dark.png" class="only-dark align-center" src="../../_images/choose-a-terminal-bad-dark.png" style="width: 900px;" />
+<a class="only-dark reference internal image-reference" href="../../_images/choose-a-terminal-bad-dark.png"><img alt="../../_images/choose-a-terminal-bad-dark.png" class="align-center only-dark" src="../../_images/choose-a-terminal-bad-dark.png" style="width: 900px;" />
 </a>
-<a class="only-light reference internal image-reference" href="../../_images/choose-a-terminal-bad-light.png"><img alt="../../_images/choose-a-terminal-bad-light.png" class="only-light align-center" src="../../_images/choose-a-terminal-bad-light.png" style="width: 900px;" />
+<a class="only-light reference internal image-reference" href="../../_images/choose-a-terminal-bad-light.png"><img alt="../../_images/choose-a-terminal-bad-light.png" class="align-center only-light" src="../../_images/choose-a-terminal-bad-light.png" style="width: 900px;" />
 </a>
 <br>
 </div>
@@ -488,7 +490,7 @@ with rendering errors.</p>
 <h2>Getting started with the Graphical Interface<a class="headerlink" href="#getting-started-with-the-graphical-interface" title="Link to this heading">#</a></h2>
 <p>Once you’ve chosen a terminal, get started with
 <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> with our <a class="reference internal" href="../get_started/getting-started.html#getting-started-walkthrough"><span class="std std-ref">Getting Started Tutorial</span></a>.</p>
-<p>To quit <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> in the terminal, press <code class="docutils literal notranslate"><span class="pre">CTRL+C</span></code>.</p>
+<p>To quit <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> in the terminal, press <code class="docutils literal notranslate"><span class="pre">CTRL+Q</span></code>.</p>
 </section>
 </section>
 
@@ -542,7 +544,7 @@ with rendering errors.</p>
     <div class="footer-items__start">
       
         <div class="footer-item"><p class="sphinx-version">
-Created using <a href="https://sphinx-doc.org/">Sphinx</a> 8.1.3.
+Created using <a href="https://sphinx-doc.org/">Sphinx</a> 9.1.0.
 <br/>
 </p>
 <p class="theme-version">

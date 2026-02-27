@@ -40,9 +40,9 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=5a057da9"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'pages/user_guides/update-configs';</script>
@@ -124,7 +124,7 @@
     <img src="../../_static/logo_dark.png" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">datashuttle v0.7.1</p>
+    <p class="title logo__title">datashuttle v0.1</p>
   
 </a></div>
     
@@ -360,6 +360,8 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="set-up-a-project.html">Set up a project</a></li>
+
 <li class="toctree-l1"><a class="reference internal" href="choose-a-terminal.html">Choose a terminal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="validate.html">Project validation</a></li>
 
@@ -367,7 +369,7 @@
 <li class="toctree-l1"><a class="reference internal" href="transfer-data.html">Transfer data</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Update configs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="read-logs.html">Read the logs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="use-name-templates.html">Name templates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="use-validation-templates.html">Validation Templates</a></li>
 </ul>
 </div>
 </nav></div>
@@ -435,9 +437,9 @@
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="gui" for="sd-tab-item-0">
 Graphical Interface</label><div class="sd-tab-content docutils">
-<a class="only-dark reference internal image-reference" href="../../_images/updating-configs-dark.png"><img alt="../../_images/updating-configs-dark.png" class="only-dark align-center" src="../../_images/updating-configs-dark.png" style="width: 900px;" />
+<a class="only-dark reference internal image-reference" href="../../_images/updating-configs-dark.png"><img alt="../../_images/updating-configs-dark.png" class="align-center only-dark" src="../../_images/updating-configs-dark.png" style="width: 1100px;" />
 </a>
-<a class="only-light reference internal image-reference" href="../../_images/updating-configs-light.png"><img alt="../../_images/updating-configs-light.png" class="only-light align-center" src="../../_images/updating-configs-light.png" style="width: 900px;" />
+<a class="only-light reference internal image-reference" href="../../_images/updating-configs-light.png"><img alt="../../_images/updating-configs-light.png" class="align-center only-light" src="../../_images/updating-configs-light.png" style="width: 1100px;" />
 </a>
 <br>
 <p>Clicking the <code class="docutils literal notranslate"><span class="pre">Configs</span></code> tab on the <code class="docutils literal notranslate"><span class="pre">Project</span> <span class="pre">Manager</span></code> page will display
@@ -445,13 +447,13 @@ the current configs.</p>
 <p>Changing any config and clicking <code class="docutils literal notranslate"><span class="pre">Save</span></code> will  update the project
 configs on the local machine.</p>
 <p>If SSH configs are changed the connection may need to be
-<a class="reference internal" href="../get_started/set-up-a-project.html#new-project-ssh"><span class="std std-ref">set up again</span></a>.</p>
+<a class="reference internal" href="set-up-a-project.html#new-project-ssh"><span class="std std-ref">set up again</span></a>.</p>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-1">
 Python API</label><div class="sd-tab-content docutils">
 <p>The project configs on the local machine can be selectively
-updated with the <code class="docutils literal notranslate"><span class="pre">update_config_file()</span></code> method.</p>
+updated with the <a class="reference internal" href="../api_index.html#datashuttle.DataShuttle.update_config_file" title="datashuttle.DataShuttle.update_config_file"><code class="xref myst py py-meth docutils literal notranslate"><span class="pre">update_config_file()</span></code></a> method.</p>
 <p>For example, to change the <code class="docutils literal notranslate"><span class="pre">local_path</span></code> and <code class="docutils literal notranslate"><span class="pre">central_path</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">update_config_file</span><span class="p">(</span>
     <span class="n">local_path</span><span class="o">=</span><span class="s2">&quot;/a/new/local/path&quot;</span><span class="p">,</span>
@@ -459,11 +461,8 @@ updated with the <code class="docutils literal notranslate"><span class="pre">up
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>If SSH configs are changed the connection may need to be
-<a class="reference internal" href="../get_started/set-up-a-project.html#new-project-ssh"><span class="std std-ref">set up again</span></a> with:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">setup_ssh_connection</span><span class="p">()</span>
-</pre></div>
-</div>
+<p>If SSH, AWS or Google Drive configs are changed the connection
+may need to be <a class="reference internal" href="set-up-a-project.html#new-project-ssh"><span class="std std-ref">set up again</span></a>.</p>
 </div>
 </div>
 </section>
@@ -499,7 +498,7 @@ updated with the <code class="docutils literal notranslate"><span class="pre">up
     <div class="footer-items__start">
       
         <div class="footer-item"><p class="sphinx-version">
-Created using <a href="https://sphinx-doc.org/">Sphinx</a> 8.1.3.
+Created using <a href="https://sphinx-doc.org/">Sphinx</a> 9.1.0.
 <br/>
 </p>
 <p class="theme-version">
