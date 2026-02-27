@@ -1488,8 +1488,9 @@ class TestTuiWidgets(TuiBase):
 
         format_keys = {
             "Never": "never",
-            "Always": "always",
             "If Source Newer": "if_source_newer",
+            "If Different": "if_different",
+            "Always": "always",
         }
         format_val = format_keys[value]
 

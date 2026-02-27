@@ -46,7 +46,7 @@ allow transfer across:
 
 ```{warning}
 The **overwrite existing files** setting is very important.
-It takes on the options **never**, **always** or **if source newer**.
+It takes on the options **never**, **if source newer**, **if_differet"" or **always**.
 
 See the [transfer options](transfer-options) section for full details on
 this and other transfer settings.
@@ -308,25 +308,16 @@ overwrite existing files
 
 : **never**
   Never overwrite existing files.
-  Internally maps to rclone’s `--ignore-existing`.
-
-: **if_different**
-  Only overwrite files if the source and destination differ in
-  modification time or checksum.
-  This uses rclone’s default behavior.
 
 : **if_source_newer**
   Only overwrite files if the source file is newer than the destination.
-  Internally maps to rclone’s `--update`.
+
+: **if_different**
+  Only overwrite files if the source and destination differ in
+  modification time or size.
 
 : **always**
-  Always overwrite files, even if timestamps are identical.
-  Internally maps to rclone’s `--ignore-times`.
-
-: Under the hood, datashuttle uses
-  [rclone](https://rclone.org/) for all file transfers, and these options
-  directly map to rclone’s copy semantics.
-
+  Always overwrite files, even if sizes and timestamps are identical.
 
 (dry-run-argument)=
 dry run

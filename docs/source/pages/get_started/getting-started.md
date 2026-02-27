@@ -498,7 +498,7 @@ central storage machine connected as a mounted drive or through SSH.
 
 ```{warning}
 The **overwrite existing files** setting is very important.
-It takes on the options **never**, **always** or **if source newer**.
+It takes on the options **never**, **if source newer**, **if_differet"" or **always**.
 
 See the [transfer options](transfer-options) section for full details.
 ```

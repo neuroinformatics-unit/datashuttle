@@ -799,7 +799,7 @@ def make_rclone_transfer_options(
     overwrite_existing_files: OverwriteExistingFiles, dry_run: bool
 ) -> Dict:
     """Create a dictionary of rclone transfer options."""
-    allowed_overwrite = ["never", "always", "if_source_newer"]
+    allowed_overwrite = ["never", "if_source_newer", "if_different", "always"]
 
     if overwrite_existing_files not in allowed_overwrite:
         utils.log_and_raise_error(
