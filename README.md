@@ -2,9 +2,9 @@
 
 **datashuttle** is a tool to automate creation, validation and transfer of neuroscience project folders.
 
-Learn how to [Install](https://datashuttle.neuroinformatics.dev/pages/get_started/install.html)
+Learn how to [Install](https://datashuttle.neuroinformatics.dev/latest/pages/get_started/install.html)
 and
-[Get Started](https://datashuttle.neuroinformatics.dev/pages/get_started/index.html)
+[Get Started](https://datashuttle.neuroinformatics.dev/latest/pages/get_started/index.html)
 on the
 [**datashuttle** website](https://datashuttle.neuroinformatics.dev).
 
