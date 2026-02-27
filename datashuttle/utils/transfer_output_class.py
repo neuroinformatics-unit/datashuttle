@@ -130,7 +130,7 @@ class TransferOutput(UserDict):
         return message
 
     def create_python_api_message(self):
-        """Create a message summarising the transfer, for display in the TUI."""
+        """Create a message summarising the transfer, for display in the Python API."""
         message = ""
 
         for top_level_folder in ["rawdata", "derivatives"]:
