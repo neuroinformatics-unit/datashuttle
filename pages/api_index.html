@@ -598,7 +598,7 @@ e.g. sub-001_&#64;DATE&#64; will generate sub-001_date-20220101 (on the 1st janu
 
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.upload_custom">
-<span class="sig-name descname"><span class="pre">upload_custom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.upload_custom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.upload_custom" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">upload_custom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_transfer_output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.upload_custom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.upload_custom" title="Link to this definition">#</a></dt>
 <dd><p>Upload data from a local project to the central project folder.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -623,17 +623,19 @@ transfer was taking place, but no files will be moved.</p></li>
 <li><p><strong>init_log</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to handle logging. This should
 always be <code class="docutils literal notranslate"><span class="pre">True</span></code>, unless logger is handled elsewhere
 (e.g. in a calling function).</p></li>
+<li><p><strong>display_transfer_output</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <cite>True</cite>, a summary of number of transferred files, and any
+errors will be printed alongside the Rclone logs.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransferOutput</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.download_custom">
-<span class="sig-name descname"><span class="pre">download_custom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.download_custom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.download_custom" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">download_custom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_transfer_output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.download_custom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.download_custom" title="Link to this definition">#</a></dt>
 <dd><p>Download data from the central project to the local project folder.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -658,10 +660,12 @@ transfer was taking place, but no files will be moved.</p></li>
 <li><p><strong>init_log</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to handle logging. This should
 always be <code class="docutils literal notranslate"><span class="pre">True</span></code>, unless logger is handled elsewhere
 (e.g. in a calling function).</p></li>
+<li><p><strong>display_transfer_output</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <cite>True</cite>, a summary of number of transferred files, and any
+errors will be printed alongside the Rclone logs.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransferOutput</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -683,7 +687,7 @@ transfer was taking place, but no files will be moved.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransferOutput</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -705,7 +709,7 @@ transfer was taking place, but no files will be moved.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransferOutput</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -727,7 +731,7 @@ transfer was taking place, but no files will be moved..</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransferOutput</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -749,7 +753,7 @@ transfer was taking place, but no files will be moved.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransferOutput</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -772,7 +776,7 @@ transfer was taking place, but no files will be moved.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransferOutput</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -795,7 +799,7 @@ transfer was taking place, but no files will be moved.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransferOutput</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -821,7 +825,7 @@ transfer was taking place, but no files will be moved.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransferOutput</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -848,7 +852,7 @@ transfer was taking place, but no files will be moved.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransferOutput</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>

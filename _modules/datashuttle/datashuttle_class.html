@@ -471,6 +471,7 @@
     <span class="n">requires_aws_configs</span><span class="p">,</span>
     <span class="n">requires_ssh_configs</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datashuttle.utils.transfer_output_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransferOutput</span>
 
 <span class="c1"># -----------------------------------------------------------------------------</span>
 <span class="c1"># Project Manager Class</span>
@@ -742,7 +743,8 @@
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">init_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">display_transfer_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransferOutput</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload data from a local project to the central project folder.</span>
 
 <span class="sd">        Parameters</span>
@@ -781,6 +783,10 @@
 <span class="sd">            always be ``True``, unless logger is handled elsewhere</span>
 <span class="sd">            (e.g. in a calling function).</span>
 
+<span class="sd">        display_transfer_output</span>
+<span class="sd">            If `True`, a summary of number of transferred files, and any</span>
+<span class="sd">            errors will be printed alongside the Rclone logs.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
@@ -797,7 +803,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_top_level_folder</span><span class="p">(</span><span class="n">top_level_folder</span><span class="p">)</span>
 
-        <span class="n">TransferData</span><span class="p">(</span>
+        <span class="n">transfer_output</span> <span class="o">=</span> <span class="n">TransferData</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
             <span class="s2">&quot;upload&quot;</span><span class="p">,</span>
             <span class="n">top_level_folder</span><span class="p">,</span>
@@ -806,11 +812,15 @@
             <span class="n">datatype</span><span class="p">,</span>
             <span class="n">overwrite_existing_files</span><span class="p">,</span>
             <span class="n">dry_run</span><span class="p">,</span>
-            <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">display_transfer_output</span><span class="p">:</span>
+            <span class="n">rclone</span><span class="o">.</span><span class="n">log_rclone_transfer_output</span><span class="p">(</span><span class="n">transfer_output</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
-            <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
+            <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">transfer_output</span></div>
 
 
 <div class="viewcode-block" id="DataShuttle.download_custom">
@@ -826,7 +836,8 @@
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">init_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">display_transfer_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransferOutput</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Download data from the central project to the local project folder.</span>
 
 <span class="sd">        Parameters</span>
@@ -865,6 +876,10 @@
 <span class="sd">            always be ``True``, unless logger is handled elsewhere</span>
 <span class="sd">            (e.g. in a calling function).</span>
 
+<span class="sd">        display_transfer_output</span>
+<span class="sd">            If `True`, a summary of number of transferred files, and any</span>
+<span class="sd">            errors will be printed alongside the Rclone logs.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
@@ -881,7 +896,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_top_level_folder</span><span class="p">(</span><span class="n">top_level_folder</span><span class="p">)</span>
 
-        <span class="n">TransferData</span><span class="p">(</span>
+        <span class="n">transfer_output</span> <span class="o">=</span> <span class="n">TransferData</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
             <span class="s2">&quot;download&quot;</span><span class="p">,</span>
             <span class="n">top_level_folder</span><span class="p">,</span>
@@ -890,11 +905,15 @@
             <span class="n">datatype</span><span class="p">,</span>
             <span class="n">overwrite_existing_files</span><span class="p">,</span>
             <span class="n">dry_run</span><span class="p">,</span>
-            <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">display_transfer_output</span><span class="p">:</span>
+            <span class="n">rclone</span><span class="o">.</span><span class="n">log_rclone_transfer_output</span><span class="p">(</span><span class="n">transfer_output</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
-            <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
+            <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">transfer_output</span></div>
 
 
     <span class="c1"># Specific top-level folder</span>
@@ -910,7 +929,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransferOutput</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload all files in the `rawdata` top level folder.</span>
 
 <span class="sd">        Parameters</span>
@@ -927,7 +946,7 @@
 <span class="sd">            transfer was taking place, but no files will be moved.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_top_level_folder</span><span class="p">(</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_top_level_folder</span><span class="p">(</span>
             <span class="s2">&quot;upload&quot;</span><span class="p">,</span>
             <span class="s2">&quot;rawdata&quot;</span><span class="p">,</span>
             <span class="n">overwrite_existing_files</span><span class="o">=</span><span class="n">overwrite_existing_files</span><span class="p">,</span>
@@ -943,7 +962,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransferOutput</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload all files in the `derivatives` top level folder.</span>
 
 <span class="sd">        Parameters</span>
@@ -960,7 +979,7 @@
 <span class="sd">            transfer was taking place, but no files will be moved.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_top_level_folder</span><span class="p">(</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_top_level_folder</span><span class="p">(</span>
             <span class="s2">&quot;upload&quot;</span><span class="p">,</span>
             <span class="s2">&quot;derivatives&quot;</span><span class="p">,</span>
             <span class="n">overwrite_existing_files</span><span class="o">=</span><span class="n">overwrite_existing_files</span><span class="p">,</span>
@@ -976,7 +995,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransferOutput</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Download all files in the `rawdata` top level folder.</span>
 
 <span class="sd">        Parameters</span>
@@ -993,7 +1012,7 @@
 <span class="sd">            transfer was taking place, but no files will be moved..</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_top_level_folder</span><span class="p">(</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_top_level_folder</span><span class="p">(</span>
             <span class="s2">&quot;download&quot;</span><span class="p">,</span>
             <span class="s2">&quot;rawdata&quot;</span><span class="p">,</span>
             <span class="n">overwrite_existing_files</span><span class="o">=</span><span class="n">overwrite_existing_files</span><span class="p">,</span>
@@ -1009,7 +1028,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransferOutput</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Download all files in the `derivatives` top level folder.</span>
 
 <span class="sd">        Parameters</span>
@@ -1026,7 +1045,7 @@
 <span class="sd">            transfer was taking place, but no files will be moved.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_top_level_folder</span><span class="p">(</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_top_level_folder</span><span class="p">(</span>
             <span class="s2">&quot;download&quot;</span><span class="p">,</span>
             <span class="s2">&quot;derivatives&quot;</span><span class="p">,</span>
             <span class="n">overwrite_existing_files</span><span class="o">=</span><span class="n">overwrite_existing_files</span><span class="p">,</span>
@@ -1042,7 +1061,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransferOutput</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload the entire project.</span>
 
 <span class="sd">        Includes every top level folder (e.g. ``rawdata``, ``derivatives``).</span>
@@ -1068,10 +1087,13 @@
                 <span class="s2">&quot;dry_run&quot;</span><span class="p">:</span> <span class="n">dry_run</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_entire_project</span><span class="p">(</span>
+
+        <span class="n">transfer_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_entire_project</span><span class="p">(</span>
             <span class="s2">&quot;upload&quot;</span><span class="p">,</span> <span class="n">overwrite_existing_files</span><span class="p">,</span> <span class="n">dry_run</span>
         <span class="p">)</span>
-        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">transfer_output</span></div>
 
 
 <div class="viewcode-block" id="DataShuttle.download_entire_project">
@@ -1082,7 +1104,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransferOutput</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Download the entire project.</span>
 
 <span class="sd">        Includes every top level folder (e.g. ``rawdata``, ``derivatives``).</span>
@@ -1108,10 +1130,14 @@
                 <span class="s2">&quot;dry_run&quot;</span><span class="p">:</span> <span class="n">dry_run</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_entire_project</span><span class="p">(</span>
+
+        <span class="n">transfer_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_entire_project</span><span class="p">(</span>
             <span class="s2">&quot;download&quot;</span><span class="p">,</span> <span class="n">overwrite_existing_files</span><span class="p">,</span> <span class="n">dry_run</span>
         <span class="p">)</span>
-        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
+
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">transfer_output</span></div>
 
 
 <div class="viewcode-block" id="DataShuttle.upload_specific_folder_or_file">
@@ -1123,7 +1149,7 @@
         <span class="n">filepath</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransferOutput</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload a specific file or folder.</span>
 
 <span class="sd">        If transferring a single file, the path including the filename is</span>
@@ -1156,11 +1182,13 @@
             <span class="p">},</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_specific_file_or_folder</span><span class="p">(</span>
+        <span class="n">transfer_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_specific_file_or_folder</span><span class="p">(</span>
             <span class="s2">&quot;upload&quot;</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">overwrite_existing_files</span><span class="p">,</span> <span class="n">dry_run</span>
         <span class="p">)</span>
 
-        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">transfer_output</span></div>
 
 
 <div class="viewcode-block" id="DataShuttle.download_specific_folder_or_file">
@@ -1172,7 +1200,7 @@
         <span class="n">filepath</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransferOutput</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Download a specific file or folder.</span>
 
 <span class="sd">        If transferring a single file, the path including the filename is</span>
@@ -1206,11 +1234,13 @@
             <span class="p">},</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_specific_file_or_folder</span><span class="p">(</span>
+        <span class="n">transfer_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_specific_file_or_folder</span><span class="p">(</span>
             <span class="s2">&quot;download&quot;</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">overwrite_existing_files</span><span class="p">,</span> <span class="n">dry_run</span>
         <span class="p">)</span>
 
-        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">transfer_output</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_transfer_top_level_folder</span><span class="p">(</span>
@@ -1220,7 +1250,8 @@
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">init_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">display_transfer_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransferOutput</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload or download files within a particular top-level-folder.</span>
 
 <span class="sd">        A centralised function to upload or download data within</span>
@@ -1243,7 +1274,7 @@
             <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_custom</span>
         <span class="p">)</span>
 
-        <span class="n">transfer_func</span><span class="p">(</span>
+        <span class="n">transfer_output</span> <span class="o">=</span> <span class="n">transfer_func</span><span class="p">(</span>
             <span class="n">top_level_folder</span><span class="p">,</span>
             <span class="s2">&quot;all&quot;</span><span class="p">,</span>
             <span class="s2">&quot;all&quot;</span><span class="p">,</span>
@@ -1251,14 +1282,17 @@
             <span class="n">overwrite_existing_files</span><span class="o">=</span><span class="n">overwrite_existing_files</span><span class="p">,</span>
             <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span>
             <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">display_transfer_output</span><span class="o">=</span><span class="n">display_transfer_output</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
             <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span>
 
+        <span class="k">return</span> <span class="n">transfer_output</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_transfer_specific_file_or_folder</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">upload_or_download</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">overwrite_existing_files</span><span class="p">,</span> <span class="n">dry_run</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransferOutput</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Core function for upload/download_specific_folder_or_file().&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
@@ -1289,6 +1323,7 @@
             <span class="n">processed_filepath</span> <span class="o">=</span> <span class="n">filepath</span>
 
         <span class="n">include_list</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;--include /</span><span class="si">{</span><span class="n">processed_filepath</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+
         <span class="n">output</span> <span class="o">=</span> <span class="n">rclone</span><span class="o">.</span><span class="n">transfer_data</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
             <span class="n">upload_or_download</span><span class="p">,</span>
@@ -1298,8 +1333,13 @@
                 <span class="n">overwrite_existing_files</span><span class="p">,</span> <span class="n">dry_run</span>
             <span class="p">),</span>
         <span class="p">)</span>
+        <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="p">,</span> <span class="n">transfer_output</span> <span class="o">=</span> <span class="n">rclone</span><span class="o">.</span><span class="n">parse_rclone_copy_output</span><span class="p">(</span>
+            <span class="n">top_level_folder</span><span class="p">,</span> <span class="n">output</span>
+        <span class="p">)</span>
+        <span class="n">rclone</span><span class="o">.</span><span class="n">log_stdout_stderr_python_api</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="p">)</span>
+        <span class="n">rclone</span><span class="o">.</span><span class="n">log_rclone_transfer_output</span><span class="p">(</span><span class="n">transfer_output</span><span class="p">)</span>
 
-        <span class="n">utils</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">transfer_output</span>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># SSH</span>
@@ -2108,22 +2148,44 @@
         <span class="n">upload_or_download</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;upload&quot;</span><span class="p">,</span> <span class="s2">&quot;download&quot;</span><span class="p">],</span>
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransferOutput</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Transfer the entire project.</span>
 
 <span class="sd">        i.e. every &#39;top level folder&#39; (e.g. &#39;rawdata&#39;, &#39;derivatives&#39;).</span>
 <span class="sd">        See ``upload_custom()`` or ``download_custom()`` for parameters.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">top_level_folder</span> <span class="ow">in</span> <span class="n">canonical_folders</span><span class="o">.</span><span class="n">get_top_level_folders</span><span class="p">():</span>
-            <span class="n">utils</span><span class="o">.</span><span class="n">log_and_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Transferring `</span><span class="si">{</span><span class="n">top_level_folder</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+        <span class="n">all_output</span> <span class="o">=</span> <span class="n">TransferOutput</span><span class="p">()</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_top_level_folder</span><span class="p">(</span>
+        <span class="k">for</span> <span class="n">top_level_folder</span> <span class="ow">in</span> <span class="n">canonical_folders</span><span class="o">.</span><span class="n">get_top_level_folders</span><span class="p">():</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">log_and_message</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">*************************************</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Transferring `</span><span class="si">{</span><span class="n">top_level_folder</span><span class="si">}</span><span class="s2">`</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;*************************************</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+            <span class="n">transfer_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_top_level_folder</span><span class="p">(</span>
                 <span class="n">upload_or_download</span><span class="p">,</span>
                 <span class="n">top_level_folder</span><span class="p">,</span>
                 <span class="n">overwrite_existing_files</span><span class="o">=</span><span class="n">overwrite_existing_files</span><span class="p">,</span>
                 <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span>
                 <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">display_transfer_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
+
+            <span class="n">all_output</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">][</span><span class="s2">&quot;file_names&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">transfer_output</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">][</span>
+                <span class="s2">&quot;file_names&quot;</span>
+            <span class="p">]</span>
+            <span class="n">all_output</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">][</span><span class="s2">&quot;messages&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">transfer_output</span><span class="p">[</span><span class="s2">&quot;errors&quot;</span><span class="p">][</span>
+                <span class="s2">&quot;messages&quot;</span>
+            <span class="p">]</span>
+
+            <span class="n">all_output</span><span class="p">[</span><span class="s2">&quot;num_transferred&quot;</span><span class="p">][</span><span class="n">top_level_folder</span><span class="p">]</span> <span class="o">=</span> <span class="n">transfer_output</span><span class="p">[</span>
+                <span class="s2">&quot;num_transferred&quot;</span>
+            <span class="p">][</span><span class="n">top_level_folder</span><span class="p">]</span>
+
+        <span class="n">rclone</span><span class="o">.</span><span class="n">log_rclone_transfer_output</span><span class="p">(</span><span class="n">all_output</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">all_output</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_start_log</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
