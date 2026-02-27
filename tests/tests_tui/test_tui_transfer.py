@@ -61,18 +61,25 @@ class TestTuiTransfer(TuiBase):
 
     async def check_persistent_settings(self, pilot):
         """Run transfer with each overwrite setting and check it is propagated
-        to datashuttle methods.
+        to datashuttle methods. The dry-run settings are arbitrary, just to
+        test both True and False at least once.
         """
         await self.set_and_check_persistent_settings(pilot, "never", True)
-
-        await self.set_and_check_persistent_settings(pilot, "always", False)
-
         await self.set_and_check_persistent_settings(
             pilot, "if_source_newer", True
         )
+        await self.set_and_check_persistent_settings(
+            pilot, "if_different", False
+        )
+        await self.set_and_check_persistent_settings(pilot, "always", False)
 
     async def set_overwrite_checkbox(self, pilot, overwrite_setting):
-        all_positions = {"never": None, "always": 5, "if_source_newer": 6}
+        all_positions = {
+            "never": None,
+            "if_source_newer": 5,
+            "if_different": 6,
+            "always": 7,
+        }
         position = all_positions[overwrite_setting]
 
         if position is not None:
@@ -82,7 +89,7 @@ class TestTuiTransfer(TuiBase):
 
     async def set_transfer_tab_dry_run_checkbox(self, pilot, dry_run_setting):
         if (
-            pilot.app.screen.query_one("#transfer_tab_dry_run_checkbox")
+            pilot.app.screen.query_one("#transfer_tab_dry_run_checkbox").value
             is not dry_run_setting
         ):
             await self.change_checkbox(pilot, "#transfer_tab_dry_run_checkbox")

@@ -440,7 +440,8 @@ class TestFileTransfer(BaseTest):
         ).is_file()
 
     @pytest.mark.parametrize(
-        "overwrite_existing_files", ["never", "always", "if_source_newer"]
+        "overwrite_existing_files",
+        ["never", "if_source_newer", "if_different", "always"],
     )
     @pytest.mark.parametrize("dry_run", [True, False])
     def test_rclone_options(
@@ -468,11 +469,20 @@ class TestFileTransfer(BaseTest):
 
         if overwrite_existing_files == "never":
             assert "--ignore-existing" in log
-        elif overwrite_existing_files == "always":
-            assert "--ignore-existing" not in log
+            assert "--ignore-times" not in log
             assert "--update" not in log
         elif overwrite_existing_files == "if_source_newer":
             assert "--update" in log
+            assert "--ignore-times" not in log
+            assert "--ignore-existing" not in log
+        elif overwrite_existing_files == "if_different":
+            assert "--ignore-existing" not in log
+            assert "--ignore-times" not in log
+            assert "--update" not in log
+        elif overwrite_existing_files == "always":
+            assert "--ignore-times" in log
+            assert "--ignore-existing" not in log
+            assert "--update" not in log
 
         assert "--progress" in log
 
@@ -482,7 +492,7 @@ class TestFileTransfer(BaseTest):
             assert "--dry-run" not in log
 
     @pytest.mark.parametrize(
-        "overwrite_existing_files", ["never", "always", "if_source_newer"]
+        "overwrite_existing_files", ["never", "if_source_newer", "if_different", "always"]
     )
     @pytest.mark.parametrize(
         "transfer_method", ["entire_project", "custom", "top_level_folder"]
@@ -506,11 +516,12 @@ class TestFileTransfer(BaseTest):
         one that is older onto the one that is newer.
 
         "never" : files will never be overwritten
-        "always" : files will be overwritten wherever there is a date difference
-                   (both cases)
         "if_source_newer" : only overwrite when the source file is
                             newer than the target (only in `later_to_earlier`
                             parameter)
+        "if_different" : overwrite whenever the source and target file are different
+        "always" : files will be overwritten wherever there is a date difference
+                   (both cases)
 
         Two files are written with 'earlier' and 'later' times. The
         exact location of these files is abstracted as will change
@@ -547,7 +558,7 @@ class TestFileTransfer(BaseTest):
             assert test_utils.read_file(path_later) == ["file earlier"]
 
     @pytest.mark.parametrize(
-        "overwrite_existing_files", ["never", "always", "if_source_newer"]
+        "overwrite_existing_files", ["never", "if_source_newer", "always"]
     )
     @pytest.mark.parametrize(
         "transfer_method", ["entire_project", "custom", "top_level_folder"]
@@ -569,7 +580,8 @@ class TestFileTransfer(BaseTest):
         Again test overwrite setting for every possible combination,
         but this time swap the transfer function direction such that
         the later file is transferred onto the earlier file. This
-        should transfer both in the 'if_source_newer' and 'always' case.
+        should transfer both in the 'if_source_newer', 'if_different' and
+        'always' case.
         """
         path_earlier, path_later = self.setup_overwrite_file_tests(
             upload_or_download, top_level_folder, project
@@ -598,7 +610,11 @@ class TestFileTransfer(BaseTest):
         if overwrite_existing_files == "never":
             # The newer file is not transferred
             assert test_utils.read_file(path_earlier) == ["file earlier"]
-        elif overwrite_existing_files in ["if_source_newer", "always"]:
+        elif overwrite_existing_files in [
+            "if_source_newer",
+            "if_different",
+            "always",
+        ]:
             # The newer file is transferred
             assert test_utils.read_file(path_earlier) == ["file laterxx"]
 
@@ -638,7 +654,7 @@ class TestFileTransfer(BaseTest):
             assert test_utils.read_file(central_file_path) == [
                 "file laterxx bigger"
             ]
-        elif overwrite_existing_files == "always":
+        elif overwrite_existing_files in ["if_different", "always"]:
             assert test_utils.read_file(central_file_path) == ["file earlier"]
 
     def test_transfer_output(self, project, monkeypatch):
