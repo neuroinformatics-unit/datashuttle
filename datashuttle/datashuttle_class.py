@@ -326,7 +326,7 @@ class DataShuttle:
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
         init_log: bool = True,
-        display_errors: bool = True,
+        display_transfer_output: bool = True,
     ) -> TransferOutput:
         """Upload data from a local project to the central project folder.
 
@@ -366,8 +366,9 @@ class DataShuttle:
             always be ``True``, unless logger is handled elsewhere
             (e.g. in a calling function).
 
-        display_errors
-            if `True`, a summary of errors will be printed alongside the Rclone logs.
+        display_transfer_output
+            If `True`, a summary of number of transferred files, and any
+            errors will be printed alongside the Rclone logs.
 
         """
         if init_log:
@@ -385,7 +386,7 @@ class DataShuttle:
 
         self._check_top_level_folder(top_level_folder)
 
-        errors = TransferData(
+        transfer_output = TransferData(
             self.cfg,
             "upload",
             top_level_folder,
@@ -396,13 +397,13 @@ class DataShuttle:
             dry_run,
         ).run()
 
-        if display_errors:
-            rclone.log_rclone_copy_errors_api(errors)
+        if display_transfer_output:
+            rclone.log_rclone_transfer_output(transfer_output)
 
         if init_log:
             ds_logger.close_log_filehandler()
 
-        return errors
+        return transfer_output
 
     @check_configs_set
     @check_is_not_local_project
@@ -415,7 +416,7 @@ class DataShuttle:
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
         init_log: bool = True,
-        display_errors: bool = True,
+        display_transfer_output: bool = True,
     ) -> TransferOutput:
         """Download data from the central project to the local project folder.
 
@@ -455,8 +456,9 @@ class DataShuttle:
             always be ``True``, unless logger is handled elsewhere
             (e.g. in a calling function).
 
-        display_errors
-            if `True`, a summary of errors will be printed alongside the Rclone logs.
+        display_transfer_output
+            If `True`, a summary of number of transferred files, and any
+            errors will be printed alongside the Rclone logs.
 
         """
         if init_log:
@@ -485,8 +487,8 @@ class DataShuttle:
             dry_run,
         ).run()
 
-        if display_errors:
-            rclone.log_rclone_copy_errors_api(transfer_output)
+        if display_transfer_output:
+            rclone.log_rclone_transfer_output(transfer_output)
 
         if init_log:
             ds_logger.close_log_filehandler()
@@ -803,7 +805,7 @@ class DataShuttle:
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
         init_log: bool = True,
-        display_errors: bool = True,
+        display_transfer_output: bool = True,
     ) -> TransferOutput:
         """Upload or download files within a particular top-level-folder.
 
@@ -835,7 +837,7 @@ class DataShuttle:
             overwrite_existing_files=overwrite_existing_files,
             dry_run=dry_run,
             init_log=False,
-            display_errors=display_errors,
+            display_transfer_output=display_transfer_output,
         )
 
         if init_log:
@@ -890,7 +892,7 @@ class DataShuttle:
             top_level_folder, output
         )
         rclone.log_stdout_stderr_python_api(stdout, stderr)
-        rclone.log_rclone_copy_errors_api(transfer_output)
+        rclone.log_rclone_transfer_output(transfer_output)
 
         return transfer_output
 
@@ -1653,7 +1655,7 @@ class DataShuttle:
                 overwrite_existing_files=overwrite_existing_files,
                 dry_run=dry_run,
                 init_log=False,
-                display_errors=False,
+                display_transfer_output=False,
             )
 
             all_output["errors"]["file_names"] += transfer_output["errors"][
@@ -1667,7 +1669,7 @@ class DataShuttle:
                 "num_transferred"
             ][top_level_folder]
 
-        rclone.log_rclone_copy_errors_api(all_output)
+        rclone.log_rclone_transfer_output(all_output)
 
         return all_output
 

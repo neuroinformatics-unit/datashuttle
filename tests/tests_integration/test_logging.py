@@ -483,7 +483,8 @@ class TestLogging:
         assert str(e.value) in log
 
     def test_num_files_transferred_logging(self, project):
-        """ """
+        """Test the number of transferred file is properly logged."""
+        # First create some files to transfer in the two top level folders
         for top_level_folder in ["rawdata", "derivatives"]:
             test_utils.make_local_folders_with_files_in(
                 project,
@@ -494,6 +495,7 @@ class TestLogging:
             )
         test_utils.delete_log_files(project.cfg.logging_path)
 
+        # Transfer only rawdata, check that is selectively logged correctly
         transfer_output = project.upload_rawdata()
         assert transfer_output["num_transferred"]["rawdata"] == 8
         assert transfer_output["num_transferred"]["derivatives"] is None
@@ -503,6 +505,7 @@ class TestLogging:
         assert "derivatives" not in log
         test_utils.delete_log_files(project.cfg.logging_path)
 
+        # Transfer only derivatives, check that is selectively logged correctly
         transfer_output = project.upload_derivatives()
         assert transfer_output["num_transferred"]["derivatives"] == 8
         assert transfer_output["num_transferred"]["rawdata"] is None
@@ -512,6 +515,7 @@ class TestLogging:
         assert "Nothing was transferred from rawdata" not in log
         test_utils.delete_log_files(project.cfg.logging_path)
 
+        # Make an additional file for detivatives
         test_utils.make_local_folders_with_files_in(
             project,
             "derivatives",
@@ -521,6 +525,9 @@ class TestLogging:
         )
         test_utils.delete_log_files(project.cfg.logging_path)
 
+        # Upload the entire project, check that derivatives num transferred
+        # is correct, and that rawdata is 0 not None, as a transfer was attempted
+        # (but no files needed to be transferred)
         transfer_output = project.upload_entire_project()
 
         assert transfer_output["num_transferred"]["derivatives"] == 1

@@ -689,16 +689,12 @@ def log_stdout_stderr_python_api(stdout: str, stderr: str) -> None:
     utils.log_and_message(message)
 
 
-def log_rclone_copy_errors_api(transfer_output: TransferOutput) -> None:
-    """Log the `errors` dictionary.
+def log_rclone_transfer_output(transfer_output: TransferOutput) -> None:
+    """Log the `TransferOutput` dictionary.
 
-    The `errors` dictionary contains all pertinent information on
+    The `TransferOutput` dictionary contains all pertinent information on
     issues that occurred when running `rclone copy`. Note this logs
     for the API, the TUI display is handled separately.
-
-    Note this function is very similar
-    to `handle_transfer_and_update_ui_when_complete`
-    but kept separate for flexibility.
     """
     message = transfer_output.create_python_api_message()
 
@@ -710,7 +706,7 @@ def parse_rclone_copy_output(
 ) -> tuple[str, str, TransferOutput]:
     """Format the `rclone copy` output ready for logging.
 
-    Reformat and combine the string streams and `errors`
+    Reformat and combine the string streams and `TransferOutput`
     dictionary from stdout and stderr output of `rclone copy`.
     see `reformat_rclone_copy_output()` for details.
     """
