@@ -116,6 +116,12 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
         elif event.button.id == "mainwindow_exit_button":
             self.app.exit()
 
+    def action_show_copy_help(self) -> None:
+        """Display a notification (for CTRL+C)."""
+        self.notify(
+            "Use CTRL+Y to copy from Inputs and DirectoryTrees.\n"
+            "Use ESC or the 'Exit' button to quit the application.\n"
+            "CTRL+C can be used to copy after highlighting text with the mouse while pressing 'shift'.",
             timeout=6,
         )
 
