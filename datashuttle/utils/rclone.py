@@ -799,7 +799,7 @@ def make_rclone_transfer_options(
     overwrite_existing_files: OverwriteExistingFiles, dry_run: bool
 ) -> Dict:
     """Create a dictionary of rclone transfer options."""
-    allowed_overwrite = ["never", "always", "if_source_newer"]
+    allowed_overwrite = ["never", "if_source_newer", "if_different", "always"]
 
     if overwrite_existing_files not in allowed_overwrite:
         utils.log_and_raise_error(
@@ -967,8 +967,12 @@ def handle_rclone_arguments(
     if overwrite == "never":
         extra_arguments_list += [rclone_args("never_overwrite")]
 
-    elif overwrite == "always":
+    elif overwrite == "if_different":
+        # default rclone behavior (no flags)
         pass
+
+    elif overwrite == "always":
+        extra_arguments_list += [rclone_args("always_overwrite")]
 
     elif overwrite == "if_source_newer":
         extra_arguments_list += [rclone_args("if_source_newer_overwrite")]
@@ -993,6 +997,7 @@ def rclone_args(name: str) -> str:
         "copy",
         "never_overwrite",
         "if_source_newer_overwrite",
+        "always_overwrite",
         "progress",
         "check",
     ]
@@ -1009,6 +1014,9 @@ def rclone_args(name: str) -> str:
 
     if name == "if_source_newer_overwrite":
         arg = "--update"
+
+    if name == "always_overwrite":
+        arg = "--ignore-times"
 
     if name == "progress":
         arg = "--progress"

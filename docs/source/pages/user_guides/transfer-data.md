@@ -46,7 +46,7 @@ allow transfer across:
 
 ```{warning}
 The **overwrite existing files** setting is very important.
-It takes on the options **never**, **always** or **if source newer**.
+It takes on the options **never**, **if source newer**, **if_differet"" or **always**.
 
 See the [transfer options](transfer-options) section for full details on
 this and other transfer settings.
@@ -304,28 +304,20 @@ Transfer a range
 (transfer-options)=
 
 overwrite existing files
-: By default this option is set to **never**—a transfer will never overwrite a
-file that already exists, even if the source and destination modification datetimes
-or sizes are different.
+: Controls how existing files are handled during transfer.
 
-: If *always**, when there are differences in datetime or size
-between the source and destination file the destination file will be overwritten.
-This includes when the source file is older or smaller than the destination.
+: **never**
+  Never overwrite existing files.
 
-: Finally, **if source newer** ensures data is only overwritten
-when the
-[source file has a more recent modification time](https://rclone.org/docs/#u-update)
-than the destination.
-If modification datetimes are equal, the destination will be overwritten if the
-sizes or checksums are different.
+: **if_source_newer**
+  Only overwrite files if the source file is newer than the destination.
 
-: Under the hood, transfers are made with calls to
-[Rclone](https://rclone.org/). Using **never**
-calls
-[Rclone's copy](https://rclone.org/commands/rclone_copy/)
-function with the flag `--ignore_existing`. Using
-**always** copies without this flag and (using Rclone's default overwrite behaviour.)
-Using **if source newer** calls copy with the `--update` flag.
+: **if_different**
+  Only overwrite files if the source and destination differ in
+  modification time or size.
+
+: **always**
+  Always overwrite files, even if sizes and timestamps are identical.
 
 (dry-run-argument)=
 dry run

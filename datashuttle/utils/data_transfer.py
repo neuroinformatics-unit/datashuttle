@@ -62,10 +62,12 @@ class TransferData:
 
         overwrite_existing_files
             If ``"never"`` files on target will never be overwritten by source.
-            If ``"always"`` files on target will be overwritten by source if
-            there is any difference in date or size.
             If ``"if_source_newer"`` files on target will only be overwritten
             by files on source with newer creation / modification datetime.
+            IF ``"if_different"``, target will always be overwritten if the
+            size or creation / modification datetimes differ.
+            If ``"always"`` files on target will be overwritten by source if
+            there is any difference in datetimes or size.
 
         dry_run
             Perform a dry-run of transfer. This will output as if file
