@@ -554,12 +554,13 @@ class TestFileTransfer(BaseTest):
         if overwrite_existing_files in ["never", "if_source_newer"]:
             # The newer file is not transferred
             assert test_utils.read_file(path_later) == ["file laterxx"]
-        elif overwrite_existing_files == "always":
+        elif overwrite_existing_files in ["if_different", "always"]:
             # The newer file is transferred
             assert test_utils.read_file(path_later) == ["file earlier"]
 
     @pytest.mark.parametrize(
-        "overwrite_existing_files", ["never", "if_source_newer", "always"]
+        "overwrite_existing_files",
+        ["never", "if_source_newer", "if_different", "always"],
     )
     @pytest.mark.parametrize(
         "transfer_method", ["entire_project", "custom", "top_level_folder"]
@@ -620,7 +621,8 @@ class TestFileTransfer(BaseTest):
             assert test_utils.read_file(path_earlier) == ["file laterxx"]
 
     @pytest.mark.parametrize(
-        "overwrite_existing_files", ["never", "always", "if_source_newer"]
+        "overwrite_existing_files",
+        ["never", "if_source_newer", "if_different", "always"],
     )
     def test_overwrite_different_size_different_times(
         self, project, overwrite_existing_files
