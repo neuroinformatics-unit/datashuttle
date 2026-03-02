@@ -156,8 +156,10 @@ class TestFileTransfer(BaseTransfer):
             pathtable["parent_sub"]
             .fillna("")
             .apply(
-                lambda x: fnmatch.fnmatch(x, "sub-002*")
-                or fnmatch.fnmatch(x, "sub-003*")
+                lambda x: (
+                    fnmatch.fnmatch(x, "sub-002*")
+                    or fnmatch.fnmatch(x, "sub-003*")
+                )
             )
         ]
 

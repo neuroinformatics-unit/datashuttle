@@ -276,8 +276,9 @@ class TransferData:
         ]
 
         filt_sub_level_folders = filter(
-            lambda folder: folder[:4] != "ses-"
-            and folder not in sub_level_dtype,
+            lambda folder: (
+                folder[:4] != "ses-" and folder not in sub_level_dtype
+            ),
             sub_level_folders,
         )
         extra_folder_names += [
