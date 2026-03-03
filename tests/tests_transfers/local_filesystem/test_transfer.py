@@ -423,8 +423,8 @@ class TestFileTransfer(BaseTest):
         datatyp directly. Check that rlcone is setup to transfer
         multiple levels down from the datatype level.
         """
-        make_base_path = (
-            lambda root: root / "rawdata" / "sub-001" / "ses-001" / "behav"
+        make_base_path = lambda root: (
+            root / "rawdata" / "sub-001" / "ses-001" / "behav"
         )
         local = make_base_path(project.cfg["local_path"])
         test_file_path = (
@@ -690,8 +690,8 @@ class TestFileTransfer(BaseTest):
 
         # Run every transfer function and check that
         # `TransferOutput` is returned correctly.
-        specific_file = (
-            lambda path_: f"{path_}/rawdata/{subs[0]}/{sessions[0]}/ephys/placeholder_file.txt"
+        specific_file = lambda path_: (
+            f"{path_}/rawdata/{subs[0]}/{sessions[0]}/ephys/placeholder_file.txt"
         )
 
         # All 'rawdata' functions
