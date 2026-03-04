@@ -62,6 +62,7 @@ dev = [
     "ruff",
     "setuptools_scm",
     "textual-dev",
+    "pyinstaller",
     "types-requests",
     "types-PyYAML",
     "types-appdirs",
