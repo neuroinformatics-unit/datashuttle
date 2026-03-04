@@ -252,6 +252,11 @@ def get_values_from_bids_formatted_name(
 
         value = get_value_from_key_regexp(name, key)
 
+        if len(value) == 0:
+            raise NeuroBlueprintError(
+                f"No value is associated with the key {key} in {name}.",
+            )
+
         if len(value) > 1:
             raise NeuroBlueprintError(
                 f"There is more than one instance of {key} in {name}. "

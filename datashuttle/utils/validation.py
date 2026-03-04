@@ -627,7 +627,7 @@ def datetime_are_iso_format(
             format_to_check = utils.get_values_from_bids_formatted_name(
                 [name], key, return_as_int=False
             )[0]
-        except:
+        except NeuroBlueprintError:
             return []
 
         strfmt = formats[key]
@@ -1210,7 +1210,7 @@ def strip_uncheckable_names(
                 prefix,
                 return_as_int=return_as_int,  # type: ignore
             )[0]
-        except Exception:
+        except NeuroBlueprintError:
             continue
 
         if path_:
