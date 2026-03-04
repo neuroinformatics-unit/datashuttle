@@ -588,7 +588,7 @@ class TestLogging:
         errors = transfer_output["errors"]
         # in Linux, macOS backup files are sometimes written during logging,
         # we want to ignore these in case present.
-        if len(errors["file"]) > 1:
+        if len(errors["file_names"]) > 1:
             errors["file_names"] = [
                 filepath
                 for filepath in errors["file_names"]
