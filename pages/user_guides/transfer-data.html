@@ -469,7 +469,7 @@ allow transfer across:</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>The <strong>overwrite existing files</strong> setting is very important.
-It takes on the options <strong>never</strong>, <strong>always</strong> or <strong>if source newer</strong>.</p>
+It takes on the options <strong>never</strong>, <strong>if source newer</strong>, <strong>if different</strong> or <strong>always</strong>.</p>
 <p>See the <a class="reference internal" href="#id1"><span class="std std-ref">transfer options</span></a> section for full details on
 this and other transfer settings.</p>
 </div>
@@ -654,28 +654,20 @@ allow further customisation of data transfer.</p>
 <section id="transfer-options">
 <h2>Transfer Options<a class="headerlink" href="#transfer-options" title="Link to this heading">#</a></h2>
 <dl class="simple myst" id="id1">
-<dt>overwrite existing files</dt><dd><p>By default this option is set to <strong>never</strong>—a transfer will never overwrite a
-file that already exists, even if the source and destination modification datetimes
-or sizes are different.</p>
+<dt>overwrite existing files</dt><dd><p>Controls how existing files are handled during transfer.</p>
 </dd>
-<dd><p>If <em>always</em>*, when there are differences in datetime or size
-between the source and destination file the destination file will be overwritten.
-This includes when the source file is older or smaller than the destination.</p>
+<dd><p><strong>never</strong>
+Never overwrite existing files.</p>
 </dd>
-<dd><p>Finally, <strong>if source newer</strong> ensures data is only overwritten
-when the
-<a class="reference external" href="https://rclone.org/docs/#u-update">source file has a more recent modification time</a>
-than the destination.
-If modification datetimes are equal, the destination will be overwritten if the
-sizes or checksums are different.</p>
+<dd><p><strong>if_source_newer</strong>
+Only overwrite files if the source file is newer than the destination.</p>
 </dd>
-<dd><p>Under the hood, transfers are made with calls to
-<a class="reference external" href="https://rclone.org/">Rclone</a>. Using <strong>never</strong>
-calls
-<a class="reference external" href="https://rclone.org/commands/rclone_copy/">Rclone’s copy</a>
-function with the flag <code class="docutils literal notranslate"><span class="pre">--ignore_existing</span></code>. Using
-<strong>always</strong> copies without this flag and (using Rclone’s default overwrite behaviour.)
-Using <strong>if source newer</strong> calls copy with the <code class="docutils literal notranslate"><span class="pre">--update</span></code> flag.</p>
+<dd><p><strong>if_different</strong>
+Only overwrite files if the source and destination differ in
+modification time or size.</p>
+</dd>
+<dd><p><strong>always</strong>
+Always overwrite files, even if sizes and timestamps are identical.</p>
 </dd>
 </dl>
 <dl class="simple myst" id="dry-run-argument">

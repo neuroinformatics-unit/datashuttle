@@ -575,7 +575,7 @@ name. Similarly, if only subject or session level folders were
 created, these are separated by “sub” and “ses” keys.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>created_paths</p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]]</span></p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -613,11 +613,13 @@ datatype folder to upload.</p></li>
 sub_names but requiring a <code class="docutils literal notranslate"><span class="pre">&quot;ses-&quot;</span></code> prefix.</p></li>
 <li><p><strong>datatype</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – The (broad or narrow) NeuroBlueprint datatypes to transfer.
 If <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>, any broad or narrow datatype folder will be transferred.</p></li>
-<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
-If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
-there is any difference in date or size.
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_different'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
 If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
-by files on source with newer creation / modification datetime.</p></li>
+by files on source with newer creation / modification datetime.
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_different&quot;</span></code>, target will always be overwritten if the
+size or creation / modification datetimes differ.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will always be overwritten by source,
+even when size and creation / modification datetimes match.</p></li>
 <li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
 transfer was taking place, but no files will be moved.</p></li>
 <li><p><strong>init_log</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to handle logging. This should
@@ -650,11 +652,13 @@ datatype folder to upload.</p></li>
 sub_names but requiring a <code class="docutils literal notranslate"><span class="pre">&quot;ses-&quot;</span></code> prefix.</p></li>
 <li><p><strong>datatype</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – The (broad or narrow) NeuroBlueprint datatypes to transfer.
 If <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>, any broad or narrow datatype folder will be transferred.</p></li>
-<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
-If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
-there is any difference in date or size.
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_different'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
 If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
-by files on source with newer creation / modification datetime.</p></li>
+by files on source with newer creation / modification datetime.
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_different&quot;</span></code>, target will always be overwritten if the
+size or creation / modification datetimes differ.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will always be overwritten by source,
+even when size and creation / modification datetimes match.</p></li>
 <li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
 transfer was taking place, but no files will be moved.</p></li>
 <li><p><strong>init_log</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to handle logging. This should
@@ -677,11 +681,13 @@ errors will be printed alongside the Rclone logs.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
-If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
-there is any difference in date or size.
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_different'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
 If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
-by files on source with newer creation / modification datetime.</p></li>
+by files on source with newer creation / modification datetime.
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_different&quot;</span></code>, target will always be overwritten if the
+size or creation / modification datetimes differ.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will always be overwritten by source,
+even when size and creation / modification datetimes match.</p></li>
 <li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
 transfer was taking place, but no files will be moved.</p></li>
 </ul>
@@ -699,11 +705,13 @@ transfer was taking place, but no files will be moved.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
-If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
-there is any difference in date or size.
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_different'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
 If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
-by files on source with newer creation / modification datetime.</p></li>
+by files on source with newer creation / modification datetime.
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_different&quot;</span></code>, target will always be overwritten if the
+size or creation / modification datetimes differ.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will always be overwritten by source,
+even when size and creation / modification datetimes match.</p></li>
 <li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
 transfer was taking place, but no files will be moved.</p></li>
 </ul>
@@ -721,11 +729,13 @@ transfer was taking place, but no files will be moved.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
-If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
-there is any difference in date or size.
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_different'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
 If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
-by files on source with newer creation / modification datetime.</p></li>
+by files on source with newer creation / modification datetime.
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_different&quot;</span></code>, target will always be overwritten if the
+size or creation / modification datetimes differ.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will always be overwritten by source,
+even when size and creation / modification datetimes match.</p></li>
 <li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
 transfer was taking place, but no files will be moved..</p></li>
 </ul>
@@ -743,11 +753,13 @@ transfer was taking place, but no files will be moved..</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
-If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
-there is any difference in date or size.
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_different'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
 If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
-by files on source with newer creation / modification datetime.</p></li>
+by files on source with newer creation / modification datetime.
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_different&quot;</span></code>, target will always be overwritten if the
+size or creation / modification datetimes differ.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will always be overwritten by source,
+even when size and creation / modification datetimes match.</p></li>
 <li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
 transfer was taking place, but no files will be moved.</p></li>
 </ul>
@@ -766,11 +778,13 @@ transfer was taking place, but no files will be moved.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
-If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
-there is any difference in date or size.
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_different'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
 If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
-by files on source with newer creation / modification datetime.</p></li>
+by files on source with newer creation / modification datetime.
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_different&quot;</span></code>, target will always be overwritten if the
+size or creation / modification datetimes differ.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will always be overwritten by source,
+even when size and creation / modification datetimes match.</p></li>
 <li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
 transfer was taking place, but no files will be moved.</p></li>
 </ul>
@@ -789,11 +803,13 @@ transfer was taking place, but no files will be moved.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
-If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
-there is any difference in date or size.
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_different'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
 If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
-by files on source with newer creation / modification datetime.</p></li>
+by files on source with newer creation / modification datetime.
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_different&quot;</span></code>, target will always be overwritten if the
+size or creation / modification datetimes differ.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will always be overwritten by source,
+even when size and creation / modification datetimes match.</p></li>
 <li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
 transfer was taking place, but no files will be moved.</p></li>
 </ul>
@@ -815,11 +831,13 @@ all files in the folder (“*”) or all files and sub-folders (“**”).</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filepath</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span>) – a string containing the full filepath.</p></li>
-<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
-If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
-there is any difference in date or size.
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_different'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
 If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
-by files on source with newer creation / modification datetime.</p></li>
+by files on source with newer creation / modification datetime.
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_different&quot;</span></code>, target will always be overwritten if the
+size or creation / modification datetimes differ.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will always be overwritten by source,
+even when size and creation / modification datetimes match.</p></li>
 <li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
 transfer was taking place, but no files will be moved.</p></li>
 </ul>
@@ -842,11 +860,13 @@ and sub-folders (“**”).</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filepath</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span>) – a string containing the full filepath.</p></li>
-<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
-If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
-there is any difference in date or size.
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_different'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
 If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
-by files on source with newer creation / modification datetime.</p></li>
+by files on source with newer creation / modification datetime.
+IF <code class="docutils literal notranslate"><span class="pre">&quot;if_different&quot;</span></code>, target will always be overwritten if the
+size or creation / modification datetimes differ.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
+there is any difference in datetimes or size.</p></li>
 <li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
 transfer was taking place, but no files will be moved.</p></li>
 </ul>
@@ -1107,7 +1127,7 @@ this flag is ignored.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>The next subject ID.</p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1128,7 +1148,7 @@ this flag is ignored.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>The next session ID.</p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1156,7 +1176,7 @@ It can be used to make folders and validate, but not for transfer.</p>
 <dd class="field-odd"><p>e.g. {“validation_templates”: {“on”: False, “sub”: None, “ses”: None}}</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>validation_templates</p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1226,7 +1246,7 @@ and the following additional checks are performed:</p>
 <dd class="field-even"><p>A list of validation errors found in the project.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>error_messages</p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1297,7 +1317,7 @@ and the following additional checks are performed:</p>
 <dd class="field-even"><p>A list of validation errors found in the project.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>error_messages</p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
 </dd>
 </dl>
 </dd></dl>
