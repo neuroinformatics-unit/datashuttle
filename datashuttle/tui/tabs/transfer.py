@@ -179,7 +179,12 @@ class TransferTab(TreeAndInputTab):
                     Select(
                         (
                             (name, name)
-                            for name in ["Never", "Always", "If Source Newer"]
+                            for name in [
+                                "Never",
+                                "If Source Newer",
+                                "If Different",
+                                "Always",
+                            ]
                         ),
                         value=self.interface.tui_settings[
                             "overwrite_existing_files"
@@ -238,7 +243,12 @@ class TransferTab(TreeAndInputTab):
     def on_select_changed(self, event: Select.Changed) -> None:
         """Handle a Select widget changed on the tab."""
         if event.select.id == "transfer_tab_overwrite_select":
-            assert event.select.value in ["Never", "Always", "If Source Newer"]
+            assert event.select.value in [
+                "Never",
+                "If Source Newer",
+                "If Different",
+                "Always",
+            ]
             format_select = event.select.value.lower().replace(" ", "_")
             self.interface.save_tui_settings(
                 format_select,

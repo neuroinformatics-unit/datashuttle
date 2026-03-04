@@ -6,7 +6,9 @@ DisplayMode = Literal["error", "warn", "print"]
 
 TopLevelFolder = Literal["rawdata", "derivatives"]
 
-OverwriteExistingFiles = Literal["never", "always", "if_source_newer"]
+OverwriteExistingFiles = Literal[
+    "never", "if_source_newer", "if_different", "always"
+]
 
 Prefix = Literal["sub", "ses"]
 

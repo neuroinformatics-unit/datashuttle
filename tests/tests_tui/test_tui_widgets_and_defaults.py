@@ -1392,29 +1392,13 @@ class TestTuiWidgets(TuiBase):
                 pilot, project_name, value="Never"
             )
 
-            # now  check "Always"
             await self.scroll_to_click_pause(
                 pilot, "#transfer_tab_overwrite_select"
-            )
-            await self.move_select_to_position(
-                pilot, "#transfer_tab_overwrite_select", position=5
-            )
-            self.check_overwrite_existing_files_configs(
-                pilot, project_name, value="Always"
-            )
-            # reload project screen to check persistence of settings.
-            await self.exit_to_main_menu_and_reeneter_project_manager(
-                pilot, project_name
-            )
-            await self.switch_tab(pilot, "transfer")
-
-            self.check_overwrite_existing_files_configs(
-                pilot, project_name, value="Always"
             )
 
             # now  check "If Source Newer"
             await self.move_select_to_position(
-                pilot, "#transfer_tab_overwrite_select", position=6
+                pilot, "#transfer_tab_overwrite_select", position=5
             )
             self.check_overwrite_existing_files_configs(
                 pilot, project_name, value="If Source Newer"
@@ -1427,6 +1411,40 @@ class TestTuiWidgets(TuiBase):
 
             self.check_overwrite_existing_files_configs(
                 pilot, project_name, value="If Source Newer"
+            )
+
+            # now  check "If Different"
+            await self.move_select_to_position(
+                pilot, "#transfer_tab_overwrite_select", position=6
+            )
+            self.check_overwrite_existing_files_configs(
+                pilot, project_name, value="If Different"
+            )
+            # reload project screen to check persistence of settings.
+            await self.exit_to_main_menu_and_reeneter_project_manager(
+                pilot, project_name
+            )
+            await self.switch_tab(pilot, "transfer")
+
+            self.check_overwrite_existing_files_configs(
+                pilot, project_name, value="If Different"
+            )
+
+            # now  check "Always"
+            await self.move_select_to_position(
+                pilot, "#transfer_tab_overwrite_select", position=7
+            )
+            self.check_overwrite_existing_files_configs(
+                pilot, project_name, value="Always"
+            )
+            # reload project screen to check persistence of settings.
+            await self.exit_to_main_menu_and_reeneter_project_manager(
+                pilot, project_name
+            )
+            await self.switch_tab(pilot, "transfer")
+
+            self.check_overwrite_existing_files_configs(
+                pilot, project_name, value="Always"
             )
 
     @pytest.mark.asyncio
@@ -1488,8 +1506,9 @@ class TestTuiWidgets(TuiBase):
 
         format_keys = {
             "Never": "never",
-            "Always": "always",
             "If Source Newer": "if_source_newer",
+            "If Different": "if_different",
+            "Always": "always",
         }
         format_val = format_keys[value]
 
