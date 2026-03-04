@@ -46,7 +46,7 @@ allow transfer across:
 
 ```{warning}
 The **overwrite existing files** setting is very important.
-It takes on the options **never**, **if source newer**, **if_differet"" or **always**.
+It takes on the options **never**, **if source newer**, **if different** or **always**.
 
 See the [transfer options](transfer-options) section for full details on
 this and other transfer settings.
