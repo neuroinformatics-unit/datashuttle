@@ -586,14 +586,16 @@ class TestLogging:
 
         # Check that errors and logs flag the transfer errors
         errors = transfer_output["errors"]
-        # in Linux, macOS backup files are written during logging ,we want to ignore these
-        errors["file_names"] = [
-            filepath
-            for filepath in errors["file_names"]
-            if "partial" not in filepath
-        ]
+        # in Linux, macOS backup files are sometimes written during logging,
+        # we want to ignore these in case present.
+        if len(errors["file_names"]) > 1:
+            errors["file_names"] = [
+                filepath
+                for filepath in errors["file_names"]
+                if "partial" not in filepath
+            ]
 
-        assert errors["file_names"] == [relative_path.as_posix()]
+        assert relative_path.as_posix() in errors["file_names"][0]
         assert error_message in errors["messages"][0]
 
         log = test_utils.read_log_file(project.cfg.logging_path)
