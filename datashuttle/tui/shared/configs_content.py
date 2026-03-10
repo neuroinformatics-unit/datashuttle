@@ -752,7 +752,10 @@ class ConfigsContent(Container):
             if cfg_to_load["aws_region"] is None
             else cfg_to_load["aws_region"]
         )
-        select.value = value
+        if value is False:
+            select.clear()
+        else:
+            select.value = value
 
     def setup_widgets_to_display(
         self, connection_method: ConnectionMethods
