@@ -26,15 +26,13 @@ from datashuttle.tui.custom_widgets import (
     CustomDirectoryTree,
     TreeAndInputTab,
 )
+from datashuttle.tui.screens import modal_dialogs
 from datashuttle.tui.screens.create_folder_settings import (
     CreateFoldersSettingsScreen,
 )
 from datashuttle.tui.screens.datatypes import (
     CreateDatatypeCheckboxes,
     DisplayedDatatypesScreen,
-)
-from datashuttle.tui.screens.modal_dialogs import (
-    SearchingCentralForNextSubSesPopup,
 )
 from datashuttle.tui.tooltips import get_tooltip
 from datashuttle.tui.utils.tui_decorators import (
@@ -65,7 +63,7 @@ class CreateFoldersTab(TreeAndInputTab):
         self.mainwindow = mainwindow
         self.interface = interface
         self.searching_central_popup_widget: (
-            SearchingCentralForNextSubSesPopup | None
+            modal_dialogs.CentralWaitingScreen | None
         ) = None
 
         self.click_info = ClickInfo()
@@ -342,7 +340,9 @@ class CreateFoldersTab(TreeAndInputTab):
             "connection_method"
         ] in ["aws", "gdrive", "ssh"]:
             self.searching_central_popup_widget = (
-                SearchingCentralForNextSubSesPopup(prefix)
+                modal_dialogs.CentralWaitingScreen(
+                    f"Searching central for next {prefix}"
+                )
             )
             self.mainwindow.push_screen(self.searching_central_popup_widget)
 
