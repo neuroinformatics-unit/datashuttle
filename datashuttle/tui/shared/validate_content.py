@@ -287,12 +287,14 @@ class ValidateContent(Container):
             )
         else:
             self.app.call_from_thread(self.write_results_to_richlog, output)
-            self.app.call_from_thread(
-                setattr,
-                self.query_one("#validate_logs_label"),
-                "value",
-                f"Logs output to: {self.interface.project.get_logging_path()}",
-            )
+            self.app.call_from_thread(self._update_logs_label)
+
+    def _update_logs_label(self) -> None:
+        """Update the logs label with the current project logging path."""
+        assert self.interface is not None
+        self.query_one("#validate_logs_label").value = (
+            f"Logs output to: {self.interface.project.get_logging_path()}"
+        )
 
     def write_results_to_richlog(self, results):
         """Display the validation results on the Rich Log widget."""
