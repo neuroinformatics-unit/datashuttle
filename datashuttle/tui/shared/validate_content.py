@@ -292,7 +292,9 @@ class ValidateContent(Container):
     def _update_logs_label(self) -> None:
         """Update the logs label with the current project logging path."""
         assert self.interface is not None
-        self.query_one("#validate_logs_label").value = (
+        self.query_one(
+            "#validate_logs_label"
+        ).value = (
             f"Logs output to: {self.interface.project.get_logging_path()}"
         )
 
