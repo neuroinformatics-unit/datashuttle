@@ -608,6 +608,8 @@ def search_for_folders(
         local_or_central == "local"
         or cfg["connection_method"] == "local_filesystem"
     ):
+        assert search_path is not None
+
         if not search_path.exists():
             if verbose:
                 utils.log_and_message(
@@ -631,7 +633,7 @@ def search_for_folders(
 
 
 def search_local_filesystem(
-    search_path: Path | None,
+    search_path: Path,
     search_prefix: str,
     return_full_path: bool = False,
 ) -> tuple[List[Any], List[Any]]:
@@ -646,7 +648,7 @@ def search_local_filesystem(
         The path to search (relative to the local or remote drive). For example,
         for "local_filesystem" this is the path on the local machine. For any other
         connection to central, this is the path on the central storage that has been
-        connected to. Must not be ``None`` when searching the local filesystem.
+        connected to.
 
     search_prefix
         The search string e.g. "sub-*".
@@ -655,11 +657,6 @@ def search_local_filesystem(
         If `True`, return the full filepath, otherwise return only the folder/file name.
 
     """
-    if search_path is None:
-        raise ValueError(
-            "search_path cannot be None when searching the local filesystem."
-        )
-
     all_folder_names = []
     all_filenames = []
 
