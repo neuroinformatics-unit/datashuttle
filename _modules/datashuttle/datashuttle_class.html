@@ -1681,6 +1681,11 @@
             <span class="c1"># For backward compatibility</span>
             <span class="n">connection_method</span> <span class="o">=</span> <span class="s2">&quot;local_only&quot;</span>
 
+        <span class="k">if</span> <span class="n">connection_method</span> <span class="o">!=</span> <span class="s2">&quot;local_only&quot;</span><span class="p">:</span>
+            <span class="c1"># This will raise an error here, to ensure config</span>
+            <span class="c1"># is not saved at all if it cannot be set up</span>
+            <span class="n">rclone</span><span class="o">.</span><span class="n">prompt_rclone_download_if_does_not_exist</span><span class="p">()</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
             <span class="n">utils</span><span class="o">.</span><span class="n">log_and_raise_error</span><span class="p">(</span>
                 <span class="s2">&quot;A config file already exists for this project. &quot;</span>
