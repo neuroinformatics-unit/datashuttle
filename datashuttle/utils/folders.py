@@ -690,7 +690,7 @@ def search_central_via_connection(
         The path to search (relative to the local or remote drive). For example,
         for "local_filesystem" this is the path on the local machine. For any other
         connection to central, this is the path on the central storage that has been
-        connected to. Can be `None` if Google Drive.
+        connected to. Can be `None` if connection method is `gdrive`.
 
     search_prefix
         The search string e.g. "sub-*".
