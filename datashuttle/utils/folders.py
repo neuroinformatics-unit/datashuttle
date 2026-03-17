@@ -631,7 +631,9 @@ def search_for_folders(
 
 
 def search_local_filesystem(
-    search_path: Path | None, search_prefix: str, return_full_path: bool = False
+    search_path: Path | None,
+    search_prefix: str,
+    return_full_path: bool = False,
 ) -> tuple[List[Any], List[Any]]:
     """Search local filesystem recursively.
 
