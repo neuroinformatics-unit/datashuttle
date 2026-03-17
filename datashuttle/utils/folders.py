@@ -728,7 +728,7 @@ def search_central_via_connection(
         is_dir = file_or_folder.get("IsDir", False)
 
         to_append = (
-            search_path / name if (return_full_path and search_path) else name
+            Path(final_search_path) / name if return_full_path else name
         )
 
         if is_dir:
