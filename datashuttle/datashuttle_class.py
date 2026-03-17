@@ -1219,6 +1219,11 @@ class DataShuttle:
             # For backward compatibility
             connection_method = "local_only"
 
+        if connection_method != "local_only":
+            # This will raise an error here, to ensure config
+            # is not saved at all if it cannot be set up
+            rclone.prompt_rclone_download_if_does_not_exist()
+
         if self._config_path.is_file():
             utils.log_and_raise_error(
                 "A config file already exists for this project. "
