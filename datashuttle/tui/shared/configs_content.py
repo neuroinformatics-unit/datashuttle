@@ -568,6 +568,9 @@ class ConfigsContent(Container):
         success, output = interface.setup_new_project(project_name, cfg_kwargs)
 
         if success:
+            # Don't allow the user to change the project name at this stage.
+            self.query_one("#configs_name_input").disabled = True
+
             self.interface = interface
 
             if cfg_kwargs["connection_method"] not in ["ssh", "gdrive", "aws"]:
