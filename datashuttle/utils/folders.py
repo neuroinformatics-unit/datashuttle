@@ -718,8 +718,13 @@ def search_central_via_connection(
     all_filenames: list = []
 
     if output.returncode != 0:
+        display_search_path = (
+            f"{rclone_config_name}:<root>"
+            if search_path is None
+            else final_search_path
+        )
         utils.log_and_message(
-            f"Error searching files at {final_search_path}\n"
+            f"Error searching files at {display_search_path}\n"
             f"{output.stderr.decode('utf-8') if output.stderr else ''}"
         )
         return all_folder_names, all_filenames
