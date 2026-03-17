@@ -631,7 +631,7 @@ def search_for_folders(
 
 
 def search_local_filesystem(
-    search_path: Path, search_prefix: str, return_full_path: bool = False
+    search_path: Path | None, search_prefix: str, return_full_path: bool = False
 ) -> tuple[List[Any], List[Any]]:
     """Search local filesystem recursively.
 
@@ -644,7 +644,7 @@ def search_local_filesystem(
         The path to search (relative to the local or remote drive). For example,
         for "local_filesystem" this is the path on the local machine. For any other
         connection to central, this is the path on the central storage that has been
-        connected to.
+        connected to. Must not be ``None`` when searching the local filesystem.
 
     search_prefix
         The search string e.g. "sub-*".
@@ -653,6 +653,11 @@ def search_local_filesystem(
         If `True`, return the full filepath, otherwise return only the folder/file name.
 
     """
+    if search_path is None:
+        raise ValueError(
+            "search_path cannot be None when searching the local filesystem."
+        )
+
     all_folder_names = []
     all_filenames = []
 
