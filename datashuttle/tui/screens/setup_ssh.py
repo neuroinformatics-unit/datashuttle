@@ -168,6 +168,8 @@ class SetupSshScreen(ModalScreen):
             password
         )
 
+        self.query_one("#setup_ssh_password_input").value = ""
+
         if success:
             message = (
                 f"Connection set up successfully.\n"
@@ -220,7 +222,7 @@ class SetupSshScreen(ModalScreen):
         # may or may not be displayed.
         try:
             self.query_one("#setup_ssh_cancel_button").remove()
-        except BaseException:
+        except Exception:
             pass
 
         message = "Connection was set up successfully."
