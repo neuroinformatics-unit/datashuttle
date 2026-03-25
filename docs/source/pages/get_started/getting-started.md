@@ -1,5 +1,5 @@
 (getting-started-walkthrough)=
-# Walkthrough ``datashuttle``
+# i. Walkthrough ``datashuttle``
 
 :::{note}
 
@@ -34,7 +34,7 @@ as you would do at the end of a real acquisition session.
 Finally, we will download data from the central
 storage to a local machine, as you would do during analysis.
 
-## Installing ``datashuttle``
+## ii. Installing ``datashuttle``
 
 The first step is to install ``datashuttle`` by following the instructions
 on the [How to Install](how-to-install) page.
@@ -81,10 +81,12 @@ for how to validate your project format.
 
 :::
 
-## Make a new project
+## iii. Make a new project
 
 The first thing to do when using ``datashuttle`` on a new machine is
 to set up your project.
+
+## Local setup
 
 We need to set the:
 
