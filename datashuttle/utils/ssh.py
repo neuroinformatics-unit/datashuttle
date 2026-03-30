@@ -249,7 +249,7 @@ def save_hostkey_locally(key, central_host_id, hostkeys_path) -> None:
 
 
 def get_remote_server_key(central_host_id: str):
-    """Get the remove server host key for validation before connection.
+    """Get the remote server host key for validation before connection.
 
     Parameters
     ----------

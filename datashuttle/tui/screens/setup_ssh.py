@@ -168,6 +168,8 @@ class SetupSshScreen(ModalScreen):
             password
         )
 
+        self.query_one("#setup_ssh_password_input").value = ""
+
         if success:
             message = (
                 f"Connection set up successfully.\n"
