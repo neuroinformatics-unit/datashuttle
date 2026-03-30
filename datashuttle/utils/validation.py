@@ -627,7 +627,7 @@ def datetime_are_iso_format(
             format_to_check = utils.get_values_from_bids_formatted_name(
                 [name], key, return_as_int=False
             )[0]
-        except:
+        except Exception:
             return []
 
         strfmt = formats[key]
