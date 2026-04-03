@@ -36,7 +36,21 @@ The GIFS are created with the following commands:
 
 \## DARK
 
-.\\ffmpeg.exe -i datashuttle-gif-dark.mp4 -vf "fps=9,scale=600:-1:flags=lanczos,unsharp=3:3:0.5,palettegen=stats\_mode=diff:max\_colors=256" palette-dark.png
+\## DARK
+
+.\ffmpeg.exe -i datashuttle-gif-dark.mp4 -vf "fps=9,scale=600:-1:flags=lanczos,unsharp=3:3:0.5,palettegen=stats_mode=diff:max_colors=256" palette-dark.png
+
+
+.\ffmpeg.exe -i datashuttle-gif-dark.mp4 -i palette-dark.png -filter_complex "fps=9,scale=600:-1:flags=lanczos,unsharp=3:3:0.5[x];[x][1:v]paletteuse=dither=bayer:bayer_scale=2:diff_mode=rectangle" datashuttle-demo-dark.gif
+
+
+
+\## LIGHT
+
+.\ffmpeg.exe -i datashuttle-gif-light.mp4 -vf "fps=9,scale=600:-1:flags=lanczos,unsharp=3:3:0.5,palettegen=stats_mode=diff:max_colors=256" palette-light.png
+
+
+.\ffmpeg.exe -i datashuttle-gif-light.mp4 -i palette-light.png -filter_complex "fps=9,scale=600:-1:flags=lanczos,unsharp=3:3:0.5[x];[x][1:v]paletteuse=dither=bayer:bayer_scale=2:diff_mode=rectangle" datashuttle-demo-light.gif
 
 
 
