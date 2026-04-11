@@ -168,8 +168,6 @@ class SetupSshScreen(ModalScreen):
             password
         )
 
-        self.query_one("#setup_ssh_password_input").value = ""
-
         if success:
             message = (
                 f"Connection set up successfully.\n"
@@ -192,6 +190,7 @@ class SetupSshScreen(ModalScreen):
             )
             self.failed_password_attempts += 1
 
+        self.query_one("#setup_ssh_password_input").value = ""
         self.query_one("#messagebox_message_label").update(message)
 
     def try_setup_rclone_encryption(self):
