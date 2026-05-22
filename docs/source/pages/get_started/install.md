@@ -23,7 +23,7 @@ Next, create and activate an environment.  You can call your environment whateve
 we've used `datashuttle-env`:
 
 ```sh
-conda create -n datashuttle-env
+conda create -n datashuttle-env python=3.13
 conda activate datashuttle-env
 ```
 
