@@ -124,6 +124,12 @@ jobs:
         run: |
           pytest tests/tests_transfers/aws
 
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: neuroinformatics-unit/datashuttle
+
   build_sdist_wheels:
     name: Build source distribution
     needs: [test]
