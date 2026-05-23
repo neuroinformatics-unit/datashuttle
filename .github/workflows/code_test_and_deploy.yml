@@ -58,7 +58,7 @@ jobs:
           channels: conda-forge
           activate-environment: "datashuttle-test"
 
-      - name: Install pip  # ← add this right after
+      - name: Install pip
         run: conda install pip
 
       # The recommended installation is via conda, but we need to test
@@ -123,12 +123,6 @@ jobs:
           AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
         run: |
           pytest tests/tests_transfers/aws
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          slug: neuroinformatics-unit/datashuttle
 
   build_sdist_wheels:
     name: Build source distribution
