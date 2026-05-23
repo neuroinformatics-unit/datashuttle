@@ -57,36 +57,27 @@ jobs:
           auto-update-conda: true
           channels: conda-forge
           activate-environment: "datashuttle-test"
+<<<<<<< HEAD
 
       - name: Install pip
         run: conda install pip
+=======
+          conda-packages: pip   # ← add this
+>>>>>>> eef7450 (Simplify workflow by removing debug steps and adding packages)
 
       # The recommended installation is via conda, but we need to test
       # against dependencies from the pyproject.toml on the branch
       # to ensure dependency changes in a PR are reflected.
       - name: Install rclone
         run: |
+<<<<<<< HEAD
+=======
+          conda activate datashuttle-test
+>>>>>>> eef7450 (Simplify workflow by removing debug steps and adding packages)
           conda install -c conda-forge rclone
 
       - name: Install datashuttle from repo
         run: |
-          echo "=== Active conda env ==="
-          echo $CONDA_DEFAULT_ENV
-          conda info
-
-          echo "=== Which python/pip ==="
-          which python || echo "python not found"
-          which pip || echo "pip not found"
-
-          echo "=== Conda envs ==="
-          conda env list
-
-          echo "=== Python in datashuttle-test env ==="
-          conda run -n datashuttle-test which python
-          conda run -n datashuttle-test which pip || echo "pip not in datashuttle-test"
-
-          echo "=== pip via python -m ==="
-          python -m pip --version || echo "python -m pip also broken"
           python -m pip install --upgrade pip
           python -m pip install .[dev]
 
