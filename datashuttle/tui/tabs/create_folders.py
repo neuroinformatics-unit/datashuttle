@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 from typing import TYPE_CHECKING, List, Optional
 
 if TYPE_CHECKING:
@@ -316,7 +315,7 @@ class CreateFoldersTab(TreeAndInputTab):
         Shows a pop up screen in cases when searching for next sub/ses takes
         time such as searching central in SSH connection method.
 
-        Creates an asyncio task which handles the suggestion logic and
+        Spawns a Textual worker which handles the suggestion logic and
         dismissing the pop up.
 
         Parameters
@@ -346,13 +345,11 @@ class CreateFoldersTab(TreeAndInputTab):
             )
             self.mainwindow.push_screen(self.searching_central_popup_widget)
 
-        asyncio.create_task(
-            self.fill_suggestion_and_dismiss_popup(
-                prefix, input_id, include_central
-            ),
-            name=f"suggest_next_{prefix}_async_task",
+        self.fill_suggestion_and_dismiss_popup(
+            prefix, input_id, include_central
         )
 
+    @work(group="suggest_next_async", exclusive=True)
     async def fill_suggestion_and_dismiss_popup(
         self, prefix, input_id, include_central
     ) -> None:
@@ -363,6 +360,11 @@ class CreateFoldersTab(TreeAndInputTab):
 
         Else, if the worker successfully exits, this function handles dismissal
         of the popup.
+
+        Decorated with ``@work`` so Textual owns the task lifecycle (no need to
+        hold an ``asyncio.Task`` reference to prevent premature GC), and so a
+        repeat invocation cancels the previous in-flight one via
+        ``exclusive=True``.
 
         see `suggest_next_sub_ses()` for parameters.
         """

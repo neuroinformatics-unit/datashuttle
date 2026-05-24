@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 import platform
 from typing import TYPE_CHECKING, Optional, Union
 
@@ -192,14 +191,11 @@ class ValidateContent(Container):
                         self.validating_central_popup
                     )
 
-                asyncio.create_task(
-                    self.run_validate_and_dismiss_popup(
-                        top_level_folder=top_level_folder,
-                        include_central=include_central,
-                        strict_mode=strict_mode,
-                        allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
-                    ),
-                    name="validate_async_task",
+                self.run_validate_and_dismiss_popup(
+                    top_level_folder=top_level_folder,
+                    include_central=include_central,
+                    strict_mode=strict_mode,
+                    allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
                 )
             else:
                 path_ = self.query_one("#validate_path_input").value
@@ -229,6 +225,7 @@ class ValidateContent(Container):
         if path_:
             self.query_one("#validate_path_input").value = path_.as_posix()
 
+    @work(group="validate_async", exclusive=True)
     async def run_validate_and_dismiss_popup(
         self,
         top_level_folder,
@@ -236,7 +233,13 @@ class ValidateContent(Container):
         strict_mode,
         allow_letters_in_sub_ses_values,
     ) -> None:
-        """Run validation in a worker thread and dismiss the waiting popup when done."""
+        """Run validation in a worker thread and dismiss the waiting popup when done.
+
+        Decorated with ``@work`` so Textual owns the task lifecycle (no need to
+        hold an ``asyncio.Task`` reference to prevent premature GC), and so a
+        repeat button-press cancels the previous in-flight invocation via
+        ``exclusive=True``.
+        """
         worker = self.validate_project_worker(
             top_level_folder=top_level_folder,
             include_central=include_central,
