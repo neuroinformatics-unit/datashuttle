@@ -358,7 +358,7 @@ class TestDateSearchRange(BaseTest):
     def test_without_wildcard_ses(self, project):
         """Test without wildcard ses.
 
-        Including @*@ only led to an uncaught but as it was triggering a
+        Including @*@ only led to an uncaught bug as it was triggering a
         conditional in `check_and_format_names` that was not triggered by
         @DATETO@ alone though it should have been.
         """
