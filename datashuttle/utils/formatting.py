@@ -303,7 +303,7 @@ def replace_date_time_tags_in_name(
 ) -> None:
     """Replace tags with their final value for every name in a list.
 
-    @DATE@, @TIME@ and @DATETIME@ keys can be positioed directly
+    @DATE@, @TIME@ and @DATETIME@ keys can be positioned directly
     after the sub- or ses- key. In this case, they are replaced with
     the date, time or datetime directly e.g. sub-@DATE@ becomes sub-20250101.
 
