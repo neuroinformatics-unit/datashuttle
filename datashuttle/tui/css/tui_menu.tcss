@@ -554,7 +554,7 @@ ConfirmAndAwaitTransferPopup {
 
 /* Suggest next subject / session loading pop up --------------------------------------------------- */
 
-SearchingCentralForNextSubSesPopup {
+CentralWaitingScreen {
     align: center middle;
 }
 

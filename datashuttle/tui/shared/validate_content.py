@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import platform
-from typing import TYPE_CHECKING, Optional, Union, cast
+from typing import TYPE_CHECKING, Optional, Union
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
