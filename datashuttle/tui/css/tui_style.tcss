@@ -154,13 +154,14 @@ RadioButton {
     width: auto;
 }
 
-/* DatatypeCheckboxes --------------------------------------------------------------------- */
+/* BaseDatatypeCheckboxes --------------------------------------------------------------------- */
 
-DatatypeCheckboxes {
+BaseDatatypeCheckboxes {
     layout: grid;
     grid-size: 2 4;
     grid-columns: 30;
     grid_rows: 3;
     width: auto;
     padding: 0 0 1 0;
+    overflow: auto;
 }

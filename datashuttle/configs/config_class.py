@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict, Optional, Union, cast
+from typing import TYPE_CHECKING, Dict, Union, cast
 
 if TYPE_CHECKING:
     from collections.abc import ItemsView, KeysView, ValuesView
 
     from datashuttle.utils.custom_types import (
-        OverwriteExistingFiles,
         TopLevelFolder,
     )
 
@@ -20,6 +19,7 @@ from datashuttle.configs import (
     canonical_configs,
     canonical_folders,
     load_configs,
+    rclone_configs,
 )
 from datashuttle.utils import folders, utils
 
@@ -36,6 +36,9 @@ class Configs(UserDict):
         self, project_name: str, file_path: Path, input_dict: Union[dict, None]
     ) -> None:
         """Initialize the Configs class with project name, file path, and config dictionary.
+
+        This class also holds `RCloneConfigs` that manage the Rclone config files
+        used for transfer.
 
         Parameters
         ----------
@@ -63,6 +66,8 @@ class Configs(UserDict):
         self.logging_path: Path
         self.hostkeys_path: Path
         self.project_metadata_path: Path
+
+        self.rclone = rclone_configs.RCloneConfigs(self, self.file_path.parent)
 
     def setup_after_load(self) -> None:
         """Set up the config after loading it."""
@@ -248,48 +253,6 @@ class Configs(UserDict):
                 base_folder = self["central_path"] / top_level_folder
 
         return base_folder
-
-    def get_rclone_config_name(
-        self, connection_method: Optional[str] = None
-    ) -> str:
-        """Generate the rclone configuration name for the central project.
-
-        These configs are created by datashuttle but managed and stored by rclone.
-        """
-        if connection_method is None:
-            connection_method = self["connection_method"]
-
-        assert connection_method != "local_only", (
-            "This state assumes a central connection."
-        )
-
-        return f"central_{self.project_name}_{connection_method}"
-
-    def make_rclone_transfer_options(
-        self, overwrite_existing_files: OverwriteExistingFiles, dry_run: bool
-    ) -> Dict:
-        """Create a dictionary of rclone transfer options.
-
-        Originally these arguments were collected from configs, but now
-        they are passed via function arguments. The `show_transfer_progress`
-        and `dry_run` options are fixed here.
-        """
-        allowed_overwrite = ["never", "always", "if_source_newer"]
-
-        if overwrite_existing_files not in allowed_overwrite:
-            utils.log_and_raise_error(
-                f"`overwrite_existing_files` not "
-                f"recognised, must be one of: "
-                f"{allowed_overwrite}",
-                ValueError,
-            )
-
-        return {
-            "overwrite_existing_files": overwrite_existing_files,
-            "show_transfer_progress": True,
-            "transfer_verbosity": "vv",
-            "dry_run": dry_run,
-        }
 
     def init_paths(self) -> None:
         """Initialize paths used by datashuttle."""

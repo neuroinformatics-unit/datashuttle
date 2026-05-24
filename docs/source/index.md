@@ -16,20 +16,13 @@ Therefore, add the title and hide it, then add a custom centered title.
 <p style="text-align: center; font-size: 48px;"><b>datashuttle</b></p>
 <p style="text-align: center; font-size: 22px;">Automate the creation, validation and transfer of neuroscience project folders.</p>
 
-```{image} _static/datashuttle-overview-light.png
-:alt: My Logo
-:class: logo, mainlogo, only-light
+```{image} /_static/datashuttle-demo.gif
+:alt: Datashuttle graphical interface walkthrough
 :align: center
-:width: 600px
+:width: 700px
 ```
-```{image} _static/datashuttle-overview-dark.png
-:alt: My Logo
-:class: logo, mainlogo, only-dark
-:align: center
-:width: 600px
-```
-<br>
 
+<br>
 
 ::::{grid} 1 2 2 4
 :gutter: 4
@@ -76,6 +69,19 @@ during acquisition and analysis. Its graphical interface or Python API builds
 folder trees according to the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev)
 specification. Automation and validation ensures that no errors, such as duplicate session
 names or incorrect dates, slip into the project.
+
+```{image} _static/datashuttle-overview-light.png
+:alt: My Logo
+:class: logo, mainlogo, only-light
+:align: center
+:width: 600px
+```
+```{image} _static/datashuttle-overview-dark.png
+:alt: My Logo
+:class: logo, mainlogo, only-dark
+:align: center
+:width: 600px
+```
 
 Data can be transferred between acquisition, storage and analysis
 machines with a single function call or button click. Standardisation makes

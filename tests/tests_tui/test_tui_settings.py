@@ -69,7 +69,7 @@ class TestTuiSettings(TuiBase):
                 is False
             )
 
-            with pytest.raises(BaseException) as e:
+            with pytest.raises(Exception) as e:
                 transfer_tab.query_one("#transfer_legend")
 
             assert "No nodes match" in str(e)

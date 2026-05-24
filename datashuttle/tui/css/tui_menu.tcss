@@ -91,11 +91,6 @@ MessageBox {
     align: center middle;
 }
 
-#messagebox_top_container {
-    height: 15;
-    width: 65;
- }
-
 #messagebox_message_container {
     align: center middle;
     overflow: hidden auto;
@@ -111,6 +106,8 @@ MessageBox {
     align: center bottom;
     height: 3;
 }
+
+/* NOTE: `messagebox_top_container` width and height are defined on the `MessageBox` class. */
 
 /* Light Mode Error Screen */
 
@@ -246,11 +243,13 @@ MessageBox:light > #messagebox_top_container {
     margin: 2 1 0 0;
     dock: left;
 }
-
-
-#configs_go_to_project_screen_button {
+#configs_setup_connection_button {
     margin: 2 1 0 0;
 }
+#configs_go_to_project_screen_button {
+    margin: 2 1 0 8;
+}
+
 #configs_container > DatatypeCheckboxes {
     layout: grid;
     grid-size: 2 2;
@@ -645,6 +644,11 @@ AcceptOrDeclineMessageBox {
     background: $primary-background;
  }
 
+#accept_or_decline_horizontal {
+    align: center middle;
+    width: 100%;
+}
+
  AcceptOrDeclineMessageBox:light > #accept_or_decline_messagebox_container {
     border: tall $panel-darken-3;
     background: $boost;
@@ -654,7 +658,7 @@ AcceptOrDeclineMessageBox {
     align: center middle;
     text-align: center;
     width: 100%;
-    margin: 0 0 1 2;
+    margin: 2 0 1 1;
  }
 
 #accept_or_decline_messagebox_accept_button {

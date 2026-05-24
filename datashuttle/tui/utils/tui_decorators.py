@@ -59,7 +59,7 @@ def require_double_click(func):
             id = event.node.tree.id
         else:
             raise RuntimeError(
-                "The message type for the widget you are trying to"
+                "The message type for the widget you are trying to "
                 "register clicks on is not supported. Add it to the decorator."
             )
 

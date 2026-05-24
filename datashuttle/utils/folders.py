@@ -981,6 +981,8 @@ def search_for_folders(
         local_or_central == "local"
         or cfg["connection_method"] == "local_filesystem"
     ):
+        assert search_path is not None
+
         if not search_path.exists():
             if verbose:
                 utils.log_and_message(
@@ -1004,7 +1006,9 @@ def search_for_folders(
 
 
 def search_local_filesystem(
-    search_path: Path, search_prefix: str, return_full_path: bool = False
+    search_path: Path,
+    search_prefix: str,
+    return_full_path: bool = False,
 ) -> tuple[List[Any], List[Any]]:
     """Search local filesystem recursively.
 
@@ -1042,7 +1046,7 @@ def search_local_filesystem(
 
 def search_central_via_connection(
     cfg: Configs,
-    search_path: Path,
+    search_path: Path | None,
     search_prefix: str,
     return_full_path: bool = False,
 ) -> tuple[List[Any], List[Any]]:
@@ -1059,7 +1063,7 @@ def search_central_via_connection(
         The path to search (relative to the local or remote drive). For example,
         for "local_filesystem" this is the path on the local machine. For any other
         connection to central, this is the path on the central storage that has been
-        connected to.
+        connected to. Can be `None` if connection method is `gdrive`.
 
     search_prefix
         The search string e.g. "sub-*".
@@ -1068,10 +1072,15 @@ def search_central_via_connection(
         If `True`, return the full filepath, otherwise return only the folder/file name.
 
     """
-    rclone_config_name = cfg.get_rclone_config_name(cfg["connection_method"])
+    rclone_config_name = cfg.rclone.get_rclone_config_name(
+        cfg["connection_method"]
+    )
 
-    output = rclone.call_rclone(
-        f'lsjson {rclone_config_name}:"{search_path.as_posix()}"',
+    final_search_path = search_path.as_posix() if search_path else ""
+
+    output = rclone.call_rclone_for_central_connection(
+        cfg,
+        f'lsjson {rclone_config_name}:"{final_search_path}" {rclone.get_config_arg(cfg)}',
         pipe_std=True,
     )
 
@@ -1079,8 +1088,13 @@ def search_central_via_connection(
     all_filenames: list = []
 
     if output.returncode != 0:
+        display_search_path = (
+            f"{rclone_config_name}:<root>"
+            if search_path is None
+            else final_search_path
+        )
         utils.log_and_message(
-            f"Error searching files at {search_path.as_posix()}\n"
+            f"Error searching files at {display_search_path}\n"
             f"{output.stderr.decode('utf-8') if output.stderr else ''}"
         )
         return all_folder_names, all_filenames
@@ -1095,7 +1109,9 @@ def search_central_via_connection(
 
         is_dir = file_or_folder.get("IsDir", False)
 
-        to_append = search_path / name if return_full_path else name
+        to_append = (
+            Path(final_search_path) / name if return_full_path else name
+        )
 
         if is_dir:
             all_folder_names.append(to_append)

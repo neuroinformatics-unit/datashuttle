@@ -45,6 +45,7 @@ from datashuttle.utils import (
     gdrive,
     getters,
     rclone,
+    rclone_encryption,
     ssh,
     utils,
     validation,
@@ -60,6 +61,7 @@ from datashuttle.utils.decorators import (  # noqa
     requires_aws_configs,
     requires_ssh_configs,
 )
+from datashuttle.utils.transfer_output_class import TransferOutput
 
 # -----------------------------------------------------------------------------
 # Project Manager Class
@@ -203,7 +205,16 @@ class DataShuttle:
 
         """
         if log:
-            self._start_log("create-folders", local_vars=locals())
+            self._start_log(
+                "create-folders",
+                local_vars={
+                    "top_level_folder": top_level_folder,
+                    "sub_names": sub_names,
+                    "ses_names": ses_names,
+                    "datatype": datatype,
+                    "bypass_validation": bypass_validation,
+                },
+            )
 
         self._check_top_level_folder(top_level_folder)
 
@@ -217,13 +228,13 @@ class DataShuttle:
         utils.log("\nFormatting Names...")
         ds_logger.log_names(["sub_names", "ses_names"], [sub_names, ses_names])
 
-        name_templates = self.get_name_templates()
+        validation_templates = self.get_validation_templates()
 
         format_sub, format_ses = self._format_and_validate_names(
             top_level_folder,
             sub_names,
             ses_names,
-            name_templates,
+            validation_templates,
             bypass_validation,
             allow_letters_in_sub_ses_values,
             log=True,
@@ -260,7 +271,7 @@ class DataShuttle:
         top_level_folder: TopLevelFolder,
         sub_names: Union[str, List[str]],
         ses_names: Optional[Union[str, List[str]]],
-        name_templates: Dict,
+        validation_templates: Dict,
         bypass_validation: bool,
         allow_letters_in_sub_ses_values: bool,
         log: bool = True,
@@ -269,7 +280,7 @@ class DataShuttle:
         format_sub = formatting.check_and_format_names(
             sub_names,
             "sub",
-            name_templates,
+            validation_templates,
             bypass_validation,
             allow_letters_in_sub_ses_values,
         )
@@ -278,7 +289,7 @@ class DataShuttle:
             format_ses = formatting.check_and_format_names(
                 ses_names,
                 "ses",
-                name_templates,
+                validation_templates,
                 bypass_validation,
                 allow_letters_in_sub_ses_values,
             )
@@ -294,7 +305,7 @@ class DataShuttle:
                 include_central=False,
                 display_mode="error",
                 log=log,
-                name_templates=name_templates,
+                validation_templates=validation_templates,
                 allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
             )
 
@@ -315,7 +326,8 @@ class DataShuttle:
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
         init_log: bool = True,
-    ) -> None:
+        display_transfer_output: bool = True,
+    ) -> TransferOutput:
         """Upload data from a local project to the central project folder.
 
         Parameters
@@ -340,10 +352,12 @@ class DataShuttle:
 
         overwrite_existing_files
             If ``"never"`` files on target will never be overwritten by source.
-            If ``"always"`` files on target will be overwritten by source if
-            there is any difference in date or size.
             If ``"if_source_newer"`` files on target will only be overwritten
             by files on source with newer creation / modification datetime.
+            If ``"if_different"``, target will always be overwritten if the
+            size or creation / modification datetimes differ.
+            If ``"always"`` files on target will always be overwritten by source,
+            even when size and creation / modification datetimes match.
 
         dry_run
             Perform a dry-run of transfer. This will output as if file
@@ -354,13 +368,27 @@ class DataShuttle:
             always be ``True``, unless logger is handled elsewhere
             (e.g. in a calling function).
 
+        display_transfer_output
+            If `True`, a summary of number of transferred files, and any
+            errors will be printed alongside the Rclone logs.
+
         """
         if init_log:
-            self._start_log("upload-custom", local_vars=locals())
+            self._start_log(
+                "upload-custom",
+                local_vars={
+                    "top_level_folder": top_level_folder,
+                    "sub_names": sub_names,
+                    "ses_names": ses_names,
+                    "datatype": datatype,
+                    "overwrite_existing_files": overwrite_existing_files,
+                    "dry_run": dry_run,
+                },
+            )
 
         self._check_top_level_folder(top_level_folder)
 
-        TransferData(
+        transfer_output = TransferData(
             self.cfg,
             "upload",
             top_level_folder,
@@ -369,11 +397,15 @@ class DataShuttle:
             datatype,
             overwrite_existing_files,
             dry_run,
-            log=True,
-        )
+        ).run()
+
+        if display_transfer_output:
+            rclone.log_rclone_transfer_output(transfer_output)
 
         if init_log:
             ds_logger.close_log_filehandler()
+
+        return transfer_output
 
     @check_configs_set
     @check_is_not_local_project
@@ -386,7 +418,8 @@ class DataShuttle:
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
         init_log: bool = True,
-    ) -> None:
+        display_transfer_output: bool = True,
+    ) -> TransferOutput:
         """Download data from the central project to the local project folder.
 
         Parameters
@@ -411,10 +444,12 @@ class DataShuttle:
 
         overwrite_existing_files
             If ``"never"`` files on target will never be overwritten by source.
-            If ``"always"`` files on target will be overwritten by source if
-            there is any difference in date or size.
             If ``"if_source_newer"`` files on target will only be overwritten
             by files on source with newer creation / modification datetime.
+            If ``"if_different"``, target will always be overwritten if the
+            size or creation / modification datetimes differ.
+            If ``"always"`` files on target will always be overwritten by source,
+            even when size and creation / modification datetimes match.
 
         dry_run
             Perform a dry-run of transfer. This will output as if file
@@ -425,13 +460,27 @@ class DataShuttle:
             always be ``True``, unless logger is handled elsewhere
             (e.g. in a calling function).
 
+        display_transfer_output
+            If `True`, a summary of number of transferred files, and any
+            errors will be printed alongside the Rclone logs.
+
         """
         if init_log:
-            self._start_log("download-custom", local_vars=locals())
+            self._start_log(
+                "download-custom",
+                local_vars={
+                    "top_level_folder": top_level_folder,
+                    "sub_names": sub_names,
+                    "ses_names": ses_names,
+                    "datatype": datatype,
+                    "overwrite_existing_files": overwrite_existing_files,
+                    "dry_run": dry_run,
+                },
+            )
 
         self._check_top_level_folder(top_level_folder)
 
-        TransferData(
+        transfer_output = TransferData(
             self.cfg,
             "download",
             top_level_folder,
@@ -440,11 +489,15 @@ class DataShuttle:
             datatype,
             overwrite_existing_files,
             dry_run,
-            log=True,
-        )
+        ).run()
+
+        if display_transfer_output:
+            rclone.log_rclone_transfer_output(transfer_output)
 
         if init_log:
             ds_logger.close_log_filehandler()
+
+        return transfer_output
 
     # Specific top-level folder
     # ----------------------------------------------------------------------------------
@@ -457,24 +510,26 @@ class DataShuttle:
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ) -> None:
+    ) -> TransferOutput:
         """Upload all files in the `rawdata` top level folder.
 
         Parameters
         ----------
         overwrite_existing_files
             If ``"never"`` files on target will never be overwritten by source.
-            If ``"always"`` files on target will be overwritten by source if
-            there is any difference in date or size.
             If ``"if_source_newer"`` files on target will only be overwritten
             by files on source with newer creation / modification datetime.
+            If ``"if_different"``, target will always be overwritten if the
+            size or creation / modification datetimes differ.
+            If ``"always"`` files on target will always be overwritten by source,
+            even when size and creation / modification datetimes match.
 
         dry_run
             Perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved.
 
         """
-        self._transfer_top_level_folder(
+        return self._transfer_top_level_folder(
             "upload",
             "rawdata",
             overwrite_existing_files=overwrite_existing_files,
@@ -487,24 +542,26 @@ class DataShuttle:
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ) -> None:
+    ) -> TransferOutput:
         """Upload all files in the `derivatives` top level folder.
 
         Parameters
         ----------
         overwrite_existing_files
             If ``"never"`` files on target will never be overwritten by source.
-            If ``"always"`` files on target will be overwritten by source if
-            there is any difference in date or size.
             If ``"if_source_newer"`` files on target will only be overwritten
             by files on source with newer creation / modification datetime.
+            If ``"if_different"``, target will always be overwritten if the
+            size or creation / modification datetimes differ.
+            If ``"always"`` files on target will always be overwritten by source,
+            even when size and creation / modification datetimes match.
 
         dry_run
             Perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved.
 
         """
-        self._transfer_top_level_folder(
+        return self._transfer_top_level_folder(
             "upload",
             "derivatives",
             overwrite_existing_files=overwrite_existing_files,
@@ -517,24 +574,26 @@ class DataShuttle:
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ) -> None:
+    ) -> TransferOutput:
         """Download all files in the `rawdata` top level folder.
 
         Parameters
         ----------
         overwrite_existing_files
             If ``"never"`` files on target will never be overwritten by source.
-            If ``"always"`` files on target will be overwritten by source if
-            there is any difference in date or size.
             If ``"if_source_newer"`` files on target will only be overwritten
             by files on source with newer creation / modification datetime.
+            If ``"if_different"``, target will always be overwritten if the
+            size or creation / modification datetimes differ.
+            If ``"always"`` files on target will always be overwritten by source,
+            even when size and creation / modification datetimes match.
 
         dry_run
             Perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved..
 
         """
-        self._transfer_top_level_folder(
+        return self._transfer_top_level_folder(
             "download",
             "rawdata",
             overwrite_existing_files=overwrite_existing_files,
@@ -547,24 +606,26 @@ class DataShuttle:
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ) -> None:
+    ) -> TransferOutput:
         """Download all files in the `derivatives` top level folder.
 
         Parameters
         ----------
         overwrite_existing_files
             If ``"never"`` files on target will never be overwritten by source.
-            If ``"always"`` files on target will be overwritten by source if
-            there is any difference in date or size.
             If ``"if_source_newer"`` files on target will only be overwritten
             by files on source with newer creation / modification datetime.
+            If ``"if_different"``, target will always be overwritten if the
+            size or creation / modification datetimes differ.
+            If ``"always"`` files on target will always be overwritten by source,
+            even when size and creation / modification datetimes match.
 
         dry_run
             Perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved.
 
         """
-        self._transfer_top_level_folder(
+        return self._transfer_top_level_folder(
             "download",
             "derivatives",
             overwrite_existing_files=overwrite_existing_files,
@@ -577,7 +638,7 @@ class DataShuttle:
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ) -> None:
+    ) -> TransferOutput:
         """Upload the entire project.
 
         Includes every top level folder (e.g. ``rawdata``, ``derivatives``).
@@ -586,21 +647,32 @@ class DataShuttle:
         ----------
         overwrite_existing_files
             If ``"never"`` files on target will never be overwritten by source.
-            If ``"always"`` files on target will be overwritten by source if
-            there is any difference in date or size.
             If ``"if_source_newer"`` files on target will only be overwritten
             by files on source with newer creation / modification datetime.
+            If ``"if_different"``, target will always be overwritten if the
+            size or creation / modification datetimes differ.
+            If ``"always"`` files on target will always be overwritten by source,
+            even when size and creation / modification datetimes match.
 
         dry_run
             Perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved.
 
         """
-        self._start_log("upload-entire-project", local_vars=locals())
-        self._transfer_entire_project(
+        self._start_log(
+            "upload-entire-project",
+            local_vars={
+                "overwrite_existing_files": overwrite_existing_files,
+                "dry_run": dry_run,
+            },
+        )
+
+        transfer_output = self._transfer_entire_project(
             "upload", overwrite_existing_files, dry_run
         )
         ds_logger.close_log_filehandler()
+
+        return transfer_output
 
     @check_configs_set
     @check_is_not_local_project
@@ -608,7 +680,7 @@ class DataShuttle:
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ) -> None:
+    ) -> TransferOutput:
         """Download the entire project.
 
         Includes every top level folder (e.g. ``rawdata``, ``derivatives``).
@@ -617,21 +689,33 @@ class DataShuttle:
         ----------
         overwrite_existing_files
             If ``"never"`` files on target will never be overwritten by source.
-            If ``"always"`` files on target will be overwritten by source if
-            there is any difference in date or size.
             If ``"if_source_newer"`` files on target will only be overwritten
             by files on source with newer creation / modification datetime.
+            If ``"if_different"``, target will always be overwritten if the
+            size or creation / modification datetimes differ.
+            If ``"always"`` files on target will always be overwritten by source,
+            even when size and creation / modification datetimes match.
 
         dry_run
             Perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved.
 
         """
-        self._start_log("download-entire-project", local_vars=locals())
-        self._transfer_entire_project(
+        self._start_log(
+            "download-entire-project",
+            local_vars={
+                "overwrite_existing_files": overwrite_existing_files,
+                "dry_run": dry_run,
+            },
+        )
+
+        transfer_output = self._transfer_entire_project(
             "download", overwrite_existing_files, dry_run
         )
+
         ds_logger.close_log_filehandler()
+
+        return transfer_output
 
     @check_configs_set
     @check_is_not_local_project
@@ -640,7 +724,7 @@ class DataShuttle:
         filepath: Union[str, Path],
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ) -> None:
+    ) -> TransferOutput:
         """Upload a specific file or folder.
 
         If transferring a single file, the path including the filename is
@@ -654,23 +738,34 @@ class DataShuttle:
 
         overwrite_existing_files
             If ``"never"`` files on target will never be overwritten by source.
-            If ``"always"`` files on target will be overwritten by source if
-            there is any difference in date or size.
             If ``"if_source_newer"`` files on target will only be overwritten
             by files on source with newer creation / modification datetime.
+            If ``"if_different"``, target will always be overwritten if the
+            size or creation / modification datetimes differ.
+            If ``"always"`` files on target will always be overwritten by source,
+            even when size and creation / modification datetimes match.
 
         dry_run
             Perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved.
 
         """
-        self._start_log("upload-specific-folder-or-file", local_vars=locals())
+        self._start_log(
+            "upload-specific-folder-or-file",
+            local_vars={
+                "filepath": filepath,
+                "overwrite_existing_files": overwrite_existing_files,
+                "dry_run": dry_run,
+            },
+        )
 
-        self._transfer_specific_file_or_folder(
+        transfer_output = self._transfer_specific_file_or_folder(
             "upload", filepath, overwrite_existing_files, dry_run
         )
 
         ds_logger.close_log_filehandler()
+
+        return transfer_output
 
     @check_configs_set
     @check_is_not_local_project
@@ -679,7 +774,7 @@ class DataShuttle:
         filepath: Union[str, Path],
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ) -> None:
+    ) -> TransferOutput:
         """Download a specific file or folder.
 
         If transferring a single file, the path including the filename is
@@ -694,10 +789,12 @@ class DataShuttle:
 
         overwrite_existing_files
             If ``"never"`` files on target will never be overwritten by source.
-            If ``"always"`` files on target will be overwritten by source if
-            there is any difference in date or size.
             If ``"if_source_newer"`` files on target will only be overwritten
             by files on source with newer creation / modification datetime.
+            IF ``"if_different"``, target will always be overwritten if the
+            size or creation / modification datetimes differ.
+            If ``"always"`` files on target will be overwritten by source if
+            there is any difference in datetimes or size.
 
         dry_run
             Perform a dry-run of transfer. This will output as if file
@@ -705,14 +802,21 @@ class DataShuttle:
 
         """
         self._start_log(
-            "download-specific-folder-or-file", local_vars=locals()
+            "download-specific-folder-or-file",
+            local_vars={
+                "filepath": filepath,
+                "overwrite_existing_files": overwrite_existing_files,
+                "dry_run": dry_run,
+            },
         )
 
-        self._transfer_specific_file_or_folder(
+        transfer_output = self._transfer_specific_file_or_folder(
             "download", filepath, overwrite_existing_files, dry_run
         )
 
         ds_logger.close_log_filehandler()
+
+        return transfer_output
 
     def _transfer_top_level_folder(
         self,
@@ -721,7 +825,8 @@ class DataShuttle:
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
         init_log: bool = True,
-    ) -> None:
+        display_transfer_output: bool = True,
+    ) -> TransferOutput:
         """Upload or download files within a particular top-level-folder.
 
         A centralised function to upload or download data within
@@ -729,7 +834,13 @@ class DataShuttle:
         """
         if init_log:
             self._start_log(
-                f"{upload_or_download}-{top_level_folder}", local_vars=locals()
+                f"{upload_or_download}-{top_level_folder}",
+                local_vars={
+                    "upload_or_download": upload_or_download,
+                    "top_level_folder": top_level_folder,
+                    "overwrite_existing_files": overwrite_existing_files,
+                    "dry_run": dry_run,
+                },
             )
 
         transfer_func = (
@@ -738,7 +849,7 @@ class DataShuttle:
             else self.download_custom
         )
 
-        transfer_func(
+        transfer_output = transfer_func(
             top_level_folder,
             "all",
             "all",
@@ -746,14 +857,17 @@ class DataShuttle:
             overwrite_existing_files=overwrite_existing_files,
             dry_run=dry_run,
             init_log=False,
+            display_transfer_output=display_transfer_output,
         )
 
         if init_log:
             ds_logger.close_log_filehandler()
 
+        return transfer_output
+
     def _transfer_specific_file_or_folder(
         self, upload_or_download, filepath, overwrite_existing_files, dry_run
-    ) -> None:
+    ) -> TransferOutput:
         """Core function for upload/download_specific_folder_or_file()."""
         if isinstance(filepath, str):
             filepath = Path(filepath)
@@ -784,17 +898,23 @@ class DataShuttle:
             processed_filepath = filepath
 
         include_list = [f"--include /{processed_filepath.as_posix()}"]
+
         output = rclone.transfer_data(
             self.cfg,
             upload_or_download,
             top_level_folder,
             include_list,
-            self.cfg.make_rclone_transfer_options(
+            rclone.make_rclone_transfer_options(
                 overwrite_existing_files, dry_run
             ),
         )
+        stdout, stderr, transfer_output = rclone.parse_rclone_copy_output(
+            top_level_folder, output
+        )
+        rclone.log_stdout_stderr_python_api(stdout, stderr)
+        rclone.log_rclone_transfer_output(transfer_output)
 
-        utils.log(output.stderr.decode("utf-8"))
+        return transfer_output
 
     # -------------------------------------------------------------------------
     # SSH
@@ -814,10 +934,13 @@ class DataShuttle:
         Next, prompt to input their password for the central
         cluster. Once input, SSH private / public key pair
         will be setup.
+
+        Do not log this method, too high a risk of logging secrets.
         """
-        self._start_log(
-            "setup-ssh-connection-to-central-server", local_vars=locals()
-        )
+        if self.cfg["connection_method"] != "ssh":
+            raise RuntimeError(
+                "configs `connection_method` must be 'ssh' to set up SSH connection."
+            )
 
         verified = ssh.verify_ssh_central_host_api(
             self.cfg["central_host_id"],
@@ -830,6 +953,15 @@ class DataShuttle:
 
             self._setup_rclone_central_ssh_config(private_key_str, log=True)
 
+            utils.log_and_message(
+                f"Your SSH key will be stored in the rclone config at:\n "
+                f"{self.cfg.rclone.get_rclone_central_connection_config_filepath()}.\n"
+            )
+
+            if not self.cfg.rclone.rclone_file_is_encrypted():
+                if self._ask_user_rclone_encryption():
+                    self._try_encrypt_rclone_config()
+
             rclone.check_successful_connection_and_raise_error_on_fail(
                 self.cfg
             )
@@ -837,8 +969,6 @@ class DataShuttle:
             utils.log_and_message(
                 "SSH key pair setup successfully. SSH key saved to the RClone config file."
             )
-
-        ds_logger.close_log_filehandler()
 
     # -------------------------------------------------------------------------
     # Google Drive
@@ -859,11 +989,13 @@ class DataShuttle:
 
         Next, with the provided credentials, the final setup will be done. This
         opens up a browser if the user confirmed access to a browser.
+
+        Do not log this method, too high a risk of logging secrets.
         """
-        self._start_log(
-            "setup-google-drive-connection-to-central-server",
-            local_vars=locals(),
-        )
+        if self.cfg["connection_method"] != "gdrive":
+            raise RuntimeError(
+                "configs `connection_method` must be 'gdrive' to set up Google Drive connection."
+            )
 
         if self.cfg["gdrive_client_id"]:
             gdrive_client_secret = gdrive.get_client_secret()
@@ -876,7 +1008,7 @@ class DataShuttle:
             config_token = gdrive.prompt_and_get_config_token(
                 self.cfg,
                 gdrive_client_secret,
-                self.cfg.get_rclone_config_name("gdrive"),
+                self.cfg.rclone.get_rclone_config_name("gdrive"),
                 log=True,
             )
         else:
@@ -886,13 +1018,17 @@ class DataShuttle:
             gdrive_client_secret, config_token
         )
 
-        rclone.await_call_rclone_with_popen_raise_on_fail(process, log=True)
+        rclone.await_call_rclone_with_popen_for_central_connection_raise_on_fail(
+            self.cfg, process, log=True
+        )
+
+        if not self.cfg.rclone.rclone_file_is_encrypted():
+            if self._ask_user_rclone_encryption():
+                self._try_encrypt_rclone_config()
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
 
         utils.log_and_message("Google Drive Connection Successful.")
-
-        ds_logger.close_log_filehandler()
 
     # -------------------------------------------------------------------------
     # AWS S3
@@ -908,22 +1044,94 @@ class DataShuttle:
         First, the user will be prompted to input their AWS secret access key.
 
         Next, with the provided credentials, the final connection setup will be done.
+
+        Do not log this method, too high a risk of logging secrets.
         """
-        self._start_log(
-            "setup-aws-connection-to-central-server",
-            local_vars=locals(),
-        )
+        if self.cfg["connection_method"] != "aws":
+            raise RuntimeError(
+                "configs `connection_method` must be 'aws' to "
+                "set up Amazon Web Services S3 Bucket connection."
+            )
 
         aws_secret_access_key = aws.get_aws_secret_access_key()
 
         self._setup_rclone_aws_config(aws_secret_access_key, log=True)
+
+        if not self.cfg.rclone.rclone_file_is_encrypted():
+            if self._ask_user_rclone_encryption():
+                self._try_encrypt_rclone_config()
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
         aws.raise_if_bucket_absent(self.cfg)
 
         utils.log_and_message("AWS Connection Successful.")
 
-        ds_logger.close_log_filehandler()
+    # -------------------------------------------------------------------------
+    # Rclone config encryption
+    # -------------------------------------------------------------------------
+
+    def _ask_user_rclone_encryption(self) -> bool:
+        """Get user input to determine if they want to encrypt the rclone config."""
+        input_ = utils.get_user_input(
+            f"{rclone_encryption.get_explanation_message(self.cfg)}\n"
+            f"Press 'y' to encrypt the Rclone config or leave blank to skip."
+        )
+
+        return input_ == "y"
+
+    def _try_encrypt_rclone_config(self, is_using_api=True) -> None:
+        """Try to encrypt the rclone config file.
+
+        If it fails, error and let the user know the config file is unencrypted.
+        """
+        try:
+            self.encrypt_rclone_config()
+        except Exception as e:
+            config_path = (
+                self.cfg.rclone.get_rclone_central_connection_config_filepath()
+            )
+
+            api_prompt = (
+                "Use `encrypt_rclone_config()` to attempt to encrypt the file again "
+                if is_using_api
+                else ""
+            )
+
+            # don't log during encryption
+            utils.raise_error(
+                f"Config encryption failed:\n"
+                f"{str(e)}\n"
+                f"{api_prompt}\n\n"
+                f"IMPORTANT: The config at {config_path} is not currently encrypted.\n",
+                RuntimeError,
+            )
+
+        utils.print_message_to_user(
+            f"Rclone config file for the central connection "
+            f"{self.cfg['connection_method']} was successfully encrypted."
+        )
+
+    def encrypt_rclone_config(self) -> None:
+        """Encrypt the rclone config file for the central connection."""
+        if self.cfg.rclone.rclone_file_is_encrypted():
+            self.remove_rclone_encryption()
+
+        rclone_encryption.run_rclone_config_encrypt(self.cfg)
+
+        self.cfg.rclone.set_rclone_config_encryption_state(True)
+
+    def remove_rclone_encryption(self) -> None:
+        """Unencrypt the rclone config file for the central connection."""
+        if not self.cfg.rclone.rclone_file_is_encrypted():
+            raise RuntimeError(
+                f"The config for the current connection method: "
+                f"{self.cfg['connection_method']} "
+                f"is not encrypted. Cannot unencrypt."
+            )
+
+        rclone_encryption.remove_rclone_encryption(self.cfg)
+
+        self.cfg.rclone.set_rclone_config_encryption_state(False)
 
     # -------------------------------------------------------------------------
     # Configs
@@ -943,7 +1151,7 @@ class DataShuttle:
     ) -> None:
         """Initialize the configurations for datashuttle on the local machine.
 
-        Once initialised, these settings will be used each
+        Once initialized, these settings will be used each
         time the datashuttle is opened.
 
         These settings are stored in a config file on the
@@ -1004,13 +1212,17 @@ class DataShuttle:
         """
         self._start_log(
             "make-config-file",
-            local_vars=locals(),
             store_in_temp_folder=True,
         )
 
         if connection_method is None:
             # For backward compatibility
             connection_method = "local_only"
+
+        if connection_method != "local_only":
+            # This will raise an error here, to ensure config
+            # is not saved at all if it cannot be set up
+            rclone.prompt_rclone_download_if_does_not_exist()
 
         if self._config_path.is_file():
             utils.log_and_raise_error(
@@ -1044,7 +1256,8 @@ class DataShuttle:
 
         # This is just a placeholder rclone config that will suffice
         # if central is a 'local filesystem'.
-        self._setup_rclone_central_local_filesystem_config()
+        if connection_method != "local_only":
+            self._setup_rclone_central_local_filesystem_config()
 
         utils.log_and_message(
             "Configuration file has been saved and "
@@ -1073,15 +1286,21 @@ class DataShuttle:
                 ConfigError,
             )
 
-        self._start_log(
-            "update-config-file",
-            local_vars=locals(),
-        )
+        self._start_log("update-config-file", local_vars=kwargs)
 
         if "connection_method" in kwargs:
             if kwargs["connection_method"] is None:
                 # For backward compatibility
                 kwargs["connection_method"] = "local_only"
+
+            if (
+                self.cfg["connection_method"] == "local_only"
+                and kwargs["connection_method"] != "local_only"
+            ):
+                # We need to ensure this rclone config is created if it was not created during
+                # initial set up because the project is local only. It does not matter if the
+                # RClone config is ever overwritten, it's just a placeholder.
+                self._setup_rclone_central_local_filesystem_config()
 
         new_cfg = copy.deepcopy(self.cfg)
         new_cfg.update(**kwargs)
@@ -1119,6 +1338,11 @@ class DataShuttle:
     def get_config_path(self) -> Path:
         """Return the full path to the DataShuttle config file."""
         return self._config_path
+
+    @check_configs_set
+    def get_rclone_central_config_path(self) -> Path:
+        """Get the path to the Rclone config for the current `connection_method`."""
+        return rclone.get_rclone_config_filepath(self.cfg)
 
     @check_configs_set
     def get_configs(self) -> Configs:
@@ -1166,9 +1390,9 @@ class DataShuttle:
         The next subject ID.
 
         """
-        name_template = self.get_name_templates()
-        name_template_regexp = (
-            name_template["sub"] if name_template["on"] else None
+        validation_template = self.get_validation_templates()
+        validation_template_regexp = (
+            validation_template["sub"] if validation_template["on"] else None
         )
 
         if self.is_local_project():
@@ -1181,7 +1405,7 @@ class DataShuttle:
             include_central=include_central,
             return_with_prefix=return_with_prefix,
             search_str="sub-*",
-            name_template_regexp=name_template_regexp,
+            validation_template_regexp=validation_template_regexp,
         )
 
     @check_configs_set
@@ -1215,9 +1439,9 @@ class DataShuttle:
         The next session ID.
 
         """
-        name_template = self.get_name_templates()
-        name_template_regexp = (
-            name_template["ses"] if name_template["on"] else None
+        validation_template = self.get_validation_templates()
+        validation_template_regexp = (
+            validation_template["ses"] if validation_template["on"] else None
         )
 
         if self.is_local_project():
@@ -1230,7 +1454,7 @@ class DataShuttle:
             include_central=include_central,
             return_with_prefix=return_with_prefix,
             search_str="ses-*",
-            name_template_regexp=name_template_regexp,
+            validation_template_regexp=validation_template_regexp,
         )
 
     @check_configs_set
@@ -1245,36 +1469,38 @@ class DataShuttle:
     # Name Templates
     # -------------------------------------------------------------------------
 
-    def get_name_templates(self) -> Dict:
+    def get_validation_templates(self) -> Dict:
         """Return the regexp templates used for validation.
 
         If the "on" key is set to `False`, template validation is not performed.
 
         Returns
         -------
-        name_templates
-            e.g. {"name_templates": {"on": False, "sub": None, "ses": None}}
+        validation_templates
+            e.g. {"validation_templates": {"on": False, "sub": None, "ses": None}}
 
         """
         settings = self._load_persistent_settings()
-        return settings["name_templates"]
+        return settings["validation_templates"]
 
-    def set_name_templates(self, new_name_templates: Dict) -> None:
+    def set_validation_templates(self, new_validation_templates: Dict) -> None:
         """Update the persistent settings with new name templates.
 
-        Name templates are regexp for that, when ``name_templates["on"]`` is
+        Name templates are regexp for that, when ``validation_templates["on"]`` is
         set to ``True``, ``"sub"`` and ``"ses"`` names are validated against
         the regexp contained in the dict.
 
         Parameters
         ----------
-        new_name_templates
-            e.g. ``{"name_templates": {"on": False, "sub": None, "ses": None}}``
+        new_validation_templates
+            e.g. ``{"validation_templates": {"on": False, "sub": None, "ses": None}}``
             where ``"sub"`` or ``"ses"`` can be a regexp that subject and session
             names respectively are validated against.
 
         """
-        self._update_persistent_setting("name_templates", new_name_templates)
+        self._update_persistent_setting(
+            "validation_templates", new_validation_templates
+        )
 
     # -------------------------------------------------------------------------
     # Showers
@@ -1352,10 +1578,9 @@ class DataShuttle:
 
         self._start_log(
             "validate-project",
-            local_vars=locals(),
         )
 
-        name_templates = self.get_name_templates()
+        validation_templates = self.get_validation_templates()
 
         if self.is_local_project():
             include_central = False
@@ -1369,7 +1594,7 @@ class DataShuttle:
             top_level_folder_to_validate,
             include_central=include_central,
             display_mode=display_mode,
-            name_templates=name_templates,
+            validation_templates=validation_templates,
             strict_mode=strict_mode,
             allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
         )
@@ -1434,22 +1659,44 @@ class DataShuttle:
         upload_or_download: Literal["upload", "download"],
         overwrite_existing_files: OverwriteExistingFiles,
         dry_run: bool,
-    ) -> None:
+    ) -> TransferOutput:
         """Transfer the entire project.
 
         i.e. every 'top level folder' (e.g. 'rawdata', 'derivatives').
         See ``upload_custom()`` or ``download_custom()`` for parameters.
         """
-        for top_level_folder in canonical_folders.get_top_level_folders():
-            utils.log_and_message(f"Transferring `{top_level_folder}`")
+        all_output = TransferOutput()
 
-            self._transfer_top_level_folder(
+        for top_level_folder in canonical_folders.get_top_level_folders():
+            utils.log_and_message(
+                f"\n\n*************************************\n"
+                f"Transferring `{top_level_folder}`\n"
+                f"*************************************\n"
+            )
+
+            transfer_output = self._transfer_top_level_folder(
                 upload_or_download,
                 top_level_folder,
                 overwrite_existing_files=overwrite_existing_files,
                 dry_run=dry_run,
                 init_log=False,
+                display_transfer_output=False,
             )
+
+            all_output["errors"]["file_names"] += transfer_output["errors"][
+                "file_names"
+            ]
+            all_output["errors"]["messages"] += transfer_output["errors"][
+                "messages"
+            ]
+
+            all_output["num_transferred"][top_level_folder] = transfer_output[
+                "num_transferred"
+            ][top_level_folder]
+
+        rclone.log_rclone_transfer_output(all_output)
+
+        return all_output
 
     def _start_log(
         self,
@@ -1572,14 +1819,15 @@ class DataShuttle:
     ) -> None:
         rclone.setup_rclone_config_for_ssh(
             self.cfg,
-            self.cfg.get_rclone_config_name("ssh"),
+            self.cfg.rclone.get_rclone_config_name("ssh"),
             private_key_str,
             log=log,
         )
 
     def _setup_rclone_central_local_filesystem_config(self) -> None:
         rclone.setup_rclone_config_for_local_filesystem(
-            self.cfg.get_rclone_config_name("local_filesystem"),
+            self.cfg,
+            self.cfg.rclone.get_rclone_config_name("local_filesystem"),
         )
 
     def _setup_rclone_gdrive_config(
@@ -1589,7 +1837,7 @@ class DataShuttle:
     ) -> subprocess.Popen:
         return rclone.setup_rclone_config_for_gdrive(
             self.cfg,
-            self.cfg.get_rclone_config_name("gdrive"),
+            self.cfg.rclone.get_rclone_config_name("gdrive"),
             gdrive_client_secret,
             config_token,
         )
@@ -1599,7 +1847,7 @@ class DataShuttle:
     ) -> None:
         rclone.setup_rclone_config_for_aws(
             self.cfg,
-            self.cfg.get_rclone_config_name("aws"),
+            self.cfg.rclone.get_rclone_config_name("aws"),
             aws_secret_access_key,
             log=log,
         )
@@ -1669,8 +1917,15 @@ class DataShuttle:
         Added keys:
             v0.4.0: tui "overwrite_existing_files" and "dry_run"
         """
-        if "name_templates" not in settings:
-            settings.update(canonical_configs.get_name_templates_defaults())
+        if "validation_templates" not in settings:
+            if "name_templates" in settings:
+                settings["validation_templates"] = settings.pop(
+                    "name_templates"
+                )
+            else:
+                settings.update(
+                    canonical_configs.get_validation_templates_defaults()
+                )
 
         canonical_tui_configs = canonical_configs.get_tui_config_defaults()
 

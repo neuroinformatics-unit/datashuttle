@@ -20,9 +20,9 @@ class TestTuiSettings(TuiBase):
 
             assert (
                 "For help getting started, check out the"
-                in pilot.app.screen.query_one(
-                    "#get_help_label"
-                ).renderable.strip()
+                in pilot.app.screen.query_one("#get_help_label")
+                .render()
+                .plain.strip()
             )
 
             await self.scroll_to_click_pause(pilot, "#all_main_menu_buttons")

@@ -146,7 +146,7 @@ class TestValidationUnit:
             [f"{prefix}-999", f"{prefix}-1000", f"{prefix}-1001"],
             [f"{prefix}-0099", f"{prefix}-100", f"{prefix}-0098"],
         ]:
-            with pytest.raises(BaseException) as e:
+            with pytest.raises(Exception) as e:
                 formatting.check_and_format_names(names, prefix)
 
             assert (
@@ -165,7 +165,7 @@ class TestValidationUnit:
             f"{prefix}-001_date-20250220",
         ]
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(Exception) as e:
             formatting.check_and_format_names(names, prefix)
 
         assert (

@@ -135,7 +135,7 @@ class TestDatatypesTUI(TuiBase):
             )
 
             # Confirm also that narrow datatypes are not shown.
-            with pytest.raises(BaseException):
+            with pytest.raises(Exception):
                 pilot.app.screen.query_one(
                     f"#create_{narrow_datatype_names[0]}_checkbox"
                 )

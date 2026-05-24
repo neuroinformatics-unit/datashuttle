@@ -3,6 +3,7 @@ import platform
 
 import pytest
 
+from ... import test_utils
 from . import ssh_test_utils
 from .base_ssh import BaseSSHTransfer
 
@@ -19,7 +20,7 @@ TEST_SSH = ssh_test_utils.docker_is_running()
 )
 class TestSSHTransfer(BaseSSHTransfer):
     @pytest.fixture(
-        scope="class",
+        scope="function",
     )
     def ssh_setup(self, pathtable_and_project, setup_ssh_container_fixture):
         """
@@ -119,9 +120,7 @@ class TestSSHTransfer(BaseSSHTransfer):
             .apply(lambda x: fnmatch.fnmatch(x, "ses-003*"))
         ]
 
-        pathtable = pathtable[
-            pathtable["parent_datatype"].apply(lambda x: x is None)
-        ]
+        pathtable = pathtable[pathtable["parent_datatype"].isna()]
 
         expected_transferred_paths = pathtable["path"]
 
@@ -141,8 +140,10 @@ class TestSSHTransfer(BaseSSHTransfer):
             pathtable["parent_sub"]
             .fillna("")
             .apply(
-                lambda x: fnmatch.fnmatch(x, "sub-002*")
-                or fnmatch.fnmatch(x, "sub-003*")
+                lambda x: (
+                    fnmatch.fnmatch(x, "sub-002*")
+                    or fnmatch.fnmatch(x, "sub-003*")
+                )
             )
         ]
 
@@ -156,4 +157,12 @@ class TestSSHTransfer(BaseSSHTransfer):
 
         self.run_and_check_transfers(
             project, sub_names, ses_names, datatype, expected_transferred_paths
+        )
+
+    def test_rclone_config_file_encrypted(self, ssh_setup):
+        """Quick confidence check the set up rclone config is indeed encrypted."""
+        pathtable, project = ssh_setup
+
+        test_utils.check_rclone_file_is_encrypted(
+            project.cfg.rclone.get_rclone_central_connection_config_filepath()
         )

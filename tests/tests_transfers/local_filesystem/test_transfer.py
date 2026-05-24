@@ -423,8 +423,8 @@ class TestFileTransfer(BaseTest):
         datatyp directly. Check that rlcone is setup to transfer
         multiple levels down from the datatype level.
         """
-        make_base_path = (
-            lambda root: root / "rawdata" / "sub-001" / "ses-001" / "behav"
+        make_base_path = lambda root: (
+            root / "rawdata" / "sub-001" / "ses-001" / "behav"
         )
         local = make_base_path(project.cfg["local_path"])
         test_file_path = (
@@ -440,7 +440,8 @@ class TestFileTransfer(BaseTest):
         ).is_file()
 
     @pytest.mark.parametrize(
-        "overwrite_existing_files", ["never", "always", "if_source_newer"]
+        "overwrite_existing_files",
+        ["never", "if_source_newer", "if_different", "always"],
     )
     @pytest.mark.parametrize("dry_run", [True, False])
     def test_rclone_options(
@@ -468,11 +469,20 @@ class TestFileTransfer(BaseTest):
 
         if overwrite_existing_files == "never":
             assert "--ignore-existing" in log
-        elif overwrite_existing_files == "always":
-            assert "--ignore-existing" not in log
+            assert "--ignore-times" not in log
             assert "--update" not in log
         elif overwrite_existing_files == "if_source_newer":
             assert "--update" in log
+            assert "--ignore-times" not in log
+            assert "--ignore-existing" not in log
+        elif overwrite_existing_files == "if_different":
+            assert "--ignore-existing" not in log
+            assert "--ignore-times" not in log
+            assert "--update" not in log
+        elif overwrite_existing_files == "always":
+            assert "--ignore-times" in log
+            assert "--ignore-existing" not in log
+            assert "--update" not in log
 
         assert "--progress" in log
 
@@ -482,7 +492,8 @@ class TestFileTransfer(BaseTest):
             assert "--dry-run" not in log
 
     @pytest.mark.parametrize(
-        "overwrite_existing_files", ["never", "always", "if_source_newer"]
+        "overwrite_existing_files",
+        ["never", "if_source_newer", "if_different", "always"],
     )
     @pytest.mark.parametrize(
         "transfer_method", ["entire_project", "custom", "top_level_folder"]
@@ -506,11 +517,12 @@ class TestFileTransfer(BaseTest):
         one that is older onto the one that is newer.
 
         "never" : files will never be overwritten
-        "always" : files will be overwritten wherever there is a date difference
-                   (both cases)
         "if_source_newer" : only overwrite when the source file is
                             newer than the target (only in `later_to_earlier`
                             parameter)
+        "if_different" : overwrite whenever the source and target file are different
+        "always" : files will be overwritten wherever there is a date difference
+                   (both cases)
 
         Two files are written with 'earlier' and 'later' times. The
         exact location of these files is abstracted as will change
@@ -542,12 +554,13 @@ class TestFileTransfer(BaseTest):
         if overwrite_existing_files in ["never", "if_source_newer"]:
             # The newer file is not transferred
             assert test_utils.read_file(path_later) == ["file laterxx"]
-        elif overwrite_existing_files == "always":
+        elif overwrite_existing_files in ["if_different", "always"]:
             # The newer file is transferred
             assert test_utils.read_file(path_later) == ["file earlier"]
 
     @pytest.mark.parametrize(
-        "overwrite_existing_files", ["never", "always", "if_source_newer"]
+        "overwrite_existing_files",
+        ["never", "if_source_newer", "if_different", "always"],
     )
     @pytest.mark.parametrize(
         "transfer_method", ["entire_project", "custom", "top_level_folder"]
@@ -569,7 +582,8 @@ class TestFileTransfer(BaseTest):
         Again test overwrite setting for every possible combination,
         but this time swap the transfer function direction such that
         the later file is transferred onto the earlier file. This
-        should transfer both in the 'if_source_newer' and 'always' case.
+        should transfer both in the 'if_source_newer', 'if_different' and
+        'always' case.
         """
         path_earlier, path_later = self.setup_overwrite_file_tests(
             upload_or_download, top_level_folder, project
@@ -598,12 +612,17 @@ class TestFileTransfer(BaseTest):
         if overwrite_existing_files == "never":
             # The newer file is not transferred
             assert test_utils.read_file(path_earlier) == ["file earlier"]
-        elif overwrite_existing_files in ["if_source_newer", "always"]:
+        elif overwrite_existing_files in [
+            "if_source_newer",
+            "if_different",
+            "always",
+        ]:
             # The newer file is transferred
             assert test_utils.read_file(path_earlier) == ["file laterxx"]
 
     @pytest.mark.parametrize(
-        "overwrite_existing_files", ["never", "always", "if_source_newer"]
+        "overwrite_existing_files",
+        ["never", "if_source_newer", "if_different", "always"],
     )
     def test_overwrite_different_size_different_times(
         self, project, overwrite_existing_files
@@ -638,8 +657,100 @@ class TestFileTransfer(BaseTest):
             assert test_utils.read_file(central_file_path) == [
                 "file laterxx bigger"
             ]
-        elif overwrite_existing_files == "always":
+        elif overwrite_existing_files in ["if_different", "always"]:
             assert test_utils.read_file(central_file_path) == ["file earlier"]
+
+    def test_transfer_output(self, project, monkeypatch):
+        """
+        Test that the `test_transfer_output` variable is correctly
+        returned from every transfer function. `test_transfer_output` is a variable
+        that contains information about any errors that were encountered
+        during transfer.
+        """
+        # Monkeypatch the error-parsing function so it returns
+        # predictable values.
+        import datashuttle
+
+        def test_errors(top_level_folder):
+            from datashuttle.utils.transfer_output_class import TransferOutput
+
+            transfer_output = TransferOutput()
+            transfer_output.data = {
+                "errors": {
+                    "file_names": [f"{top_level_folder}/hello_world.txt"],
+                    "messages": ["how are you?"],
+                },
+                "num_transferred": {"rawdata": None, "derivatives": None},
+            }
+            return transfer_output
+
+        def monkeypatch_parse_output(top_level_folder, b):
+            stdout = "stdout"
+            stderr = "stderr"
+            return stdout, stderr, test_errors(top_level_folder)
+
+        monkeypatch.setattr(
+            datashuttle.utils.rclone,
+            "parse_rclone_copy_output",
+            monkeypatch_parse_output,
+        )
+
+        # Generate some test files so the transfer runs properly
+        subs, sessions = test_utils.get_default_sub_sessions_to_test()
+
+        for top_level_folder in ["rawdata", "derivatives"]:
+            test_utils.make_and_check_local_project_folders(
+                project,
+                top_level_folder,
+                subs,
+                sessions,
+                get_broad_datatypes(),
+            )
+
+        # Run every transfer function and check that
+        # `TransferOutput` is returned correctly.
+        specific_file = lambda path_: (
+            f"{path_}/rawdata/{subs[0]}/{sessions[0]}/ephys/placeholder_file.txt"
+        )
+
+        # All 'rawdata' functions
+        for func in [
+            lambda: project.upload_specific_folder_or_file(
+                specific_file(project.get_local_path())
+            ),
+            lambda: project.download_specific_folder_or_file(
+                specific_file(project.get_central_path())
+            ),
+            lambda: project.upload_custom("rawdata", "all", "all", "all"),
+            lambda: project.download_custom("rawdata", "all", "all", "all"),
+            project.upload_rawdata,
+            project.download_rawdata,
+        ]:
+            assert func() == test_errors("rawdata")
+
+        # All 'derivatives' functions
+        for func in [project.upload_derivatives, project.download_derivatives]:
+            assert func() == test_errors("derivatives")
+
+        # Entire project functions should merge the errors
+        # of rawdata and derivatives
+        for func in [
+            project.upload_entire_project,
+            project.download_entire_project,
+        ]:
+            assert func() == {
+                "errors": {
+                    "file_names": [
+                        "rawdata/hello_world.txt",
+                        "derivatives/hello_world.txt",
+                    ],
+                    "messages": ["how are you?", "how are you?"],
+                },
+                "num_transferred": {
+                    "rawdata": None,
+                    "derivatives": None,
+                },
+            }
 
     def get_paths_to_a_local_and_central_file(self, project, top_level_folder):
         path_to_test_file = (

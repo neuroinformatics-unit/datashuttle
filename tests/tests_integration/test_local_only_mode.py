@@ -9,7 +9,7 @@ from datashuttle.utils.custom_exceptions import (
 from .. import test_utils
 from ..base import BaseTest
 
-TEST_PROJECT_NAME = "test_project"
+TEST_PROJECT_NAME = test_utils.get_test_project_name()
 
 
 class TestLocalOnlyProject(BaseTest):

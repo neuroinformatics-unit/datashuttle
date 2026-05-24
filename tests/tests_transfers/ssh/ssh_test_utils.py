@@ -3,7 +3,7 @@ import copy
 import subprocess
 import sys
 
-from datashuttle.utils import rclone, ssh, utils
+from datashuttle.utils import utils
 
 
 def setup_project_for_ssh(
@@ -23,7 +23,7 @@ def setup_project_for_ssh(
     )
 
 
-def setup_ssh_connection(project, setup_ssh_key_pair=True):
+def setup_ssh_connection(project):
     """
     Convenience function to verify the server hostkey and ssh
     key pairs to the Dockerfile image for ssh tests.
@@ -37,7 +37,7 @@ def setup_ssh_connection(project, setup_ssh_key_pair=True):
     container thing.
     """
     # Monkeypatch
-    orig_builtin = copy.deepcopy(builtins.input)
+    orig_input = copy.deepcopy(builtins.input)
     builtins.input = lambda _: "y"  # type: ignore
 
     orig_get_secret = copy.deepcopy(utils.get_connection_secret_from_user)
@@ -46,26 +46,13 @@ def setup_ssh_connection(project, setup_ssh_key_pair=True):
     orig_isatty = copy.deepcopy(sys.stdin.isatty)
     sys.stdin.isatty = lambda: True
 
-    # Run setup
-    verified = ssh.verify_ssh_central_host_api(
-        project.cfg["central_host_id"], project.cfg.hostkeys_path, log=True
-    )
-
-    if setup_ssh_key_pair:
-        private_key_str = ssh.setup_ssh_key_api(project.cfg, log=False)
-
-        rclone.setup_rclone_config_for_ssh(
-            project.cfg,
-            project.cfg.get_rclone_config_name("ssh"),
-            private_key_str,
-        )
-
-    # Restore functions
-    builtins.input = orig_builtin
-    utils.get_connection_secret_from_user = orig_get_secret
-    sys.stdin.isatty = orig_isatty
-
-    return verified
+    try:
+        project.setup_ssh_connection()
+    finally:
+        # Restore functions
+        builtins.input = orig_input
+        utils.get_connection_secret_from_user = orig_get_secret
+        sys.stdin.isatty = orig_isatty
 
 
 def docker_is_running():

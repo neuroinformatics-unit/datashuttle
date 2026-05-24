@@ -1,12 +1,15 @@
 import glob
 import logging
 import os
+import platform
 import re
 from pathlib import Path
 
 import pytest
+from filelock import FileLock
 
 from datashuttle.configs import canonical_configs
+from datashuttle.configs.canonical_configs import get_broad_datatypes
 from datashuttle.configs.canonical_tags import tags
 from datashuttle.utils import ds_logger
 from datashuttle.utils.custom_exceptions import (
@@ -15,6 +18,8 @@ from datashuttle.utils.custom_exceptions import (
 )
 
 from .. import test_utils
+
+TEST_PROJECT_NAME = test_utils.get_test_project_name()
 
 
 class TestLogging:
@@ -86,7 +91,7 @@ class TestLogging:
         Switch on datashuttle logging as required for
         these tests, then turn back off during tear-down.
         """
-        project_name = "test_project"
+        project_name = TEST_PROJECT_NAME
         test_utils.delete_project_if_it_exists(project_name)
         test_utils.set_datashuttle_loggers(disable=False)
 
@@ -151,8 +156,9 @@ class TestLogging:
         log = test_utils.read_log_file(project.cfg.logging_path)
 
         assert "Starting logging for command make-config-file" in log
-        assert "\nVariablesState:\nlocals: {'local_path':" in log
         assert "Successfully created rclone config." in log
+        assert 'New config file: \n {\n    "local_path": ' in log
+        assert '"connection_method": "local_filesystem"' in log
         assert (
             "Configuration file has been saved and options loaded into datashuttle."
             in log
@@ -165,11 +171,8 @@ class TestLogging:
         log = test_utils.read_log_file(project.cfg.logging_path)
 
         assert "Starting logging for command update-config-file" in log
-        assert (
-            "\n\nVariablesState:\nlocals: {'kwargs': {'central_host_id':"
-            in log
-        )
         assert "Update successful. New config file:" in log
+        assert 'New config file: \n {\n    "local_path":' in log
         assert """ "central_host_id": "test_id",\n """ in log
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
@@ -290,7 +293,7 @@ class TestLogging:
         assert "Using config file from" in log
         assert "--include" in log
         assert "sub-11/ses-123/anat/**" in log
-        assert "/central/test_project/rawdata" in log
+        assert f"/central/{TEST_PROJECT_NAME}/rawdata" in log
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_logs_upload_and_download_folder_or_file(
@@ -379,7 +382,7 @@ class TestLogging:
 
         configs["local_path"] = "~"
 
-        with pytest.raises(BaseException):
+        with pytest.raises(Exception):
             project.make_config_file(**configs)
 
         # Because an error was raised, the log will stay in the
@@ -412,10 +415,6 @@ class TestLogging:
             "'central_host_username' are required if 'connection_method' is 'ssh'"
             in log
         )
-        assert (
-            "VariablesState:\nlocals: {'kwargs': {'connection_method': 'ssh'"
-            in log
-        )
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_logs_bad_create_folders_error(self, project):
@@ -446,7 +445,7 @@ class TestLogging:
         test_utils.delete_log_files(project.cfg.logging_path)
 
         # Check a validation error is logged.
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(Exception) as e:
             project.validate_project("rawdata", display_mode="error")
 
         log = test_utils.read_log_file(project.cfg.logging_path)
@@ -475,10 +474,171 @@ class TestLogging:
         project.create_folders("rawdata", "sub-001")
         test_utils.delete_log_files(project.cfg.logging_path)  #
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(Exception) as e:
             project.create_folders("rawdata", "sub-001_id-a")
 
         log = test_utils.read_log_file(project.cfg.logging_path)
 
         assert "ERROR" in log
         assert str(e.value) in log
+
+    def test_num_files_transferred_logging(self, project):
+        """Test the number of transferred file is properly logged."""
+        # First create some files to transfer in the two top level folders
+        for top_level_folder in ["rawdata", "derivatives"]:
+            test_utils.make_local_folders_with_files_in(
+                project,
+                top_level_folder,
+                ["sub-001", "sub-002"],
+                ["ses-001", "ses-002"],
+                ["ephys", "behav"],
+            )
+        test_utils.delete_log_files(project.cfg.logging_path)
+
+        # Transfer only rawdata, check that is selectively logged correctly
+        transfer_output = project.upload_rawdata()
+        assert transfer_output["num_transferred"]["rawdata"] == 8
+        assert transfer_output["num_transferred"]["derivatives"] is None
+
+        log = test_utils.read_log_file(project.cfg.logging_path)
+        assert "8 files were transferred from rawdata" in log
+        assert "derivatives" not in log
+        test_utils.delete_log_files(project.cfg.logging_path)
+
+        # Transfer only derivatives, check that is selectively logged correctly
+        transfer_output = project.upload_derivatives()
+        assert transfer_output["num_transferred"]["derivatives"] == 8
+        assert transfer_output["num_transferred"]["rawdata"] is None
+
+        log = test_utils.read_log_file(project.cfg.logging_path)
+        assert "8 files were transferred from derivatives" in log
+        assert "Nothing was transferred from rawdata" not in log
+        test_utils.delete_log_files(project.cfg.logging_path)
+
+        # Make an additional file for detivatives
+        test_utils.make_local_folders_with_files_in(
+            project,
+            "derivatives",
+            ["sub-003"],
+            ["ses-001"],
+            ["ephys"],
+        )
+        test_utils.delete_log_files(project.cfg.logging_path)
+
+        # Upload the entire project, check that derivatives num transferred
+        # is correct, and that rawdata is 0 not None, as a transfer was attempted
+        # (but no files needed to be transferred)
+        transfer_output = project.upload_entire_project()
+
+        assert transfer_output["num_transferred"]["derivatives"] == 1
+        assert transfer_output["num_transferred"]["rawdata"] == 0
+
+        log = test_utils.read_log_file(project.cfg.logging_path)
+        assert "1 file was transferred from derivatives" in log
+        assert "Nothing was transferred from rawdata" in log
+        test_utils.delete_log_files(project.cfg.logging_path)
+
+    def test_errors_are_caught_and_logged(self, project):
+        """
+        Create errors in the transfer output by locking files, and check
+        the errors are correctly flagged in logs and `errors`. Also,
+        perform a transfer where no files are transferred, and check
+        this is flagged in logs and `errors`.
+        """
+
+        # Set up a folder to transfer
+        subs, sessions = test_utils.get_default_sub_sessions_to_test()
+
+        test_utils.make_and_check_local_project_folders(
+            project,
+            "rawdata",
+            subs,
+            sessions,
+            get_broad_datatypes(),
+        )
+
+        # Lock a file then perform the transfer, causing errors.
+        relative_path = (
+            Path("rawdata")
+            / subs[0]
+            / sessions[0]
+            / "ephys"
+            / "placeholder_file.txt"
+        )
+        a_transferred_file = project.get_local_path() / relative_path
+
+        test_utils.delete_log_files(project.cfg.logging_path)
+
+        if platform.system() == "Windows":
+            lock = FileLock(a_transferred_file, timeout=5)
+            with lock:
+                transfer_output = project.upload_custom(
+                    "rawdata", "all", "all", "all"
+                )
+            error_message = "because another process has locked "
+        else:
+            thread = test_utils.lock_a_file(a_transferred_file)
+            transfer_output = project.upload_custom(
+                "rawdata", "all", "all", "all"
+            )
+            thread.join()
+            error_message = "size changed"
+
+        # Check that errors and logs flag the transfer errors
+        errors = transfer_output["errors"]
+        # in Linux, macOS backup files are sometimes written during logging,
+        # we want to ignore these in case present.
+        if len(errors["file_names"]) > 1:
+            errors["file_names"] = [
+                filepath
+                for filepath in errors["file_names"]
+                if "partial" not in filepath
+            ]
+
+        assert relative_path.as_posix() in errors["file_names"][0]
+        assert error_message in errors["messages"][0]
+
+        log = test_utils.read_log_file(project.cfg.logging_path)
+
+        assert Path(errors["file_names"][0]).as_posix() in log
+        assert "Errors were detected!" in log
+        assert error_message in log
+
+        # now just upload everything
+        project.upload_entire_project()
+        test_utils.delete_log_files(project.cfg.logging_path)
+
+        # Check that it is flagged that no transfer took place for rawdata
+        transfer_output = project.upload_custom("rawdata", "all", "all", "all")
+
+        assert transfer_output["num_transferred"]["rawdata"] == 0
+        assert transfer_output["num_transferred"]["derivatives"] is None
+
+        log = test_utils.read_log_file(project.cfg.logging_path)
+        assert "Nothing was transferred from rawdata." in log
+
+        test_utils.delete_log_files(project.cfg.logging_path)
+
+        # Check that it is flagged that no transfer took place for derivatives
+        transfer_output = project.upload_custom(
+            "derivatives", "all", "all", "all"
+        )
+
+        assert transfer_output["num_transferred"]["rawdata"] is None
+        assert transfer_output["num_transferred"]["derivatives"] == 0
+
+        log = test_utils.read_log_file(project.cfg.logging_path)
+        assert "Nothing was transferred from derivatives." in log
+
+        test_utils.delete_log_files(project.cfg.logging_path)
+
+        # Check that it is flagged that no transfer took place
+        # for both rawdata and derivatives
+        transfer_output = project.upload_entire_project()
+
+        assert transfer_output["num_transferred"]["rawdata"] == 0
+        assert transfer_output["num_transferred"]["derivatives"] == 0
+
+        log = test_utils.read_log_file(project.cfg.logging_path)
+        assert "Nothing was transferred from rawdata." in log
+        assert "Nothing was transferred from derivatives." in log

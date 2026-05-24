@@ -210,7 +210,7 @@ def connect_client(
             f"3) The central_host_id: {cfg['central_host_id']} is"
             f" correct.\n"
             f"4) The central username:"
-            f" {cfg['central_host_username']}, and password are correct."
+            f" {cfg['central_host_username']}, and password are correct.\n\n"
             f"Original error: {e}",
             ConnectionError,
         )
@@ -249,7 +249,7 @@ def save_hostkey_locally(key, central_host_id, hostkeys_path) -> None:
 
 
 def get_remote_server_key(central_host_id: str):
-    """Get the remove server host key for validation before connection.
+    """Get the remote server host key for validation before connection.
 
     Parameters
     ----------

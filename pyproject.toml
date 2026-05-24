@@ -16,14 +16,16 @@ dependencies = [
     "PyYAML",
     "requests",
     "rich",
-    "fancylog>=0.4.2",
     "simplejson",
     "pyperclip",
-    "textual==3.4.0",
+    "textual>=3.4.0,<8",
     "show-in-file-manager",
     "gitpython",
     "typeguard",
-    "psutil"
+    "psutil",
+    # Skip the fancylog versions which logs env packages
+    # by default, which is slow due to subprocess calls.
+    "fancylog >=0.4.2,!=0.5.*,!=0.6.*"
 ]
 
 classifiers = [
@@ -67,6 +69,8 @@ dev = [
     "types-setuptools",
     "pytest-asyncio",
     "validators",
+    "filelock",
+    "python-dotenv",
 ]
 
 [build-system]
@@ -163,6 +167,6 @@ ignore = [
 datashuttle = "datashuttle.tui_launcher:main"
 
 [tool.codespell]
-skip = '.git,*.pdf,*.svg'
+skip = '.git,*.pdf,*.svg,*.yml'
 #
 # ignore-words-list = ''

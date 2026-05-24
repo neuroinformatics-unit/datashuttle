@@ -90,6 +90,21 @@ class TestTransferChecks(BaseTest):
                 else:
                     assert path_ not in results_paths
 
+    def test_datashuttle_log_path_assumption(self, project):
+        """
+        Rclone check must exclude logs, and rclone requires
+        a relative path, so we cannot use make_and_get_logging_path()
+        without making assumptions of the log destination. While it
+        is unlikely this directory will change, if it does this test
+        acts as a reminder to fix this hard coding.
+        """
+        logging_path = project.cfg.make_and_get_logging_path()
+        logging_folder = Path(*logging_path.parts[-2:])
+        assert logging_folder.as_posix() == ".datashuttle/logs", (
+            "The datashuttle logs path was changed. There is a hard-coded"
+            "reference to it in `perform_rclone_check`. Fix that then change this test."
+        )
+
     def get_folder_structure(self, top_level_folder):
         # fmt: off
         folder_structure = [

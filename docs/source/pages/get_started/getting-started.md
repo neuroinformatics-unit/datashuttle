@@ -387,7 +387,7 @@ to the central project folder (`False` by default).
 
 This was a quick overview of creating folders—see
 and [How to use Create Folder Tags](how-to-create-folders) for full details
-including additional customisation with [Name Templates](how-to-use-name-templates).
+including additional customisation with [Validation Templates](how-to-use-validation-templates).
 
 ## Exploring folders
 
@@ -498,7 +498,7 @@ central storage machine connected as a mounted drive or through SSH.
 
 ```{warning}
 The **overwrite existing files** setting is very important.
-It takes on the options **never**, **always** or **if source newer**.
+It takes on the options **never**, **if source newer**, **if_different**, or **always**.
 
 See the [transfer options](transfer-options) section for full details.
 ```

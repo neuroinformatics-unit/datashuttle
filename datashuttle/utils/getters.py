@@ -35,7 +35,7 @@ def get_next_sub_or_ses(
     include_central: bool = False,
     return_with_prefix: bool = True,
     default_num_value_digits: int = 3,
-    name_template_regexp: Optional[str] = None,
+    validation_template_regexp: Optional[str] = None,
 ) -> str:
     """Suggest the next available subject or session number.
 
@@ -79,7 +79,7 @@ def get_next_sub_or_ses(
         the desired value can be entered here. e.g. if 3 (the default),
         if no subjects are found the subject returned will be "sub-001".
 
-    name_template_regexp
+    validation_template_regexp
         the name template to try and get the num digits from.
         If unspecified, the number of digits will be default_num_value_digits.
 
@@ -109,7 +109,7 @@ def get_next_sub_or_ses(
         all_folders,
         prefix,
         default_num_value_digits,
-        name_template_regexp,
+        validation_template_regexp,
     )
 
     # calculate next sub number
@@ -126,7 +126,7 @@ def get_max_sub_or_ses_num_and_value_length(
     all_folders: List[str],
     prefix: Prefix,
     default_num_value_digits: Optional[int] = None,
-    name_template_regexp: Optional[str] = None,
+    validation_template_regexp: Optional[str] = None,
 ) -> Tuple[int, int]:
     """Find the maximum subject or session value given a list of BIDS-style folder names.
 
@@ -139,7 +139,7 @@ def get_max_sub_or_ses_num_and_value_length(
     all_folders
         A list of BIDS-style formatted folder names.
 
-    prefix, default_num_value_digits, name_template_regexp
+    prefix, default_num_value_digits, validation_template_regexp
         see `get_next_sub_or_ses()`.
 
     Returns
@@ -163,9 +163,9 @@ def get_max_sub_or_ses_num_and_value_length(
         max_existing_num = 0
 
         # Try and get the num digits from a name template, otherwise use default.
-        if name_template_regexp is not None:
+        if validation_template_regexp is not None:
             num_value_digits = get_num_value_digits_from_regexp(
-                prefix, name_template_regexp
+                prefix, validation_template_regexp
             )
             if num_value_digits is False:
                 num_value_digits = default_num_value_digits
@@ -183,9 +183,9 @@ def get_max_sub_or_ses_num_and_value_length(
         # or name template if it exists (e.g. sub-003 has three values).
         # If a name template exists but the length can't be determined from it,
         # default back to the project.
-        if name_template_regexp is not None:
+        if validation_template_regexp is not None:
             num_value_digits = get_num_value_digits_from_regexp(
-                prefix, name_template_regexp
+                prefix, validation_template_regexp
             )
 
             if num_value_digits is False:
@@ -200,15 +200,13 @@ def get_max_sub_or_ses_num_and_value_length(
         # Then get the latest existing sub or ses number in the project.
         all_value_nums = []
         for value in all_values_str:
-            try:
-                int_value = utils.sub_or_ses_value_to_int(value)
-                all_value_nums.append(int_value)
-            except NeuroBlueprintError:
-                # Re-raise with a more descriptive error for this case.
+            if not value.isdigit():
                 utils.log_and_raise_error(
                     f"Cannot suggest next {prefix} because not all {prefix} labels in the project are integer. e.g. {prefix}-{value}",
                     NeuroBlueprintError,
                 )
+            int_value = utils.sub_or_ses_value_to_int(value)
+            all_value_nums.append(int_value)
 
         all_value_nums = sorted(all_value_nums)
 
@@ -251,7 +249,7 @@ def get_num_value_digits_from_project(
 
 
 def get_num_value_digits_from_regexp(
-    prefix: Prefix, name_template_regexp: str
+    prefix: Prefix, validation_template_regexp: str
 ) -> Union[Literal[False], int]:
     r"""Given a name template regexp, find the number of values for the sub or ses key.
 
@@ -265,7 +263,7 @@ def get_num_value_digits_from_regexp(
     prefix
         "sub" or "ses".
 
-    name_template_regexp
+    validation_template_regexp
         Regexp for the name template to validate against.
 
     Returns
@@ -275,7 +273,7 @@ def get_num_value_digits_from_regexp(
 
     """
     all_values_str = utils.get_values_from_bids_formatted_name(
-        [name_template_regexp], prefix, return_as_int=False
+        [validation_template_regexp], prefix, return_as_int=False
     )[0]
 
     if "*" in all_values_str:

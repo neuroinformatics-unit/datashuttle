@@ -1,3 +1,7 @@
+# python-dotenv environment file for test account credentials.
+.env
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

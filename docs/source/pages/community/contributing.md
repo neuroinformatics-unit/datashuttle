@@ -10,6 +10,7 @@ and [opening a pull request](#pull-requests).
 
 The core development team will support you in contributing code, regardless of your experience!
 
+(developer-install)=
 ## Creating a development environment
 
 For detailed instructions on installing ``datashuttle`` along with
@@ -115,18 +116,53 @@ skip pre-commit checks, and ask for help in your PR.
 For docstrings, we adhere to the [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html) style.
 Make sure to provide docstrings for all public functions, classes, and methods.
 
+## Running tests locally
+
+Unit and integration tests are important tools to ensure the code is working
+as expected, and protect against regressions introduced by future changes.
+
+All tests are automatically run on GitHub Actions for open PRs. However, running tests locally can
+be useful to verify that everything works correctly on your system. We use [pytest](https://docs.pytest.org/en/stable/)
+to manage running `datashuttle` tests.
+
+Before running the tests, make sure `datashuttle` is [installed in development mode](developer-install)
+
+### Running the full test suite
+
+From the root of the repository, run:
+```bash
+pytest
+```
+This runs all tests that can be executed in the local development environment.
+
+To run a specific test file, you can include the path to the file, for example:
+
+```bash
+pytest tests/test_validation.py
+```
+
+or to run any tests with names that match a keyword:
+
+```bash
+pytest -k validate
+```
+
+### Tests requiring additional infrastructure
+
+Some tests depend on external infrastructure and are skipped automatically
+when run locally:
+
+- SSH transfer tests require that Docker is installed and running.
+- Cloud storage tests (Google Drive, AWS) require private credentials to run
+and are generally not expected to be run outside the GitHub Actions environment. Please
+contact the development team if you require local testing of Google Drive or AWS for your contribution.
+
 ## Contributing documentation
 
-It is very important that the documentation for ``datashuttle`` is clear,
-accurate and concise. A key principle of ``datashuttle`` is it should
-make data acquisition simple and easy—therefore it should be
-well-documented.
-
-For these reasons every part of all software must be documented as
-thoroughly as possible, and all new features must be fully documented. If you
+To ensure ease of use, all parts of `datashuttle` must be documented as
+thoroughly as possible, and all new features should be fully documented. If you
 notice any areas where the documentation can be improved, please don't hesitate
 to make a contribution.
-
 
 
 ### Working with the documentation

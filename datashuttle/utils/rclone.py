@@ -1,20 +1,39 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict, List, Literal, Optional
+from typing import (
+    TYPE_CHECKING,
+    Callable,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    TypeVar,
+)
+
+T = TypeVar("T")
 
 if TYPE_CHECKING:
-    from datashuttle.configs.config_class import Configs
-    from datashuttle.utils.custom_types import TopLevelFolder
+    from pathlib import Path
+    from subprocess import CompletedProcess
 
+    from datashuttle.configs.config_class import Configs
+    from datashuttle.utils.custom_types import (
+        OverwriteExistingFiles,
+        TopLevelFolder,
+    )
+
+import json
 import os
 import platform
 import shlex
 import subprocess
 import tempfile
+from pathlib import Path
 from subprocess import CompletedProcess
 
 from datashuttle.configs import canonical_configs
-from datashuttle.utils import utils
+from datashuttle.utils import rclone_encryption, utils
+from datashuttle.utils.transfer_output_class import TransferOutput
 
 
 def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
@@ -47,13 +66,33 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
     return output
 
 
-def call_rclone_through_script(command: str) -> CompletedProcess:
+def call_rclone_for_central_connection(
+    cfg, command: str, pipe_std: bool = False
+) -> CompletedProcess:
+    """Call RClone when the config file may need to be decrypted.
+
+    This is a convenience function to call RClone in places where
+    the config file may need to be decrypted. This is for connecting
+    to the central storage through aws, ssh or gdrive. It wraps the
+    function call in a set-up / teardown of the config password.
+    """
+    return run_function_that_requires_encrypted_rclone_config_access(
+        cfg, lambda: call_rclone(command, pipe_std)
+    )
+
+
+def call_rclone_through_script_for_central_connection(
+    cfg: Configs, command: str
+) -> CompletedProcess:
     """Call rclone through a script.
 
     This is to avoid limits on command-line calls (in particular on Windows).
     Used for transfers due to generation of large call strings.
 
     Parameters
+    ----------
+    cfg
+        Datashuttle Configs class.
     ----------
     command
         Full command to run with RClone.
@@ -83,12 +122,21 @@ def call_rclone_through_script(command: str) -> CompletedProcess:
         if system != "Windows":
             os.chmod(tmp_script_path, 0o700)
 
-        output = subprocess.run(
+        lambda_func = lambda: subprocess.run(
             [tmp_script_path],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=False,
         )
+
+        if rclone_encryption.connection_method_requires_encryption(
+            cfg["connection_method"]
+        ):
+            output = run_function_that_requires_encrypted_rclone_config_access(
+                cfg, lambda_func
+            )
+        else:
+            output = lambda_func()
 
         if output.returncode != 0:
             prompt_rclone_download_if_does_not_exist()
@@ -99,7 +147,9 @@ def call_rclone_through_script(command: str) -> CompletedProcess:
     return output
 
 
-def call_rclone_with_popen(command: str) -> subprocess.Popen:
+def call_rclone_with_popen(
+    command: str,
+) -> subprocess.Popen:
     """Call rclone using `subprocess.Popen` for control over process termination.
 
     It is not possible to kill a process while running it using `subprocess.run`.
@@ -109,14 +159,19 @@ def call_rclone_with_popen(command: str) -> subprocess.Popen:
     process explicitly.
     """
     command = "rclone " + command
+
+    # this command must use shell=False (and thus shlex.split) otherwise
+    # the process cannot be properly cancelled.
     process = subprocess.Popen(
-        shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        shlex.split(command),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
     return process
 
 
-def await_call_rclone_with_popen_raise_on_fail(
-    process: subprocess.Popen, log: bool = True
+def await_call_rclone_with_popen_for_central_connection_raise_on_fail(
+    cfg: Configs, process: subprocess.Popen, log: bool = True
 ):
     """Await rclone the subprocess.Popen call.
 
@@ -129,15 +184,54 @@ def await_call_rclone_with_popen_raise_on_fail(
         utils.log_and_raise_error(stderr.decode("utf-8"), ConnectionError)
 
     if log:
-        log_rclone_config_output()
+        log_rclone_config_output(cfg)
+
+    return stdout, stderr
+
+
+def run_function_that_requires_encrypted_rclone_config_access(
+    cfg: Configs,
+    lambda_func: Callable[..., T],
+    check_config_exists: bool = True,
+) -> T:
+    """Run command that requires possibly encrypted Rclone config file.
+
+    The Rclone config file may be encrypted for aws, gdrive or ssh connections.
+    In this case we need to set an environment variable to tell Rclone how
+    to decrypt the config file (and remove the variable afterwards).
+    """
+    rclone_config_filepath = (
+        cfg.rclone.get_rclone_central_connection_config_filepath()
+    )
+
+    if check_config_exists and not rclone_config_filepath.is_file():
+        raise RuntimeError(
+            f"The Rclone config file cannot be found. You may be seeing this as the way "
+            f"Rclone configs are managed was changed in v0.7.1\n"
+            f"Please set up the {cfg['connection_method']} connection again."
+        )
+
+    is_encrypted = cfg.rclone.rclone_file_is_encrypted()
+
+    if is_encrypted:
+        rclone_encryption.set_credentials_as_password_command(cfg)
+
+    try:
+        results = lambda_func()
+    finally:
+        if is_encrypted:
+            rclone_encryption.remove_rclone_password_env_var()
+
+    return results
 
 
 # -----------------------------------------------------------------------------
-# Setup
+# RClone Configs
 # -----------------------------------------------------------------------------
 
 
 def setup_rclone_config_for_local_filesystem(
+    cfg: Configs,
     rclone_config_name: str,
     log: bool = True,
 ) -> None:
@@ -157,9 +251,12 @@ def setup_rclone_config_for_local_filesystem(
 
     Parameters
     ----------
+    cfg
+        datashuttle Configs class
+
     rclone_config_name
         canonical config name, generated by
-        datashuttle.cfg.get_rclone_config_name()
+        datashuttle.cfg.rclone.get_rclone_config_name()
 
     log
         whether to log, if True logger must already be initialised.
@@ -168,7 +265,7 @@ def setup_rclone_config_for_local_filesystem(
     call_rclone(f"config create {rclone_config_name} local", pipe_std=True)
 
     if log:
-        log_rclone_config_output()
+        log_rclone_config_output(cfg)
 
 
 def setup_rclone_config_for_ssh(
@@ -190,7 +287,7 @@ def setup_rclone_config_for_ssh(
 
     rclone_config_name
         canonical config name, generated by
-        datashuttle.cfg.get_rclone_config_name()
+        datashuttle.cfg.rclone.get_rclone_config_name()
 
     private_key_str
         PEM encoded ssh private key to pass to RClone.
@@ -201,6 +298,8 @@ def setup_rclone_config_for_ssh(
     """
     key_escaped = private_key_str.replace("\n", "\\n")
 
+    cfg.rclone.delete_existing_rclone_config_file()
+
     command = (
         f"config create "
         f"{rclone_config_name} "
@@ -208,13 +307,13 @@ def setup_rclone_config_for_ssh(
         f"host {cfg['central_host_id']} "
         f"user {cfg['central_host_username']} "
         f"port {canonical_configs.get_default_ssh_port()} "
+        f"{get_config_arg(cfg)} "
         f'-- key_pem "{key_escaped}"'
     )
-
     call_rclone(command, pipe_std=True)
 
     if log:
-        log_rclone_config_output()
+        log_rclone_config_output(cfg)
 
 
 def setup_rclone_config_for_gdrive(
@@ -240,7 +339,7 @@ def setup_rclone_config_for_gdrive(
 
     rclone_config_name
          Canonical config name, generated by
-         datashuttle.cfg.get_rclone_config_name()
+         datashuttle.cfg.rclone.get_rclone_config_name()
 
     gdrive_client_secret
         Google Drive client secret, mandatory when using a Google Drive client.
@@ -266,7 +365,9 @@ def setup_rclone_config_for_gdrive(
         else ""
     )
 
-    process = call_rclone_with_popen(
+    cfg.rclone.delete_existing_rclone_config_file()
+
+    command = (
         f"config create "
         f"{rclone_config_name} "
         f"drive "
@@ -274,10 +375,75 @@ def setup_rclone_config_for_gdrive(
         f"{client_secret_key_value}"
         f"scope drive "
         f"root_folder_id {cfg['gdrive_root_folder_id']} "
-        f"{extra_args}"
+        f"{extra_args} "
+        f"{get_config_arg(cfg)}"
     )
 
+    process = call_rclone_with_popen(command)
+
     return process
+
+
+def preliminary_setup_gdrive_config_without_browser(
+    cfg: Configs,
+    gdrive_client_secret: str | None,
+    rclone_config_name: str,
+    log: bool = True,
+) -> str:
+    """Prepare rclone configuration for Google Drive without using a browser.
+
+    This function prepares the rclone configuration for Google Drive without using a browser.
+
+    The `config_is_local=false` flag tells rclone that the configuration process is being run
+    on a headless machine which does not have access to a browser.
+
+    The `--non-interactive` flag is used to control Rclone's behaviour while running it through
+    external applications. An `rclone config create` command would assume default values for config
+    variables in an interactive mode. If the `--non-interactive` flag is provided and rclone needs
+    the user to input some detail, a JSON blob will be returned with the question in it. For this
+    particular setup, rclone outputs a command for user to run on a machine with a browser.
+
+    This function runs `rclone config create` with the user credentials and returns the rclone's output info.
+    This output info is presented to the user while asking for a `config_token`.
+
+    Next, the user will run rclone's given command, authenticate with google drive and input the
+    config token given by rclone for datashuttle to proceed with the setup.
+    """
+    client_id_key_value = (
+        f"client_id {cfg['gdrive_client_id']} "
+        if cfg["gdrive_client_id"]
+        else " "
+    )
+    client_secret_key_value = (
+        f"client_secret {gdrive_client_secret} "
+        if gdrive_client_secret
+        else ""
+    )
+
+    cfg.rclone.delete_existing_rclone_config_file()
+
+    output = call_rclone(
+        f"config create "
+        f"{get_config_arg(cfg)} "
+        f"{rclone_config_name} "
+        f"drive "
+        f"{client_id_key_value}"
+        f"{client_secret_key_value}"
+        f"scope drive "
+        f"root_folder_id {cfg['gdrive_root_folder_id']} "
+        f"config_is_local=false "
+        f"--non-interactive",
+        pipe_std=True,
+    )
+
+    # Extracting rclone's message from the json
+    output_json = json.loads(output.stdout)
+    message = output_json["Option"]["Help"]
+
+    if log:
+        utils.log(message)
+
+    return message
 
 
 def setup_rclone_config_for_aws(
@@ -296,7 +462,7 @@ def setup_rclone_config_for_aws(
 
     rclone_config_name
         Canonical RClone config name, generated by
-        datashuttle.cfg.get_rclone_config_name()
+        datashuttle.cfg.rclone.get_rclone_config_name()
 
     aws_secret_access_key
         The aws secret access key provided by the user.
@@ -315,6 +481,8 @@ def setup_rclone_config_for_aws(
         else f" location_constraint {aws_region}"
     )
 
+    cfg.rclone.delete_existing_rclone_config_file()
+
     output = call_rclone(
         "config create "
         f"{rclone_config_name} "
@@ -322,7 +490,8 @@ def setup_rclone_config_for_aws(
         f"access_key_id {cfg['aws_access_key_id']} "
         f"secret_access_key {aws_secret_access_key} "
         f"region {aws_region}"
-        f"{location_constraint_key_value}",
+        f"{location_constraint_key_value} "
+        f"{get_config_arg(cfg)}",
         pipe_std=True,
     )
 
@@ -332,7 +501,21 @@ def setup_rclone_config_for_aws(
         )
 
     if log:
-        log_rclone_config_output()
+        log_rclone_config_output(cfg)
+
+
+def get_config_arg(cfg: Configs) -> str:
+    """Get the full argument to run Rclone commands with a specific config."""
+    if rclone_encryption.connection_method_requires_encryption(
+        cfg["connection_method"]
+    ):
+        rclone_config_path = (
+            cfg.rclone.get_rclone_central_connection_config_filepath()
+        )
+
+        return f'--config "{rclone_config_path}"'
+    else:
+        return ""
 
 
 def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
@@ -351,16 +534,22 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
     else:
         tempfile_path = (cfg["central_path"] / filename).as_posix()
 
-    output = call_rclone(
-        f"touch {cfg.get_rclone_config_name()}:{tempfile_path}", pipe_std=True
+    config_name = cfg.rclone.get_rclone_config_name()
+
+    output = call_rclone_for_central_connection(
+        cfg,
+        f"touch {config_name}:{tempfile_path} {get_config_arg(cfg)}",
+        pipe_std=True,
     )
     if output.returncode != 0:
         utils.log_and_raise_error(
             output.stderr.decode("utf-8"), ConnectionError
         )
 
-    output = call_rclone(
-        f"delete {cfg.get_rclone_config_name()}:{tempfile_path}", pipe_std=True
+    output = call_rclone_for_central_connection(
+        cfg,
+        f"delete {cfg.rclone.get_rclone_config_name()}:{tempfile_path} {get_config_arg(cfg)}",
+        pipe_std=True,
     )
     if output.returncode != 0:
         utils.log_and_raise_error(
@@ -368,12 +557,25 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
         )
 
 
-def log_rclone_config_output() -> None:
+def get_rclone_config_filepath(cfg: Configs) -> Path:
+    """Get the path to the central Rclone config for the current `connection_method`."""
+    if rclone_encryption.connection_method_requires_encryption(
+        cfg["connection_method"]
+    ):
+        config_filepath = (
+            cfg.rclone.get_rclone_central_connection_config_filepath()
+        )
+    else:
+        output = call_rclone("config file", pipe_std=True)
+        config_filepath = output.stdout.decode("utf-8")
+
+    return config_filepath
+
+
+def log_rclone_config_output(cfg: Configs) -> None:
     """Log the output from creating Rclone config."""
-    output = call_rclone("config file", pipe_std=True)
-    utils.log(
-        f"Successfully created rclone config. {output.stdout.decode('utf-8')}"
-    )
+    config_filepath = get_rclone_config_filepath(cfg)
+    utils.log(f"Successfully created rclone config. {config_filepath}")
 
 
 def prompt_rclone_download_if_does_not_exist() -> None:
@@ -437,7 +639,7 @@ def transfer_data(
 
     rclone_options
         A list of options to pass to Rclone's copy function.
-        see `cfg.make_rclone_transfer_options()`.
+        see `make_rclone_transfer_options()`.
 
     Returns
     -------
@@ -458,26 +660,167 @@ def transfer_data(
     extra_arguments = handle_rclone_arguments(rclone_options, include_list)
 
     if upload_or_download == "upload":
-        output = call_rclone_through_script(
+        output = call_rclone_through_script_for_central_connection(
+            cfg,
             f"{rclone_args('copy')} "
-            f'"{local_filepath}" "{cfg.get_rclone_config_name()}:'
-            f'{central_filepath}" {extra_arguments}',
+            f'"{local_filepath}" "{cfg.rclone.get_rclone_config_name()}:'
+            f'{central_filepath}" {extra_arguments} {get_config_arg(cfg)} --use-json-log',
         )
 
     elif upload_or_download == "download":
-        output = call_rclone_through_script(
+        output = call_rclone_through_script_for_central_connection(
+            cfg,
             f"{rclone_args('copy')} "
-            f'"{cfg.get_rclone_config_name()}:'
-            f'{central_filepath}" "{local_filepath}"  {extra_arguments}',
+            f'"{cfg.rclone.get_rclone_config_name()}:'
+            f'{central_filepath}" "{local_filepath}" {extra_arguments} {get_config_arg(cfg)} --use-json-log',
         )
 
     return output
 
 
+def log_stdout_stderr_python_api(stdout: str, stderr: str) -> None:
+    """Log `stdout` and `stderr`."""
+    message = (
+        f"\n\n**************  STDOUT  **************\n"
+        f"{stdout}"
+        f"\n\n**************  STDERR  **************\n"
+        f"{stderr}"
+    )
+
+    utils.log_and_message(message)
+
+
+def log_rclone_transfer_output(transfer_output: TransferOutput) -> None:
+    """Log the `TransferOutput` dictionary.
+
+    The `TransferOutput` dictionary contains all pertinent information on
+    issues that occurred when running `rclone copy`. Note this logs
+    for the API, the TUI display is handled separately.
+    """
+    message = transfer_output.create_python_api_message()
+
+    utils.log_and_message(message, use_rich=True)
+
+
+def parse_rclone_copy_output(
+    top_level_folder: TopLevelFolder | None, output: CompletedProcess
+) -> tuple[str, str, TransferOutput]:
+    """Format the `rclone copy` output ready for logging.
+
+    Reformat and combine the string streams and `TransferOutput`
+    dictionary from stdout and stderr output of `rclone copy`.
+    see `reformat_rclone_copy_output()` for details.
+    """
+    stdout, stdout_outputs = reformat_rclone_copy_output(
+        output.stdout, top_level_folder=top_level_folder
+    )
+    stderr, stderr_outputs = reformat_rclone_copy_output(
+        output.stderr, top_level_folder=top_level_folder
+    )
+
+    combined_transfer_output = TransferOutput.merge_std_outputs(
+        stdout_outputs, stderr_outputs
+    )
+
+    return stdout, stderr, combined_transfer_output
+
+
+def reformat_rclone_copy_output(
+    stream: bytes,
+    top_level_folder: TopLevelFolder | None = None,
+) -> tuple[str, TransferOutput]:
+    """Parse the output of `rclone copy` for convenient error checking.
+
+    Rclone's `copy` command (called with `--use-json-log`) outputs a lot of
+    information related to the transfer. We dump this in text form to a log
+    file. However, we also want to grab any key events (errors, or complete
+    lack of transferred files) so these can be displayed separately.
+
+    This function iterates through all lines in the `rclone copy` output.
+    This output is typically a mix of string format and json format.
+    If the line is json-encoded, then we extract important information
+    and format it to string, and re-insert it into the output.
+
+    In this way, we have a string-format output ready to be
+    dumped to the logs, as well as an `errors` dictionary containing
+    details on all key information.
+
+    Returns
+    -------
+    format_stream
+        The input stream, converted to string and with all
+        json-formatted lines reformatted as string. This is ready
+        to be dumped to a log file.
+
+    errors
+        A dictionary (`TransferOutput`) containing key information
+        about issues in the transfer.
+
+    """
+    split_stream = stream.decode("utf-8").split("\n")
+
+    transfer_output = TransferOutput()
+
+    for idx, line in enumerate(split_stream):
+        try:
+            line_json = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+
+        if line_json["level"] in ["error", "critical"]:
+            if "object" in line_json:
+                full_filepath = Path(
+                    f"{top_level_folder}/{line_json['object']}"
+                ).as_posix()
+                transfer_output["errors"]["file_names"].append(full_filepath)
+                transfer_output["errors"]["messages"].append(
+                    f"The file {full_filepath} failed to transfer. Reason: {line_json['msg']}"
+                )
+            else:
+                transfer_output["errors"]["messages"].append(
+                    f"ERROR : {line_json['msg']}"
+                )
+
+        elif "stats" in line_json and "totalTransfers" in line_json["stats"]:
+            transfer_output["num_transferred"][top_level_folder] = line_json[
+                "stats"
+            ]["totalTransfers"]
+
+        split_stream[idx] = (
+            f"{line_json['time'][:19]} {line_json['level'].upper()} : {line_json['msg']}"
+        )
+
+    format_stream = "\n".join(split_stream)
+
+    return format_stream, transfer_output
+
+
+def make_rclone_transfer_options(
+    overwrite_existing_files: OverwriteExistingFiles, dry_run: bool
+) -> Dict:
+    """Create a dictionary of rclone transfer options."""
+    allowed_overwrite = ["never", "if_source_newer", "if_different", "always"]
+
+    if overwrite_existing_files not in allowed_overwrite:
+        utils.log_and_raise_error(
+            f"`overwrite_existing_files` not "
+            f"recognised, must be one of: "
+            f"{allowed_overwrite}",
+            ValueError,
+        )
+
+    return {
+        "overwrite_existing_files": overwrite_existing_files,
+        "show_transfer_progress": True,
+        "transfer_verbosity": "vv",
+        "dry_run": dry_run,
+    }
+
+
 def get_local_and_central_file_differences(
     cfg: Configs,
     top_level_folders_to_check: List[TopLevelFolder],
-) -> Dict:
+) -> Dict[str, List]:
     """Format a structure of all changes between local and central.
 
     Rclone output comes as a list of files, separated by newlines,
@@ -565,17 +908,33 @@ def perform_rclone_check(
     local_filepath = cfg.get_base_folder(
         "local", top_level_folder
     ).parent.as_posix()
+
     central_filepath = cfg.get_base_folder(
         "central", top_level_folder
     ).parent.as_posix()
 
-    output = call_rclone(
-        f"{rclone_args('check')} "
-        f'"{local_filepath}" '
-        f'"{cfg.get_rclone_config_name()}:{central_filepath}"'
-        f" --combined -",
-        pipe_std=True,
-    )
+    if rclone_encryption.connection_method_requires_encryption(
+        cfg["connection_method"]
+    ):
+        output = call_rclone_for_central_connection(
+            cfg,
+            f"{rclone_args('check')} "
+            f'"{local_filepath}" '
+            f'"{cfg.rclone.get_rclone_config_name()}:{central_filepath}" '
+            f"--combined - "
+            f'--exclude "*.datashuttle/logs/*" '
+            f"{get_config_arg(cfg)}",
+            pipe_std=True,
+        )
+    else:
+        output = call_rclone(
+            f"{rclone_args('check')} "
+            f'"{local_filepath}" '
+            f'"{cfg.rclone.get_rclone_config_name()}:{central_filepath}" '
+            f"--combined - "
+            f'--exclude "*.datashuttle/logs/*"',
+            pipe_std=True,
+        )
 
     return output.stdout.decode("utf-8")
 
@@ -608,8 +967,12 @@ def handle_rclone_arguments(
     if overwrite == "never":
         extra_arguments_list += [rclone_args("never_overwrite")]
 
-    elif overwrite == "always":
+    elif overwrite == "if_different":
+        # default rclone behavior (no flags)
         pass
+
+    elif overwrite == "always":
+        extra_arguments_list += [rclone_args("always_overwrite")]
 
     elif overwrite == "if_source_newer":
         extra_arguments_list += [rclone_args("if_source_newer_overwrite")]
@@ -634,6 +997,7 @@ def rclone_args(name: str) -> str:
         "copy",
         "never_overwrite",
         "if_source_newer_overwrite",
+        "always_overwrite",
         "progress",
         "check",
     ]
@@ -650,6 +1014,9 @@ def rclone_args(name: str) -> str:
 
     if name == "if_source_newer_overwrite":
         arg = "--update"
+
+    if name == "always_overwrite":
+        arg = "--ignore-times"
 
     if name == "progress":
         arg = "--progress"

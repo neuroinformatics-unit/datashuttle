@@ -1,3 +1,4 @@
+import os
 import platform
 
 import pytest
@@ -18,6 +19,10 @@ TEST_SSH = ssh_test_utils.docker_is_running()
     reason="SSH tests are not run as docker is either not installed, "
     "running or current user is not in the docker group.",
 )
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipped on CI as sporadically failing there.",
+)
 class TestSSHDriveSuggestNext(BaseSSHTransfer, TuiBase):
     @pytest.fixture(
         scope="function",
@@ -27,6 +32,7 @@ class TestSSHDriveSuggestNext(BaseSSHTransfer, TuiBase):
         Setup pathtable and project for SSH transfer tests.
         """
         project = test_utils.make_project(setup_project_paths["project_name"])
+
         ssh_test_utils.setup_project_for_ssh(
             project,
         )

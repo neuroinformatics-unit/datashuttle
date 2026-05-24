@@ -132,7 +132,6 @@ def wrap_variables_for_fancylog(local_vars: dict, cfg: Configs) -> List:
     class VariablesState:
         def __init__(self, local_vars_, cfg_):
             local_vars_ = copy.deepcopy(local_vars_)
-            del local_vars_["self"]
             self.locals = local_vars_
             self.cfg = copy.deepcopy(cfg_)
 
