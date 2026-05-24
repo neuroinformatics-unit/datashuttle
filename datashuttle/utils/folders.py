@@ -661,7 +661,7 @@ def get_datetime_to_search_regexp(format_type: str, tag: str) -> str:
 
 def find_datetime_in_name(
     name: str, format_type: str, tag: str
-) -> tuple[str, str] | None:
+) -> tuple[str | Any, ...] | None:
     """Find and extract datetime values from a name using a regex pattern.
 
     Parameters
