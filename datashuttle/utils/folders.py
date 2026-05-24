@@ -793,7 +793,7 @@ def format_and_validate_datetime_search_str(
 
     if already_has_wildcard_at_end:
         # Handle edge case where @*@ tag is immediately after @DATETIMETO@
-        # or similar tag. This results in "datetime-**" which cases errors.
+        # or similar tag. This results in "datetime-**" which causes errors.
         full_search_str = full_search_str.replace("**", "*")
 
     return full_search_str
