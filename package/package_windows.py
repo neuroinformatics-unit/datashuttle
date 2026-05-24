@@ -1,10 +1,16 @@
 import os
 import shutil
 import subprocess
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
 import packaging_utils
 from make_inno_setup_script import make_inno_setup_script
+
+try:
+    DATASHUTTLE_VERSION = version("datashuttle")
+except PackageNotFoundError:
+    DATASHUTTLE_VERSION = "0.0.0"
 
 WEZTERM_VERSION = packaging_utils.get_wezterm_version()
 WEZTERM_FOLDERNAME = f"WezTerm-windows-{WEZTERM_VERSION}"
@@ -59,7 +65,7 @@ subprocess.run(
 )
 
 # Now we create the distribution folder, that contains the datashuttle executable,
-# terminal launcher executable, vendored Wezterm and all auxillary files
+# terminal launcher executable, vendored Wezterm and all auxiliary files
 dist_dir = project_root / "dist"
 launcher_subdir = dist_dir / "terminal_launcher"
 
@@ -96,22 +102,24 @@ shutil.copy(
     project_root / "wezterm_config.lua",
     project_root / "dist" / "_vendored" / WEZTERM_FOLDERNAME,
 )
-breakpoint()
+
 # Finally, we will parcel the distribution folder into an installer.
 # The output of this step is shipped, and when run will install the
 # distribution in the correct place on the system, create shortcuts etc.
 # Inno setup runs through a script, we generate it dynamically, removing
-# and old versions before we start.
-inno_path = project_root / "inno_complie_script.iss"
+# any old versions before we start.
+inno_path = project_root / "inno_compile_script.iss"
 
 if os.path.isfile(inno_path):
     os.remove(inno_path)
-f = open(inno_path, "a")
 
-text = make_inno_setup_script("0.0.0", str(project_root))
+text = make_inno_setup_script(DATASHUTTLE_VERSION, str(project_root))
 
-f.write(text.strip())
-f.close()
+with open(inno_path, "w") as f:
+    f.write(text.strip())
 
-# Run inno set up on the generated script.
-subprocess.call(rf"C:\Program Files (x86)\Inno Setup 6\iscc {inno_path}")
+# Run Inno Setup on the generated script.
+subprocess.run(
+    [r"C:\Program Files (x86)\Inno Setup 6\iscc.exe", str(inno_path)],
+    check=True,
+)

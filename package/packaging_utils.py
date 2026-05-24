@@ -2,12 +2,12 @@ import platform
 import subprocess
 import zipfile
 from pathlib import Path
-from sys import platform
 
 import requests
 
 
 def get_wezterm_version():
+    """Return the pinned Wezterm release version to vendor."""
     return "20240203-110809-5046fc22"
 
 
@@ -16,19 +16,19 @@ def download_wezterm(vendored_dir: Path, wezterm_foldername: str) -> None:
 
     This downloads a specific version of Wezterm, to be vendored in the Datashuttle distribution.
     """
-    vendored_dir: str = (
+    vendored_dir_str: str = (
         vendored_dir.as_posix()
     )  # unfortunately we  need to do some Path / str juggling here
 
     # First set up Wezterm URL and paths depending on platform
     wezterm_url = f"https://github.com/wezterm/wezterm/releases/download/{get_wezterm_version()}/{wezterm_foldername}"
-    wezterm_zip_path = f"{vendored_dir}/{wezterm_foldername}"
+    wezterm_zip_path = f"{vendored_dir_str}/{wezterm_foldername}"
 
     if platform.system() == "Windows":
         wezterm_url += ".zip"
         wezterm_zip_path += ".zip"
 
-    wezterm_extracted_dir = f"{vendored_dir}/{wezterm_foldername}"
+    wezterm_extracted_dir = f"{vendored_dir_str}/{wezterm_foldername}"
 
     # Download and unzip Wezterm (if it has not been downloaded already)
     if Path(wezterm_extracted_dir).exists():
@@ -39,7 +39,7 @@ def download_wezterm(vendored_dir: Path, wezterm_foldername: str) -> None:
     else:
         print(f"Downloading Wezterm from: {wezterm_url}")
 
-        Path(vendored_dir).mkdir(parents=True, exist_ok=True)
+        Path(vendored_dir_str).mkdir(parents=True, exist_ok=True)
         response = requests.get(wezterm_url)
         response.raise_for_status()
 
@@ -48,10 +48,10 @@ def download_wezterm(vendored_dir: Path, wezterm_foldername: str) -> None:
 
         print(f"Unzipping Wezterm at: {wezterm_zip_path}")
 
-        if platform == "darwin":
-            unzip_macos(wezterm_zip_path, vendored_dir)
+        if platform.system() == "Darwin":
+            unzip_macos(wezterm_zip_path, vendored_dir_str)
         else:
-            unzip_windows(wezterm_zip_path, vendored_dir)
+            unzip_windows(wezterm_zip_path, vendored_dir_str)
 
         Path(wezterm_zip_path).unlink()
 

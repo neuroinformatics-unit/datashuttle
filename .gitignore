@@ -6,7 +6,7 @@ package/dist
 package/build
 package/_vendored
 package/Output
-package/inno_complie_script.iss
+package/inno_compile_script.iss
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

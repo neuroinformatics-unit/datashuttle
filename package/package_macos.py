@@ -22,9 +22,15 @@ if (dist_path := project_root / "dist").exists():
     shutil.rmtree(dist_path)
 
 # Step 2: Run PyInstaller builds
-subprocess.run(f"pyinstaller {project_root / 'datashuttle.spec'}", shell=True)
 subprocess.run(
-    f"pyinstaller {project_root / 'terminal_launcher_macos.spec'}", shell=True
+    f"pyinstaller {project_root / 'datashuttle.spec'}",
+    shell=True,
+    check=True,
+)
+subprocess.run(
+    f"pyinstaller {project_root / 'terminal_launcher_macos.spec'}",
+    shell=True,
+    check=True,
 )
 
 app_macos_path = (
