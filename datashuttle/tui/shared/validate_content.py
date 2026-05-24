@@ -246,8 +246,7 @@ class ValidateContent(Container):
         )
         await worker.wait()
         if self.validating_central_popup:
-            self.validating_central_popup.dismiss()
-            self.validating_central_popup = None
+            self._hide_validating_central_popup()
 
     @work(exclusive=True, thread=True)
     def validate_project_worker(
@@ -268,6 +267,10 @@ class ValidateContent(Container):
         )
 
         if not success:
+            if self.validating_central_popup:
+                self.app.call_from_thread(
+                    self._hide_validating_central_popup,
+                )
             self.app.call_from_thread(
                 self.parent_class.mainwindow.show_modal_error_dialog,
                 output,
@@ -275,6 +278,10 @@ class ValidateContent(Container):
         else:
             self.app.call_from_thread(self.write_results_to_richlog, output)
             self.app.call_from_thread(self._update_logs_label)
+
+    def _hide_validating_central_popup(self):
+        self.validating_central_popup.dismiss()
+        self.validating_central_popup = None
 
     def _update_logs_label(self) -> None:
         """Update the logs label with the current project logging path."""
