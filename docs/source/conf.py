@@ -17,7 +17,7 @@ import setuptools_scm
 sys.path.insert(0, os.path.abspath("../.."))
 
 project = "datashuttle"
-copyright = "2022, Neuroinformatics Unit"
+copyright = "2023, University College London"
 author = "Neuroinformatics Unit"
 
 # Retrieve the version number from the package
