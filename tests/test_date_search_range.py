@@ -458,7 +458,10 @@ class TestDateSearchRange(BaseTest):
     def run_session_upload(
         self, project, subs, sessions, session_search_string
     ):
-        """"""
+        """
+        Helper method to create test folders and upload sessions with specified search criteria.
+        Returns the list of transferred session names.
+        """
         datatypes_used = test_utils.get_all_broad_folders_used(value=False)
         datatypes_used.update({"behav": True})
 
