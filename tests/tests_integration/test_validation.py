@@ -7,7 +7,7 @@ from datetime import datetime
 import pytest
 
 from datashuttle import validate_project_from_path
-from datashuttle.configs import canonical_tags, canonical_folders
+from datashuttle.configs import canonical_folders, canonical_tags
 from datashuttle.utils import formatting, validation
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
