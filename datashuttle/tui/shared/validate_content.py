@@ -114,7 +114,6 @@ class ValidateContent(Container):
                 id="validate_arguments_horizontal",
             ),
             RichLog(highlight=True, markup=True, id="validate_richlog"),
-            Label("", id="validate_logs_label"),
             Button("Validate", id="validate_validate_button"),
         ]
 
@@ -277,20 +276,10 @@ class ValidateContent(Container):
             )
         else:
             self.app.call_from_thread(self.write_results_to_richlog, output)
-            self.app.call_from_thread(self._update_logs_label)
 
     def _hide_validating_central_popup(self):
         self.validating_central_popup.dismiss()
         self.validating_central_popup = None
-
-    def _update_logs_label(self) -> None:
-        """Update the logs label with the current project logging path."""
-        assert self.interface is not None
-        self.query_one(
-            "#validate_logs_label"
-        ).value = (
-            f"Logs output to: {self.interface.project.get_logging_path()}"
-        )
 
     def write_results_to_richlog(self, results):
         """Display the validation results on the Rich Log widget."""
