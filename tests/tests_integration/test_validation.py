@@ -796,12 +796,12 @@ class TestValidation(BaseTest):
         """
         tag = canonical_tags.tags(format)
 
-        name_templates = {
+        validation_templates = {
             "on": True,
             "sub": rf"sub-{tag}_id-123",
             "ses": rf"ses-{tag}_id-123",
         }
-        project.set_name_templates(name_templates)
+        project.set_validation_templates(validation_templates)
 
         allow_letters = format == "datetime"
 
