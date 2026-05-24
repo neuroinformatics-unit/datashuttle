@@ -431,7 +431,7 @@ class TestDateSearchRange(BaseTest):
         assert sorted(transferred_sessions) == sorted(expected_sessions)
 
     def test_datetime_as_sub_or_ses_value(self, project):
-        """ """
+        """Test datetime range filtering when datetimes are used directly as sub/ses values (e.g., ses-20240301T110101)."""
         subs = ["sub-001"]
 
         sessions = [
