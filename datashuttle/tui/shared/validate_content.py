@@ -156,7 +156,6 @@ class ValidateContent(Container):
             )
 
         elif event.button.id == "validate_validate_button":
-
             # Get settings from widgets
             select_value = self.query_one(
                 "#validate_top_level_folder_select"
@@ -173,7 +172,6 @@ class ValidateContent(Container):
             ).value
 
             if self.interface:
-
                 # If we are in a project, and it has a central storage we
                 # will connect and, if it's a slow connection, show a waiting screen
                 if self.interface.project.is_local_project():
@@ -186,7 +184,6 @@ class ValidateContent(Container):
                 if include_central and self.interface.project.cfg[
                     "connection_method"
                 ] in ["aws", "gdrive", "ssh"]:
-
                     self.validating_central_popup = (
                         modal_dialogs.CentralWaitingScreen(
                             "Validating central project..."
