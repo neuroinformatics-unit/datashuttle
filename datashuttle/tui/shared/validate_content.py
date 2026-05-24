@@ -156,6 +156,8 @@ class ValidateContent(Container):
             )
 
         elif event.button.id == "validate_validate_button":
+
+            # Get settings from widgets
             select_value = self.query_one(
                 "#validate_top_level_folder_select"
             ).value
@@ -171,6 +173,9 @@ class ValidateContent(Container):
             ).value
 
             if self.interface:
+
+                # If we are in a project, and it has a central storage we
+                # will connect and, if it's a slow connection, show a waiting screen
                 if self.interface.project.is_local_project():
                     include_central = False
                 else:
@@ -181,6 +186,7 @@ class ValidateContent(Container):
                 if include_central and self.interface.project.cfg[
                     "connection_method"
                 ] in ["aws", "gdrive", "ssh"]:
+
                     self.validating_central_popup = (
                         modal_dialogs.CentralWaitingScreen(
                             "Validating central project..."
@@ -189,31 +195,16 @@ class ValidateContent(Container):
                     self.parent_class.mainwindow.push_screen(
                         self.validating_central_popup
                     )
-                    self._validate_task = asyncio.create_task(
-                        self.run_validate_and_dismiss_popup(
-                            top_level_folder=top_level_folder,
-                            include_central=include_central,
-                            strict_mode=strict_mode,
-                            allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
-                        ),
-                        name="validate_async_task",
-                    )
-                else:
-                    success, output = self.interface.validate_project(
+
+                asyncio.create_task(
+                    self.run_validate_and_dismiss_popup(
                         top_level_folder=top_level_folder,
                         include_central=include_central,
                         strict_mode=strict_mode,
                         allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
-                    )
-                    if not success:
-                        self.parent_class.mainwindow.show_modal_error_dialog(
-                            cast("str", output)
-                        )
-                    else:
-                        self.write_results_to_richlog(output)
-                        self.query_one(
-                            "#validate_logs_label"
-                        ).value = f"Logs output to: {self.interface.project.get_logging_path()}"
+                    ),
+                    name="validate_async_task",
+                )
             else:
                 path_ = self.query_one("#validate_path_input").value
 
@@ -257,10 +248,7 @@ class ValidateContent(Container):
             allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
         )
         await worker.wait()
-        if (
-            hasattr(self, "validating_central_popup")
-            and self.validating_central_popup
-        ):
+        if self.validating_central_popup:
             self.validating_central_popup.dismiss()
             self.validating_central_popup = None
 
@@ -274,16 +262,18 @@ class ValidateContent(Container):
     ) -> Worker[None]:
         """Run validation in a separate thread to avoid freezing the TUI."""
         assert self.interface is not None
+
         success, output = self.interface.validate_project(
             top_level_folder=top_level_folder,
             include_central=include_central,
             strict_mode=strict_mode,
             allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
         )
+
         if not success:
             self.app.call_from_thread(
                 self.parent_class.mainwindow.show_modal_error_dialog,
-                cast("str", output),
+                output,
             )
         else:
             self.app.call_from_thread(self.write_results_to_richlog, output)
