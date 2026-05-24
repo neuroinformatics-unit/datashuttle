@@ -1,4 +1,9 @@
 # -*- mode: python ; coding: utf-8 -*-
+import os
+
+TARGET_ARCH = os.environ.get("TARGET_ARCH") or None
+MACOS_MIN_VERSION = os.environ.get("MACOS_MIN_VERSION", "10.13.0")
+DATASHUTTLE_VERSION = os.environ.get("DATASHUTTLE_VERSION", "0.0.0")
 
 a = Analysis(
     ['terminal_launcher_macos.py'],
@@ -28,7 +33,7 @@ exe = EXE(
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
-    target_arch=None,
+    target_arch=TARGET_ARCH,
     codesign_identity=None,
     entitlements_file=None,
 )
@@ -47,17 +52,17 @@ app = BUNDLE(
     exe,
     a.binaries,
     a.datas,
-    name='datashuttle.app',  # <- the app bundle name
-    icon=None,                     # <- optional .icns file here
-    bundle_identifier="com.yourdomain.terminal_launcher",  # optional
+    name='Datashuttle.app',
+    icon=None,
+    bundle_identifier='dev.neuroinformatics.datashuttle',
     info_plist={
         'NSHighResolutionCapable': 'True',
         'CFBundleDisplayName': 'Datashuttle',
         'CFBundleName': 'Datashuttle',
-        'CFBundleIdentifier': 'com.yourdomain.datashuttle',
-        'CFBundleVersion': '0.1.0',
-        'CFBundleShortVersionString': '0.1.0',
+        'CFBundleIdentifier': 'dev.neuroinformatics.datashuttle',
+        'CFBundleVersion': DATASHUTTLE_VERSION,
+        'CFBundleShortVersionString': DATASHUTTLE_VERSION,
         'NSPrincipalClass': 'NSApplication',
-        'LSMinimumSystemVersion': '10.13.0',
+        'LSMinimumSystemVersion': MACOS_MIN_VERSION,
     }
 )

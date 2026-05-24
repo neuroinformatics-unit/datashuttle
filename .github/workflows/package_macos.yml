@@ -1,0 +1,89 @@
+name: macos-build
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ "v*" ]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-macos:
+    name: ${{ matrix.target_arch }} (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # macos-13 was deprecated by GitHub in Feb 2026. We now build on
+          # newer images and use MACOSX_DEPLOYMENT_TARGET to pin the
+          # backward-compatibility floor (the deployment target, not the
+          # build host, is what determines the minimum macOS the binary
+          # will run on).
+          - os: macos-15-intel
+            target_arch: x86_64
+            macos_min_version: "10.13.0"
+            macosx_deployment_target: "10.13"
+          - os: macos-14
+            target_arch: arm64
+            macos_min_version: "11.0.0"
+            macosx_deployment_target: "11.0"
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    env:
+      TARGET_ARCH: ${{ matrix.target_arch }}
+      MACOS_MIN_VERSION: ${{ matrix.macos_min_version }}
+      MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macosx_deployment_target }}
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # Need full history for setuptools_scm to derive the version.
+          fetch-depth: 0
+
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: "3.12"
+          auto-update-conda: true
+          channels: conda-forge
+          activate-environment: "datashuttle-package"
+
+      - name: Install rclone
+        run: conda install -c conda-forge rclone
+
+      - name: Install create-dmg
+        run: brew install create-dmg
+
+      - name: Install datashuttle and packaging deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install .[dev]
+          pip install pyinstaller
+
+      - name: Run macOS packaging script
+        run: python package/package_macos.py
+
+      - name: Verify .app bundle is valid for this arch
+        run: |
+          BIN="package/dist/Datashuttle.app/Contents/Resources/datashuttle"
+          test -x "$BIN"
+          file "$BIN"
+          # Ensure the architecture matches what we asked PyInstaller to build.
+          lipo -archs "$BIN" | grep -q "${TARGET_ARCH}"
+          # Print the Info.plist min OS version so it's visible in the log.
+          /usr/libexec/PlistBuddy -c "Print :LSMinimumSystemVersion" \
+            package/dist/Datashuttle.app/Contents/Info.plist
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-installer-${{ matrix.target_arch }}
+          path: package/Output/datashuttle-*-${{ matrix.target_arch }}.dmg
