@@ -38,11 +38,17 @@ from datashuttle.utils.transfer_output_class import TransferOutput
 
 
 def get_command(command: str) -> str:
-    """Return an rclone command line, locating the binary appropriately.
+    r"""Return an rclone command line, locating the binary appropriately.
 
     When running from a PyInstaller bundle (``sys.frozen``), use the rclone
     binary extracted alongside the executable. Otherwise fall back to the
     `rclone` on ``PATH``.
+
+    The bundled binary path is wrapped in double quotes because PyInstaller's
+    ``_MEIPASS`` may sit under directories that contain spaces (e.g. the
+    Windows default install location ``C:\Program Files (x86)\DataShuttle\``);
+    without quoting, ``shell=True`` invocations split on the first space and
+    appear as "rclone not installed" to the caller.
     """
     from pathlib import Path
 
@@ -50,9 +56,10 @@ def get_command(command: str) -> str:
         # PyInstaller: binary extracted to _MEIPASS
         meipass = sys._MEIPASS  # type: ignore[attr-defined]
         if sys.platform == "win32":
-            format_command = f"{Path(meipass) / 'rclone.exe'!s} {command}"
+            rclone_path = Path(meipass) / "rclone.exe"
         else:
-            format_command = f"{meipass}/rclone {command}"
+            rclone_path = Path(meipass) / "rclone"
+        format_command = f'"{rclone_path}" {command}'
     else:
         # Normal Python execution: use PATH or fixed path
         format_command = f"rclone {command}"  # or provide full path if needed
