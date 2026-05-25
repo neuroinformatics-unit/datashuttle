@@ -94,8 +94,10 @@ shutil.copytree(
     vendored_dir / WEZTERM_FOLDERNAME, vendored_output_path, dirs_exist_ok=True
 )
 
-# Copy the datashuttle license
-shutil.copy(project_root / "license.txt", dist_dir)
+# Copy the datashuttle license. We pull from the canonical top-level LICENSE
+# file at the repo root so there is a single source of truth; Inno Setup picks
+# it up via `LicenseFile=` and displays it as the EULA during install.
+shutil.copy(project_root.parent / "LICENSE", dist_dir / "license.txt")
 
 # Copy the datashuttle icon
 shutil.copy(project_root / "NeuroBlueprint_icon.ico", dist_dir)

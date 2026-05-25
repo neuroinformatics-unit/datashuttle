@@ -30,7 +30,7 @@ The key files are:
 - **datashuttle.spec**: The pyinstaller command file that packages datashuttle, through `datashuttle_launcher.py` script.
     This outputs a datashuttle executable that contains all datashuttle dependencies, and can be run through a terminal.
 - **datashuttle_launcher.py**: A wrapper script that `datashuttle.spec` packages, that launches datashuttle.
-- **license.txt**: The datashuttle license
+- **license.txt**: Generated at build time by copying the top-level `LICENSE` (MIT) into `dist/`. Used as the installer EULA (Inno Setup `LicenseFile=` on Windows, `create-dmg --eula` on macOS).
 - **package_<macos_or_windows>.py**: The entry point script that coordinates the packaging of datashuttle on macOS / Windows.
 - **terminal_launcher_<macos_or_windows>.py**: The entry point script for the final datashuttle distribution.
     It opens Wezterm and runs the datashuttle executable in it.

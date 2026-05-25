@@ -92,6 +92,13 @@ shutil.copy(
     app_resources / "_vendored" / WEZTERM_FOLDERNAME,
 )
 
+# Stage the EULA file alongside the build outputs. We copy from the canonical
+# top-level LICENSE so there is a single source of truth, and pass the staged
+# path to create-dmg via `--eula` so Finder prompts the user to accept the
+# MIT license before mounting the disk image.
+license_path = project_root / "dist" / "license.txt"
+shutil.copy(project_root.parent / "LICENSE", license_path)
+
 # Build a .dmg for distribution.
 output_dir = project_root / "Output"
 output_dir.mkdir(exist_ok=True)
@@ -117,6 +124,8 @@ subprocess.run(
         "--app-drop-link",
         "450",
         "200",
+        "--eula",
+        str(license_path),
         str(dmg_path),
         str(project_root / "dist" / "Datashuttle.app"),
     ],

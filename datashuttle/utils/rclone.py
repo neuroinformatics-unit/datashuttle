@@ -132,13 +132,13 @@ def call_rclone_through_script_for_central_connection(
     """
     system = platform.system()
 
+    format_command = get_command(command)
+
     if system == "Windows":
         suffix = ".bat"
     else:
         suffix = ".sh"
-        command = "#!/bin/bash\n" + command
-
-    format_command = get_command(command)
+        format_command = "#!/bin/bash\n" + format_command
 
     with tempfile.NamedTemporaryFile(
         mode="w", suffix=suffix, delete=False

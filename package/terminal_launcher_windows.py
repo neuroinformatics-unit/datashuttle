@@ -42,8 +42,11 @@ def main():
 
     # Print all vars for debugging:
     print("Local Variables: \n")
-    for var in locals():
-        print(f"{eval(var)}: {var}\n")
+    # Snapshot items() because the loop body would otherwise mutate the
+    # locals dict it is iterating over (`var`/`val` bindings) -> RuntimeError
+    # "dictionary changed size during iteration".
+    for var, val in list(locals().items()):
+        print(f"{val}: {var}\n")
 
     # Start the Wezterm terminal, and within it start datashuttle
     env = os.environ.copy()
