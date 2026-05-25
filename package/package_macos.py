@@ -36,10 +36,17 @@ if not (vendored_dir / WEZTERM_FOLDERNAME).exists():
     packaging_utils.download_wezterm(vendored_dir, WEZTERM_FOLDERNAME)
 
 # Build the datashuttle executable and the terminal-launcher .app bundle.
+# Pin pyinstaller's output to `package/dist` and `package/build` so we don't
+# depend on the caller's CWD (the script is typically invoked from the repo
+# root as `python package/package_macos.py`).
 subprocess.run(
     [
         "pyinstaller",
         str(project_root / "datashuttle.spec"),
+        "--distpath",
+        str(project_root / "dist"),
+        "--workpath",
+        str(project_root / "build"),
         "--noconfirm",
         "--clean",
     ],
@@ -49,6 +56,10 @@ subprocess.run(
     [
         "pyinstaller",
         str(project_root / "terminal_launcher_macos.spec"),
+        "--distpath",
+        str(project_root / "dist"),
+        "--workpath",
+        str(project_root / "build"),
         "--noconfirm",
         "--clean",
     ],
