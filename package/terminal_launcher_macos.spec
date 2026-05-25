@@ -3,7 +3,13 @@ import os
 
 TARGET_ARCH = os.environ.get("TARGET_ARCH") or None
 MACOS_MIN_VERSION = os.environ.get("MACOS_MIN_VERSION", "10.13.0")
-DATASHUTTLE_VERSION = os.environ.get("DATASHUTTLE_VERSION", "0.0.0")
+try:
+    DATASHUTTLE_VERSION = os.environ["DATASHUTTLE_VERSION"]
+except KeyError as exc:
+    raise RuntimeError(
+        "DATASHUTTLE_VERSION env var is not set; run this spec via "
+        "package/package_macos.py rather than invoking pyinstaller directly."
+    ) from exc
 
 a = Analysis(
     ['terminal_launcher_macos.py'],

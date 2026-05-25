@@ -5,6 +5,14 @@ on:
     branches: [ main ]
     tags: [ "v*" ]
   pull_request:
+  # Manual trigger so you can exercise the build (and optionally the
+  # release-upload step) from the Actions tab without cutting a tag.
+  workflow_dispatch:
+    inputs:
+      test_release_upload:
+        description: "Also push the .dmg(s) to a throwaway draft Release for end-to-end testing."
+        type: boolean
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -14,6 +22,13 @@ jobs:
   build-macos:
     name: ${{ matrix.target_arch }} (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+
+    # `contents: write` is required for softprops/action-gh-release to
+    # create / update the GitHub Release. The release step itself is
+    # gated to tag pushes only, so PRs and main-branch pushes don't get
+    # write access.
+    permissions:
+      contents: write
 
     strategy:
       fail-fast: false
@@ -87,3 +102,25 @@ jobs:
         with:
           name: macos-installer-${{ matrix.target_arch }}
           path: package/Output/datashuttle-*-${{ matrix.target_arch }}.dmg
+
+      # Attach the .dmg to a GitHub Release in two cases:
+      #  * Real tag push (v*) -> draft release named after the tag.
+      #  * Manual run with `test_release_upload=true` -> draft release
+      #    named `test-build-<run_id>`, safe to delete afterwards.
+      # `softprops/action-gh-release` creates the release as a draft if
+      # it doesn't already exist, and appends assets if it does — so the
+      # arm64 and x86_64 matrix jobs both attach to the same release.
+      - name: Attach .dmg to GitHub Release
+        if: >-
+          startsWith(github.ref, 'refs/tags/v') ||
+          (github.event_name == 'workflow_dispatch' &&
+           inputs.test_release_upload)
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          prerelease: ${{ github.event_name == 'workflow_dispatch' }}
+          tag_name: ${{ github.event_name == 'workflow_dispatch' && format('test-build-{0}', github.run_id) || github.ref_name }}
+          name: ${{ github.event_name == 'workflow_dispatch' && format('Test build {0}', github.run_id) || github.ref_name }}
+          target_commitish: ${{ github.sha }}
+          files: package/Output/datashuttle-*-${{ matrix.target_arch }}.dmg
+          fail_on_unmatched_files: true

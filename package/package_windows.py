@@ -9,8 +9,11 @@ from make_inno_setup_script import make_inno_setup_script
 
 try:
     DATASHUTTLE_VERSION = version("datashuttle")
-except PackageNotFoundError:
-    DATASHUTTLE_VERSION = "0.0.0"
+except PackageNotFoundError as exc:
+    raise RuntimeError(
+        "datashuttle is not installed in the current Python environment; "
+        "run `pip install .` (or `pip install -e .`) before packaging."
+    ) from exc
 
 WEZTERM_VERSION = packaging_utils.get_wezterm_version()
 WEZTERM_FOLDERNAME = f"WezTerm-windows-{WEZTERM_VERSION}"

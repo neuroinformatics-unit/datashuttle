@@ -9,8 +9,11 @@ import packaging_utils
 
 try:
     DATASHUTTLE_VERSION = version("datashuttle")
-except PackageNotFoundError:
-    DATASHUTTLE_VERSION = "0.0.0"
+except PackageNotFoundError as exc:
+    raise RuntimeError(
+        "datashuttle is not installed in the current Python environment; "
+        "run `pip install .` (or `pip install -e .`) before packaging."
+    ) from exc
 
 # Architecture is set by CI via TARGET_ARCH (x86_64 or arm64); fall back to host.
 TARGET_ARCH = os.environ.get("TARGET_ARCH") or platform.machine()
