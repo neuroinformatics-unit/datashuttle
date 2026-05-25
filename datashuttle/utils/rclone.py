@@ -31,7 +31,6 @@ import sys
 import tempfile
 from pathlib import Path
 from subprocess import CompletedProcess
-from typing import Dict, List, Literal
 
 from datashuttle.configs import canonical_configs
 from datashuttle.utils import rclone_encryption, utils
