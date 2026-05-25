@@ -20,13 +20,13 @@ def download_wezterm(vendored_dir: Path, wezterm_foldername: str) -> None:
         vendored_dir.as_posix()
     )  # unfortunately we  need to do some Path / str juggling here
 
-    # First set up Wezterm URL and paths depending on platform
-    wezterm_url = f"https://github.com/wezterm/wezterm/releases/download/{get_wezterm_version()}/{wezterm_foldername}"
-    wezterm_zip_path = f"{vendored_dir_str}/{wezterm_foldername}"
-
-    if platform.system() == "Windows":
-        wezterm_url += ".zip"
-        wezterm_zip_path += ".zip"
+    # First set up Wezterm URL and paths depending on platform.
+    # Both the macOS and Windows release assets use a `.zip` extension.
+    wezterm_url = (
+        f"https://github.com/wezterm/wezterm/releases/download/"
+        f"{get_wezterm_version()}/{wezterm_foldername}.zip"
+    )
+    wezterm_zip_path = f"{vendored_dir_str}/{wezterm_foldername}.zip"
 
     wezterm_extracted_dir = f"{vendored_dir_str}/{wezterm_foldername}"
 
