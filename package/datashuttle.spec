@@ -7,10 +7,21 @@ from glob import glob
 from pathlib import Path
 import shutil
 
-# Include .tcss files
+# Include .tcss files.
+# Anchor the glob at the spec file's location (the `package/` dir) so the
+# lookup does not depend on the caller's CWD or on PyInstaller's chdir
+# behaviour. SPECPATH is provided by PyInstaller; fall back gracefully if
+# absent (e.g. when linting the spec outside of PyInstaller).
+_spec_dir = Path(globals().get("SPECPATH", os.path.dirname(os.path.abspath(__file__))))
+_css_src_dir = (_spec_dir / ".." / "datashuttle" / "tui" / "css").resolve()
+_tcss_matches = sorted(_css_src_dir.glob("*.tcss"))
+if not _tcss_matches:
+    raise FileNotFoundError(
+        f"No .tcss files found under {_css_src_dir}; cannot build TUI styles."
+    )
 tcss_files = [
-    (f, os.path.join("datashuttle", "tui", "css"))
-    for f in glob("../datashuttle/tui/css/*.tcss")
+    (str(f), os.path.join("datashuttle", "tui", "css"))
+    for f in _tcss_matches
 ]
 
 # Get current conda environment prefix
