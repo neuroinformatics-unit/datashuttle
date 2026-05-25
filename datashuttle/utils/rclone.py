@@ -39,17 +39,21 @@ from datashuttle.utils.transfer_output_class import TransferOutput
 
 
 def get_command(command: str) -> str:
-    """ """
+    """Return an rclone command line, locating the binary appropriately.
+
+    When running from a PyInstaller bundle (``sys.frozen``), use the rclone
+    binary extracted alongside the executable. Otherwise fall back to the
+    `rclone` on ``PATH``.
+    """
     from pathlib import Path
 
     if getattr(sys, "frozen", False):
         # PyInstaller: binary extracted to _MEIPASS
+        meipass = sys._MEIPASS  # type: ignore[attr-defined]
         if sys.platform == "win32":
-            format_command = (
-                f"{str(Path(sys._MEIPASS) / 'rclone.exe')} {command}"
-            )
+            format_command = f"{Path(meipass) / 'rclone.exe'!s} {command}"
         else:
-            format_command = f"{sys._MEIPASS}/rclone {command}"
+            format_command = f"{meipass}/rclone {command}"
     else:
         # Normal Python execution: use PATH or fixed path
         format_command = f"rclone {command}"  # or provide full path if needed

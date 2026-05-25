@@ -10,6 +10,11 @@ from datashuttle.tui_launcher import main as datashuttle_main
 
 
 def run():
+    """Entry point for the packaged datashuttle executable.
+
+    Sets ``sys.argv`` to mimic invoking ``datashuttle launch`` from the CLI,
+    then calls the TUI launcher.
+    """
     # Simulate: datashuttle launch
     sys.argv = ["datashuttle", "launch"]
     datashuttle_main()

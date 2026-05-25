@@ -1,12 +1,13 @@
-"""This script launches the terminal from inside the frozen, packaged
-version of datashuttle (or from this script, if testing).
+"""Launch the terminal from inside the frozen, packaged version of datashuttle.
 
-It must know all paths relative parts to the wezterm executable.
-This differs subtly between operating system, the macOS version
-of this script is `terminal_launcher_macos.py`.
+Also works when invoked directly from this script during local testing.
 
-This script is the entry point for starting datashuttle
-in wezterm, packaged by `terminal_launcher_windows.spec`.
+It must know all path-relative parts to the wezterm executable.
+These differ subtly between operating systems; the macOS counterpart
+of this script is ``terminal_launcher_macos.py``.
+
+This script is the entry point for starting datashuttle in wezterm, as
+packaged by ``terminal_launcher_windows.spec``.
 """
 
 import os
@@ -18,6 +19,7 @@ import packaging_utils
 
 
 def main():
+    """Launch the bundled WezTerm with the datashuttle executable."""
     WEZTERM_VERSION = packaging_utils.get_wezterm_version()
 
     # Get the path relative to the running executable / script.
