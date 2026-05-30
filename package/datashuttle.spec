@@ -39,7 +39,12 @@ binaries = [(rclone_src, ".")]
 
 a = Analysis(
     ['datashuttle_launcher.py'],  # terminal_launcher
-    pathex=[os.path.abspath('..')],
+    # Anchor pathex on SPECPATH (the spec file's directory) rather than on
+    # the caller's CWD, so PyInstaller can always find the `datashuttle/`
+    # source package one level up regardless of where the build is invoked
+    # from. `os.path.abspath('..')` would resolve against CWD and silently
+    # produce a bundle missing the datashuttle modules.
+    pathex=[str((Path(SPECPATH) / "..").resolve())],
     binaries=binaries,
     datas=tcss_files,
     hiddenimports=[
@@ -50,7 +55,10 @@ a = Analysis(
         'textual.widgets._tree_control',
         'rich._unicode_data.unicode17-0-0'
     ],
-    hookspath=['hooks'],
+    # No custom hooks directory; previously set to the relative path
+    # 'hooks' which was both CWD-dependent and pointed at a nonexistent
+    # folder. Left empty so the build is fully reproducible.
+    hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],

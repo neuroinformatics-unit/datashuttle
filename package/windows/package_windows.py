@@ -1,11 +1,24 @@
 import os
 import shutil
 import subprocess
+import sys
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
-import packaging_utils
-from make_inno_setup_script import make_inno_setup_script
+# Paths.
+#   this_dir     -> package/windows/   (location of this script + windows-specific files)
+#   package_root -> package/           (shared files: datashuttle.spec, packaging_utils, etc.)
+#   repo_root    -> repo root          (top-level LICENSE etc.)
+# `package_root` is added to sys.path so `import packaging_utils` and
+# `from make_inno_setup_script import ...` keep working after the split.
+this_dir = Path(__file__).resolve().parent
+package_root = this_dir.parent
+repo_root = package_root.parent
+sys.path.insert(0, str(package_root))
+sys.path.insert(0, str(this_dir))
+
+import packaging_utils  # noqa: E402
+from make_inno_setup_script import make_inno_setup_script  # noqa: E402
 
 try:
     DATASHUTTLE_VERSION = version("datashuttle")
@@ -19,14 +32,15 @@ WEZTERM_VERSION = packaging_utils.get_wezterm_version()
 WEZTERM_FOLDERNAME = f"WezTerm-windows-{WEZTERM_VERSION}"
 WEZTERM_URL = f"https://github.com/wezterm/wezterm/releases/download/{WEZTERM_VERSION}/{WEZTERM_FOLDERNAME}.zip"
 
-project_root = Path(__file__).parent
-vendored_dir = project_root / "_vendored"
+# The vendored WezTerm cache is shared across Windows + macOS builds, so we
+# anchor it at the package root rather than under windows/ or macos/.
+vendored_dir = package_root / "_vendored"
 
 # Before we start, remove leftover folders from a previous builds
-if (build_path := project_root / "build").exists():
+if (build_path := this_dir / "build").exists():
     shutil.rmtree(build_path)
 
-if (dist_path := project_root / "dist").exists():
+if (dist_path := this_dir / "dist").exists():
     shutil.rmtree(dist_path)
 
 # First, download Wezterm to be vendored
@@ -35,14 +49,17 @@ if not (vendored_dir / WEZTERM_FOLDERNAME).exists():
 
 # Run pyinstaller that will create the datashuttle executable. This is
 # the executable that we will later call through the vendored Wezterm terminal.
+# `datashuttle.spec` lives in `package/` (shared with macOS), but build/dist
+# outputs are pinned under `package/windows/` so the two platforms never
+# clobber each other when built on the same machine.
 subprocess.run(
     [
         "pyinstaller",
-        str(project_root / "datashuttle.spec"),
+        str(package_root / "datashuttle.spec"),
         "--distpath",
-        str(project_root / "dist"),
+        str(this_dir / "dist"),
         "--workpath",
-        str(project_root / "build"),
+        str(this_dir / "build"),
         "--noconfirm",
         "--clean",
     ],
@@ -56,11 +73,11 @@ subprocess.run(
 subprocess.run(
     [
         "pyinstaller",
-        str(project_root / "terminal_launcher_windows.spec"),
+        str(this_dir / "terminal_launcher_windows.spec"),
         "--distpath",
-        str(project_root / "dist"),
+        str(this_dir / "dist"),
         "--workpath",
-        str(project_root / "build"),
+        str(this_dir / "build"),
         "--noconfirm",
         "--clean",
     ],
@@ -69,7 +86,7 @@ subprocess.run(
 
 # Now we create the distribution folder, that contains the datashuttle executable,
 # terminal launcher executable, vendored Wezterm and all auxiliary files
-dist_dir = project_root / "dist"
+dist_dir = this_dir / "dist"
 launcher_subdir = dist_dir / "terminal_launcher"
 
 # Copy contents of dist/terminal_launcher/ (the output of pyinstaller packaging of
@@ -97,15 +114,15 @@ shutil.copytree(
 # Copy the datashuttle license. We pull from the canonical top-level LICENSE
 # file at the repo root so there is a single source of truth; Inno Setup picks
 # it up via `LicenseFile=` and displays it as the EULA during install.
-shutil.copy(project_root.parent / "LICENSE", dist_dir / "license.txt")
+shutil.copy(repo_root / "LICENSE", dist_dir / "license.txt")
 
 # Copy the datashuttle icon
-shutil.copy(project_root / "NeuroBlueprint_icon.ico", dist_dir)
+shutil.copy(this_dir / "NeuroBlueprint_icon.ico", dist_dir)
 
 # Copy the Wezterm configuration file
 shutil.copy(
-    project_root / "wezterm_config.lua",
-    project_root / "dist" / "_vendored" / WEZTERM_FOLDERNAME,
+    package_root / "wezterm_config.lua",
+    this_dir / "dist" / "_vendored" / WEZTERM_FOLDERNAME,
 )
 
 # Finally, we will parcel the distribution folder into an installer.
@@ -113,12 +130,12 @@ shutil.copy(
 # distribution in the correct place on the system, create shortcuts etc.
 # Inno setup runs through a script, we generate it dynamically, removing
 # any old versions before we start.
-inno_path = project_root / "inno_compile_script.iss"
+inno_path = this_dir / "inno_compile_script.iss"
 
 if os.path.isfile(inno_path):
     os.remove(inno_path)
 
-text = make_inno_setup_script(DATASHUTTLE_VERSION, str(project_root))
+text = make_inno_setup_script(DATASHUTTLE_VERSION, str(this_dir))
 
 with open(inno_path, "w") as f:
     f.write(text.strip())

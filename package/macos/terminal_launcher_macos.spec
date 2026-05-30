@@ -8,7 +8,7 @@ try:
 except KeyError as exc:
     raise RuntimeError(
         "DATASHUTTLE_VERSION env var is not set; run this spec via "
-        "package/package_macos.py rather than invoking pyinstaller directly."
+        "package/macos/package_macos.py rather than invoking pyinstaller directly."
     ) from exc
 
 a = Analysis(

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!--
+        Required for embedded Python (ctypes / cffi / generated trampolines
+        produce executable memory pages that the default hardened-runtime
+        memory protection rejects).
+    -->
+    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    <true/>
+
+    <!--
+        We load third-party dylibs (from the conda environment, WezTerm
+        internals, rclone) that are not signed by our team ID. Without
+        this, the dynamic linker would refuse to load them.
+    -->
+    <key>com.apple.security.cs.disable-library-validation</key>
+    <true/>
+</dict>
+</plist>

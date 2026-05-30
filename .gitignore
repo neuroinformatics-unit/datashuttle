@@ -2,11 +2,14 @@
 .env
 
 # Packaging
-package/dist
-package/build
 package/_vendored
-package/Output
-package/inno_compile_script.iss
+package/windows/build
+package/windows/dist
+package/windows/Output
+package/windows/inno_compile_script.iss
+package/macos/build
+package/macos/dist
+package/macos/Output
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

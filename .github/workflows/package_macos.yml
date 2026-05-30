@@ -80,6 +80,21 @@ jobs:
       - name: Install create-dmg
         run: brew install create-dmg
 
+      # Import the Developer ID Application certificate into a temporary
+      # keychain. The keychain is torn down automatically at job end so
+      # the cert never persists on the runner. Only runs on tag pushes and
+      # opt-in manual dispatches — PRs and main-branch pushes don't get
+      # access to the secrets.
+      - name: Import code-signing certificate
+        if: >-
+          startsWith(github.ref, 'refs/tags/v') ||
+          (github.event_name == 'workflow_dispatch' &&
+           inputs.test_release_upload)
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.MACOS_CERTIFICATE }}
+          p12-password: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+
       - name: Install datashuttle and packaging deps
         run: |
           python -m pip install --upgrade pip
@@ -87,24 +102,33 @@ jobs:
           python -m pip install pyinstaller requests
 
       - name: Run macOS packaging script
-        run: python package/package_macos.py
+        env:
+          # The signing / notarisation env vars are read by
+          # package/macos/sign_macos.py. They are only present on tag pushes and
+          # opt-in manual dispatches; on PRs they are empty strings and
+          # sign_macos becomes a no-op.
+          MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        run: python package/macos/package_macos.py
 
       - name: Verify .app bundle is valid for this arch
         run: |
-          BIN="package/dist/Datashuttle.app/Contents/Resources/datashuttle"
+          BIN="package/macos/dist/Datashuttle.app/Contents/Resources/datashuttle"
           test -x "$BIN"
           file "$BIN"
           # Ensure the architecture matches what we asked PyInstaller to build.
           lipo -archs "$BIN" | grep -q "${TARGET_ARCH}"
           # Print the Info.plist min OS version so it's visible in the log.
           /usr/libexec/PlistBuddy -c "Print :LSMinimumSystemVersion" \
-            package/dist/Datashuttle.app/Contents/Info.plist
+            package/macos/dist/Datashuttle.app/Contents/Info.plist
 
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
           name: macos-installer-${{ matrix.target_arch }}
-          path: package/Output/datashuttle-*-${{ matrix.target_arch }}.dmg
+          path: package/macos/Output/datashuttle-*-${{ matrix.target_arch }}.dmg
 
       # Attach the .dmg to a GitHub Release in two cases:
       #  * Real tag push (v*) -> draft release named after the tag.
@@ -125,5 +149,5 @@ jobs:
           tag_name: ${{ github.event_name == 'workflow_dispatch' && format('test-build-{0}', github.run_id) || github.ref_name }}
           name: ${{ github.event_name == 'workflow_dispatch' && format('Test build {0}', github.run_id) || github.ref_name }}
           target_commitish: ${{ github.sha }}
-          files: package/Output/datashuttle-*-${{ matrix.target_arch }}.dmg
+          files: package/macos/Output/datashuttle-*-${{ matrix.target_arch }}.dmg
           fail_on_unmatched_files: true

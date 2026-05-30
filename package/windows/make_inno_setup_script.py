@@ -37,6 +37,9 @@ def make_inno_setup_script(version, base_path):
     ; Uncomment the following line to run in non administrative install mode (install for current user only.)
     ;PrivilegesRequired=lowest
     PrivilegesRequiredOverridesAllowed=dialog
+    ; IMPORTANT: This filename format (datashuttle_{version}.exe) must stay in
+    ; sync with the myst_substitutions in docs/source/conf.py, which builds
+    ; the direct download links on the Install page.
     OutputBaseFilename=datashuttle_"""
         + version
         + """

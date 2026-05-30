@@ -65,13 +65,13 @@ jobs:
 
       - name: Run Windows packaging script
         run: |
-          python package/package_windows.py
+          python package/windows/package_windows.py
 
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-installer
-          path: package\Output\datashuttle_*.exe
+          path: package\windows\Output\datashuttle_*.exe
 
       # Attach the .exe to a GitHub Release in two cases:
       #  * Real tag push (v*) -> draft release named after the tag.
@@ -89,5 +89,5 @@ jobs:
           tag_name: ${{ github.event_name == 'workflow_dispatch' && format('test-build-{0}', github.run_id) || github.ref_name }}
           name: ${{ github.event_name == 'workflow_dispatch' && format('Test build {0}', github.run_id) || github.ref_name }}
           target_commitish: ${{ github.sha }}
-          files: package/Output/datashuttle_*.exe
+          files: package/windows/Output/datashuttle_*.exe
           fail_on_unmatched_files: true
