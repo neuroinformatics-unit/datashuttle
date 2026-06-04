@@ -1,16 +1,18 @@
 from __future__ import annotations
 
 import platform
-from typing import TYPE_CHECKING, Optional, Union, cast
+from typing import TYPE_CHECKING, Optional, Union
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+    from textual.worker import Worker
 
     from datashuttle.tui.interface import Interface
     from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 
 from pathlib import Path
 
+from textual import work
 from textual.containers import Container, Horizontal
 from textual.widgets import (
     Button,
@@ -64,6 +66,9 @@ class ValidateContent(Container):
 
         self.parent_class = parent_class
         self.interface = interface
+        self.validating_central_popup: (
+            modal_dialogs.CentralWaitingScreen | None
+        ) = None
 
     def compose(self) -> ComposeResult:
         """Set up the widgets for the container."""
@@ -108,7 +113,6 @@ class ValidateContent(Container):
                 id="validate_arguments_horizontal",
             ),
             RichLog(highlight=True, markup=True, id="validate_richlog"),
-            Label("", id="validate_logs_label"),
             Button("Validate", id="validate_validate_button"),
         ]
 
@@ -150,6 +154,7 @@ class ValidateContent(Container):
             )
 
         elif event.button.id == "validate_validate_button":
+            # Get settings from widgets
             select_value = self.query_one(
                 "#validate_top_level_folder_select"
             ).value
@@ -165,6 +170,8 @@ class ValidateContent(Container):
             ).value
 
             if self.interface:
+                # If we are in a project, and it has a central storage we
+                # will connect and, if it's a slow connection, show a waiting screen
                 if self.interface.project.is_local_project():
                     include_central = False
                 else:
@@ -172,21 +179,24 @@ class ValidateContent(Container):
                         "#validate_include_central_checkbox"
                     ).value
 
-                success, output = self.interface.validate_project(
+                if include_central and self.interface.project.cfg[
+                    "connection_method"
+                ] in ["aws", "gdrive", "ssh"]:
+                    self.validating_central_popup = (
+                        modal_dialogs.CentralWaitingScreen(
+                            "Validating central project..."
+                        )
+                    )
+                    self.parent_class.mainwindow.push_screen(
+                        self.validating_central_popup
+                    )
+
+                self.run_validate_and_dismiss_popup(
                     top_level_folder=top_level_folder,
                     include_central=include_central,
                     strict_mode=strict_mode,
                     allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
                 )
-                if not success:
-                    self.parent_class.mainwindow.show_modal_error_dialog(
-                        cast("str", output)
-                    )
-                else:
-                    self.write_results_to_richlog(output)
-                    self.query_one(
-                        "#validate_logs_label"
-                    ).value = f"Logs output to: {self.interface.project.get_logging_path()}"
             else:
                 path_ = self.query_one("#validate_path_input").value
 
@@ -214,6 +224,65 @@ class ValidateContent(Container):
         """Fill the Input with the path_ if it is not None."""
         if path_:
             self.query_one("#validate_path_input").value = path_.as_posix()
+
+    @work(group="validate_async", exclusive=True)
+    async def run_validate_and_dismiss_popup(
+        self,
+        top_level_folder,
+        include_central,
+        strict_mode,
+        allow_letters_in_sub_ses_values,
+    ) -> None:
+        """Run validation in a worker thread and dismiss the waiting popup when done.
+
+        Decorated with ``@work`` so Textual owns the task lifecycle (no need to
+        hold an ``asyncio.Task`` reference to prevent premature GC), and so a
+        repeat button-press cancels the previous in-flight invocation via
+        ``exclusive=True``.
+        """
+        worker = self.validate_project_worker(
+            top_level_folder=top_level_folder,
+            include_central=include_central,
+            strict_mode=strict_mode,
+            allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
+        )
+        await worker.wait()
+        if self.validating_central_popup:
+            self._hide_validating_central_popup()
+
+    @work(exclusive=True, thread=True)
+    def validate_project_worker(
+        self,
+        top_level_folder,
+        include_central,
+        strict_mode,
+        allow_letters_in_sub_ses_values,
+    ) -> Worker[None]:
+        """Run validation in a separate thread to avoid freezing the TUI."""
+        assert self.interface is not None
+
+        success, output = self.interface.validate_project(
+            top_level_folder=top_level_folder,
+            include_central=include_central,
+            strict_mode=strict_mode,
+            allow_letters_in_sub_ses_values=allow_letters_in_sub_ses_values,
+        )
+
+        if not success:
+            if self.validating_central_popup:
+                self.app.call_from_thread(
+                    self._hide_validating_central_popup,
+                )
+            self.app.call_from_thread(
+                self.parent_class.mainwindow.show_modal_error_dialog,
+                output,
+            )
+        else:
+            self.app.call_from_thread(self.write_results_to_richlog, output)
+
+    def _hide_validating_central_popup(self):
+        self.validating_central_popup.dismiss()
+        self.validating_central_popup = None
 
     def write_results_to_richlog(self, results):
         """Display the validation results on the Rich Log widget."""

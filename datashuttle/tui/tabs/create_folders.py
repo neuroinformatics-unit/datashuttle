@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 from typing import TYPE_CHECKING, List, Optional
 
 if TYPE_CHECKING:
@@ -26,15 +25,13 @@ from datashuttle.tui.custom_widgets import (
     CustomDirectoryTree,
     TreeAndInputTab,
 )
+from datashuttle.tui.screens import modal_dialogs
 from datashuttle.tui.screens.create_folder_settings import (
     CreateFoldersSettingsScreen,
 )
 from datashuttle.tui.screens.datatypes import (
     CreateDatatypeCheckboxes,
     DisplayedDatatypesScreen,
-)
-from datashuttle.tui.screens.modal_dialogs import (
-    SearchingCentralForNextSubSesPopup,
 )
 from datashuttle.tui.tooltips import get_tooltip
 from datashuttle.tui.utils.tui_decorators import (
@@ -65,7 +62,7 @@ class CreateFoldersTab(TreeAndInputTab):
         self.mainwindow = mainwindow
         self.interface = interface
         self.searching_central_popup_widget: (
-            SearchingCentralForNextSubSesPopup | None
+            modal_dialogs.CentralWaitingScreen | None
         ) = None
 
         self.click_info = ClickInfo()
@@ -318,7 +315,7 @@ class CreateFoldersTab(TreeAndInputTab):
         Shows a pop up screen in cases when searching for next sub/ses takes
         time such as searching central in SSH connection method.
 
-        Creates an asyncio task which handles the suggestion logic and
+        Spawns a Textual worker which handles the suggestion logic and
         dismissing the pop up.
 
         Parameters
@@ -342,17 +339,17 @@ class CreateFoldersTab(TreeAndInputTab):
             "connection_method"
         ] in ["aws", "gdrive", "ssh"]:
             self.searching_central_popup_widget = (
-                SearchingCentralForNextSubSesPopup(prefix)
+                modal_dialogs.CentralWaitingScreen(
+                    f"Searching central for next {prefix}"
+                )
             )
             self.mainwindow.push_screen(self.searching_central_popup_widget)
 
-        asyncio.create_task(
-            self.fill_suggestion_and_dismiss_popup(
-                prefix, input_id, include_central
-            ),
-            name=f"suggest_next_{prefix}_async_task",
+        self.fill_suggestion_and_dismiss_popup(
+            prefix, input_id, include_central
         )
 
+    @work(group="suggest_next_async", exclusive=True)
     async def fill_suggestion_and_dismiss_popup(
         self, prefix, input_id, include_central
     ) -> None:
@@ -363,6 +360,11 @@ class CreateFoldersTab(TreeAndInputTab):
 
         Else, if the worker successfully exits, this function handles dismissal
         of the popup.
+
+        Decorated with ``@work`` so Textual owns the task lifecycle (no need to
+        hold an ``asyncio.Task`` reference to prevent premature GC), and so a
+        repeat invocation cancels the previous in-flight one via
+        ``exclusive=True``.
 
         see `suggest_next_sub_ses()` for parameters.
         """
