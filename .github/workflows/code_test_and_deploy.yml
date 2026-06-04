@@ -98,13 +98,17 @@ jobs:
         # run Linux containers because nested containerisation is disabled.
       - name: Test SSH (Linux only)
         if: runner.os == 'Linux'
+        env:
+          COVERAGE_FILE: .coverage.ssh
         run: |
           sudo service mysql stop  # free up port 3306 for ssh tests
-          pytest tests/tests_transfers/ssh
+          pytest tests/tests_transfers/ssh --cov=datashuttle --cov-report=
 
       - name: Test all except central connections
+        env:
+          COVERAGE_FILE: .coverage.main
         run: |
-          pytest --ignore=tests/tests_transfers/ssh --ignore=tests/tests_transfers/gdrive --ignore=tests/tests_transfers/aws
+          pytest --ignore=tests/tests_transfers/ssh --ignore=tests/tests_transfers/gdrive --ignore=tests/tests_transfers/aws --cov=datashuttle --cov-report=
 
       - name: Test Google Drive
         env:
@@ -112,8 +116,9 @@ jobs:
           GDRIVE_CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
           GDRIVE_ROOT_FOLDER_ID: ${{ secrets.GDRIVE_ROOT_FOLDER_ID }}
           GDRIVE_CONFIG_TOKEN: ${{ secrets.GDRIVE_CONFIG_TOKEN }}
+          COVERAGE_FILE: .coverage.gdrive
         run: |
-          pytest tests/tests_transfers/gdrive
+          pytest tests/tests_transfers/gdrive --cov=datashuttle --cov-report=
 
       - name: Test AWS
         env:
@@ -121,8 +126,20 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
+          COVERAGE_FILE: .coverage.aws
         run: |
-          pytest tests/tests_transfers/aws
+          pytest tests/tests_transfers/aws --cov=datashuttle --cov-report=
+
+      - name: Combine coverage reports
+        run: |
+          coverage combine
+          coverage xml
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: neuroinformatics-unit/datashuttle
 
   build_sdist_wheels:
     name: Build source distribution
