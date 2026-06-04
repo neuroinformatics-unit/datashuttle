@@ -242,13 +242,11 @@ class TestValidationUnit:
         """
         date_regexp = r"sub-\d\d@DATE@_some-tag"
         fixed_date_regexp = validation.replace_tags_in_regexp(date_regexp)
-        assert fixed_date_regexp == r"sub-\d\d_date-\d\d\d\d\d\d\d\d_some-tag"
+        assert fixed_date_regexp == r"sub-\d\d_date-\d{8}_some-tag"
 
         time_regexp = r"ses-\d\d\d\d@TIME@_some-.?.?tag"
         fixed_time_regexp = validation.replace_tags_in_regexp(time_regexp)
-        assert (
-            fixed_time_regexp == r"ses-\d\d\d\d_time-\d\d\d\d\d\d_some-.?.?tag"
-        )
+        assert fixed_time_regexp == r"ses-\d\d\d\d_time-\d{6}_some-.?.?tag"
 
         datetime_regexp = r"ses-.?.?.?@DATETIME@some-.?.?tag"
         fixed_datetime_regexp = validation.replace_tags_in_regexp(
@@ -256,7 +254,7 @@ class TestValidationUnit:
         )
         assert (
             fixed_datetime_regexp
-            == r"ses-.?.?.?_datetime-\d\d\d\d\d\d\d\dT\d\d\d\d\d\d_some-.?.?tag"
+            == r"ses-.?.?.?_datetime-\d{8}T\d{6}_some-.?.?tag"
         )
 
     def test_handle_path(self):
