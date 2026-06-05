@@ -5,7 +5,6 @@
 [![codecov](https://codecov.io/gh/neuroinformatics-unit/datashuttle/branch/main/graph/badge.svg?token=P8CCH3TI8K)](https://codecov.io/gh/neuroinformatics-unit/datashuttle)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://neuroinformatics.zulipchat.com/#narrow/channel/405999-DataShuttle)
-[![DOI](https://zenodo.org/badge/531897428.svg)](https://zenodo.org/badge/latestdoi/531897428)
 
 # **datashuttle**
 
