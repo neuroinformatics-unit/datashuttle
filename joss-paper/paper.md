@@ -97,7 +97,7 @@ Currently, NeuroBlueprint is designed for experiments in which subjects go throu
 
 # Availability
 
-Datashuttle’s source code is available at https://github.com/neuroinformatics-unit/datashuttle and documentation published at https://datashuttle.neuroinformatics.dev.
+Datashuttle’s source code is available at <https://github.com/neuroinformatics-unit/datashuttle> and documentation published at <https://datashuttle.neuroinformatics.dev>.
 
 # Acknowledgements
 
