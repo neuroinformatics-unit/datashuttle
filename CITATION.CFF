@@ -1,4 +1,21 @@
 cff-version: "1.2.0"
+type: software
+repository-code: https://github.com/neuroinformatics-unit/datashuttle
+url: https://datashuttle.neuroinformatics.dev
+abstract: >-
+  Datashuttle is a Python package that facilitates data standardisation in neuroscience.
+  Experimental data are often stored using custom folder structures and naming conventions,
+  which hinders data sharing, reproducibility, and the development of community tools.
+  Datashuttle addresses this by providing user-friendly tools to create, validate, and transfer
+  standardised experimental data folders. The package can be used programmatically—integrated
+  into existing Python scripts for data acquisition—or via a graphical user interface.
+keywords:
+  - Python
+  - Neuroscience
+  - Data management
+  - Standardisation
+  - FAIR
+license: BSD-3-Clause
 authors:
 - family-names: Ziminski
   given-names: Joseph J.
