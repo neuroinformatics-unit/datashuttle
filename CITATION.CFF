@@ -1,46 +1,71 @@
-cff-version: 1.2.0
-title: "datashuttle: automated data management for experimental neuroscience"
-message: >-
-  If you use datashuttle in your work, please cite the following Zenodo DOI.
-type: software
+cff-version: "1.2.0"
 authors:
-  - given-names: Joseph J.
-    family-names: Ziminski
-    orcid: https://orcid.org/0000-0003-4286-6868
+- family-names: Ziminski
+  given-names: Joseph J.
+  orcid: "https://orcid.org/0000-0003-4286-6868"
+  affiliation: Neuroinformatics Unit, Sainsbury Wellcome Centre & Gatsby Computational Neuroscience Unit, University College London, London, U.K.
+- family-names: Sirmpilatze
+  given-names: Nikoloz
+  orcid: "https://orcid.org/0000-0003-1778-2427"
+  affiliation: Neuroinformatics Unit, Sainsbury Wellcome Centre & Gatsby Computational Neuroscience Unit, University College London, London, U.K.
+- family-names: Peri
+  given-names: Brandon D.
+  affiliation: Department of Physiology, Development and Neuroscience, University of Cambridge, Cambridge, United Kingdom
+- family-names: Singh
+  given-names: Shrey
+  affiliation: Netaji Subhas University of Technology, New Delhi, India
+- family-names: Keshavarzi
+  given-names: Sepiedeh
+  orcid: "https://orcid.org/0000-0002-7310-8034"
+  affiliation: Department of Physiology, Development and Neuroscience, University of Cambridge, Cambridge, United Kingdom
+- family-names: Tyson
+  given-names: Adam L.
+  orcid: "https://orcid.org/0000-0003-3225-1130"
+  affiliation: Neuroinformatics Unit, Sainsbury Wellcome Centre & Gatsby Computational Neuroscience Unit, University College London, London, U.K.
+contact:
+- family-names: Tyson
+  given-names: Adam L.
+  orcid: "https://orcid.org/0000-0003-3225-1130"
+  affiliation: Neuroinformatics Unit, Sainsbury Wellcome Centre & Gatsby Computational Neuroscience Unit, University College London, London, U.K.
+doi: 10.5281/zenodo.20633972
+message: If you use this software, please cite our article in the
+  Journal of Open Source Software.
+preferred-citation:
+  authors:
+  - family-names: Ziminski
+    given-names: Joseph J.
+    orcid: "https://orcid.org/0000-0003-4286-6868"
     affiliation: Neuroinformatics Unit, Sainsbury Wellcome Centre & Gatsby Computational Neuroscience Unit, University College London, London, U.K.
-  - given-names: Nikoloz
-    family-names: Sirmpilatze
-    orcid: https://orcid.org/0000-0003-1778-2427
+  - family-names: Sirmpilatze
+    given-names: Nikoloz
+    orcid: "https://orcid.org/0000-0003-1778-2427"
     affiliation: Neuroinformatics Unit, Sainsbury Wellcome Centre & Gatsby Computational Neuroscience Unit, University College London, London, U.K.
-  - given-names: Brandon D.
-    family-names: Peri
+  - family-names: Peri
+    given-names: Brandon D.
     affiliation: Department of Physiology, Development and Neuroscience, University of Cambridge, Cambridge, United Kingdom
-  - given-names: Shrey
-    family-names: Singh
+  - family-names: Singh
+    given-names: Shrey
     affiliation: Netaji Subhas University of Technology, New Delhi, India
-  - given-names: Sepiedeh
-    family-names: Keshavarzi
-    orcid: https://orcid.org/0000-0002-7310-8034
+  - family-names: Keshavarzi
+    given-names: Sepiedeh
+    orcid: "https://orcid.org/0000-0002-7310-8034"
     affiliation: Department of Physiology, Development and Neuroscience, University of Cambridge, Cambridge, United Kingdom
-  - given-names: Adam L.
-    family-names: Tyson
-    orcid: https://orcid.org/0000-0003-3225-1130
+  - family-names: Tyson
+    given-names: Adam L.
+    orcid: "https://orcid.org/0000-0003-3225-1130"
     affiliation: Neuroinformatics Unit, Sainsbury Wellcome Centre & Gatsby Computational Neuroscience Unit, University College London, London, U.K.
-identifiers:
-  - type: doi
-    value: 10.5281/zenodo.20633972
-    description: A collection of archived snapshots of datashuttle on Zenodo.
-repository-code: https://github.com/neuroinformatics-unit/datashuttle
-url: https://datashuttle.neuroinformatics.dev
-abstract: >-
-  Datashuttle is a Python package that facilitates data standardisation in
-  neuroscience. It provides user-friendly tools to create, validate, and
-  transfer standardised experimental data folders following the NeuroBlueprint
-  specification, usable programmatically or via a graphical user interface.
-keywords:
-  - Python
-  - Neuroscience
-  - Data management
-  - Standardisation
-  - FAIR
-license: BSD-3-Clause
+  date-published: 2026-06-16
+  doi: 10.21105/joss.09642
+  issn: 2475-9066
+  issue: 122
+  journal: Journal of Open Source Software
+  publisher:
+    name: Open Journals
+  start: 9642
+  title: "datashuttle: automated data management for experimental
+    neuroscience"
+  type: article
+  url: "https://joss.theoj.org/papers/10.21105/joss.09642"
+  volume: 11
+title: "datashuttle: automated data management for experimental
+  neuroscience"
