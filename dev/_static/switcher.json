@@ -5,8 +5,12 @@
     "url": "https://datashuttle.neuroinformatics.dev/dev/"
   },
   {
-    "name": "v0.8.0 (latest)",
-    "version": "v0.8.0",
+    "name": "v0.9.0 (latest)",
+    "version": "v0.9.0",
     "url": "https://datashuttle.neuroinformatics.dev/latest/"
+  },
+  {
+    "version": "v0.8.0",
+    "url": "https://datashuttle.neuroinformatics.dev/v0.8.0/"
   }
 ]
