@@ -23,12 +23,18 @@ TEST_PROJECT_NAME = test_utils.get_test_project_name()
 
 
 class TestLogging:
-    @pytest.fixture(scope="function")
+    @pytest.fixture(scope="function", autouse=True)
     def teardown_logger(self):
-        """Ensure the logger is deleted at the end of each test."""
-        yield
+        """Ensure the logger is deleted at the start and after the test."""
+        ds_logger.close_log_filehandler()
         if "datashuttle" in logging.root.manager.loggerDict:
-            logging.root.manager.loggerDict.pop("datashuttle")
+            logging.root.manager.loggerDict.pop("datashuttle", None)
+
+        yield
+
+        ds_logger.close_log_filehandler()
+        if "datashuttle" in logging.root.manager.loggerDict:
+            logging.root.manager.loggerDict.pop("datashuttle", None)
 
     # -------------------------------------------------------------------------
     # Basic Functionality Tests
