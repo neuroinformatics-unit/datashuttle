@@ -1,0 +1,24 @@
+[
+  {
+    "name": "dev",
+    "version": "dev",
+    "url": "https://datashuttle.neuroinformatics.dev/dev/"
+  },
+  {
+    "name": "v0.9.2 (latest)",
+    "version": "v0.9.2",
+    "url": "https://datashuttle.neuroinformatics.dev/latest/"
+  },
+  {
+    "version": "v0.9.1",
+    "url": "https://datashuttle.neuroinformatics.dev/v0.9.1/"
+  },
+  {
+    "version": "v0.9.0",
+    "url": "https://datashuttle.neuroinformatics.dev/v0.9.0/"
+  },
+  {
+    "version": "v0.8.0",
+    "url": "https://datashuttle.neuroinformatics.dev/v0.8.0/"
+  }
+]
