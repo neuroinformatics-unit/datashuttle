@@ -69,6 +69,31 @@ myst_enable_extensions = [
 # Automatically add anchors to markdown headings
 myst_heading_anchors = 3
 
+# Build direct download URLs from the version tag so install.md always links
+# to the exact assets for this build. Falls back to releases/latest on dev
+# builds (e.g. pushes to main between releases).
+_gh_releases = "https://github.com/neuroinformatics-unit/datashuttle/releases"
+if "dev" not in release:
+    _dl_base = f"{_gh_releases}/download/v{release}"
+    # IMPORTANT: These filenames must exactly match the formats produced by the
+    # packaging scripts:
+    #   Windows : package/windows/make_inno_setup_script.py  ->  datashuttle_{version}.exe
+    #   macOS   : package/macos/package_macos.py             ->  datashuttle-{version}-{arch}.dmg
+    myst_substitutions = {
+        "release": release,
+        "win_installer_url": f"{_dl_base}/datashuttle_{release}.exe",
+        "mac_arm_url": f"{_dl_base}/datashuttle-{release}-arm64.dmg",
+        "mac_intel_url": f"{_dl_base}/datashuttle-{release}-x86_64.dmg",
+    }
+else:
+    _latest = f"{_gh_releases}/latest"
+    myst_substitutions = {
+        "release": release,
+        "win_installer_url": _latest,
+        "mac_arm_url": _latest,
+        "mac_intel_url": _latest,
+    }
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import sys
 from typing import TYPE_CHECKING, Dict
 
 if TYPE_CHECKING:
@@ -29,6 +30,24 @@ from datashuttle.tui.screens import (
 from datashuttle.tui.tooltips import get_tooltip
 
 
+def _resolve_css_path() -> list[Path]:
+    """Resolve the directory containing the TUI ``.tcss`` files.
+
+    When running from source, the stylesheets live next to this module.
+    When running as a PyInstaller-frozen executable, the ``.tcss`` files
+    are bundled under ``_MEIPASS/datashuttle/tui/css/`` via the spec's
+    ``datas`` entry; the synthetic ``__file__`` for this module cannot
+    be relied on for that lookup (especially on macOS), so prefer
+    ``sys._MEIPASS`` when frozen.
+    """
+    if getattr(sys, "frozen", False):
+        base = Path(getattr(sys, "_MEIPASS", Path(sys.executable).parent))
+        css_dir = base / "datashuttle" / "tui" / "css"
+    else:
+        css_dir = Path(__file__).parent / "css"
+    return sorted(css_dir.glob("*.tcss"))
+
+
 class TuiApp(App, inherit_bindings=False):  # type: ignore
     """The main app page for the DataShuttle TUI.
 
@@ -38,7 +57,7 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
     """
 
     tui_path = Path(__file__).parent
-    CSS_PATH = list(Path(tui_path / "css").glob("*.tcss"))
+    CSS_PATH = _resolve_css_path()
     ENABLE_COMMAND_PALETTE = False
 
     BINDINGS = [

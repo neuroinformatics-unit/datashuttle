@@ -1,0 +1,93 @@
+name: windows-build
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ "v*" ]
+  pull_request:
+  # Manual trigger so you can exercise the build (and optionally the
+  # release-upload step) from the Actions tab without cutting a tag.
+  workflow_dispatch:
+    inputs:
+      test_release_upload:
+        description: "Also push the .exe to a throwaway draft Release for end-to-end testing."
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    # `contents: write` is required for softprops/action-gh-release to
+    # create / update the GitHub Release. The release step itself is
+    # gated to tag pushes only.
+    permissions:
+      contents: write
+
+    defaults:
+      run:
+        shell: powershell
+
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v4
+        with:
+          python-version: "3.12"
+          auto-update-conda: true
+          channels: conda-forge
+          activate-environment: "datashuttle-test"
+
+      - name: Install pip
+        run: conda install pip
+
+      - name: Install rclone
+        run: conda install -c conda-forge rclone
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install .[dev]
+          python -m pip install pyinstaller requests
+
+      # Install Inno Setup silently
+      - name: Install Inno Setup
+        run: |
+          choco install innosetup --yes
+
+      - name: Verify Inno Setup installation
+        run: |
+          Get-Command "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+
+      - name: Run Windows packaging script
+        run: |
+          python package/windows/package_windows.py
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: package\windows\Output\datashuttle_*.exe
+
+      # Attach the .exe to a GitHub Release in two cases:
+      #  * Real tag push (v*) -> draft release named after the tag.
+      #  * Manual run with `test_release_upload=true` -> draft release
+      #    named `test-build-<run_id>`, safe to delete afterwards.
+      - name: Attach .exe to GitHub Release
+        if: >-
+          startsWith(github.ref, 'refs/tags/v') ||
+          (github.event_name == 'workflow_dispatch' &&
+           inputs.test_release_upload)
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          prerelease: ${{ github.event_name == 'workflow_dispatch' }}
+          tag_name: ${{ github.event_name == 'workflow_dispatch' && format('test-build-{0}', github.run_id) || github.ref_name }}
+          name: ${{ github.event_name == 'workflow_dispatch' && format('Test build {0}', github.run_id) || github.ref_name }}
+          target_commitish: ${{ github.sha }}
+          files: package/windows/Output/datashuttle_*.exe
+          fail_on_unmatched_files: true

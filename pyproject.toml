@@ -60,6 +60,7 @@ dev = [
     "ruff",
     "setuptools_scm",
     "textual-dev",
+    "pyinstaller",
     "types-requests",
     "types-PyYAML",
     "types-appdirs",
@@ -168,5 +169,5 @@ datashuttle = "datashuttle.tui_launcher:main"
 
 [tool.codespell]
 skip = '.git,*.pdf,*.svg,*.yml'
-#
-# ignore-words-list = ''
+# `datas` is a required PyInstaller keyword used in package/*.spec files.
+ignore-words-list = 'datas'
