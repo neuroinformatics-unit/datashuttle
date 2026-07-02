@@ -218,42 +218,96 @@ class TestDatatypesTUI(TuiBase):
     async def test_transfer_displayed_datatypes_widgets_hide_after_mode_switch(
         self, setup_project_paths
     ):
-        """Test that after editing the displayed datatypes in custom transfer, the
-        widgets are properly hidden. This test was added after a bug in which the
-        old, deleted widgets were still persistent on the other tabs.
+        """Check refreshed transfer widgets hide correctly and still drive transfer.
+
+        Covers the bug where the deleted custom widgets persisted after
+        switching transfer type, then verifies a newly displayed narrow
+        datatype can still be selected and transferred correctly.
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+        subs, sessions = test_utils.get_default_sub_sessions_to_test()
+        sub_to_transfer, ses_to_transfer = "sub-002", "ses-003"
+
+        refreshed_widgets = [
+            "#transfer_custom_datatype_checkboxes",
+            "#transfer_tab_displayed_datatypes_button",
+        ]
+
+        def assert_refreshed_widgets_display(pilot, expected):
+            for id in refreshed_widgets:
+                assert pilot.app.screen.query_one(id).display is expected
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
-
             await self.switch_tab(pilot, "transfer")
             await self.scroll_to_click_pause(
                 pilot, "#transfer_custom_radiobutton"
             )
-            await self.scroll_to_click_pause(
-                pilot,
-                "#transfer_tab_displayed_datatypes_button",
+
+            # Set up a project containing only the (narrow) "conf" datatype.
+            project = pilot.app.screen.interface.project
+            folders_used = test_utils.get_all_broad_folders_used(value=False)
+            folders_used["conf"] = True
+
+            test_utils.make_and_check_local_project_folders(
+                project,
+                "rawdata",
+                subs,
+                sessions,
+                ["conf"],
+                datatypes_used=folders_used,
             )
-            await self.scroll_to_click_pause(
-                pilot, "#displayed_datatypes_close_button"
+            _, base_path_to_check = test_utils.handle_upload_or_download(
+                project, "upload", transfer_method=None
             )
+
+            # Display the narrow datatypes, refreshing the custom widgets.
+            await self.scroll_to_click_pause(
+                pilot, "#transfer_tab_displayed_datatypes_button"
+            )
+            pilot.app.screen.query_one(
+                "#displayed_datatypes_selection_list"
+            ).toggle_all()
+            await self.scroll_to_click_pause(
+                pilot, "#displayed_datatypes_save_button"
+            )
+
+            # The refreshed widgets must hide / show with the transfer mode.
             await self.scroll_to_click_pause(
                 pilot, "#transfer_toplevel_radiobutton"
             )
+            assert_refreshed_widgets_display(pilot, False)
+
+            await self.scroll_to_click_pause(
+                pilot, "#transfer_custom_radiobutton"
+            )
+            assert_refreshed_widgets_display(pilot, True)
+
+            # Select the newly displayed "conf" datatype and transfer.
+            await self.fill_input(
+                pilot, "#transfer_subject_input", sub_to_transfer
+            )
+            await self.fill_input(
+                pilot, "#transfer_session_input", ses_to_transfer
+            )
+            await self.change_checkbox(pilot, "#transfer_conf_checkbox")
 
             assert (
                 pilot.app.screen.query_one(
                     "#transfer_custom_datatype_checkboxes"
-                ).display
-                is False
+                ).datatype_config["conf"]["on"]
+                is True
             )
-            assert (
-                pilot.app.screen.query_one(
-                    "#transfer_tab_displayed_datatypes_button"
-                ).display
-                is False
+
+            await self.click_and_await_transfer(pilot)
+
+            test_utils.check_working_top_level_folder_only_exists(
+                "rawdata",
+                base_path_to_check / "rawdata",
+                [sub_to_transfer],
+                [ses_to_transfer],
+                folders_used,
             )
