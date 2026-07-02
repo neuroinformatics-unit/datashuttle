@@ -213,3 +213,47 @@ class TestDatatypesTUI(TuiBase):
             assert kwargs["datatype"] == ["ecephys", "fusi"]
             assert kwargs["overwrite_existing_files"] == "never"
             assert kwargs["dry_run"] is False
+
+    @pytest.mark.asyncio
+    async def test_transfer_displayed_datatypes_widgets_hide_after_mode_switch(
+        self, setup_project_paths
+    ):
+        """Test that after editing the displayed datatypes in custom transfer, the
+        widgets are properly hidden. This test was added after a bug in which the
+        old, deleted widgets were still persistent on the other tabs.
+        """
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+            await self.check_and_click_onto_existing_project(
+                pilot, project_name
+            )
+
+            await self.switch_tab(pilot, "transfer")
+            await self.scroll_to_click_pause(
+                pilot, "#transfer_custom_radiobutton"
+            )
+            await self.scroll_to_click_pause(
+                pilot,
+                "#transfer_tab_displayed_datatypes_button",
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#displayed_datatypes_close_button"
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#transfer_toplevel_radiobutton"
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_custom_datatype_checkboxes"
+                ).display
+                is False
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_tab_displayed_datatypes_button"
+                ).display
+                is False
+            )
