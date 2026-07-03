@@ -224,7 +224,7 @@ class TestDatatypesTUI(TuiBase):
         switching transfer type, then verifies a newly displayed narrow
         datatype can still be selected and transferred correctly.
         """
-        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+        _, _, project_name = setup_project_paths.values()
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
         sub_to_transfer, ses_to_transfer = "sub-002", "ses-003"
 
