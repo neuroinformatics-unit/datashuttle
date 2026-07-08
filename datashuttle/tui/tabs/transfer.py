@@ -142,6 +142,8 @@ class TransferTab(TreeAndInputTab):
             ),
             # These are almost identical to create tab
             Label("Datatype(s)", id="transfer_datatype_label"),
+        ]
+        self.refreshed_transfer_custom_widgets = [
             self.create_datatype_checkboxes_widget(),
             self.get_displayed_datatypes_button(),
         ]
@@ -161,6 +163,7 @@ class TransferTab(TreeAndInputTab):
             *self.transfer_all_widgets,
             *self.transfer_toplevel_widgets,
             *self.transfer_custom_widgets,
+            *self.refreshed_transfer_custom_widgets,
             id="transfer_params_container",
         )
         yield Horizontal(
@@ -279,7 +282,10 @@ class TransferTab(TreeAndInputTab):
                 "#transfer_toplevel_radiobutton"
             ).value
 
-        for widget in self.transfer_custom_widgets:
+        for widget in (
+            self.transfer_custom_widgets
+            + self.refreshed_transfer_custom_widgets
+        ):
             widget.display = self.query_one(
                 "#transfer_custom_radiobutton"
             ).value
@@ -326,7 +332,7 @@ class TransferTab(TreeAndInputTab):
                 self.refresh_after_datatype_changed,
             )
 
-    async def refresh_after_datatype_changed(self, ignore):
+    async def refresh_after_datatype_changed(self, ignore) -> None:
         """Refresh Checkboxes after the shown datatypes have changed.
 
         The widget must be completely removed and reinitialised.
@@ -341,14 +347,13 @@ class TransferTab(TreeAndInputTab):
             "#transfer_tab_displayed_datatypes_button"
         ).remove()
 
-        (
-            Button(
-                "Displayed Datatypes",
-                id="transfer_tab_displayed_datatypes_button",
-            ),
-        )
-        await container.mount(self.create_datatype_checkboxes_widget())
-        await container.mount(self.get_displayed_datatypes_button())
+        self.refreshed_transfer_custom_widgets = [
+            self.create_datatype_checkboxes_widget(),
+            self.get_displayed_datatypes_button(),
+        ]
+
+        for widget in self.refreshed_transfer_custom_widgets:
+            await container.mount(widget)
 
     def on_custom_directory_tree_directory_tree_special_key_press(
         self, event: CustomDirectoryTree.DirectoryTreeSpecialKeyPress
