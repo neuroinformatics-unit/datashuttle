@@ -129,28 +129,28 @@ def call_rclone_through_script_for_central_connection(
     else:
         run_command = ["bash", str(tmp_script_path)]
 
-    try:
-        lambda_func = lambda: subprocess.run(
-            run_command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            shell=False,
+    # try:
+    lambda_func = lambda: subprocess.run(
+        run_command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        shell=False,
+    )
+
+    if rclone_encryption.connection_method_requires_encryption(
+        cfg["connection_method"]
+    ):
+        output = run_function_that_requires_encrypted_rclone_config_access(
+            cfg, lambda_func
         )
+    else:
+        output = lambda_func()
 
-        if rclone_encryption.connection_method_requires_encryption(
-            cfg["connection_method"]
-        ):
-            output = run_function_that_requires_encrypted_rclone_config_access(
-                cfg, lambda_func
-            )
-        else:
-            output = lambda_func()
+    if output.returncode != 0:
+        prompt_rclone_download_if_does_not_exist()
 
-        if output.returncode != 0:
-            prompt_rclone_download_if_does_not_exist()
-
-    finally:
-        os.remove(tmp_script_path)
+    # finally:
+    os.remove(tmp_script_path)
 
     return output
 
