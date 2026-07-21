@@ -119,12 +119,19 @@ def call_rclone_through_script_for_central_connection(
     tmp_script_path.parent.mkdir(parents=True, exist_ok=True)
     tmp_script_path.write_text(command)
 
-    try:
-        if system != "Windows":
-            os.chmod(tmp_script_path, 0o700)
+    # Run the script through the interpreter rather than executing the file
+    # directly. This avoids relying on the shebang interpreter being
+    # resolvable (e.g. `/bin/bash` may not exist at that path on some
+    # systems) and on the filesystem allowing exec, both of which can raise
+    # a misleading ENOENT on exec.
+    if system == "Windows":
+        run_command = ["cmd", "/c", str(tmp_script_path)]
+    else:
+        run_command = ["bash", str(tmp_script_path)]
 
+    try:
         lambda_func = lambda: subprocess.run(
-            [tmp_script_path],
+            run_command,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=False,
