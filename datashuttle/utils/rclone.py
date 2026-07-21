@@ -27,7 +27,7 @@ import os
 import platform
 import shlex
 import subprocess
-import tempfile
+from datetime import datetime
 from pathlib import Path
 from subprocess import CompletedProcess
 
@@ -112,11 +112,12 @@ def call_rclone_through_script_for_central_connection(
         suffix = ".sh"
         command = "#!/bin/bash\n" + command
 
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=suffix, delete=False
-    ) as tmp_script:
-        tmp_script.write(command)
-        tmp_script_path = tmp_script.name
+    timestamp = datetime.now().strftime("%Y%m%dT%H%M%S%f")
+    tmp_script_path = (
+        cfg["local_path"] / ".datashuttle" / f"transfer_{timestamp}{suffix}"
+    )
+    tmp_script_path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_script_path.write_text(command)
 
     try:
         if system != "Windows":
