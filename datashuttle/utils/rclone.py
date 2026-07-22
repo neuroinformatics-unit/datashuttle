@@ -27,7 +27,7 @@ import os
 import platform
 import shlex
 import subprocess
-from datetime import datetime
+import tempfile
 from pathlib import Path
 from subprocess import CompletedProcess
 
@@ -112,45 +112,44 @@ def call_rclone_through_script_for_central_connection(
         suffix = ".sh"
         command = "#!/bin/bash\n" + command
 
-    timestamp = datetime.now().strftime("%Y%m%dT%H%M%S%f")
-    tmp_script_path = (
-        cfg["local_path"] / ".datashuttle" / f"transfer_{timestamp}{suffix}"
-    )
-    tmp_script_path.parent.mkdir(parents=True, exist_ok=True)
-    tmp_script_path.write_text(command)
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=suffix, delete=False
+    ) as tmp_script:
+        tmp_script.write(command)
+        tmp_script_path = tmp_script.name
 
-    # Run the script through the interpreter rather than executing the file
-    # directly. This avoids relying on the shebang interpreter being
-    # resolvable (e.g. `/bin/bash` may not exist at that path on some
-    # systems) and on the filesystem allowing exec, both of which can raise
-    # a misleading ENOENT on exec.
     if system == "Windows":
-        run_command = ["cmd", "/c", str(tmp_script_path)]
+        run_command = [tmp_script_path]
     else:
-        run_command = ["bash", str(tmp_script_path)]
+        # On non-Windows, run the script through bash rather than executing
+        # the file directly. This avoids relying on the shebang interpreter
+        # being resolvable (e.g. `/bin/bash` may not exist at that path on
+        # some HPC / container systems), which raises a misleading ENOENT
+        # against the script path itself.
+        run_command = ["bash", tmp_script_path]
 
-    # try:
-    lambda_func = lambda: subprocess.run(
-        run_command,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=False,
-    )
-
-    if rclone_encryption.connection_method_requires_encryption(
-        cfg["connection_method"]
-    ):
-        output = run_function_that_requires_encrypted_rclone_config_access(
-            cfg, lambda_func
+    try:
+        lambda_func = lambda: subprocess.run(
+            run_command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=False,
         )
-    else:
-        output = lambda_func()
 
-    if output.returncode != 0:
-        prompt_rclone_download_if_does_not_exist()
+        if rclone_encryption.connection_method_requires_encryption(
+            cfg["connection_method"]
+        ):
+            output = run_function_that_requires_encrypted_rclone_config_access(
+                cfg, lambda_func
+            )
+        else:
+            output = lambda_func()
 
-    # finally:
-    os.remove(tmp_script_path)
+        if output.returncode != 0:
+            prompt_rclone_download_if_does_not_exist()
+
+    finally:
+        os.remove(tmp_script_path)
 
     return output
 
