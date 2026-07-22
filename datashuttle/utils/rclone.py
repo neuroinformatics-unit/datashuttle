@@ -135,8 +135,6 @@ def call_rclone_through_script_for_central_connection(
         shell=False,
     )
 
-    os.remove(tmp_script_path)
-
     if rclone_encryption.connection_method_requires_encryption(
         cfg["connection_method"]
     ):
@@ -148,6 +146,8 @@ def call_rclone_through_script_for_central_connection(
 
     if output.returncode != 0:
         prompt_rclone_download_if_does_not_exist()
+
+    os.remove(tmp_script_path)
 
     return output
 
