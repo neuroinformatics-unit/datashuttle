@@ -34,6 +34,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+        with:
+          # Need full history for setuptools_scm to derive the version from
+          # the tag; a shallow checkout can yield a dev-suffixed version and
+          # break the filename <-> download-link match.
+          fetch-depth: 0
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v4
         with:

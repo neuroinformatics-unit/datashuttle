@@ -19,6 +19,7 @@ repo_root = package_root.parent
 sys.path.insert(0, str(package_root))
 sys.path.insert(0, str(this_dir))
 
+import artifact_names  # noqa: E402
 import packaging_utils  # noqa: E402
 import sign_macos  # noqa: E402
 
@@ -125,10 +126,10 @@ shutil.copy(repo_root / "LICENSE", license_path)
 # Build a .dmg for distribution.
 output_dir = this_dir / "Output"
 output_dir.mkdir(exist_ok=True)
-# IMPORTANT: This filename format (datashuttle-{version}-{arch}.dmg) must stay
-# in sync with the myst_substitutions in docs/source/conf.py, which builds
-# the direct download links on the Install page.
-dmg_name = f"datashuttle-{DATASHUTTLE_VERSION}-{TARGET_ARCH}.dmg"
+# The filename is built from the shared `artifact_names` module, which is also
+# imported by docs/source/conf.py to build the direct download links on the
+# Install page — so the release asset name and the docs link cannot drift.
+dmg_name = artifact_names.macos_dmg_name(DATASHUTTLE_VERSION, TARGET_ARCH)
 dmg_path = output_dir / dmg_name
 if dmg_path.exists():
     dmg_path.unlink()
@@ -160,6 +161,7 @@ subprocess.run(
 
 # Notarise and staple the DMG. No-op unless the APPLE_ID / APPLE_TEAM_ID /
 # APPLE_APP_SPECIFIC_PASSWORD environment variables are all set.
-sign_macos.notarise_and_staple(dmg_path)
+# TODO: currently testing, no code signing.
+# sign_macos.notarise_and_staple(dmg_path)
 
 print(f"Built installer: {dmg_path}")

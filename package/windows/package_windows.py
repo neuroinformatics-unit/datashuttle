@@ -145,3 +145,5 @@ subprocess.run(
     [r"C:\Program Files (x86)\Inno Setup 6\iscc.exe", str(inno_path)],
     check=True,
 )
+
+# I think we need to rename it here.
