@@ -1,3 +1,12 @@
+[![Python Version](https://img.shields.io/pypi/pyversions/datashuttle.svg)](https://pypi.org/project/datashuttle)
+[![Downloads](https://pepy.tech/badge/datashuttle)](https://pepy.tech/project/datashuttle)
+[![License](https://img.shields.io/badge/License-BSD_3--Clause-orange.svg)](https://opensource.org/licenses/BSD-3-Clause)
+[![CI](https://img.shields.io/github/actions/workflow/status/neuroinformatics-unit/datashuttle/code_test_and_deploy.yml?label=CI)](https://github.com/neuroinformatics-unit/datashuttle/actions)
+[![codecov](https://codecov.io/gh/neuroinformatics-unit/datashuttle/branch/main/graph/badge.svg?token=P8CCH3TI8K)](https://codecov.io/gh/neuroinformatics-unit/datashuttle)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://neuroinformatics.zulipchat.com/#narrow/channel/405999-DataShuttle)
+[![JOSS](https://joss.theoj.org/papers/10.21105/joss.09642/status.svg)](https://doi.org/10.21105/joss.09642)
+
 # **datashuttle**
 
 **datashuttle** is a tool to automate creation, validation and transfer of neuroscience project folders.

@@ -54,6 +54,7 @@ class TestTuiValidate(TuiBase):
             await self.scroll_to_click_pause(
                 pilot, "#validate_validate_button"
             )
+            await pilot.pause(10)
 
             written_lines = [
                 ele.text
@@ -91,6 +92,7 @@ class TestTuiValidate(TuiBase):
             await self.scroll_to_click_pause(
                 pilot, "#validate_validate_button"
             )
+            await pilot.pause(10)
 
             args_, kwargs_ = spy_validate.call_args_list[0]
 
@@ -138,6 +140,7 @@ class TestTuiValidate(TuiBase):
             await self.scroll_to_click_pause(
                 pilot, "#validate_validate_button"
             )
+            await pilot.pause(10)
 
             args_, kwargs_ = spy_validate.call_args_list[1]
 
@@ -196,6 +199,7 @@ class TestTuiValidate(TuiBase):
             await self.scroll_to_click_pause(
                 pilot, "#validate_validate_button"
             )
+            await pilot.pause(10)
             warnings.filterwarnings("default")
 
             # Check args are passed through to function as expected
