@@ -4,6 +4,7 @@
 #mainwindow_contents_container {
     align: center top;
     padding: 1 0 0 0;
+    overflow: hidden auto;
 }
 #mainwindow_contents_container > Button {
     width: 50%;

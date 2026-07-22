@@ -27,6 +27,7 @@ import os
 import platform
 import shlex
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 from subprocess import CompletedProcess
@@ -34,6 +35,36 @@ from subprocess import CompletedProcess
 from datashuttle.configs import canonical_configs
 from datashuttle.utils import rclone_encryption, utils
 from datashuttle.utils.transfer_output_class import TransferOutput
+
+
+def get_command(command: str) -> str:
+    r"""Return an rclone command line, locating the binary appropriately.
+
+    When running from a PyInstaller bundle (``sys.frozen``), use the rclone
+    binary extracted alongside the executable. Otherwise fall back to the
+    `rclone` on ``PATH``.
+
+    The bundled binary path is wrapped in double quotes because PyInstaller's
+    ``_MEIPASS`` may sit under directories that contain spaces (e.g. the
+    Windows default install location ``C:\Program Files (x86)\DataShuttle\``);
+    without quoting, ``shell=True`` invocations split on the first space and
+    appear as "rclone not installed" to the caller.
+    """
+    from pathlib import Path
+
+    if getattr(sys, "frozen", False):
+        # PyInstaller: binary extracted to _MEIPASS
+        meipass = sys._MEIPASS  # type: ignore[attr-defined]
+        if sys.platform == "win32":
+            rclone_path = Path(meipass) / "rclone.exe"
+        else:
+            rclone_path = Path(meipass) / "rclone"
+        format_command = f'"{rclone_path}" {command}'
+    else:
+        # Normal Python execution: use PATH or fixed path
+        format_command = f"rclone {command}"  # or provide full path if needed
+
+    return format_command
 
 
 def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
@@ -52,13 +83,17 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
     subprocess.CompletedProcess with `stdout` and `stderr` attributes.
 
     """
-    command = "rclone " + command
+    format_command = get_command(command)
+
     if pipe_std:
         output = subprocess.run(
-            command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+            format_command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=True,
         )
     else:
-        output = subprocess.run(command, shell=True)
+        output = subprocess.run(format_command, shell=True)
 
     if output.returncode != 0:
         prompt_rclone_download_if_does_not_exist()
@@ -104,18 +139,18 @@ def call_rclone_through_script_for_central_connection(
     """
     system = platform.system()
 
-    command = "rclone " + command
+    format_command = get_command(command)
 
     if system == "Windows":
         suffix = ".bat"
     else:
         suffix = ".sh"
-        command = "#!/bin/bash\n" + command
+        format_command = "#!/bin/bash\n" + format_command
 
     with tempfile.NamedTemporaryFile(
         mode="w", suffix=suffix, delete=False
     ) as tmp_script:
-        tmp_script.write(command)
+        tmp_script.write(format_command)
         tmp_script_path = tmp_script.name
 
     try:
@@ -598,7 +633,7 @@ def check_rclone_with_default_call() -> bool:
     """
     try:
         output = subprocess.run(
-            "rclone -h",
+            get_command("-h"),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=True,
