@@ -657,23 +657,30 @@ def transfer_data(
         "central", top_level_folder
     ).as_posix()
 
-    extra_arguments = handle_rclone_arguments(rclone_options, include_list)
+    include_from_filepath = write_rclone_include_from_file(include_list)
 
-    if upload_or_download == "upload":
-        output = call_rclone_through_script_for_central_connection(
-            cfg,
-            f"{rclone_args('copy')} "
-            f'"{local_filepath}" "{cfg.rclone.get_rclone_config_name()}:'
-            f'{central_filepath}" {extra_arguments} {get_config_arg(cfg)} --use-json-log',
-        )
+    extra_arguments = handle_rclone_arguments(
+        rclone_options, include_from_filepath
+    )
 
-    elif upload_or_download == "download":
-        output = call_rclone_through_script_for_central_connection(
-            cfg,
-            f"{rclone_args('copy')} "
-            f'"{cfg.rclone.get_rclone_config_name()}:'
-            f'{central_filepath}" "{local_filepath}" {extra_arguments} {get_config_arg(cfg)} --use-json-log',
-        )
+    try:
+        if upload_or_download == "upload":
+            output = call_rclone_through_script_for_central_connection(
+                cfg,
+                f"{rclone_args('copy')} "
+                f'"{local_filepath}" "{cfg.rclone.get_rclone_config_name()}:'
+                f'{central_filepath}" {extra_arguments} {get_config_arg(cfg)} --use-json-log',
+            )
+
+        elif upload_or_download == "download":
+            output = call_rclone_through_script_for_central_connection(
+                cfg,
+                f"{rclone_args('copy')} "
+                f'"{cfg.rclone.get_rclone_config_name()}:'
+                f'{central_filepath}" "{local_filepath}" {extra_arguments} {get_config_arg(cfg)} --use-json-log',
+            )
+    finally:
+        os.remove(include_from_filepath)
 
     return output
 
@@ -939,8 +946,39 @@ def perform_rclone_check(
     return output.stdout.decode("utf-8")
 
 
+def make_rclone_glob_safe(name: str) -> str:
+    """Escape rclone glob characters so `name` is matched literally.
+
+    File and folder names may contain characters (e.g. ``[``, ``*``)
+    that rclone interprets as glob metacharacters. Escaping them with
+    a backslash ensures the name is treated as a literal path.
+    """
+    for char in "\\*?[]{}":
+        name = name.replace(char, "\\" + char)
+    return name
+
+
+def write_rclone_include_from_file(include_list: List[str]) -> str:
+    """Write the `--include-from` patterns to a temporary file.
+
+    The names may originate from the central storage and are passed to
+    rclone through a file rather than the command string. This avoids the
+    names being interpreted by the shell that runs the transfer.
+
+    Returns
+    -------
+    The path to the temporary file containing the patterns.
+
+    """
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".txt", delete=False
+    ) as tmp_file:
+        tmp_file.write("\n".join(include_list))
+        return tmp_file.name
+
+
 def handle_rclone_arguments(
-    rclone_options: Dict, include_list: List[str]
+    rclone_options: Dict, include_from_filepath: str
 ) -> str:
     """Construct the extra arguments to pass to RClone.
 
@@ -949,9 +987,9 @@ def handle_rclone_arguments(
     rclone_options
         A list of option keywords to be passed to
 
-    include_list
-        The (already formatted) list of filepaths for the
-        rclone `--include` option.
+    include_from_filepath
+        Path to the file holding the patterns for the rclone
+        `--include-from` option.
 
     Returns
     -------
@@ -983,7 +1021,7 @@ def handle_rclone_arguments(
     if rclone_options["dry_run"]:
         extra_arguments_list += [rclone_args("dry_run")]
 
-    extra_arguments_list += include_list
+    extra_arguments_list += [f'--include-from "{include_from_filepath}"']
 
     extra_arguments = " ".join(extra_arguments_list)
 
