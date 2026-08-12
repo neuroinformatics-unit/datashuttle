@@ -897,7 +897,7 @@ class DataShuttle:
 
             processed_filepath = filepath
 
-        include_list = [f"--include /{processed_filepath.as_posix()}"]
+        include_list = [f"/{processed_filepath.as_posix()}"]
 
         output = rclone.transfer_data(
             self.cfg,

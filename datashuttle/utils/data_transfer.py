@@ -149,7 +149,7 @@ class TransferData:
         Returns
         -------
         include_list
-            A list of paths to pass to rclone's `--include` flag.
+            A list of literal patterns to pass to rclone's `--include-from` flag.
 
         """
         # Find sub names to transfer
@@ -210,21 +210,21 @@ class TransferData:
     def make_include_arg(
         self, list_of_paths: List[str], recursive: bool = True
     ) -> List[str]:
-        """Return the list of paths formatted to rclone's required `--include` flag format."""
+        """Return the list of paths as literal rclone `--include-from` patterns."""
         if not any(list_of_paths):
             return []
 
         if recursive:
 
             def include_arg(ele: str) -> str:
-                return f' --include "{ele}/**" '
+                return f"{rclone.make_rclone_glob_safe(ele)}/**"
 
         else:
 
             def include_arg(ele: str) -> str:
-                return f' --include "{ele}" '
+                return rclone.make_rclone_glob_safe(ele)
 
-        return ["".join([include_arg(ele) for ele in list_of_paths])]
+        return [include_arg(ele) for ele in list_of_paths]
 
     # -------------------------------------------------------------------------
     # Search for non-sub / ses / dtype folders and add them to list
