@@ -223,9 +223,7 @@ project.make_config_file(
 If you want to change any config in the future, use the [](update_config_file()) method
 
 ```python
-project.update_config_file(
-    local_path=r"C:\a\new\path"
-)
+project.update_config_file(local_path=r"C:\a\new\path")
 ```
 
 We are now ready to create our standardised project folders.
@@ -347,7 +345,7 @@ project.create_folders(
     top_level_folder="rawdata",
     sub_names="sub-001",
     ses_names="ses-001_@DATE@",
-    datatype=["behav", "ephys"]
+    datatype=["behav", "ephys"],
 )
 ```
 
@@ -368,14 +366,11 @@ To get the next subject  in this project (`sub-002`) and the next
 session for that subject (`ses-001`) we can run:
 
 ```python
-next_sub = project.get_next_sub("rawdata")                # returns "sub-001"
+next_sub = project.get_next_sub("rawdata")  # returns "sub-001"
 next_ses = project.get_next_ses("rawdata", sub=next_sub)  # returns "ses-001"
 
 project.create_folders(
-    "rawdata",
-    next_sub,
-    f"{next_ses}_@DATE@",
-    datatype=["behav", "ephys"]
+    "rawdata", next_sub, f"{next_ses}_@DATE@", datatype=["behav", "ephys"]
 )
 ```
 
@@ -459,8 +454,7 @@ folder_path_dict = project.create_folders(
     top_level_folder="rawdata",
     sub_names=["sub-001"],
     ses_names=["ses-001_@DATE@"],
-    datatype=["behav", "ephys"]
-
+    datatype=["behav", "ephys"],
 )
 
 print([path_ for path_ in folder_path_dict["behav"]])
@@ -693,7 +687,7 @@ project.download_custom(
     top_level_folder="rawdata",
     sub_names="all",
     ses_names="ses-001_@*@",
-    datatype="behav"
+    datatype="behav",
 )
 ```
 
