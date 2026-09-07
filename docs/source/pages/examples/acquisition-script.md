@@ -22,15 +22,16 @@ def get_file_path():
     # the function get_next_ses() normally checks for the next session
     # if you are recording for a new subject you can use it as well to create
     # the first session folder for this subject.
-    session = project.get_next_ses(top_level_folder="rawdata",
-                                   sub=f"sub-{sub}_id-{id_number}")
+    session = project.get_next_ses(
+        top_level_folder="rawdata", sub=f"sub-{sub}_id-{id_number}"
+    )
 
     # create the folders
     created_folders = project.create_folders(
         top_level_folder="rawdata",
         sub_names=f"sub-{sub}_id-{id_number}",
         ses_names=f"{session}_@DATETIME@",
-        datatype=["behav"]
+        datatype=["behav"],
     )
     # create a prompt to enter the experiment information and
     # conspecific ID for social experiments.
@@ -46,7 +47,7 @@ def get_file_path():
     file_name_video_1 = f"{exp_number}_{comsp_id}.avi"
 
     # create the path to the video file
-    file_path1 = created_folders['behav'][0] / file_name_video_1
+    file_path1 = created_folders["behav"][0] / file_name_video_1
     file_path1.touch()
 
     return file_path1

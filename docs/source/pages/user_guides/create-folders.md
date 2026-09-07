@@ -174,7 +174,7 @@ created_folders = project.create_folders(
     top_level_folder="rawdata",
     sub_names=["sub-001", "002"],
     ses_names="ses-001_@DATE@",
-    datatype=["behav", "funcimg"]
+    datatype=["behav", "funcimg"],
 )
 ```
 
