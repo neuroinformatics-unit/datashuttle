@@ -8,7 +8,6 @@ This runs weekly to catch any formatting issues introduced into projects.
 
 
 ```python
-
 from datashuttle import DataShuttle
 import os
 
@@ -27,7 +26,9 @@ for p in project_list:
     if os.path.isdir(project_path):  # Only process directories
         project = DataShuttle(p)
         try:
-            errors = project.validate_project("rawdata", display_mode="print", strict_mode=True)
+            errors = project.validate_project(
+                "rawdata", display_mode="print", strict_mode=True
+            )
             error_messages[p] = errors if errors else "No errors"
         except Exception as e:
             error_messages[p] = f"Validation failed: {e}"
@@ -41,5 +42,4 @@ with open(log_file, "w") as f:
 # Optional: Print summary of error messages
 for project, message in error_messages.items():
     print(f"{project}: {message}")
-
 ```
