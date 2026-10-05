@@ -56,22 +56,16 @@ If a project already exists, this should match the project folder name (i.e. the
 
 
 ```python
-
 from datashuttle import DataShuttle
 
 project = DataShuttle("my_project_name")
-
 ```
 
 Next, give ``datashuttle`` the path to the project folder (this can,
 but doesn't have to, include the ``project_name``)
 
 ```python
-
-project.make_config_file(
-    local_path=r"C:\MyUsername\my_data\my_project_name"
-)
-
+project.make_config_file(local_path=r"C:\MyUsername\my_data\my_project_name")
 ```
 \
 The project is now ready for use, and in future can be instantiated with the line:

@@ -41,8 +41,7 @@ For example, to change the `local_path` and `central_path`:
 
 ```python
 project.update_config_file(
-    local_path="/a/new/local/path",
-    central_path="/a/new/central/path"
+    local_path="/a/new/local/path", central_path="/a/new/central/path"
 )
 ```
 
