@@ -945,13 +945,24 @@ def perform_rclone_check(
     return output.stdout.decode("utf-8")
 
 
-def make_rclone_glob_safe(name: str) -> str:
-    """Escape rclone glob characters so `name` is matched literally.
+def process_filename_for_rclone(name: str) -> str:
+    """Validate a literal path and escape it for rclone's include file.
 
-    File and folder names may contain characters (e.g. ``[``, ``*``)
-    that rclone interprets as glob metacharacters. Escaping them with
-    a backslash ensures the name is treated as a literal path.
+    Append intentional wildcards only after processing the literal path.
     """
+    if (
+        name.startswith(("#", ";"))
+        or name[:1].isspace()
+        or "\n" in name
+        or "\r" in name
+    ):
+        utils.log_and_raise_error(
+            f"Unsupported transfer path {name!r}: paths must not start with "
+            "'#', ';', or whitespace, or contain '\\n' (newline) or "
+            "'\\r' (carriage return).",
+            ValueError,
+        )
+
     for char in "\\*?[]{}":
         name = name.replace(char, "\\" + char)
     return name

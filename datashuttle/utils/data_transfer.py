@@ -217,12 +217,12 @@ class TransferData:
         if recursive:
 
             def include_arg(ele: str) -> str:
-                return f"{rclone.make_rclone_glob_safe(ele)}/**"
+                return f"{rclone.process_filename_for_rclone(ele)}/**"
 
         else:
 
             def include_arg(ele: str) -> str:
-                return rclone.make_rclone_glob_safe(ele)
+                return rclone.process_filename_for_rclone(ele)
 
         return [include_arg(ele) for ele in list_of_paths]
 
