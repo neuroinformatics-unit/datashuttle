@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 import time
 from pathlib import Path
 
@@ -916,7 +917,9 @@ class TestFileTransfer(BaseTest):
         self, project, filename, upload_or_download
     ):
         """Raise when a filename cannot form an include rule."""
-        if os.name == "nt" and any(char in filename for char in "\t\n\r"):
+        if sys.platform == "win32" and any(
+            char in filename for char in "\t\n\r"
+        ):
             pytest.skip("Windows does not support these filename characters.")
 
         filepath = Path("rawdata") / filename
