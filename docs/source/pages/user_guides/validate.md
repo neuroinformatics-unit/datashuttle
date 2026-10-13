@@ -63,7 +63,9 @@ from datashuttle import DataShuttle
 
 project = DataShuttle("my_project")
 
-project.make_config_file(local_path="/path/to/my/project")  # only required once, on initial project set up
+project.make_config_file(
+    local_path="/path/to/my/project"
+)  # only required once, on initial project set up
 
 error_messages = project.validate_project(
     "rawdata",
@@ -126,14 +128,9 @@ In ``strict_mode``, non-[NeuroBlueprint](https://neuroblueprint.neuroinformatics
 Therefore, any additional folders at the subject or session level will raise a validation error, for example:
 
 ```python
-project.validate_project(
-    "rawdata",
-    display_mode="print",
-    strict_mode=True
-)
+project.validate_project("rawdata", display_mode="print", strict_mode=True)
 
 # BAD_NAME: The name: some_other_folder of type: sub- is not valid. Path: <path to folder>
-
 ```
 
 ## ``include_central``
@@ -149,9 +146,7 @@ The ``include_central`` argument must be set to ``True``:
 
 ```python
 error_messages = project.validate_project(
-    "rawdata",
-    display_mode="warn",
-    include_central=True
+    "rawdata", display_mode="warn", include_central=True
 )
 ```
 

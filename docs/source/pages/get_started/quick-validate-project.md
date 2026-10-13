@@ -53,7 +53,6 @@ validate_project_from_path(
     project_path="/mydrive/path/to/project/project_name",
     display_mode="error",
 )
-
 ```
 
 In this case, `display_mode=error` will result in an error on the first encountered validation issue.
