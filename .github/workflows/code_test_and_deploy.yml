@@ -22,7 +22,7 @@ jobs:
   linting:
     runs-on: ubuntu-latest
     steps:
-      - uses: neuroinformatics-unit/actions/lint@v3
+      - uses: neuroinformatics-unit/actions/lint@9b53ffe93baaafe5533e1f295a3c069bbc17ba36 # v3
 
   test:
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
@@ -49,9 +49,9 @@ jobs:
               || '["3.9","3.14"]') }}
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Set up Conda
-        uses: conda-incubator/setup-miniconda@v4
+        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4
         with:
           python-version: ${{ matrix.python-version }}
           auto-update-conda: true
@@ -136,7 +136,7 @@ jobs:
           coverage xml
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v7
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: neuroinformatics-unit/datashuttle
@@ -147,7 +147,7 @@ jobs:
     if: github.event_name == 'push' && github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
-    - uses: neuroinformatics-unit/actions/build_sdist_wheels@v3
+    - uses: neuroinformatics-unit/actions/build_sdist_wheels@9b53ffe93baaafe5533e1f295a3c069bbc17ba36 # v3
 
 
   upload_all:
@@ -156,11 +156,11 @@ jobs:
     if: github.event_name == 'push' && github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/download-artifact@v8
+    - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
       with:
         name: artifact
         path: dist
-    - uses: pypa/gh-action-pypi-publish@release/v1
+    - uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1
       with:
         user: __token__
         password: ${{ secrets.TWINE_API_KEY }}
