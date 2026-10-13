@@ -15,45 +15,6 @@ from ...base import BaseTest
 
 class TestFileTransfer(BaseTest):
     @pytest.mark.parametrize(
-        "filename", ["#file", ";file", " file", "\tfile", "fi\nle", "fi\rle"]
-    )
-    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    def test_unsupported_transfer_filename(
-        self, project, filename, upload_or_download
-    ):
-        """Raise when a filename cannot form an include rule."""
-        if os.name == "nt" and any(char in filename for char in "\t\n\r"):
-            pytest.skip("Windows does not support these filename characters.")
-
-        filepath = Path("rawdata") / filename
-        test_utils.write_file(project.cfg["local_path"] / filepath)
-
-        transfer_function, _ = test_utils.handle_upload_or_download(
-            project, upload_or_download, "top_level_folder", "rawdata"
-        )
-
-        with pytest.raises(ValueError, match="Unsupported transfer path"):
-            transfer_function()
-
-    @pytest.mark.parametrize("filename", ["#file", ";file", " file"])
-    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    def test_transfer_special_filename_within_subject(
-        self, project, filename, upload_or_download
-    ):
-        """Allow special characters that are not at the start of an include rule."""
-        filepath = Path("rawdata") / "sub-001" / filename
-        test_utils.write_file(project.cfg["local_path"] / filepath)
-
-        transfer_function, base_path_to_check = (
-            test_utils.handle_upload_or_download(
-                project, upload_or_download, "top_level_folder", "rawdata"
-            )
-        )
-        transfer_function()
-
-        assert (base_path_to_check / filepath).is_file()
-
-    @pytest.mark.parametrize(
         "top_level_folder", canonical_folders.get_top_level_folders()
     )
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
@@ -946,3 +907,42 @@ class TestFileTransfer(BaseTest):
         )
 
         return path_to_test_file_behav, path_to_test_file_ephys
+
+    @pytest.mark.parametrize(
+        "filename", ["#file", ";file", " file", "\tfile", "fi\nle", "fi\rle"]
+    )
+    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    def test_unsupported_transfer_filename(
+        self, project, filename, upload_or_download
+    ):
+        """Raise when a filename cannot form an include rule."""
+        if os.name == "nt" and any(char in filename for char in "\t\n\r"):
+            pytest.skip("Windows does not support these filename characters.")
+
+        filepath = Path("rawdata") / filename
+        test_utils.write_file(project.cfg["local_path"] / filepath)
+
+        transfer_function, _ = test_utils.handle_upload_or_download(
+            project, upload_or_download, "top_level_folder", "rawdata"
+        )
+
+        with pytest.raises(ValueError, match="Unsupported transfer path"):
+            transfer_function()
+
+    @pytest.mark.parametrize("filename", ["#file", ";file", " file"])
+    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    def test_transfer_special_filename_within_subject(
+        self, project, filename, upload_or_download
+    ):
+        """Allow special characters that are not at the start of an include rule."""
+        filepath = Path("rawdata") / "sub-001" / filename
+        test_utils.write_file(project.cfg["local_path"] / filepath)
+
+        transfer_function, base_path_to_check = (
+            test_utils.handle_upload_or_download(
+                project, upload_or_download, "top_level_folder", "rawdata"
+            )
+        )
+        transfer_function()
+
+        assert (base_path_to_check / filepath).is_file()
