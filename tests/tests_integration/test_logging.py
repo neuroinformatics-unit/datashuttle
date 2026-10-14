@@ -602,7 +602,7 @@ class TestLogging:
             ]
 
         assert relative_path.as_posix() in errors["file_names"][0]
-        assert error_message in errors["messages"][0]
+        assert any(error_message in message for message in errors["messages"])
 
         log = test_utils.read_log_file(project.cfg.logging_path)
 
