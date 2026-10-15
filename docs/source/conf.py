@@ -16,6 +16,12 @@ import setuptools_scm
 # use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath("../.."))
 
+# The packaging scripts and this docs build share a single source of truth for
+# release-artifact filenames (`package/artifact_names.py`), so the release
+# asset names and the download links generated below cannot drift apart.
+sys.path.insert(0, os.path.abspath("../../package"))
+import artifact_names  # noqa: E402
+
 project = "datashuttle"
 copyright = "2023, University College London"
 author = "Neuroinformatics Unit"
@@ -68,6 +74,30 @@ myst_enable_extensions = [
 ]
 # Automatically add anchors to markdown headings
 myst_heading_anchors = 3
+
+# Build direct download URLs from the version tag so install.md always links
+# to the exact assets for this build. Falls back to releases/latest on dev
+# builds (e.g. pushes to main between releases).
+_gh_releases = "https://github.com/neuroinformatics-unit/datashuttle/releases"
+if "dev" not in release:
+    _dl_base = f"{_gh_releases}/download/v{release}"
+    # The filenames come from the shared `artifact_names` module, which the
+    # packaging scripts also use to name the release assets — so these links
+    # and the uploaded assets are guaranteed to match.
+    myst_substitutions = {
+        "release": release,
+        "win_installer_url": f"{_dl_base}/{artifact_names.windows_installer_name(release)}",
+        "mac_arm_url": f"{_dl_base}/{artifact_names.macos_dmg_name(release, 'arm64')}",
+        "mac_intel_url": f"{_dl_base}/{artifact_names.macos_dmg_name(release, 'x86_64')}",
+    }
+else:
+    _latest = f"{_gh_releases}/latest"
+    myst_substitutions = {
+        "release": release,
+        "win_installer_url": _latest,
+        "mac_arm_url": _latest,
+        "mac_intel_url": _latest,
+    }
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
