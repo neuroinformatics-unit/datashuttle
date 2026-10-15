@@ -82,7 +82,7 @@ def call_rclone_for_central_connection(
 
 
 def call_rclone_through_script_for_central_connection(
-    cfg: Configs, command: str
+    cfg: Configs, command: str, include_list: List[str], rclone_options: Dict
 ) -> CompletedProcess:
     """Call rclone through a script.
 
@@ -95,7 +95,11 @@ def call_rclone_through_script_for_central_connection(
         Datashuttle Configs class.
     ----------
     command
-        Full command to run with RClone.
+        Rclone command without transfer options or include patterns.
+    include_list
+        Escaped rclone include patterns, one per entry.
+    rclone_options
+        Transfer options passed to `handle_rclone_arguments`.
 
     Returns
     -------
@@ -112,13 +116,16 @@ def call_rclone_through_script_for_central_connection(
         suffix = ".sh"
         command = "#!/bin/bash\n" + command
 
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=suffix, delete=False
-    ) as tmp_script:
-        tmp_script.write(command)
-        tmp_script_path = tmp_script.name
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        include_path = Path(tmp_dir) / "include.txt"
+        include_path.write_text("\n".join(include_list), encoding="utf-8")
+        command += (
+            f" {handle_rclone_arguments(rclone_options)}"
+            f' --include-from "{include_path}"'
+        )
+        tmp_script_path = Path(tmp_dir) / f"transfer{suffix}"
+        tmp_script_path.write_text(command)
 
-    try:
         if system != "Windows":
             os.chmod(tmp_script_path, 0o700)
 
@@ -140,9 +147,6 @@ def call_rclone_through_script_for_central_connection(
 
         if output.returncode != 0:
             prompt_rclone_download_if_does_not_exist()
-
-    finally:
-        os.remove(tmp_script_path)
 
     return output
 
@@ -657,14 +661,14 @@ def transfer_data(
         "central", top_level_folder
     ).as_posix()
 
-    extra_arguments = handle_rclone_arguments(rclone_options, include_list)
-
     if upload_or_download == "upload":
         output = call_rclone_through_script_for_central_connection(
             cfg,
             f"{rclone_args('copy')} "
             f'"{local_filepath}" "{cfg.rclone.get_rclone_config_name()}:'
-            f'{central_filepath}" {extra_arguments} {get_config_arg(cfg)} --use-json-log',
+            f'{central_filepath}" {get_config_arg(cfg)} --use-json-log',
+            include_list,
+            rclone_options,
         )
 
     elif upload_or_download == "download":
@@ -672,7 +676,9 @@ def transfer_data(
             cfg,
             f"{rclone_args('copy')} "
             f'"{cfg.rclone.get_rclone_config_name()}:'
-            f'{central_filepath}" "{local_filepath}" {extra_arguments} {get_config_arg(cfg)} --use-json-log',
+            f'{central_filepath}" "{local_filepath}" {get_config_arg(cfg)} --use-json-log',
+            include_list,
+            rclone_options,
         )
 
     return output
@@ -939,19 +945,36 @@ def perform_rclone_check(
     return output.stdout.decode("utf-8")
 
 
-def handle_rclone_arguments(
-    rclone_options: Dict, include_list: List[str]
-) -> str:
+def process_filename_for_rclone(name: str) -> str:
+    """Validate a literal path and escape it for rclone's include file.
+
+    Append intentional wildcards only after processing the literal path.
+    """
+    if (
+        name.startswith(("#", ";"))
+        or name[:1].isspace()
+        or "\n" in name
+        or "\r" in name
+    ):
+        utils.log_and_raise_error(
+            f"Unsupported transfer path {name!r}: paths must not start with "
+            "'#', ';', or whitespace, or contain '\\n' (newline) or "
+            "'\\r' (carriage return).",
+            ValueError,
+        )
+
+    for char in "\\*?[]{}":
+        name = name.replace(char, "\\" + char)
+    return name
+
+
+def handle_rclone_arguments(rclone_options: Dict) -> str:
     """Construct the extra arguments to pass to RClone.
 
     Parameters
     ----------
     rclone_options
         A list of option keywords to be passed to
-
-    include_list
-        The (already formatted) list of filepaths for the
-        rclone `--include` option.
 
     Returns
     -------
@@ -982,8 +1005,6 @@ def handle_rclone_arguments(
 
     if rclone_options["dry_run"]:
         extra_arguments_list += [rclone_args("dry_run")]
-
-    extra_arguments_list += include_list
 
     extra_arguments = " ".join(extra_arguments_list)
 
