@@ -306,3 +306,19 @@ class TestValidationUnit:
         )
         assert len(error_messages) == 3
         assert all("DATETIME" in message for message in error_messages)
+
+    @pytest.mark.parametrize("prefix", ["sub", "ses"])
+    def test_datetime_iso_format_date_and_time(self, prefix):
+        """Check all datetime keys are validated when a name has more than one."""
+        error_messages = validation.validate_list_of_names(
+            [
+                f"{prefix}-001_date-20240101_time-010101",  # OK
+                f"{prefix}-002_date-20241301_time-010101",  # bad date
+                f"{prefix}-003_date-20240101_time-250101",  # bad time
+            ],
+            prefix,
+        )
+        assert len(error_messages) == 2
+        assert all("DATETIME" in message for message in error_messages)
+        assert "date-20241301" in error_messages[0]
+        assert "time-250101" in error_messages[1]
