@@ -178,6 +178,165 @@ class AcceptOrDeclineMessageBox(ModalScreen):
             self.dismiss(False)
 
 
+class ConfirmDeleteProjectModal(ModalScreen):
+    """GitHub-style project deletion confirmation modal.
+
+    Provides two distinct deletion pathways:
+    1. Move to Recycle Bin (Soft Delete, 30 days retention): Safe, recoverable.
+    2. Permanent Delete: Requires manually typing the exact project name
+       to prevent accidental deletion.
+    """
+
+    def __init__(self, mainwindow: TuiApp, project_name: str) -> None:
+        """Initialise ConfirmDeleteProjectModal.
+
+        Parameters
+        ----------
+        mainwindow
+            Main TUI application.
+
+        project_name
+            Name of the project being deleted.
+
+        """
+        super(ConfirmDeleteProjectModal, self).__init__()
+        self.mainwindow = mainwindow
+        self.project_name = project_name
+
+    def compose(self) -> ComposeResult:
+        """Compose widgets for deletion confirmation modal."""
+        warning_msg = (
+            f"Deleting Project: '{self.project_name}'\n\n"
+            f"[1] Move to Recycle Bin (Recommended):\n"
+            f"    Moves configuration into .trash for 30 days.\n"
+            f"    Can be restored at any time from Main Menu -> Recycle Bin.\n\n"
+            f"[2] Permanent Delete:\n"
+            f"    Permanently deletes project configuration and credentials.\n"
+            f"    To permanently delete, type '{self.project_name}' below:"
+        )
+
+        yield Container(
+            Label(warning_msg, id="confirm_delete_project_warning_label"),
+            Input(
+                placeholder=f"Type '{self.project_name}' to permanently delete",
+                id="confirm_delete_project_name_input",
+            ),
+            Horizontal(
+                Button(
+                    "Move to Recycle Bin (30 Days)",
+                    id="confirm_delete_project_trash_button",
+                ),
+                Button(
+                    "Permanently Delete",
+                    id="confirm_delete_project_permanent_button",
+                ),
+                Button(
+                    "Cancel",
+                    id="confirm_delete_project_cancel_button",
+                ),
+                id="confirm_delete_project_buttons_horizontal",
+            ),
+            id="confirm_delete_project_top_container",
+        )
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Handle button press in delete confirmation modal."""
+        if event.button.id == "confirm_delete_project_cancel_button":
+            self.dismiss(False)
+
+        elif event.button.id == "confirm_delete_project_trash_button":
+            self.dismiss(("soft", 30))
+
+        elif event.button.id == "confirm_delete_project_permanent_button":
+            typed_name = self.query_one(
+                "#confirm_delete_project_name_input"
+            ).value.strip()
+
+            if typed_name != self.project_name:
+                self.mainwindow.show_modal_error_dialog(
+                    f"Project name confirmation failed.\n\n"
+                    f"Entered name: '{typed_name}'\n"
+                    f"Expected name: '{self.project_name}'\n\n"
+                    f"Permanent deletion was cancelled."
+                )
+                return
+
+            self.dismiss(("permanent", 0))
+
+
+class ConfirmPermanentDeleteModal(ModalScreen):
+    """Confirmation modal for permanently deleting a project from the Recycle Bin.
+
+    Requires typing the exact project name to prevent accidental permanent deletion.
+    """
+
+    def __init__(self, mainwindow: TuiApp, project_name: str) -> None:
+        """Initialise ConfirmPermanentDeleteModal.
+
+        Parameters
+        ----------
+        mainwindow
+            Main TUI application.
+
+        project_name
+            Name of the project being permanently deleted.
+
+        """
+        super(ConfirmPermanentDeleteModal, self).__init__()
+        self.mainwindow = mainwindow
+        self.project_name = project_name
+
+    def compose(self) -> ComposeResult:
+        """Compose widgets for permanent delete modal."""
+        warning_msg = (
+            f"Permanently Delete Project: '{self.project_name}'\n\n"
+            f"Warning: This will permanently and irreversibly delete all project\n"
+            f"configuration files and credentials from disk.\n\n"
+            f"To confirm permanent deletion, type '{self.project_name}' below:"
+        )
+
+        yield Container(
+            Label(warning_msg, id="confirm_permanent_delete_warning_label"),
+            Input(
+                placeholder=f"Type '{self.project_name}' to confirm",
+                id="confirm_permanent_delete_name_input",
+            ),
+            Horizontal(
+                Button(
+                    "Permanently Delete",
+                    id="confirm_permanent_delete_button",
+                ),
+                Button(
+                    "Cancel",
+                    id="confirm_permanent_delete_cancel_button",
+                ),
+                id="confirm_permanent_delete_buttons_horizontal",
+            ),
+            id="confirm_permanent_delete_top_container",
+        )
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Handle button press in permanent delete modal."""
+        if event.button.id == "confirm_permanent_delete_cancel_button":
+            self.dismiss(False)
+
+        elif event.button.id == "confirm_permanent_delete_button":
+            typed_name = self.query_one(
+                "#confirm_permanent_delete_name_input"
+            ).value.strip()
+
+            if typed_name != self.project_name:
+                self.mainwindow.show_modal_error_dialog(
+                    f"Project name confirmation failed.\n\n"
+                    f"Entered name: '{typed_name}'\n"
+                    f"Expected name: '{self.project_name}'\n\n"
+                    f"Permanent deletion was cancelled."
+                )
+                return
+
+            self.dismiss(True)
+
+
 class ConfirmAndAwaitTransferPopup(ModalScreen):
     """A popup screen for confirming, awaiting and finishing a Transfer.
 

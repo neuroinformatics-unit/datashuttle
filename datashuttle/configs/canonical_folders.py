@@ -82,6 +82,11 @@ def get_datashuttle_path() -> Path:
     return Path.home() / ".datashuttle"
 
 
+def get_trash_path() -> Path:
+    """Return the trash path where soft-deleted project configs are stored."""
+    return get_datashuttle_path() / ".trash"
+
+
 def get_internal_datashuttle_from_path() -> Path:
     """Get a placeholder path for `validate_project_from_path()`."""
     return get_datashuttle_path() / "_datashuttle_from_path"

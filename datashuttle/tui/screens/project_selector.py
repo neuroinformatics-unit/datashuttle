@@ -20,7 +20,7 @@ from datashuttle.utils.getters import (
 class ProjectSelectorScreen(Screen):
     """The project selection screen.
 
-    Finds and displays DataShuttle projects present on the local system.
+    Finds and displays active DataShuttle projects present on the local system.
 
     `self.dismiss()` returns an initialised project if initialisation
     was successful. Otherwise, in case `Main Menu` button is pressed,

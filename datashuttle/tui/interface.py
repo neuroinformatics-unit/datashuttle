@@ -60,6 +60,65 @@ class Interface:
         except Exception as e:
             return False, str(e)
 
+    def delete_current_project(
+        self,
+        soft_delete: bool = True,
+        retention_days: int = 30,
+        delete_local_data: bool = False,
+        confirm_project_name: Optional[str] = None,
+    ) -> InterfaceOutput:
+        """Delete the currently selected project.
+
+        Parameters
+        ----------
+        soft_delete
+            If `True`, move to `.trash` with a retention window.
+
+        retention_days
+            Number of days to keep in trash before expiration.
+
+        delete_local_data
+            If `True`, also deletes the local data directory.
+
+        confirm_project_name
+            Optional confirmation of the project name.
+
+        """
+        try:
+            self.project.delete_project(
+                soft_delete=soft_delete,
+                retention_days=retention_days,
+                delete_local_data=delete_local_data,
+                confirm_project_name=confirm_project_name,
+            )
+            return True, None
+        except Exception as e:
+            return False, str(e)
+
+    def restore_project(self, project_name: str) -> InterfaceOutput:
+        """Restore a soft-deleted project from the Recycle Bin."""
+        try:
+            DataShuttle.restore_project(project_name)
+            return True, None
+        except Exception as e:
+            return False, str(e)
+
+    def get_deleted_projects(self) -> InterfaceOutput:
+        """Get all soft-deleted projects in the Recycle Bin."""
+        try:
+            deleted = DataShuttle.get_deleted_projects()
+            return True, deleted
+        except Exception as e:
+            return False, str(e)
+
+    def empty_trash(self) -> InterfaceOutput:
+        """Permanently delete all projects in the Recycle Bin."""
+        try:
+            DataShuttle.empty_trash()
+            return True, None
+        except Exception as e:
+            return False, str(e)
+
     def setup_new_project(
         self, project_name: str, cfg_kwargs: Dict
     ) -> InterfaceOutput:

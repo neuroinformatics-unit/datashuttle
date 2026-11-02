@@ -4,6 +4,8 @@
 #mainwindow_contents_container {
     align: center top;
     padding: 1 0 0 0;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 #mainwindow_contents_container > Button {
     width: 50%;
@@ -233,6 +235,15 @@ MessageBox:light > #messagebox_top_container {
     width: 26;
     color: $success;  /* unsure about this */
     dock: left;
+}
+
+#configs_delete_project_button {
+    margin: 2 0 0 0;
+    dock: right;
+}
+
+#configs_delete_project_button:hover {
+    color: $error;
 }
 
 #setup_buttons_container {
@@ -668,3 +679,139 @@ AcceptOrDeclineMessageBox {
 #accept_or_decline_messagebox_decline_button {
     align: center middle;
  }
+
+/* Confirm Delete Project Modal ---------------------------------------------------- */
+
+#confirm_delete_project_top_container {
+    align: center middle;
+    content-align: center middle;
+    height: auto;
+    width: 75;
+    padding: 1 2;
+    border: thick $panel-lighten-2;
+    background: $primary-background;
+}
+
+ConfirmDeleteProjectModal:light > #confirm_delete_project_top_container {
+    border: thick $panel-darken-3;
+    background: $boost;
+}
+
+#confirm_delete_project_warning_label {
+    width: 100%;
+    margin: 1 0 1 0;
+}
+
+#confirm_delete_project_name_input {
+    width: 100%;
+    margin: 1 0 1 0;
+}
+
+#confirm_delete_project_buttons_horizontal {
+    align: center middle;
+    content-align: center middle;
+    width: 100%;
+    margin: 1 0 0 0;
+}
+
+/* Recycle Bin Screen --------------------------------------------------------------- */
+
+#recycle_bin_top_container {
+    align: center top;
+    content-align: center top;
+    margin: 1 0 1 0;
+    width: 85%;
+    height: auto;
+}
+
+#recycle_bin_banner_label {
+    text-align: center;
+    width: 100%;
+    margin: 1 0 1 0;
+    text-style: bold;
+}
+
+#recycle_bin_empty_label {
+    text-align: center;
+    width: 100%;
+    margin: 3 0 2 0;
+}
+
+#recycle_bin_items_vertical {
+    width: 100%;
+    height: auto;
+    max-height: 25;
+    overflow: hidden auto;
+}
+
+.recycle_bin_item_card {
+    height: auto;
+    width: 100%;
+    border: tall $panel-lighten-1;
+    background: $panel;
+    margin: 0 0 1 0;
+    padding: 1 2;
+}
+
+.recycle_bin_item_card:light {
+    border: tall $panel-darken-3;
+    background: $boost;
+}
+
+.recycle_bin_item_card > Label {
+    margin: 0 0 1 0;
+}
+
+.recycle_bin_item_card > Horizontal {
+    width: 100%;
+    height: auto;
+}
+
+.recycle_bin_item_card > Horizontal > Button {
+    margin: 0 2 0 0;
+}
+
+#recycle_bin_bottom_horizontal {
+    align: center middle;
+    content-align: center middle;
+    width: 100%;
+    margin: 2 0 1 0;
+}
+
+#recycle_bin_bottom_horizontal > Button {
+    margin: 0 2 0 2;
+}
+
+/* Confirm Permanent Delete Modal -------------------------------------------------- */
+
+#confirm_permanent_delete_top_container {
+    align: center middle;
+    content-align: center middle;
+    height: auto;
+    width: 75;
+    padding: 1 2;
+    border: thick $panel-lighten-2;
+    background: $primary-background;
+}
+
+ConfirmPermanentDeleteModal:light > #confirm_permanent_delete_top_container {
+    border: thick $panel-darken-3;
+    background: $boost;
+}
+
+#confirm_permanent_delete_warning_label {
+    width: 100%;
+    margin: 1 0 1 0;
+}
+
+#confirm_permanent_delete_name_input {
+    width: 100%;
+    margin: 1 0 1 0;
+}
+
+#confirm_permanent_delete_buttons_horizontal {
+    align: center middle;
+    content-align: center middle;
+    width: 100%;
+    margin: 1 0 0 0;
+}

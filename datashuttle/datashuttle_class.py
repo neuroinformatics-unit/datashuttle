@@ -36,7 +36,14 @@ from datashuttle.configs import (
     load_configs,
 )
 from datashuttle.configs.config_class import Configs
-from datashuttle.datashuttle_functions import _format_top_level_folder
+from datashuttle.datashuttle_functions import (
+    _format_top_level_folder,
+    delete_expired_trash,
+    delete_project_from_disk,
+    empty_trash,
+    get_deleted_projects,
+    restore_project_from_trash,
+)
 from datashuttle.utils import (
     aws,
     ds_logger,
@@ -1362,6 +1369,124 @@ class DataShuttle:
         that contain valid config.yaml files.
         """
         return getters.get_existing_project_paths()
+
+    @staticmethod
+    def get_deleted_projects() -> List[Dict]:
+        """Return a list of soft-deleted projects in the Recycle Bin."""
+        return get_deleted_projects()
+
+    @staticmethod
+    def restore_project(project_name: str) -> None:
+        """Restore a soft-deleted project from the Recycle Bin.
+
+        Parameters
+        ----------
+        project_name
+            Name of the project to restore.
+
+        """
+        restore_project_from_trash(project_name)
+
+    @staticmethod
+    def delete_expired_trash() -> List[str]:
+        """Delete soft-deleted projects whose retention window has expired."""
+        return delete_expired_trash()
+
+    @staticmethod
+    def empty_trash() -> None:
+        """Permanently delete all projects in the Recycle Bin."""
+        empty_trash()
+
+    @staticmethod
+    def delete_project_from_disk(
+        project_name: str,
+        soft_delete: bool = True,
+        retention_days: int = 30,
+        confirm_project_name: Optional[str] = None,
+    ) -> None:
+        """Delete a datashuttle project configuration from disk.
+
+        Parameters
+        ----------
+        project_name
+            The name of the project to delete.
+
+        soft_delete
+            If `True`, move to the Recycle Bin for retention. If `False`,
+            permanently delete immediately. Default is `True`.
+
+        retention_days
+            Number of days to retain project in the Recycle Bin. Default is 30.
+
+        confirm_project_name
+            Optional project name confirmation. If provided (recommended for permanent deletion),
+            must match `project_name` exactly.
+
+        """
+        delete_project_from_disk(
+            project_name,
+            soft_delete=soft_delete,
+            retention_days=retention_days,
+            confirm_project_name=confirm_project_name,
+        )
+
+    def delete_project(
+        self,
+        soft_delete: bool = True,
+        retention_days: int = 30,
+        delete_local_data: bool = False,
+        delete_central_data: bool = False,
+        confirm_project_name: Optional[str] = None,
+    ) -> None:
+        """Delete the datashuttle project configuration and optionally its data.
+
+        Parameters
+        ----------
+        soft_delete
+            If `True`, move to the Recycle Bin with a retention window. If `False`,
+            permanently delete immediately. Default is `True`.
+
+        retention_days
+            Number of days to keep in the Recycle Bin before expiration. Default is 30.
+
+        delete_local_data
+            If `True`, the local data folder at `local_path` will be deleted.
+
+        delete_central_data
+            If `True`, the central data folder at `central_path` (for local_filesystem
+            connection method) will be deleted.
+
+        confirm_project_name
+            Optional project name confirmation. If provided (recommended for permanent deletion),
+            must match `self.project_name` exactly.
+
+        """
+        local_path = self.cfg["local_path"] if self.cfg else None
+        central_path = self.cfg["central_path"] if self.cfg else None
+        connection_method = self.cfg["connection_method"] if self.cfg else None
+
+        if delete_local_data and local_path and local_path.is_dir():
+            shutil.rmtree(local_path)
+            utils.print_message_to_user(f"Deleted local data at: {local_path}")
+
+        if (
+            delete_central_data
+            and central_path
+            and connection_method == "local_filesystem"
+            and central_path.is_dir()
+        ):
+            shutil.rmtree(central_path)
+            utils.print_message_to_user(
+                f"Deleted central data at: {central_path}"
+            )
+
+        delete_project_from_disk(
+            self.project_name,
+            soft_delete=soft_delete,
+            retention_days=retention_days,
+            confirm_project_name=confirm_project_name,
+        )
+        self.cfg = None
 
     @check_configs_set
     def get_next_sub(

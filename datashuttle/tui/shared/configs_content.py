@@ -222,6 +222,10 @@ class ConfigsContent(Container):
                     "Go to Project Screen",
                     id="configs_go_to_project_screen_button",
                 ),
+                Button(
+                    "Delete Project",
+                    id="configs_delete_project_button",
+                ),
                 id="configs_bottom_buttons_horizontal",
             ),
         ]
@@ -275,7 +279,11 @@ class ConfigsContent(Container):
                     "connection_method"
                 ]
             )
+            self.query_one(
+                "#configs_delete_project_button"
+            ).tooltip = get_tooltip("#configs_delete_project_button")
         else:
+            self.query_one("#configs_delete_project_button").visible = False
             self.query_one("#configs_local_only_radiobutton").value = True
 
             self.setup_widgets_to_display(connection_method="local_only")
@@ -436,6 +444,17 @@ class ConfigsContent(Container):
         elif event.button.id == "configs_go_to_project_screen_button":
             self.parent_class.dismiss(self.interface)
 
+        elif event.button.id == "configs_delete_project_button":
+            assert self.interface is not None, "interface must be set"
+            project_name = self.interface.project.project_name
+            self.parent_class.mainwindow.push_screen(
+                modal_dialogs.ConfirmDeleteProjectModal(
+                    self.parent_class.mainwindow,
+                    project_name=project_name,
+                ),
+                self.handle_delete_project_response,
+            )
+
         elif event.button.id in [
             "configs_local_path_select_button",
             "configs_central_path_select_button",
@@ -481,6 +500,51 @@ class ConfigsContent(Container):
             self.query_one(
                 "#configs_central_path_input"
             ).value = path_.as_posix()
+
+    def handle_delete_project_response(
+        self, result: Union[bool, tuple[str, int]]
+    ) -> None:
+        """Handle response from delete project confirmation modal."""
+        if not result or not self.interface:
+            return
+
+        delete_type, retention_days = result
+        project_name = self.interface.project.project_name
+
+        if delete_type == "soft":
+            success, output = self.interface.delete_current_project(
+                soft_delete=True, retention_days=retention_days
+            )
+            if success:
+                self.parent_class.mainwindow.push_screen(
+                    modal_dialogs.MessageBox(
+                        f"Project '{project_name}' was moved to the Recycle Bin ({retention_days}-day retention).\n\n"
+                        f"You can restore it at any time from Main Menu -> Recycle Bin.",
+                        border_color="green",
+                    ),
+                    self.dismiss_parent_screen,
+                )
+            else:
+                self.parent_class.mainwindow.show_modal_error_dialog(output)
+
+        elif delete_type == "permanent":
+            success, output = self.interface.delete_current_project(
+                soft_delete=False
+            )
+            if success:
+                self.parent_class.mainwindow.push_screen(
+                    modal_dialogs.MessageBox(
+                        f"Project '{project_name}' was permanently deleted.",
+                        border_color="green",
+                    ),
+                    self.dismiss_parent_screen,
+                )
+            else:
+                self.parent_class.mainwindow.show_modal_error_dialog(output)
+
+    def dismiss_parent_screen(self, _=None) -> None:
+        """Dismiss parent screen safely after modal confirmation."""
+        self.parent_class.dismiss()
 
     def setup_ssh_connection(self) -> None:
         """Run the SSH set up in a new screen."""

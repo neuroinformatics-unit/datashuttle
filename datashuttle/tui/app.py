@@ -23,6 +23,7 @@ from datashuttle.tui.screens import (
     new_project,
     project_manager,
     project_selector,
+    recycle_bin,
     settings,
     validate_at_path,
 )
@@ -62,6 +63,7 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
                 id="mainwindow_validate_from_project_path",
             ),
             Button("Settings", id="mainwindow_settings_button"),
+            Button("Recycle Bin", id="mainwindow_recycle_bin_button"),
             Button("Get Help", id="mainwindow_get_help_button"),
             Button("Exit", id="mainwindow_exit_button"),
             id="mainwindow_contents_container",
@@ -107,6 +109,9 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
                     self,
                 )
             )
+
+        elif event.button.id == "mainwindow_recycle_bin_button":
+            self.push_screen(recycle_bin.RecycleBinScreen(self))
 
         elif event.button.id == "mainwindow_get_help_button":
             self.push_screen(get_help.GetHelpScreen())

@@ -64,7 +64,7 @@ myst_enable_extensions = [
     "substitution",
     "tasklist",
     "attrs_block",  # https://stackoverflow.com/questions/78183173/custom-styling-a-header-in-sphinx-website?noredirect=1#comment137843002_78183173
-    "attrs_inline"
+    "attrs_inline",
 ]
 # Automatically add anchors to markdown headings
 myst_heading_anchors = 3
@@ -75,23 +75,21 @@ templates_path = ["_templates"]
 # Automatically generate stub pages for API
 autosummary_generate = True
 numpydoc_class_members_toctree = False  # stops stubs warning
-#toc_object_entries_show_parents = "all"
+# toc_object_entries_show_parents = "all"
 html_show_sourcelink = False
 
 # Ignore links that do not work with github actions link checking
 # https://github.com/neuroinformatics-unit/actions/pull/24#issue-1978966182
-linkcheck_anchors_ignore_for_url = [
-    "https://neuroinformatics.zulipchat.com/"
-]
+linkcheck_anchors_ignore_for_url = ["https://neuroinformatics.zulipchat.com/"]
 
 autodoc_default_options = {
-    'members': True,
+    "members": True,
     "member-order": "bysource",
-    'special-members': False,
-    'private-members': False,
-    'inherited-members': False,
-    'undoc-members': True,
-    'exclude-members': "",
+    "special-members": False,
+    "private-members": False,
+    "inherited-members": False,
+    "undoc-members": True,
+    "exclude-members": "",
 }
 
 # List of patterns, relative to source directory, that match files and
@@ -116,7 +114,7 @@ html_title = "datashuttle"
 html_static_path = ["_static"]
 
 html_css_files = [
-    'css/custom.css',
+    "css/custom.css",
 ]
 
 html_favicon = "_static/logo_light.png"
@@ -164,8 +162,8 @@ html_theme_options = {
     "footer_end": ["footer_end"],
     "show_prev_next": False,
     "show_toc_level": 2,  # sidebar levels that are expanded before scrolling
-#    "secondary_sidebar_items": [],
- #   "page_sidebar_items": [],
+    #    "secondary_sidebar_items": [],
+    #   "page_sidebar_items": [],
 }
 
 

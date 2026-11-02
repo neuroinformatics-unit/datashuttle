@@ -107,6 +107,12 @@ def get_tooltip(id: str) -> str:
     elif id == "#configs_aws_region_select":
         tooltip = "Select the region for the S3 Bucket you are connecting to."
 
+    elif id == "#configs_delete_project_button":
+        tooltip = (
+            "Permanently delete this project's configuration in Datashuttle.\n\n"
+            "This will not delete your local or central data files."
+        )
+
     # Settings
     # -------------------------------------------------------------------------
 
