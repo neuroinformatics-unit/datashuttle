@@ -505,7 +505,7 @@ class ConfigsContent(Container):
         self, result: Union[bool, tuple[str, int]]
     ) -> None:
         """Handle response from delete project confirmation modal."""
-        if not result or not self.interface:
+        if not isinstance(result, tuple) or not self.interface:
             return
 
         delete_type, retention_days = result

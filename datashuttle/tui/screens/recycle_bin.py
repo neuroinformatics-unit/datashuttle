@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Dict, List
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+    from textual.widget import Widget
 
     from datashuttle.tui.app import TuiApp
 
@@ -48,7 +49,7 @@ class RecycleBinScreen(Screen):
 
         self.deleted_projects = get_deleted_projects()
 
-        items_widgets = []
+        items_widgets: List[Widget] = []
         if not self.deleted_projects:
             items_widgets.append(
                 Static(
