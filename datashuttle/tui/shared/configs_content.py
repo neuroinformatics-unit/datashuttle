@@ -38,6 +38,8 @@ from datashuttle.tui.screens import (
 from datashuttle.tui.tooltips import get_tooltip
 from datashuttle.tui.utils import tui_utils
 
+DELETE_PROJECT_BUTTON_ID = "configs_delete_project_button"
+
 
 class ConfigsContent(Container):
     """Holds widgets and logic for setting datashuttle configs.
@@ -224,7 +226,7 @@ class ConfigsContent(Container):
                 ),
                 Button(
                     "Delete Project",
-                    id="configs_delete_project_button",
+                    id=DELETE_PROJECT_BUTTON_ID,
                 ),
                 id="configs_bottom_buttons_horizontal",
             ),
@@ -279,11 +281,12 @@ class ConfigsContent(Container):
                     "connection_method"
                 ]
             )
-            self.query_one(
-                "#configs_delete_project_button"
-            ).tooltip = get_tooltip("#configs_delete_project_button")
+            delete_btn_selector = f"#{DELETE_PROJECT_BUTTON_ID}"
+            self.query_one(delete_btn_selector).tooltip = get_tooltip(
+                delete_btn_selector
+            )
         else:
-            self.query_one("#configs_delete_project_button").visible = False
+            self.query_one(f"#{DELETE_PROJECT_BUTTON_ID}").visible = False
             self.query_one("#configs_local_only_radiobutton").value = True
 
             self.setup_widgets_to_display(connection_method="local_only")
@@ -419,60 +422,68 @@ class ConfigsContent(Container):
                 self.setup_configs_for_an_existing_project()
 
         elif event.button.id == "configs_setup_connection_button":
-            assert self.interface is not None, (
-                "type narrow flexible `interface`"
-            )
-
-            connection_method = self.interface.get_configs()[
-                "connection_method"
-            ]
-
-            if not self.widget_configs_match_saved_configs():
-                self.parent_class.mainwindow.show_modal_error_dialog(
-                    "The values set above must equal the datashuttle settings. "
-                    "Either press 'Save' or reload this page."
-                )
-                return
-
-            if connection_method == "ssh":
-                self.setup_ssh_connection()
-            elif connection_method == "gdrive":
-                self.setup_gdrive_connection()
-            elif connection_method == "aws":
-                self.setup_aws_connection()
+            self._handle_setup_connection_button_pressed()
 
         elif event.button.id == "configs_go_to_project_screen_button":
             self.parent_class.dismiss(self.interface)
 
-        elif event.button.id == "configs_delete_project_button":
-            assert self.interface is not None, "interface must be set"
-            project_name = self.interface.project.project_name
-            self.parent_class.mainwindow.push_screen(
-                modal_dialogs.ConfirmDeleteProjectModal(
-                    self.parent_class.mainwindow,
-                    project_name=project_name,
-                ),
-                self.handle_delete_project_response,
-            )
+        elif event.button.id == DELETE_PROJECT_BUTTON_ID:
+            self._handle_delete_project_button_pressed()
 
         elif event.button.id in [
             "configs_local_path_select_button",
             "configs_central_path_select_button",
         ]:
-            input_to_fill: Literal["local", "central"] = (
-                "local"
-                if event.button.id == "configs_local_path_select_button"
-                else "central"
-            )
+            self._handle_select_path_button_pressed(event.button.id)
 
-            self.parent_class.mainwindow.push_screen(
-                modal_dialogs.SelectDirectoryTreeScreen(
-                    self.parent_class.mainwindow
-                ),
-                lambda path_: self.handle_input_fill_from_select_directory(
-                    path_, input_to_fill
-                ),
+    def _handle_setup_connection_button_pressed(self) -> None:
+        """Handle setup connection button press."""
+        assert self.interface is not None, "type narrow flexible `interface`"
+
+        connection_method = self.interface.get_configs()["connection_method"]
+
+        if not self.widget_configs_match_saved_configs():
+            self.parent_class.mainwindow.show_modal_error_dialog(
+                "The values set above must equal the datashuttle settings. "
+                "Either press 'Save' or reload this page."
             )
+            return
+
+        if connection_method == "ssh":
+            self.setup_ssh_connection()
+        elif connection_method == "gdrive":
+            self.setup_gdrive_connection()
+        elif connection_method == "aws":
+            self.setup_aws_connection()
+
+    def _handle_delete_project_button_pressed(self) -> None:
+        """Handle delete project button press."""
+        assert self.interface is not None, "interface must be set"
+        project_name = self.interface.project.project_name
+        self.parent_class.mainwindow.push_screen(
+            modal_dialogs.ConfirmDeleteProjectModal(
+                self.parent_class.mainwindow,
+                project_name=project_name,
+            ),
+            self.handle_delete_project_response,
+        )
+
+    def _handle_select_path_button_pressed(self, button_id: str) -> None:
+        """Handle directory select button press."""
+        input_to_fill: Literal["local", "central"] = (
+            "local"
+            if button_id == "configs_local_path_select_button"
+            else "central"
+        )
+
+        self.parent_class.mainwindow.push_screen(
+            modal_dialogs.SelectDirectoryTreeScreen(
+                self.parent_class.mainwindow
+            ),
+            lambda path_: self.handle_input_fill_from_select_directory(
+                path_, input_to_fill
+            ),
+        )
 
     def handle_input_fill_from_select_directory(
         self, path_: Path, local_or_central: Literal["local", "central"]
@@ -502,7 +513,7 @@ class ConfigsContent(Container):
             ).value = path_.as_posix()
 
     def handle_delete_project_response(
-        self, result: Union[bool, tuple[str, int]]
+        self, result: bool | tuple[str, int]
     ) -> None:
         """Handle response from delete project confirmation modal."""
         if not isinstance(result, tuple) or not self.interface:
