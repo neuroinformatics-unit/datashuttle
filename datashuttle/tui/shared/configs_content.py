@@ -39,6 +39,7 @@ from datashuttle.tui.tooltips import get_tooltip
 from datashuttle.tui.utils import tui_utils
 
 DELETE_PROJECT_BUTTON_ID = "configs_delete_project_button"
+INTERFACE_REQUIRED_MSG = "type narrow flexible `interface`"
 
 
 class ConfigsContent(Container):
@@ -438,7 +439,7 @@ class ConfigsContent(Container):
 
     def _handle_setup_connection_button_pressed(self) -> None:
         """Handle setup connection button press."""
-        assert self.interface is not None, "type narrow flexible `interface`"
+        assert self.interface is not None, INTERFACE_REQUIRED_MSG
 
         connection_method = self.interface.get_configs()["connection_method"]
 
@@ -559,7 +560,7 @@ class ConfigsContent(Container):
 
     def setup_ssh_connection(self) -> None:
         """Run the SSH set up in a new screen."""
-        assert self.interface is not None, "type narrow flexible `interface`"
+        assert self.interface is not None, INTERFACE_REQUIRED_MSG
 
         self.parent_class.mainwindow.push_screen(
             setup_ssh.SetupSshScreen(self.interface),
@@ -568,7 +569,7 @@ class ConfigsContent(Container):
 
     def setup_gdrive_connection(self) -> None:
         """Run the Google Drive set up in a new screen."""
-        assert self.interface is not None, "type narrow flexible `interface`"
+        assert self.interface is not None, INTERFACE_REQUIRED_MSG
 
         self.parent_class.mainwindow.push_screen(
             setup_gdrive.SetupGdriveScreen(self.interface),
@@ -577,7 +578,7 @@ class ConfigsContent(Container):
 
     def setup_aws_connection(self) -> None:
         """Run the AWS set up in a new screen."""
-        assert self.interface is not None, "type narrow flexible `interface`"
+        assert self.interface is not None, INTERFACE_REQUIRED_MSG
 
         self.parent_class.mainwindow.push_screen(
             setup_aws.SetupAwsScreen(self.interface),
@@ -697,7 +698,7 @@ class ConfigsContent(Container):
         widget values and display the set values (or an error if
         there was a problem during setup) to the user.
         """
-        assert self.interface is not None, "type narrow flexible `interface`"
+        assert self.interface is not None, INTERFACE_REQUIRED_MSG
 
         # Handle the edge case where connection method is changed after
         # saving on the 'Make New Project' screen.
@@ -732,7 +733,7 @@ class ConfigsContent(Container):
         This change of radio button triggers `on_radio_set_changed` which displays
         the appropriate connection method widgets.
         """
-        assert self.interface is not None, "type narrow flexible `interface`"
+        assert self.interface is not None, INTERFACE_REQUIRED_MSG
 
         cfg_to_load = self.interface.get_textual_compatible_project_configs()
 
@@ -764,7 +765,7 @@ class ConfigsContent(Container):
 
         It is used while setting up widgets for the project while mounting the current tab.
         """
-        assert self.interface is not None, "type narrow flexible `interface`"
+        assert self.interface is not None, INTERFACE_REQUIRED_MSG
 
         cfg_to_load = self.interface.get_textual_compatible_project_configs()
 
