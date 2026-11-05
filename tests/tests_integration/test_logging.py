@@ -297,8 +297,8 @@ class TestLogging:
         # 'remote' here is rclone terminology
         assert "Creating backend with remote" in log
         assert "Using config file from" in log
-        assert "--include" in log
-        assert "sub-11/ses-123/anat/**" in log
+        assert "--include-from" in log
+        assert "sub-11/ses-123/anat" in log
         assert f"/central/{TEST_PROJECT_NAME}/rawdata" in log
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
