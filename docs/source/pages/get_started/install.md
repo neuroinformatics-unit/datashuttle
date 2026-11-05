@@ -1,6 +1,46 @@
 (how-to-install)=
 # Install
 
+The ``datashuttle`` graphical user interface is available as through standalone installer for Windows and macOS:
+
+::::{grid} 1 1 3 3
+:gutter: 2
+
+:::{grid-item}
+```{button-link} {{ win_installer_url }}
+:color: primary
+:shadow:
+:expand:
+{fab}`windows` Windows
+```
+:::
+
+:::{grid-item}
+```{button-link} {{ mac_arm_url }}
+:color: primary
+:shadow:
+:expand:
+{fab}`apple` macOS — Apple Silicon
+```
+:::
+
+:::{grid-item}
+```{button-link} {{ mac_intel_url }}
+:color: primary
+:shadow:
+:expand:
+{fab}`apple` macOS — Intel
+```
+:::
+
+::::
+
+``datashuttle`` can be downloaded as a Python package and used
+through the graphical user interface or Python API.
+
+(python-package)=
+## Python package
+
 ``datashuttle`` requires
 [Python](https://www.python.org/)
 to run (see [this guide](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html) on managing Python with conda).
@@ -8,7 +48,7 @@ to run (see [this guide](https://docs.conda.io/projects/conda/en/latest/user-gui
 The easiest way to install ``datashuttle`` is through the Python package manager
 [conda](https://docs.conda.io/en/latest/). However, installation with `pip` is also supported.
 
-## Installation instructions
+### Installation instructions
 
 ::::{tab-set}
 
