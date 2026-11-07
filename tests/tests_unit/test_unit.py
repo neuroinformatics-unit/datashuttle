@@ -247,6 +247,65 @@ class TestUnit:
             "local_only",
         ]
 
+    def test_transfer_output_warnings(self):
+        """Test TransferOutput warnings handling and message generation."""
+        from datashuttle.utils.transfer_output_class import TransferOutput
+
+        output = TransferOutput()
+        assert not output.warnings_detected()
+        assert not output.errors_detected()
+
+        output["num_transferred"]["rawdata"] = 0
+        output["warnings"]["empty_folders"]["rawdata"] = ["rawdata/sub-001"]
+        assert output.warnings_detected()
+
+        # Test TUI message formatting
+        tui_msg = output.create_tui_message("green", "green")
+        assert (
+            "[gold3]Warning: 1 empty folder was detected in rawdata:[/gold3]"
+            in tui_msg
+        )
+        assert "  [gold3]rawdata/sub-001[/gold3]" in tui_msg
+
+        # Test Python API message formatting
+        api_msg = output.create_python_api_message()
+        assert "Warning: 1 empty folder was detected in rawdata:" in api_msg
+        assert "rawdata/sub-001" in api_msg
+
+        # Test pluralization
+        output["warnings"]["empty_folders"]["rawdata"] = [
+            "rawdata/sub-001",
+            "rawdata/sub-002",
+        ]
+        api_msg_multi = output.create_python_api_message()
+        assert (
+            "Warning: 2 empty folders were detected in rawdata:"
+            in api_msg_multi
+        )
+        assert "rawdata/sub-001\nrawdata/sub-002" in api_msg_multi
+
+        # Test merge_std_outputs
+        out1 = TransferOutput()
+        out1["warnings"]["empty_folders"]["rawdata"] = ["rawdata/sub-001"]
+        out2 = TransferOutput()
+        out2["warnings"]["empty_folders"]["rawdata"] = ["rawdata/sub-002"]
+        out2["warnings"]["empty_folders"]["derivatives"] = [
+            "derivatives/sub-003"
+        ]
+        out2["num_transferred"]["rawdata"] = 5
+        out2["num_transferred"]["derivatives"] = 2
+
+        merged = TransferOutput.merge_std_outputs(out1, out2)
+        assert merged["warnings"]["empty_folders"]["rawdata"] == [
+            "rawdata/sub-001",
+            "rawdata/sub-002",
+        ]
+        assert merged["warnings"]["empty_folders"]["derivatives"] == [
+            "derivatives/sub-003"
+        ]
+        assert merged["num_transferred"]["rawdata"] == 5
+        assert merged["num_transferred"]["derivatives"] == 2
+
     # -------------------------------------------------------------------------
     # Utils
     # -------------------------------------------------------------------------

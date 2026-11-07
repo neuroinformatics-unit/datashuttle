@@ -57,12 +57,67 @@ class TestFileTransfer(BaseTest):
             test_utils.get_all_broad_folders_used(),
         )
 
-    def test_empty_folder_is_not_transferred(self, project):
-        project.create_folders("rawdata", "sub-001")
-        project.upload_rawdata()
-        assert not (
-            project.cfg["central_path"] / "rawdata" / "sub-001"
-        ).is_dir()
+    @pytest.mark.parametrize(
+        "folder_args,custom_args,expected_warning",
+        [
+            (("rawdata", "sub-001"), None, "rawdata/sub-001"),
+            (
+                ("rawdata", "sub-001", "ses-001"),
+                None,
+                "rawdata/sub-001/ses-001",
+            ),
+            (
+                ("rawdata", "sub-001", "ses-001", "ephys"),
+                ("rawdata", "sub-001", "ses-001", "ephys"),
+                "rawdata/sub-001/ses-001/ephys",
+            ),
+        ],
+    )
+    def test_empty_folder_warnings_on_upload(
+        self, project, folder_args, custom_args, expected_warning
+    ):
+        project.create_folders(*folder_args)
+        output = (
+            project.upload_custom(*custom_args)
+            if custom_args
+            else project.upload_rawdata()
+        )
+        assert not (project.cfg["central_path"] / expected_warning).is_dir()
+        assert output.warnings_detected()
+        assert output["warnings"]["empty_folders"]["rawdata"] == [
+            expected_warning
+        ]
+
+    def test_empty_folder_warning_mixed_transfer(self, project):
+        project.create_folders("rawdata", "sub-001", "ses-001", "ephys")
+        test_utils.write_file(
+            project.cfg["local_path"]
+            / "rawdata"
+            / "sub-001"
+            / "ses-001"
+            / "ephys"
+            / "data.raw"
+        )
+        project.create_folders("rawdata", "sub-002", "ses-001")
+
+        output = project.upload_rawdata()
+
+        assert output.warnings_detected()
+        assert output["warnings"]["empty_folders"]["rawdata"] == [
+            "rawdata/sub-002/ses-001"
+        ]
+        assert output["num_transferred"]["rawdata"] == 1
+
+    def test_empty_folder_warning_download(self, project):
+        (project.cfg["central_path"] / "rawdata" / "sub-001").mkdir(
+            parents=True, exist_ok=True
+        )
+        output = project.download_rawdata()
+
+        assert output.warnings_detected()
+        assert output["warnings"]["empty_folders"]["rawdata"] == [
+            "rawdata/sub-001"
+        ]
 
     @pytest.mark.parametrize(
         "top_level_folder_to_transfer",
@@ -680,6 +735,12 @@ class TestFileTransfer(BaseTest):
                     "file_names": [f"{top_level_folder}/hello_world.txt"],
                     "messages": ["how are you?"],
                 },
+                "warnings": {
+                    "empty_folders": {
+                        "rawdata": [],
+                        "derivatives": [],
+                    }
+                },
                 "num_transferred": {"rawdata": None, "derivatives": None},
             }
             return transfer_output
@@ -745,6 +806,12 @@ class TestFileTransfer(BaseTest):
                         "derivatives/hello_world.txt",
                     ],
                     "messages": ["how are you?", "how are you?"],
+                },
+                "warnings": {
+                    "empty_folders": {
+                        "rawdata": [],
+                        "derivatives": [],
+                    }
                 },
                 "num_transferred": {
                     "rawdata": None,

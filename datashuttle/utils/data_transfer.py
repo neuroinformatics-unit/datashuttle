@@ -96,6 +96,7 @@ class TransferData:
     def run(self) -> TransferOutput:
         """Run the transfer."""
         include_list = self.build_a_list_of_all_files_and_folders_to_transfer()
+        empty_folders = self.detect_empty_transfer_folders()
 
         if any(include_list):
             output = rclone.transfer_data(
@@ -127,7 +128,82 @@ class TransferData:
             transfer_output = TransferOutput()
             transfer_output["num_transferred"][self.__top_level_folder] = 0
 
+        if empty_folders:
+            transfer_output["warnings"]["empty_folders"][
+                self.__top_level_folder
+            ] = empty_folders
+            for folder in empty_folders:
+                utils.log_and_message(
+                    f"Warning: Empty folder detected at '{folder}'. No files were transferred."
+                )
+
         return transfer_output
+
+    def detect_empty_transfer_folders(self) -> list[str]:
+        """Detect empty subject, session, or datatype folders on the source filesystem."""
+        if not self.__base_folder.is_dir():
+            return []
+
+        empty_folders: list[str] = []
+        for sub in [
+            s
+            for s in self.get_processed_names(self.sub_names)
+            if s != "all_non_sub"
+        ]:
+            sub_path = self.__base_folder / sub
+            if not sub_path.is_dir():
+                continue
+
+            ses_names = [
+                s
+                for s in self.get_processed_names(self.ses_names, sub)
+                if s != "all_non_ses"
+            ]
+            if ses_names:
+                empty_folders.extend(
+                    self._detect_empty_session_folders(
+                        sub, sub_path, ses_names
+                    )
+                )
+            elif not self._dir_contains_files(sub_path):
+                empty_folders.append(f"{self.__top_level_folder}/{sub}")
+
+        return empty_folders
+
+    def _detect_empty_session_folders(
+        self, sub: str, sub_path: Path, ses_names: list[str]
+    ) -> list[str]:
+        """Detect empty sessions or specific datatypes under a subject."""
+        empty_folders: list[str] = []
+        datatypes = [
+            dt
+            for dt in self.datatype
+            if dt not in ["all", "all_datatype", "all_non_datatype", ""]
+        ]
+
+        for ses in ses_names:
+            ses_path = sub_path / ses
+            if not ses_path.is_dir():
+                continue
+
+            if datatypes:
+                empty_folders.extend(
+                    [
+                        f"{self.__top_level_folder}/{sub}/{ses}/{dt}"
+                        for dt in datatypes
+                        if (ses_path / dt).is_dir()
+                        and not self._dir_contains_files(ses_path / dt)
+                    ]
+                )
+            elif not self._dir_contains_files(ses_path):
+                empty_folders.append(f"{self.__top_level_folder}/{sub}/{ses}")
+
+        return empty_folders
+
+    @staticmethod
+    def _dir_contains_files(path: Path) -> bool:
+        """Return True if path contains any files."""
+        return any(f.is_file() for f in path.rglob("*"))
 
     # -------------------------------------------------------------------------
     # Build the --include list
