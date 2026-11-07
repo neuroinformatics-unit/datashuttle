@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 import warnings
 
 from datashuttle.configs import canonical_folders
-from datashuttle.utils import folders, utils
+from datashuttle.utils import folders, formatting, utils
 from datashuttle.utils.custom_exceptions import (
     ConfigError,
     NeuroBlueprintError,
@@ -326,6 +326,10 @@ def get_existing_project_paths() -> List[Path]:
     return existing_project_paths
 
 
+SUB_SEARCH_STR = "sub-*"
+SES_SEARCH_STR = "ses-*"
+
+
 def get_all_sub_and_ses_paths(
     cfg: Configs,
     top_level_folder: TopLevelFolder,
@@ -361,7 +365,7 @@ def get_all_sub_and_ses_paths(
         cfg,
         top_level_folder,
         None,
-        "sub-*",
+        SUB_SEARCH_STR,
         include_central,
         return_full_path=True,
     )
@@ -381,7 +385,7 @@ def get_all_sub_and_ses_paths(
             cfg,
             top_level_folder,
             sub,
-            "ses-*",
+            SES_SEARCH_STR,
             include_central,
             return_full_path=True,
         )
@@ -394,3 +398,176 @@ def get_all_sub_and_ses_paths(
             all_ses_folder_paths[sub] = ses_folder_paths["local"]
 
     return {"sub": all_sub_folder_paths, "ses": all_ses_folder_paths}
+
+
+def get_subs(
+    cfg: Configs,
+    top_level_folder: TopLevelFolder = "rawdata",
+    return_full_path: bool = False,
+    include_central: bool = False,
+) -> list[str] | list[Path]:
+    """Return all subject folder names or paths in the project.
+
+    Parameters
+    ----------
+    cfg
+        Datashuttle Configs.
+
+    top_level_folder
+        The top-level folder ("rawdata" or "derivatives"). Default is "rawdata".
+
+    return_full_path
+        If `True`, returns list of Path objects.
+        If `False`, returns list of subject name strings (e.g. `["sub-001", "sub-002"]`).
+        Default is `False`.
+
+    include_central
+        If `True`, combines subjects found locally and on central storage.
+        Default is `False`.
+
+    Returns
+    -------
+    list[str] | list[Path]
+        Sorted list of unique subject names or paths.
+
+    """
+    sub_paths = folders.search_project_for_sub_or_ses_names(
+        cfg,
+        top_level_folder,
+        None,
+        SUB_SEARCH_STR,
+        include_central,
+        return_full_path=return_full_path,
+    )
+    all_subs = sub_paths["local"] + (
+        sub_paths["central"] if include_central else []
+    )
+    return sorted(dict.fromkeys(all_subs))
+
+
+def get_ses(
+    cfg: Configs,
+    sub_name: str,
+    top_level_folder: TopLevelFolder = "rawdata",
+    return_full_path: bool = False,
+    include_central: bool = False,
+) -> list[str] | list[Path]:
+    """Return all session folder names or paths for a given subject.
+
+    Parameters
+    ----------
+    cfg
+        Datashuttle Configs.
+
+    sub_name
+        The subject name (e.g. "sub-001" or "001").
+
+    top_level_folder
+        The top-level folder ("rawdata" or "derivatives"). Default is "rawdata".
+
+    return_full_path
+        If `True`, returns list of Path objects.
+        If `False`, returns list of session name strings (e.g. `["ses-001", "ses-002"]`).
+        Default is `False`.
+
+    include_central
+        If `True`, combines sessions found locally and on central storage.
+        Default is `False`.
+
+    Returns
+    -------
+    list[str] | list[Path]
+        Sorted list of unique session names or paths for the subject.
+
+    """
+    formatted_sub = formatting.format_names([sub_name], "sub")[0]
+
+    subs = folders.search_project_for_sub_or_ses_names(
+        cfg,
+        top_level_folder,
+        None,
+        SUB_SEARCH_STR,
+        include_central,
+        return_full_path=False,
+    )
+    all_subs = set(
+        subs["local"] + (subs["central"] if include_central else [])
+    )
+    matching_subs = [
+        s
+        for s in all_subs
+        if s == formatted_sub or s.startswith(f"{formatted_sub}_")
+    ] or [formatted_sub]
+
+    all_ses = []
+    for sub in matching_subs:
+        ses_paths = folders.search_project_for_sub_or_ses_names(
+            cfg,
+            top_level_folder,
+            sub,
+            SES_SEARCH_STR,
+            include_central,
+            return_full_path=return_full_path,
+        )
+        all_ses.extend(
+            ses_paths["local"]
+            + (ses_paths["central"] if include_central else [])
+        )
+
+    return sorted(dict.fromkeys(all_ses))
+
+
+def get_datatype_folders(
+    cfg: Configs,
+    sub_name: str,
+    ses_name: str | None = None,
+    top_level_folder: TopLevelFolder = "rawdata",
+    return_full_path: bool = False,
+    include_central: bool = False,
+) -> list[str] | list[Path]:
+    """Return all canonical datatype folder names or paths in a subject or session folder.
+
+    Parameters
+    ----------
+    cfg
+        Datashuttle Configs.
+
+    sub_name
+        Subject name (e.g. "sub-001" or "001").
+
+    ses_name
+        Session name (e.g. "ses-001" or "001"). If None, searches at subject level.
+
+    top_level_folder
+        "rawdata" or "derivatives". Default is "rawdata".
+
+    return_full_path
+        If `True`, returns list of Path objects. Default is `False`.
+
+    include_central
+        If `True`, combines folders found locally and on central storage. Default is `False`.
+
+    Returns
+    -------
+    list[str] | list[Path]
+        Sorted list of unique datatype folder names or paths found.
+
+    """
+    formatted_sub = formatting.format_names([sub_name], "sub")[0]
+    formatted_ses = (
+        formatting.format_names([ses_name], "ses")[0] if ses_name else None
+    )
+
+    results = []
+    locations = ["local", "central"] if include_central else ["local"]
+    for loc in locations:
+        base = cfg.get_base_folder(loc, top_level_folder)  # type: ignore
+        for _, folder_obj in folders.search_for_datatype_folders(
+            cfg, base, loc, formatted_sub, formatted_ses
+        ):
+            target = (
+                base / formatted_sub / (formatted_ses or "") / folder_obj.name
+            )
+            results.append(target if return_full_path else folder_obj.name)
+
+    return sorted(dict.fromkeys(results))
