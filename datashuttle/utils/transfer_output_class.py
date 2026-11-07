@@ -36,6 +36,12 @@ class TransferOutput(UserDict):
         super().__init__(
             {
                 "errors": {"file_names": [], "messages": []},
+                "warnings": {
+                    "empty_folders": {
+                        "rawdata": [],
+                        "derivatives": [],
+                    }
+                },
                 "num_transferred": {
                     "rawdata": None,
                     "derivatives": None,
@@ -46,6 +52,12 @@ class TransferOutput(UserDict):
     def errors_detected(self) -> bool:
         """Return whether any errors occurred during transfer."""
         return any(self["errors"]["messages"])
+
+    def warnings_detected(self) -> bool:
+        """Return whether any warnings occurred during transfer."""
+        return any(self["warnings"]["empty_folders"]["rawdata"]) or any(
+            self["warnings"]["empty_folders"]["derivatives"]
+        )
 
     @classmethod
     def merge_std_outputs(
@@ -76,6 +88,14 @@ class TransferOutput(UserDict):
             + stderr_outputs["errors"]["messages"]
         )
 
+        for key in ["rawdata", "derivatives"]:
+            instance["warnings"]["empty_folders"][key] = sorted(
+                dict.fromkeys(
+                    stdout_outputs["warnings"]["empty_folders"].get(key, [])
+                    + stderr_outputs["warnings"]["empty_folders"].get(key, [])
+                )
+            )
+
         instance["num_transferred"]["rawdata"] = stderr_outputs[
             "num_transferred"
         ]["rawdata"]
@@ -85,84 +105,88 @@ class TransferOutput(UserDict):
 
         return instance
 
-    def create_tui_message(self, no_transfer_color, transfer_color) -> str:
-        """Create a message summarising the transfer, for display in the TUI.
-
-        This is very similar to `self.create_python_api_message()`, but these
-        are sufficiently subtle differences to warrant two separate functions.
-        """
+    def create_tui_message(
+        self, no_transfer_color: str, transfer_color: str
+    ) -> str:
+        """Create a message summarising the transfer, for display in the TUI."""
         message = ""
-
-        for top_level_folder in ["rawdata", "derivatives"]:
-            num_transferred = self["num_transferred"][top_level_folder]
-
-            if num_transferred is None:
+        for top_level in ["rawdata", "derivatives"]:
+            num = self["num_transferred"][top_level]
+            if num is None:
                 continue
-
-            elif num_transferred == 0:
-                message += (
-                    f"[{no_transfer_color}]"
-                    f"\nNothing was transferred from {top_level_folder}."
-                    f"[/{no_transfer_color}]\n"
-                )
-
+            if num == 0:
+                message += f"[{no_transfer_color}]\nNothing was transferred from {top_level}.[/{no_transfer_color}]\n"
             else:
-                files_were = (
-                    "files were" if num_transferred > 1 else "file was"
-                )
-                message += (
-                    f"[{transfer_color}]"
-                    f"\n{num_transferred} {files_were} transferred from {top_level_folder}."
-                    f"[/{transfer_color}]\n"
-                )
+                files_were = "files were" if num > 1 else "file was"
+                message += f"[{transfer_color}]\n{num} {files_were} transferred from {top_level}.[/{transfer_color}]\n"
 
-        errors_dict = self["errors"]
+            empty = self["warnings"]["empty_folders"].get(top_level, [])
+            message += self._format_empty_folders(
+                empty, top_level, is_tui=True
+            )
 
-        if any(errors_dict["messages"]):
-            if errors_dict["file_names"]:
-                message += "\n[red]Errors detected! In files:[/red]\n"
-                message += "\n".join(errors_dict["file_names"])
-            else:
-                message += "\n[red]Errors detected![/red]"
-            message += "[red]\n\nThe error messages are:[/red]\n"
-            message += "\n\n".join(errors_dict["messages"])
+        return message + self._format_errors(self["errors"], is_tui=True)
 
-        return message
-
-    def create_python_api_message(self):
+    def create_python_api_message(self) -> str:
         """Create a message summarising the transfer, for display in the Python API."""
         message = ""
-
-        for top_level_folder in ["rawdata", "derivatives"]:
-            num_transferred = self["num_transferred"][top_level_folder]
-
-            if num_transferred is None:
+        for top_level in ["rawdata", "derivatives"]:
+            num = self["num_transferred"][top_level]
+            if num is None:
                 continue
-
-            elif num_transferred == 0:
-                message += (
-                    f"\nNothing was transferred from {top_level_folder}.\n"
-                )
-
+            if num == 0:
+                message += f"\nNothing was transferred from {top_level}.\n"
             else:
-                files_were = (
-                    "files were" if num_transferred > 1 else "file was"
-                )
-                message += f"\n{num_transferred} {files_were} transferred from {top_level_folder}.\n"
-
-        errors = self["errors"]
-
-        if any(errors["messages"]):
-            if any(errors["file_names"]):
+                files_were = "files were" if num > 1 else "file was"
                 message += (
-                    "\n\nErrors were detected! In files:"
-                    "\n-------------------------------\n"
+                    f"\n{num} {files_were} transferred from {top_level}.\n"
                 )
-                message += "\n".join(errors["file_names"])
-            else:
-                message += "\n\n[red]Errors detected![/red]"
-            message += "\n\nThe error messages are:\n-----------------------\n"
-            message += "\n".join(errors["messages"])
-            message += "\n"
 
-        return message
+            empty = self["warnings"]["empty_folders"].get(top_level, [])
+            message += self._format_empty_folders(
+                empty, top_level, is_tui=False
+            )
+
+        return message + self._format_errors(self["errors"], is_tui=False)
+
+    @staticmethod
+    def _format_empty_folders(
+        empty_folders: list[str], top_level: str, is_tui: bool = False
+    ) -> str:
+        """Format empty folder warnings for TUI or API display."""
+        if not empty_folders:
+            return ""
+        count = len(empty_folders)
+        verb = "folders were" if count > 1 else "folder was"
+        header = f"Warning: {count} empty {verb} detected in {top_level}:"
+        if is_tui:
+            lines = "\n".join([f"  [gold3]{f}[/gold3]" for f in empty_folders])
+            return f"\n[gold3]{header}[/gold3]\n{lines}\n"
+        folder_list = "\n".join(empty_folders)
+        return f"\n\n{header}\n------------------------------------------------\n{folder_list}\n"
+
+    @staticmethod
+    def _format_errors(errors: dict, is_tui: bool = False) -> str:
+        """Format error section for TUI or API display."""
+        if not any(errors["messages"]):
+            return ""
+        file_list = "\n".join(errors["file_names"])
+        msg_list = (
+            "\n\n".join(errors["messages"])
+            if is_tui
+            else "\n".join(errors["messages"])
+        )
+        if is_tui:
+            files_part = (
+                f"\n[red]Errors detected! In files:[/red]\n{file_list}"
+                if errors["file_names"]
+                else "\n[red]Errors detected![/red]"
+            )
+            return f"{files_part}[red]\n\nThe error messages are:[/red]\n{msg_list}"
+
+        files_part = (
+            f"\n\nErrors were detected! In files:\n-------------------------------\n{file_list}"
+            if errors["file_names"]
+            else "\n\n[red]Errors detected![/red]"
+        )
+        return f"{files_part}\n\nThe error messages are:\n-----------------------\n{msg_list}\n"
