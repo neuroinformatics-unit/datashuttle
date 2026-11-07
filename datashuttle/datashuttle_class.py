@@ -36,7 +36,10 @@ from datashuttle.configs import (
     load_configs,
 )
 from datashuttle.configs.config_class import Configs
-from datashuttle.datashuttle_functions import _format_top_level_folder
+from datashuttle.datashuttle_functions import (
+    _format_top_level_folder,
+    get_all_sub_and_ses_paths_from_path,
+)
 from datashuttle.utils import (
     aws,
     ds_logger,
@@ -1362,6 +1365,206 @@ class DataShuttle:
         that contain valid config.yaml files.
         """
         return getters.get_existing_project_paths()
+
+    @check_configs_set
+    def get_subs(
+        self,
+        top_level_folder: TopLevelFolder = "rawdata",
+        return_full_path: bool = False,
+        include_central: bool = False,
+    ) -> list[str] | list[Path]:
+        """Return all subject folder names or paths in the project.
+
+        Parameters
+        ----------
+        top_level_folder
+            The top-level folder ("rawdata" or "derivatives"). Default is "rawdata".
+
+        return_full_path
+            If `True`, returns list of Path objects.
+            If `False`, returns list of subject name strings (e.g. `["sub-001", "sub-002"]`).
+            Default is `False`.
+
+        include_central
+            If `True`, combines subjects found locally and on central storage.
+            Default is `False`.
+
+        Returns
+        -------
+        list[str] | list[Path]
+            Sorted list of unique subject names or paths.
+
+        """
+        if self.is_local_project():
+            include_central = False
+
+        return getters.get_subs(
+            self.cfg,
+            top_level_folder=top_level_folder,
+            return_full_path=return_full_path,
+            include_central=include_central,
+        )
+
+    @check_configs_set
+    def get_ses(
+        self,
+        sub_name: str,
+        top_level_folder: TopLevelFolder = "rawdata",
+        return_full_path: bool = False,
+        include_central: bool = False,
+    ) -> list[str] | list[Path]:
+        """Return all session folder names or paths for a given subject.
+
+        Parameters
+        ----------
+        sub_name
+            The subject name (e.g. "sub-001" or "001").
+
+        top_level_folder
+            The top-level folder ("rawdata" or "derivatives"). Default is "rawdata".
+
+        return_full_path
+            If `True`, returns list of Path objects.
+            If `False`, returns list of session name strings (e.g. `["ses-001", "ses-002"]`).
+            Default is `False`.
+
+        include_central
+            If `True`, combines sessions found locally and on central storage.
+            Default is `False`.
+
+        Returns
+        -------
+        list[str] | list[Path]
+            Sorted list of unique session names or paths for the subject.
+
+        """
+        if self.is_local_project():
+            include_central = False
+
+        return getters.get_ses(
+            self.cfg,
+            sub_name=sub_name,
+            top_level_folder=top_level_folder,
+            return_full_path=return_full_path,
+            include_central=include_central,
+        )
+
+    @check_configs_set
+    def get_all_sub_and_ses_paths(
+        self,
+        top_level_folder: TopLevelFolder = "rawdata",
+        include_central: bool = False,
+    ) -> dict[str, list[Path] | dict[str, list[Path]]]:
+        """Return a dictionary containing paths to all subjects and sessions in the project.
+
+        Parameters
+        ----------
+        top_level_folder
+            The top-level folder ("rawdata" or "derivatives"). Default is "rawdata".
+
+        include_central
+            If `True`, combines subjects/sessions found locally and on central storage.
+            Default is `False`.
+
+        Returns
+        -------
+        dict
+            Dictionary with "sub" key (list of Path objects for all subject folders)
+            and "ses" key (dict mapping subject name to list of Path objects for its session folders).
+
+        """
+        if self.is_local_project():
+            include_central = False
+
+        return getters.get_all_sub_and_ses_paths(
+            self.cfg,
+            top_level_folder=top_level_folder,
+            include_central=include_central,
+        )
+
+    @check_configs_set
+    def get_all_sub_and_ses(
+        self,
+        top_level_folder: TopLevelFolder = "rawdata",
+        include_central: bool = False,
+    ) -> dict[str, list[Path] | dict[str, list[Path]]]:
+        """Return all subject and session paths (alias for `get_all_sub_and_ses_paths`)."""
+        return self.get_all_sub_and_ses_paths(
+            top_level_folder=top_level_folder,
+            include_central=include_central,
+        )
+
+    @check_configs_set
+    def get_datatype_folders(
+        self,
+        sub_name: str,
+        ses_name: str | None = None,
+        top_level_folder: TopLevelFolder = "rawdata",
+        return_full_path: bool = False,
+        include_central: bool = False,
+    ) -> list[str] | list[Path]:
+        """Return all canonical datatype folder names or paths in a subject or session folder.
+
+        Parameters
+        ----------
+        sub_name
+            Subject name (e.g. "sub-001" or "001").
+
+        ses_name
+            Session name (e.g. "ses-001" or "001"). If None, searches at subject level.
+
+        top_level_folder
+            "rawdata" or "derivatives". Default is "rawdata".
+
+        return_full_path
+            If `True`, returns list of Path objects. Default is `False`.
+
+        include_central
+            If `True`, combines folders found locally and on central storage. Default is `False`.
+
+        Returns
+        -------
+        list[str] | list[Path]
+            Sorted list of unique datatype folder names or paths found.
+
+        """
+        if self.is_local_project():
+            include_central = False
+
+        return getters.get_datatype_folders(
+            self.cfg,
+            sub_name=sub_name,
+            ses_name=ses_name,
+            top_level_folder=top_level_folder,
+            return_full_path=return_full_path,
+            include_central=include_central,
+        )
+
+    @staticmethod
+    def get_all_sub_and_ses_paths_from_path(
+        project_path: str | Path,
+        top_level_folder: TopLevelFolder | None = "rawdata",
+    ) -> dict[str, list[Path] | dict[str, list[Path]]]:
+        """Return filepaths to all subjects and sessions directly from a project path.
+
+        Parameters
+        ----------
+        project_path
+            Path to the project directory.
+
+        top_level_folder
+            "rawdata" or "derivatives". If `None`, both are checked. Default is "rawdata".
+
+        Returns
+        -------
+        dict
+            Dictionary with "sub" key (list of subject Paths)
+            and "ses" key (dict mapping subject name to list of session Paths).
+
+        """
+        return get_all_sub_and_ses_paths_from_path(
+            project_path, top_level_folder=top_level_folder
+        )
 
     @check_configs_set
     def get_next_sub(

@@ -1,23 +1,19 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict, List
-
-if TYPE_CHECKING:
-    from datashuttle.utils.custom_types import (
-        DisplayMode,
-        TopLevelFolder,
-    )
-
 from pathlib import Path
-from typing import (
-    Optional,
-)
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 from datashuttle.configs import canonical_configs, canonical_folders
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import (
     validation,
 )
+
+if TYPE_CHECKING:
+    from datashuttle.utils.custom_types import (
+        DisplayMode,
+        TopLevelFolder,
+    )
 
 
 def validate_project_from_path(
@@ -107,6 +103,72 @@ def validate_project_from_path(
     )
 
     return error_messages
+
+
+def _collect_sub_and_ses_paths(
+    tlf_path: Path,
+) -> tuple[list[Path], dict[str, list[Path]]]:
+    """Collect subject and session folder paths within a top-level folder."""
+    if not tlf_path.is_dir():
+        return [], {}
+
+    sub_dirs = [p for p in sorted(tlf_path.glob("sub-*")) if p.is_dir()]
+    ses_dict: dict[str, list[Path]] = {}
+    for sub in sub_dirs:
+        ses_dict[sub.name] = [
+            p for p in sorted(sub.glob("ses-*")) if p.is_dir()
+        ]
+
+    return sub_dirs, ses_dict
+
+
+def get_all_sub_and_ses_paths_from_path(
+    project_path: str | Path,
+    top_level_folder: TopLevelFolder | None = "rawdata",
+) -> dict[str, list[Path] | dict[str, list[Path]]]:
+    """Return filepaths to all subjects and sessions directly from a project path.
+
+    Enables discovery and inspection of NeuroBlueprint project structures with
+    minimal setup, without requiring project configuration files.
+
+    Parameters
+    ----------
+    project_path
+        Path to the project directory. Must contain at least one top-level
+        folder ('rawdata' or 'derivatives').
+
+    top_level_folder
+        The top-level folder ("rawdata" or "derivatives") to search.
+        If `None`, both are checked and combined. Default is "rawdata".
+
+    Returns
+    -------
+    dict
+        A dictionary with "sub" key (list of Path objects for all subject folders)
+        and "ses" key (dict mapping subject name to list of Path objects for its session folders).
+
+    """
+    project_path = Path(project_path)
+    if not project_path.is_dir():
+        raise FileNotFoundError(
+            f"Cannot get paths. No directory found at `project_path`: {project_path}"
+        )
+
+    all_subs: list[Path] = []
+    all_ses: dict[str, list[Path]] = {}
+
+    for tlf in _format_top_level_folder(top_level_folder):
+        sub_dirs, ses_dict = _collect_sub_and_ses_paths(project_path / tlf)
+        all_subs.extend(sub_dirs)
+        for sub_name, ses_dirs in ses_dict.items():
+            all_ses.setdefault(sub_name, []).extend(ses_dirs)
+
+    all_sub_paths = sorted(dict.fromkeys(all_subs), key=lambda p: p.name)
+    all_ses_paths = {
+        sub: sorted(dict.fromkeys(dirs), key=lambda p: p.name)
+        for sub, dirs in sorted(all_ses.items())
+    }
+    return {"sub": all_sub_paths, "ses": all_ses_paths}
 
 
 def _format_top_level_folder(
