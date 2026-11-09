@@ -620,30 +620,26 @@ def datetime_are_iso_format(
 
     """
     datetime_keys = list(canonical_tags.get_datetime_formats().keys())
-    key = next((key for key in datetime_keys if f"_{key}-" in name), None)
+    keys = [key for key in datetime_keys if f"_{key}-" in name]
 
-    error_message: List[str]
-    if not key:
-        error_message = []
-    else:
+    error_message: List[str] = []
+    for key in keys:
         try:
             format_to_check = utils.get_values_from_bids_formatted_name(
                 [name], key, return_as_int=False
             )[0]
         except Exception:
-            return []
+            continue
 
-        if datetime_value_str_is_iso_format(format_to_check, key):
-            error_message = []
-        else:
-            error_message = [
+        if not datetime_value_str_is_iso_format(format_to_check, key):
+            error_message.append(
                 get_datetime_error(
                     key,
                     name,
                     canonical_tags.get_datetime_formats()[key],
                     path_,
                 )
-            ]
+            )
 
     return error_message
 
